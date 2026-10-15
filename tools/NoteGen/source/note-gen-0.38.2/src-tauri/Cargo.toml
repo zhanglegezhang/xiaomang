@@ -1,0 +1,34 @@
+[package]
+name = "xiaomang-diary"
+version = "0.38.2"
+description = "Xiaomang local diary, derived from NoteGen 0.38.2"
+authors = ["codexu", "Xiaomang maintainers"]
+edition = "2021"
+rust-version = "1.96"
+autolib = false
+license = "GPL-3.0-or-later"
+
+[profile.release]
+opt-level = "s"
+lto = "thin"
+codegen-units = 1
+strip = "symbols"
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "=2.11.6", features = [] }
+tauri-plugin-single-instance = "2"
+tauri-plugin-dialog = "2"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+uuid = { version = "1", features = ["v4"] }
+base64 = "0.22"
+sha2 = "0.10"
+regex = "1"
+
+[target.'cfg(windows)'.dependencies]
+webview2-com = "=0.38.0"
+windows-core = "0.61"
+windows-sys = { version = "0.61", features = ["Win32_Storage_FileSystem", "Win32_System_DataExchange", "Win32_UI_Shell"] }

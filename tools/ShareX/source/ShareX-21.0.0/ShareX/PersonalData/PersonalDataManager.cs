@@ -1,0 +1,186 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Drawing;
+using System.IO;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+using ShareX.HelpersLib;
+
+namespace ShareX
+{
+    internal static class PersonalDataManager
+    {
+        internal static bool Busy { get; private set; }
+        internal static bool RestartReady => pendingScope != null;
+        private static TransferScope pendingScope;
+        private static string pendingStage;
+        private static PersonalDataKind[] pendingKinds;
+        private static PersonalDataPaths pendingPaths;
+        private static Size pendingDisplay;
+        internal static PersonalDataPaths Paths() => new() { Personal = Path.GetFullPath(Program.PersonalFolder), Input = XiaomangInputMethodManager.UserDirectory, Media = Path.GetFullPath(Program.ScreenshotsParentFolder), Hotkeys = Path.GetFullPath(SettingManager.HotkeysConfigFilePath), ConfigCodec = ConfigCodec };
+        internal static async Task ConfigCodec(string mode, string input, string current, string output)
+        {
+            var start = new ProcessStartInfo(Path.Combine(XiaomangInputMethodManager.BundleDirectory, "XiaomangInputWorker.exe")) { UseShellExecute = false, CreateNoWindow = true, RedirectStandardError = true, WorkingDirectory = XiaomangInputMethodManager.BundleDirectory };
+            foreach (var arg in new[] { "--personal-data-config", mode, input }) start.ArgumentList.Add(arg);
+            if (mode == "merge") start.ArgumentList.Add(current);
+            start.ArgumentList.Add(output);
+            using var process = Process.Start(start) ?? throw new IOException("输入法配置转换未启动。");
+            Task<string> error = process.StandardError.ReadToEndAsync();
+            using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(15));
+            try { await process.WaitForExitAsync(timeout.Token); }
+            catch (OperationCanceledException) { process.Kill(); throw new IOException("输入法配置转换超时，未修改个人数据。"); }
+            if (process.ExitCode != 0 || !File.Exists(output)) throw new IOException("输入法配置转换失败：" + await error);
+        }
+        private static async Task CloseOwnedWindows(string executable)
+        {
+            foreach (var process in Process.GetProcessesByName(Path.GetFileNameWithoutExtension(executable)))
+            {
+                using (process) {
+                    string path; try { path = process.MainModule?.FileName; } catch { continue; }
+                    if (!string.Equals(path, executable, StringComparison.OrdinalIgnoreCase) || process.HasExited) continue;
+                    if (!process.CloseMainWindow()) throw new IOException("相关编辑窗口无法正常关闭，请先手动保存并关闭后重试。");
+                    using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(15));
+                    try { await process.WaitForExitAsync(timeout.Token); }
+                    catch (OperationCanceledException) { throw new IOException("编辑窗口尚未保存并关闭，操作已取消，原数据未修改。"); }
+                }
+            }
+        }
+        private sealed class TransferScope : IDisposable
+        {
+            internal readonly List<FileStream> Locks = new();
+            internal readonly List<(Form form, bool enabled)> Forms = new();
+            internal bool InputPaused, OldIgnore;
+            internal IDisposable FileFavoritesLease;
+            internal void Lock(string root) {
+                PersonalDataArchive.SafePath(root); Directory.CreateDirectory(root);
+                Locks.Add(new FileStream(Path.Combine(root, ".personal-transfer.lock"), FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None));
+            }
+            public void Dispose() {
+                FileFavoritesLease?.Dispose(); FileFavoritesLease = null;
+                foreach (var file in Locks) file.Dispose(); Locks.Clear();
+                foreach (var (form, enabled) in Forms) if (!form.IsDisposed) form.Enabled = enabled;
+                if (Program.HotkeyManager != null) Program.HotkeyManager.IgnoreHotkeys = OldIgnore;
+                Busy = false;
+                if (InputPaused && Program.MainForm != null && !Program.MainForm.IsDisposed) XiaomangInputMethodManager.Start();
+            }
+        }
+        private static async Task<TransferScope> Pause(PersonalDataPaths paths, PersonalDataKind[] selected, Form transfer, PersonalDataTransferControl control = null)
+        {
+            control?.Token.ThrowIfCancellationRequested();
+            if (Busy || VoiceTypingController.IsTyping || Application.OpenForms.OfType<TodoWidgetForm>().Any(form => form.PersonalDataRecordingActive) || TaskManager.Tasks.Any(task => task.IsWorking)) throw new IOException("请先结束录音、截图或录屏任务，再备份或导入。");
+            var scope = new TransferScope(); Busy = true;
+            try {
+                if (selected.Contains(PersonalDataKind.Favorites) && FileFavoritesService.Store != null)
+                    scope.FileFavoritesLease = await FileFavoritesService.Store.Hold();
+                if (Program.HotkeyManager != null) { scope.OldIgnore = Program.HotkeyManager.IgnoreHotkeys; Program.HotkeyManager.IgnoreHotkeys = true; }
+                if (!await Program.MainForm.PreparePersonalDataEditorsAsync()) throw new IOException("临时文档尚未保存，操作已取消。");
+                control?.Token.ThrowIfCancellationRequested();
+                var widgets = Application.OpenForms.OfType<TodoWidgetForm>().ToArray();
+                foreach (var widget in widgets) widget.PreparePersonalDataSnapshot();
+                foreach (Form form in Application.OpenForms.Cast<Form>().ToArray()) if (form != transfer) { scope.Forms.Add((form, form.Enabled)); form.Enabled = false; }
+                if (selected.Contains(PersonalDataKind.Diary)) {
+                    await CloseOwnedWindows(Path.Combine(AppContext.BaseDirectory, "ThirdParty", "LocalDiary", "xiaomang-diary.exe"));
+                    scope.Lock(paths.Diary);
+                }
+                if (selected.Contains(PersonalDataKind.InputMethod)) {
+                    await CloseOwnedWindows(Path.Combine(XiaomangInputMethodManager.BundleDirectory, "qingjian-settings.exe"));
+                    scope.InputPaused = true;
+                    await Task.Run(XiaomangInputMethodManager.PauseForPersonalData);
+                    scope.Lock(paths.Input);
+                }
+                await Task.Run(() => SettingManager.WaitHotkeysConfig());
+                SettingManager.SaveHotkeysConfigAsync();
+                await SettingManager.FlushHotkeysConfigAsync();
+                await SettingManager.FlushApplicationConfigAsync();
+                foreach (var widget in widgets) await widget.FlushNoteLogsAsync();
+                if (!SettingManager.SaveApplicationConfig()) throw new IOException("当前设置保存失败，操作已取消。");
+                control?.Token.ThrowIfCancellationRequested();
+                return scope;
+            } catch { scope.Dispose(); throw; }
+        }
+        internal static async Task Export(Form transfer, PersonalDataKind[] selected, string destination, IProgress<string> progress, PersonalDataTransferControl control = null)
+        {
+            var paths = Paths();
+            using var scope = await Pause(paths, selected, transfer, control);
+            var app = PersonalDataPreferences.Json(Program.Settings);
+            await Task.Run(() => SettingManager.WaitHotkeysConfig());
+            var hotkeys = PersonalDataPreferences.Json(Program.HotkeysConfig);
+            await Task.Run(() => PersonalDataArchive.Export(paths, app, hotkeys, selected, destination, Program.VersionText, progress, control: control));
+        }
+        internal static async Task QueueImport(Form transfer, PersonalDataKind[] selected, string source, IProgress<string> progress, PersonalDataTransferControl control = null)
+        {
+            var paths = Paths();
+            var scope = await Pause(paths, selected, transfer, control);
+            string stage = Path.Combine(paths.Personal, "PersonalDataRestore", Guid.NewGuid().ToString("N"));
+            try {
+                var app = PersonalDataPreferences.Json(Program.Settings);
+                await Task.Run(() => {
+                    progress?.Report("检查导入空间…");
+                    var manifest = PersonalDataArchive.Inspect(source);
+                    PersonalDataSpace.CheckImport(paths, app, manifest, selected, false, control);
+                    PersonalDataArchive.Extract(source, stage, selected, progress, control);
+                });
+                control?.EnterCommit();
+                // Capture target paths now; they are never read from the backup.
+                pendingDisplay = Screen.FromControl(transfer).WorkingArea.Size;
+                pendingPaths = paths; pendingStage = stage; pendingKinds = selected; pendingScope = scope;
+            } catch { scope.Dispose(); PersonalDataArchive.Remove(stage); throw; }
+        }
+        internal static async void RestartForImport()
+        {
+            if (pendingScope == null) return;
+            if (!await Program.RestartAsync()) {
+                Program.CancelRestart(); pendingScope.Dispose(); pendingScope = null;
+                PersonalDataArchive.Remove(pendingStage); pendingStage = null;
+                MessageBox.Show("有窗口阻止退出，导入已取消，原数据未修改。", "个人数据");
+            }
+        }
+        internal static void ApplyAfterExit()
+        {
+            if (pendingScope == null) return;
+            try {
+                var incoming = PersonalDataArchive.ReadJson(Path.Combine(pendingStage, PersonalDataArchive.ManifestName)).ToObject<PersonalDataManifest>(PersonalDataPreferences.Serializer());
+                using var restore = new PersonalDataRestoreProgressForm((control, progress) => PersonalDataRestore.Apply(pendingPaths, pendingStage, pendingKinds, Program.VersionText, pendingDisplay, control: control, progress: progress));
+                restore.ShowDialog();
+                if (restore.Failure != null) throw restore.Failure;
+                string backup = restore.Backup;
+                int missing = 0;
+                var previousInvalid = new List<string>();
+                try { var previous = PersonalDataArchive.Inspect(backup); missing = previous.MissingVoiceAttachments.Count; previousInvalid.AddRange(previous.InvalidDiaryFiles); }
+                catch (Exception error) { DebugHelper.WriteException(error, "Reading completed import backup notice"); }
+                string warning = missing > 0 ? $"\n\n导入前有 {missing} 个录音附件已缺失，自动备份已注明，并保留了待办文字及现有附件。" : "";
+                if (incoming.InvalidDiaryFiles.Count > 0) warning += "\n\n" + PersonalDataArchive.DiaryWarning(incoming.InvalidDiaryFiles);
+                if (previousInvalid.Count > 0) warning += "\n\n导入前的自动备份保留了异常日记辅助原件（" + string.Join("、", previousInvalid) + "），供核对。";
+                MessageBox.Show("个人数据导入完成，即将重新打开小蟒。\n\n导入前的备份：\n" + backup + warning, "个人数据", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            } catch (OperationCanceledException) {
+                MessageBox.Show("导入已取消，原数据未替换，即将重新打开小蟒。已生成的导入前备份保留在 PersonalDataBackups 文件夹。", "个人数据", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            } catch (Exception error) {
+                DebugHelper.WriteException(error, "Personal data import");
+                MessageBox.Show("导入未完成：" + error.Message + "\n\n已尝试恢复原数据；自动备份位于个人数据目录的 PersonalDataBackups 文件夹。", "个人数据", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            } finally {
+                pendingScope.Dispose(); pendingScope = null;
+                // Retain the verified payload if a journal remains and manual recovery is needed.
+                if (!File.Exists(PersonalDataRestore.JournalPath(pendingPaths.Personal))) PersonalDataArchive.Remove(pendingStage);
+            }
+        }
+        internal static bool RecoverBeforeStartup()
+        {
+            if (!File.Exists(PersonalDataRestore.JournalPath(Program.PersonalFolder))) return true;
+            try {
+                var journal = PersonalDataArchive.ReadJson(PersonalDataRestore.JournalPath(Program.PersonalFolder), maxBytes: PersonalDataRestore.MaxJournalBytes);
+                using var scope = new TransferScope();
+                CloseOwnedWindows(Path.Combine(AppContext.BaseDirectory, "ThirdParty", "LocalDiary", "xiaomang-diary.exe")).GetAwaiter().GetResult();
+                XiaomangInputMethodManager.PauseForPersonalData();
+                scope.Lock(Path.Combine(Program.PersonalFolder, "Diary"));
+                scope.Lock((string)journal["Input"]);
+                PersonalDataRestore.Recover(Program.PersonalFolder); return true;
+            } catch (Exception error) {
+                DebugHelper.WriteException(error, "Personal data recovery");
+                MessageBox.Show("上次导入尚未完成，自动恢复遇到问题：" + error.Message + "\n\n为保护原数据，小蟒暂不启动。请关闭相关编辑窗口并重新启动，勿删除个人数据目录。", "个人数据恢复", MessageBoxButtons.OK, MessageBoxIcon.Error); return false;
+            }
+        }
+    }
+}

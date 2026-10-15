@@ -1,0 +1,36 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "小蟒本地日记",
+  "version": "0.38.2",
+  "identifier": "com.xiaomang.LocalDiary",
+  "build": {
+    "beforeDevCommand": "pnpm dev",
+    "devUrl": "http://localhost:3456",
+    "beforeBuildCommand": "pnpm build",
+    "frontendDist": "../out"
+  },
+  "app": {
+    "withGlobalTauri": false,
+    "security": {
+      "csp": "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; connect-src ipc: http://ipc.localhost; font-src 'self' data:; object-src 'none'; frame-src 'none'"
+    },
+    "windows": [
+      {
+        "title": "小蟒 · 本地日记",
+        "label": "main",
+        "visible": false,
+        "width": 1280,
+        "height": 820,
+        "minWidth": 800,
+        "minHeight": 540,
+        "dragDropEnabled": false
+      }
+    ]
+  },
+  "bundle": {
+    "active": false,
+    "icon": [
+      "icons/icon.ico"
+    ]
+  }
+}

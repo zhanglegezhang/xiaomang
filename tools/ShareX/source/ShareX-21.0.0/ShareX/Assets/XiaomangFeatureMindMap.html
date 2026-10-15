@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>小蟒2.3 · 产品功能思维导图</title>
+<style>
+:root{color-scheme:light;--ink:#203349;--muted:#597087;--line:#c9d8e6;--blue:#2469bc}*{box-sizing:border-box}body{margin:0;background:#f5f8fc;color:var(--ink);font:15px/1.7 "Microsoft YaHei UI","Microsoft YaHei",sans-serif}header{max-width:1440px;margin:auto;padding:32px 28px 20px}h1{font-size:30px;line-height:1.3;margin:0 0 8px}header p{color:var(--muted);margin:0}nav{position:sticky;top:0;z-index:2;display:flex;gap:10px;flex-wrap:wrap;padding:12px 28px;background:#f5f8fcf2;border-bottom:1px solid var(--line)}input,button{font:inherit;border:1px solid var(--line);border-radius:7px;padding:7px 12px;background:white;color:var(--ink)}input{width:min(460px,100%)}button{cursor:pointer}button:hover{background:#e5effb}button:focus-visible,input:focus-visible,summary:focus-visible{outline:2px solid var(--blue);outline-offset:3px}#count{align-self:center;color:var(--muted)}main{max-width:1440px;margin:auto;padding:24px 28px 48px}.root{font-size:22px;font-weight:bold;border:2px solid var(--blue);padding:12px 20px;border-radius:9px;display:table;margin:0 auto 24px;background:white}.branches{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px;position:relative}.branch{background:white;border:1px solid var(--line);border-top:4px solid var(--blue);border-radius:9px;padding:16px 17px;min-width:0}.branch h2{font-size:20px;margin:0 0 12px;color:var(--blue)}details{margin:8px 0}summary{font-weight:600;cursor:pointer}ul{padding-left:20px;margin:8px 0;border-left:1px solid var(--line);list-style:none}li{padding:2px 0 4px 12px;position:relative;overflow-wrap:anywhere}li:before{content:"";position:absolute;width:12px;left:-20px;top:14px;border-top:1px solid var(--line)}.hint{font-size:13px;color:var(--muted)}mark{background:#ffedaa;color:inherit;padding:0 2px;border-radius:2px}[hidden]{display:none!important}footer{max-width:1440px;margin:auto;padding:0 28px 32px;color:var(--muted);font-size:13px}@media(max-width:1050px){.branches{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:700px){.branches{grid-template-columns:1fr}header,main{padding:20px 16px}nav{padding:10px 16px}.root{font-size:20px}}@media print{nav{display:none}.branches{display:block}.branch{break-inside:avoid;margin:0 0 16px}body{background:white;font-size:12px}header{padding:16px 0}main{padding:10px 0}.root{margin-bottom:15px}details>ul{display:block!important}footer{padding:0}}
+</style></head><body>
+<header><h1>小蟒2.3 · 产品功能思维导图</h1><p>从使用者的目标出发，查找入口、操作方法和注意事项。纯文字版，离线可用。</p></header>
+<nav aria-label="导图操作"><input id="search" type="search" placeholder="搜索功能或操作，例如：粘贴图片、录屏、注册" aria-label="搜索功能或操作"><button id="expand">全部展开</button><button id="collapse">全部收起</button><button id="print">打印 / 保存为 PDF</button><span id="count" role="status" aria-live="polite"></span></nav>
+<main><div class="root">小蟒同学 · 捕捉、记录、检索、桌面工具</div><div class="branches" id="map">
+<section class="branch"><h2>截图与屏幕标注</h2>
+<details open><summary>开始截图与选择范围</summary><ul><li>默认 Ctrl + 1：进入矩形截图；快捷键可以在主菜单中修改。</li><li>拖动鼠标选择范围，调整边缘或位置后完成截图。</li><li>截图状态按 Esc 取消；未确定时可以重新选择范围。</li><li>观察右下角操作提示，按当前状态显示的按键完成、取消或切换操作。</li></ul></details>
+<details open><summary>截图工具栏</summary><ul><li>选择 / 移动：选中已画对象，调整位置和大小。</li><li>矩形、圆形、线条、箭头：标注范围或指出重点。</li><li>手绘、高亮：圈画和突出文字；先选工具，再在截图上拖动。</li><li>文字、编号：添加说明或按顺序标记步骤。</li><li>模糊、像素化：遮挡不想展示的内容，输出前检查遮挡效果。</li><li>调整画笔、颜色、粗细等外观；撤销、重做可以修正标注。</li><li>识别文字（OCR）：从截图中提取文字，按功能提示选择输出用途。</li><li>复制、保存、置顶：将当前截图写入系统剪贴板、保存为图片，或浮在桌面上对照。</li><li>鼠标悬停查看工具提示；具体可见工具随截图状态和当前设置而变化。</li></ul></details>
+<details open><summary>截图置顶与通知</summary><ul><li>截图置顶后可拖动到合适的位置，对照其他窗口使用。</li><li>置顶状态双击图片，在放大和缩小之间切换。</li><li>右键查看置顶窗口可用操作；关闭后结束该置顶显示。</li><li>截图通知用于查看结果和完成后的快捷操作；样式、时长等在全局设置的“截图通知”中调整。</li><li>截图文件夹可查看保存的图片、录屏文件和预览；视频缩略图需要录屏组件。</li></ul></details>
+</section>
+<section class="branch"><h2>录屏与媒体处理</h2>
+<details open><summary>第一次录屏</summary><ul><li>打开“全局设置 → 注册 → 录屏组件”，查看组件是否就绪。</li><li>没有 FFmpeg 时，点击下载；下载约 65 MB，解压后约 193 MiB。</li><li>下载有进度提示，可以取消；失败后重试，校验通过才安装。</li><li>使用包不再附带完整组件；已经下载的组件可继续使用。</li></ul></details>
+<details open><summary>开始、暂停与结束</summary><ul><li>默认 Ctrl + 2：进入区域录屏；选择希望记录的区域。</li><li>录屏工具栏显示录制状态与时间。</li><li>开始 / 停止按钮用于启动或完成录制。</li><li>暂停 / 继续按钮用于暂时停止采集，继续后接着录。</li><li>中止 / 取消用于结束当前流程；按当前工具栏提示处理结果。</li><li>录制前的倒计时可以用 Esc 取消。</li><li>录制完成后按设置保存到截图文件夹；编码阶段可能仍需要等待。</li></ul></details>
+<details open><summary>录屏设置与视频转 GIF</summary><ul><li>全局设置的“屏幕录制”中选择视频来源、音频来源、帧率、输出格式及编码参数。</li><li>想录声音时先检查音频来源；声卡输出和麦克风用途不同。</li><li>“4工具 → 视频转 GIF”：选择本地视频，调整输出选项后转换。</li><li>录屏、视频转 GIF、视频缩略图共用 FFmpeg 组件。</li><li>画质、帧率和分辨率越高，文件大小及处理耗时通常越大。</li></ul></details>
+</section>
+<section class="branch"><h2>贴边便签与待办</h2>
+<details open><summary>收起、展开与导航</summary><ul><li>桌面贴边的小贴片是便签入口，靠近或点击后按当前行为展开。</li><li>展开后有“1待办、2剪切板、3收藏夹、4工具、5日记”五个页面。</li><li>点击侧边贴片切页，鼠标离开后按当前收起行为折回桌面边缘。</li><li>拖动标题区域调整便签的纵向位置。</li><li>双击任意页面标题左侧的机器人 logo，打开小蟒主菜单。</li></ul></details>
+<details open><summary>添加与管理待办</summary><ul><li>在“1待办”输入内容，点击添加保存一条事项。</li><li>勾选提醒并选择未来的日期和时间，再添加带提醒的事项。</li><li>点击事项的完成复选框标记已办；“展示已办”用于查看完成记录。</li><li>正文可以选择和复制；修改、删除等操作按事项提供的入口执行。</li><li>待办会保存到个人数据；更换程序包前可导出个人数据备份。</li></ul></details>
+<details open><summary>长按录音：闪念胶囊</summary><ul><li>鼠标长按贴边小贴片开始录音，松开后结束。</li><li>录音时机器人 logo 上显示红色麦克风呼吸效果。</li><li>录音和转写结果加入待办，附带可播放的音频。</li><li>转写未完成或失败时仍保留录音，可从待办播放。</li><li>播放按钮旁显示音频时长，播放时可再次停止。</li><li>它与全局 Ctrl + Alt 语音打字用途不同：长按贴片生成待办，全局语音输入写入当前输入框。</li></ul></details>
+</section>
+<section class="branch"><h2>剪切板与收藏检索</h2>
+<details open><summary>剪切板记录</summary><ul><li>“2剪切板”查看记录的文本剪切板内容。</li><li>双击一条记录将其复制回系统剪贴板，然后到目标软件 Ctrl + V 粘贴。</li><li>搜索框筛选内容；预览行数控制列表展示的文本长度。</li><li>单条删除或“清空列表”只移除记录，不删除来源文件。</li><li>全局语音无可靠焦点时写入的兜底文本，不加入这里的剪切板历史。</li></ul></details>
+<details open><summary>手动收藏文本</summary><ul><li>“3收藏夹”的上半区保留原有文本收藏。</li><li>点击新增，输入希望长期保存的信息；观察保存状态。</li><li>搜索框统一搜索手动文本收藏以及下方文件、目录的名称和路径。</li><li>手动文本可编辑、复制或删除；个人数据导出包含收藏。</li></ul></details>
+<details open><summary>固定（置顶）文件与目录</summary><ul><li>在资源管理器中右键文件或文件夹，选择“添加到小蟒收藏夹”。</li><li>在“全局设置 → 注册 → 鼠标右键·收藏”启用 Windows 11 外层菜单。</li><li>固定项使用文件或文件夹图标，中央叠加图钉；文件与目录仍可区分。</li><li>先固定的排前面，后固定的排后面；重复添加不改变原顺序。</li><li>点击名称打开文件或目录；点击带图钉图标取消固定。</li><li>鼠标悬停在手动收藏、置顶或常用区域，滚动滚轮即可上下浏览，不必先点击。</li><li>资源管理器右键收藏后，右下角显示成功、已经收藏或失败提醒，不抢输入焦点；多选添加汇总为一条提醒。</li><li>取消固定不移动、不删除真实文件；右键可打开、取消固定或更改位置。</li><li>鼠标悬停可查看完整路径；路径失效时可更改位置。</li></ul></details>
+<details open><summary>常用文件与目录</summary><ul><li>根据实际访问线索的打开次数、最近使用和修改次数计算综合热度。</li><li>按热度从高到低显示，最多 10 项；已经固定的路径不会重复出现。</li><li>普通文件 / 文件夹图标不带图钉，点击名称打开。</li><li>右键可以固定，或选择“不再推荐”。</li><li>只采集实际使用线索，不扫描整个硬盘；并非所有软件的访问都会被系统记录。</li><li>固定与常用区域共用细滑块样式；上下留白紧凑，字号保留。</li></ul></details>
+</section>
+<section class="branch"><h2>本地日记与笔记编辑</h2>
+<details open><summary>打开与组织内容</summary><ul><li>从“5日记 → 本地日记”进入独立的本地日记窗口；窗口大小会记忆。</li><li>左侧树形目录组织文件夹与日记文件，支持 TXT 和 Markdown。</li><li>有子项的文件夹：加号表示可展开，减号表示已展开；没有子项时不显示展开符号。</li><li>右键可新建 MD、新建 TXT、新建子文件夹、重命名、复制副本、移动到、删除及导出。</li><li>Ctrl + 鼠标点击多选项目，可批量移动、设置图标、删除或导出。</li><li>右键设置颜色，选择颜色并切换空心 / 实心图标；TXT 与 MD 使用不同图标。</li><li>Ctrl + 上下方向键调整同级项目顺序；鼠标悬停查看路径。</li></ul></details>
+<details open><summary>编辑 TXT 与 Markdown</summary><ul><li>TXT 以纯文本编辑，正文使用微软雅黑 UI；支持查找和替换、字号调整及自动换行。</li><li>Markdown 支持正文编辑与源码模式；模式切换入口在工具栏所在区域。</li><li>Markdown 工具栏可插入标题、加粗、斜体、删除线、列表、任务、引用、代码、链接、分割线和表格。</li><li>正文右键：撤销、重做、剪切、复制、粘贴、粘贴为纯文本、全选及查找 / 替换。</li><li>Ctrl + V 粘贴图片：将系统剪贴板图片插入 Markdown，图片作为本地附件保存。</li><li>图片的调整入口可更改显示大小；表格的编辑入口可新增行、列等操作。</li><li>观察底部保存状态，确认已保存到本地后再结束编辑。</li></ul></details>
+<details open><summary>搜索、页签与恢复</summary><ul><li>搜索入口用于检索日记内容；可以按文字查找文件，点击结果打开。</li><li>中文隔字匹配允许同一行最多跳过 20 个字，连续匹配结果优先。</li><li>正文 Ctrl + F 打开查找 / 替换；支持下一处、上一处、全部替换等当前编辑器提供的操作。</li><li>上方页签可同时打开多篇日记。</li><li>页签右键可关闭当前、其他、右侧或全部页签，在树形目录中定位，以及导出。</li><li>回收站入口查看已删除项目并恢复；清空前确认不再需要。</li><li>导出可用于共享内容；导入文本时，旧编码文件按提示选择编码。</li><li>本地日记只提供本地笔记能力，不含 AI、OCR 或语音采集入口。</li></ul></details>
+</section>
+<section class="branch"><h2>常用桌面工具</h2>
+<details open><summary>文本与数据</summary><ul><li>“4工具 → 空白.txt”：打开临时纯文本编辑器，编辑后按约 5 秒自动保存。</li><li>“4工具 → 空白.md”：左侧编写 Markdown，右侧查看紧凑预览；临时文档自动保存。</li><li>TXT 与 MD 可分别使用；保存状态及文件名显示在窗口上方。</li><li>“文本对比”：选择或输入两份文本，查看差异；按需要调整比较选项。</li><li>“数据处理.html”：打开内置数据处理工具，根据页面选择需要的处理。</li><li>临时文件夹可找回临时编辑内容；重要文件应自行整理保存。</li></ul></details>
+<details open><summary>文件、图片与计算</summary><ul><li>“everything”：打开文件检索工具，搜索本地文件名称和路径。</li><li>“7-Zip”：打开压缩管理工具，处理压缩包或解压文件。</li><li>“拼图”：选择图片、调整排列，导出拼接结果。</li><li>“画图”：进入绘图画布，制作标注或示意内容。</li><li>“计算器”：打开计算工具；拾色器默认 Ctrl + 3 可取屏幕颜色。</li><li>窗口置顶默认 Ctrl + F10，将当前需要对照的窗口保持在上方。</li></ul></details>
+<details open><summary>资讯、天气与输入法入口</summary><ul><li>国内资讯、国际资讯打开对应信息页；来源、更新和数量可在每日资讯设置中调整。</li><li>MSN 天气、中央气象台打开对应天气页面，访问需要网络。</li><li>“输入法安装”进入小蟒输入法相关页面，注册操作集中到全局设置的注册页。</li></ul></details>
+</section>
+<section class="branch"><h2>语音打字与文本输入</h2>
+<details open><summary>全局语音打字</summary><ul><li>先在目标软件点击可编辑输入框，让它获得输入焦点。</li><li>按住 Ctrl + Alt 说话：文字逐步出现并可能随识别结果修正，松开后完成输出。</li><li>机器人 logo 上红色麦克风呼吸效果表示正在语音输入。</li><li>便签收起、展开时使用同款提示，不抢走原输入焦点。</li><li>输出前检查焦点，避免把文字写错地方；无法确认可靠输入位置时，结果保留到系统剪贴板。</li><li>没有自动写入时，可松键后到目标输入框按 Ctrl + V；这类兜底文本不会加入“2剪切板”。</li><li>移除尾部自动标点，保留句中标点；识别结果受麦克风、噪声、语速和词汇影响。</li></ul></details>
+<details open><summary>文本输入法</summary><ul><li>小蟒文本输入法有独立后台，退出小蟒后仍可继续中文或英文输入。</li><li>后台跟随小蟒的开机启动设置；在输入法中切换中英文。</li><li>默认 Ctrl + Shift + J 切换到小蟒输入法；该快捷键可修改。</li><li>也可使用 Win + 空格选择输入法；首次注册后按 Windows 提示添加键盘。</li><li>“输入法 → 文本输入 → 输入法设置”调整输入和候选窗口偏好。</li><li>设置中可调整每页候选数、字体、颜色、横竖排列和表情候选；表情默认关闭。</li><li>语音输入与文本输入独立，使用语音打字无需切换到小蟒文本输入法。</li></ul></details>
+</section>
+<section class="branch"><h2>主菜单与全局配置</h2>
+<details open><summary>主菜单与快捷键</summary><ul><li>打开 xiaomang.exe 或双击便签展开页的机器人 logo，唤起主菜单。</li><li>主菜单提供快捷键、全局设置、输入法、便签文件夹、截图文件夹、临时文件夹和关于。</li><li>快捷键页可新增、删除、克隆、排序和重置快捷键。</li><li>点击快捷键按钮进入编辑，再按组合键；查看状态提示，避免与其他软件冲突。</li><li>点击动作按钮选择功能；带单独配置的任务可以进入该任务设置。</li><li>初始常用键：Ctrl + 1 截图，Ctrl + 2 录屏，Ctrl + 3 拾色器，Ctrl + F10 窗口置顶，Ctrl + Shift + J 切换文本输入法。</li><li>全局语音打字当前固定 Ctrl + Alt；它不等同于一般可配置的任务快捷键。</li></ul></details>
+<details open><summary>全局设置</summary><ul><li>常规：Windows 开机启动、托盘图标、最小化到托盘、界面语言、个人数据导入导出。</li><li>新安装默认开机启动；可以关闭，后续启动尊重已有选择。</li><li>注册：录屏组件下载、语音输入组件注册与修复、文本输入法注册与维护、收藏右键入口。</li><li>截图：调整捕捉、区域选择和截图后的行为。</li><li>截图通知：调整提示的显示方式、时间和操作。</li><li>屏幕录制：视频、音频来源及编码参数。</li><li>文字识别（OCR）：调整文字识别相关选项。</li><li>拾色器：调整颜色显示和复制相关选项。</li><li>存储位置：查看保存目录并打开对应位置。</li><li>每日资讯：配置资讯来源、数量、更新等选项。</li><li>语音转写：查看模型与识别相关设置，缺少模型时按页面提示准备。</li><li>高级：查看其他详细参数，修改前确认用途。</li></ul></details>
+<details open><summary>注册页的准备与维护</summary><ul><li>录屏、输入组件和收藏右键菜单集中在同一页面，按需要使用单项按钮；卸载、重试后台及移除入口等维护操作位于“⋯”菜单。</li><li>点击“一键注册全部”，跳过已就绪项，下载缺失的录屏组件并注册其他组件；进度条显示当前阶段和下载进度。</li><li>单项失败会继续准备其他项；取消后保留已经完成的内容，并停止后续步骤。按 Windows 提示确认管理员授权。</li><li>语音组件首次注册需 Windows 管理员授权；可修复或卸载，个人数据与模型保留。</li><li>文本输入法可注册 / 修复、重试后台、撤销注册和打开日志；撤销保留个人词库及设置。</li><li>Windows 11 外层收藏菜单使用 IExplorerCommand 与 MSIX 稀疏身份包；按当前用户注册。</li><li>点击注册后，首次启用按 Windows 提示通过管理员授权，将小蟒菜单证书加入本机“受信任的人”；不加入根证书库，信任影响本机所有用户。</li><li>移动程序目录后可以修复；注册失败或移除菜单不会撤销已经批准的证书信任。</li><li>取消授权时保留原入口；操作失败查看页面提示和日志，再修复。</li></ul></details>
+</section>
+<section class="branch"><h2>个人数据、文件夹与帮助</h2>
+<details open><summary>导出、导入与迁移</summary><ul><li>从“全局设置 → 常规 → 导出个人数据”创建备份，选择希望带走的项目。</li><li>更换新包后，从“导入个人数据”选择备份，按页面确认恢复范围。</li><li>可迁移待办、剪切板、收藏、本地日记及快捷键等页面提供的个人数据类别。</li><li>固定文件和使用统计会随收藏数据备份；它们引用的外部真实文件不会因此自动打包。</li><li>新电脑的绝对路径可能不同，文件收藏打不开时更改位置。</li><li>已有个人配置优先；使用包不会附带开发者的待办、剪切板、日记或账号密钥。</li><li>导入替换数据前先检查提示和空间需求；开始替换后由程序完成恢复或回滚。</li></ul></details>
+<details open><summary>三类常用文件夹</summary><ul><li>便签文件夹：查看便签相关记录和保存内容，便于查找历史。</li><li>截图文件夹：查看截图和录屏文件，预览或打开结果。</li><li>临时文件夹：查看临时文本、Markdown 等工具生成的内容。</li><li>存储位置页提供更多目录说明和打开入口；整理时留意个人数据与备份。</li></ul></details>
+<details open><summary>关于与帮助资料</summary><ul><li>鸣谢：查看 ShareX、青简、NoteGen 等项目来源。</li><li>使用手册：保存新手使用培训 PPT。</li><li>产品介绍：保存一页纸 PDF，快速了解产品用途。</li><li>产品功能思维导图.html：直接打开本页，离线搜索功能与操作。</li><li>版本日志：保存 TXT，查看已验证的新增、优化和修复记录。</li><li>联系方式：查看产品提供的公开联系方式。</li></ul></details>
+<details open><summary>获取与分发程序</summary><ul><li>使用包：可运行程序，不含源码；按需下载录屏组件。</li><li>源码包：可运行程序与对应源码工程。</li><li>开发迁移包：源码、开发环境、离线依赖、验证脚本和交接资料。</li><li>运行入口为 xiaomang.exe。首次运行系统可能扫描程序，等待安全检查完成。</li><li>资讯、Markdown 预览和本地日记使用 WebView2；缺少时按提示从微软获取运行环境。</li><li>日常设置不会自动变成产品默认值；个人数据通过导入导出迁移。</li></ul></details>
+</section>
+</div><p id="empty" hidden>没有找到匹配的功能。请换一个关键词。</p></main>
+<footer>内容按小蟒2.3的产品功能整理；界面细节随版本更新。首次组件准备、授权以及网络下载需要额外时间。导图搜索只检查此页说明，不读取你的个人数据。</footer>
+<script>
+const branches=[...document.querySelectorAll('.branch')],groups=[...document.querySelectorAll('details')],search=document.getElementById('search'),count=document.getElementById('count');
+const initial=new Map(groups.map(group=>[group,group.open]));let prior=null;
+document.getElementById('expand').onclick=()=>groups.forEach(group=>group.open=true);
+document.getElementById('collapse').onclick=()=>groups.forEach(group=>group.open=false);
+document.getElementById('print').onclick=()=>{groups.forEach(group=>group.open=true);window.print()};
+function filter(){const query=search.value.trim().toLocaleLowerCase();if(query&&!prior)prior=new Map(groups.map(group=>[group,group.open]));let matches=0;
+for(const branch of branches){let visible=false;const titleMatches=query&&branch.querySelector('h2').textContent.toLocaleLowerCase().includes(query);
+for(const group of branch.querySelectorAll('details')){const summaryMatches=titleMatches||(query&&group.querySelector('summary').textContent.toLocaleLowerCase().includes(query));let any=false;
+for(const item of group.querySelectorAll('li')){const show=!query||summaryMatches||item.textContent.toLocaleLowerCase().includes(query);item.hidden=!show;if(show){any=true;matches++}}
+group.hidden=!any;visible=visible||any;if(query&&any)group.open=true;else if(!query&&prior)group.open=prior.get(group)??initial.get(group)}branch.hidden=!visible}
+if(!query)prior=null;count.textContent=query?`找到 ${matches} 条操作说明`:`共 ${matches} 条操作说明`;document.getElementById('empty').hidden=matches!==0}
+search.addEventListener('input',filter);filter();
+</script></body></html>

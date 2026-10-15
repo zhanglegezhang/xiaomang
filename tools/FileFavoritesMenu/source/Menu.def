@@ -1,0 +1,4 @@
+LIBRARY XiaomangFileFavoritesMenu
+EXPORTS
+    DllGetClassObject
+    DllCanUnloadNow

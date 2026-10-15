@@ -1,0 +1,40 @@
+小蟒 2.3 源码版权与修改声明
+声明日期：2026-10-15
+
+本仓库提供小蟒维护者实际修改的源码及构建必需资源，不是三个上游项目的原版合集。
+各文件原有版权、许可证和第三方资源声明继续有效。主程序作为 ShareX 的修改版本按 GPL 第3版分发；NoteGen、青简的维护分支按各自 GPL-3.0-or-later 条款分发。
+独立组件及第三方库仍适用自身许可证，不以仓库根 LICENSE 取消其原有条款。
+本软件按适用许可证的免责声明提供；接收者可依相应许可证复制、修改和再分发。
+
+ShareX 21.0.0
+上游：https://github.com/ShareX/ShareX
+Copyright (c) 2007-2026 ShareX Team 及各贡献者。
+修改日期：2026-09 至 2026-10-14。
+修改内容：小蟒产品身份、菜单及全局设置、截图和通知交互、待办/剪切板/收藏夹/工具/日记贴片、语音输入、文本输入法集成、按需组件下载和审核后的默认偏好。
+许可证：tools/ShareX/source/ShareX-21.0.0/LICENSE.txt。
+
+NoteGen 0.38.2
+上游：https://github.com/codexu/note-gen
+原提交：c57e824523de1242b1325ed96fa340b85e2df293。
+Copyright (c) codexu 和 NoteGen 贡献者。
+修改日期：2026-10-10 至 2026-10-14。
+修改内容：纯本地日记工作台与存储；移除AI、OCR、语音、云同步、插件宿主及上游自动更新；增加TXT、目录说明、图片和表格编辑、检索、备份及小蟒集成。
+保留并修改了 NoteGen 的 CodeMirror 源码编辑器；使用其 React/Tauri/Tiptap 技术基础。
+许可证：tools/NoteGen/source/note-gen-0.38.2/LICENSE。
+
+青简 0.1.4
+上游：https://github.com/qingjian-team/qingjian
+上游版本提交：f7abaef；实际分发源码包含小蟒后续维护修改。
+Copyright 青简原作者和贡献者；各词表和资源保留其独立声明。
+修改日期：2026-10 至 2026-10-14。
+修改内容：小蟒产品身份、独立数据目录、注册组件、候选设置、语言资源裁剪及后台生命周期。
+许可证：tools/Qingjian/source/qingjian-0.1.4/LICENSE；词表及资源许可见 assets 各目录。
+
+小蟒维护者编写的集成及原生辅助代码，包括 Windows 收藏菜单、语音和输入法注册工具，随对应 GPL 源码分发。
+原生语音组件的 LLVM/MinGW 等许可保留在 tools/ShareX/source/ShareX-21.0.0/VoiceInput/Licenses。
+第三方依赖版权和许可汇总：tools/ShareX/release-licenses/第三方开源声明.txt。
+公开联系邮箱：13711477110@139.com。
+
+使用包与源码的对应构建、必要资源和构建方法见根目录 README.md。正式分发时，应将源码版本标签和使用包放在同一发布条目中，或提供等价、免费且明确的源码下载入口。
+
+2026-10-15 源码分发修订：移除当前小蟒产品未启用的日语和西班牙语静态释义数据；保留其上游来源说明、生成工具与原有许可。应用源码逻辑保持原对应版本。

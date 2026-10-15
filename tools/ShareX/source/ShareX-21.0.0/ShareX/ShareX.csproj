@@ -1,0 +1,96 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net9.0-windows10.0.22621.0</TargetFramework>
+    <OutputType>WinExe</OutputType>
+    <ApplicationIcon>ShareX_Icon.ico</ApplicationIcon>
+    <UseWindowsForms>true</UseWindowsForms>
+    <UseWPF>true</UseWPF>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <Description>Screen capture, file sharing and productivity tool</Description>
+    <AssemblyTitle>xiaomangtongxue</AssemblyTitle>
+    <Product>xiaomangtongxue</Product>
+    <SupportedOSPlatformVersion>10.0.22621.0</SupportedOSPlatformVersion>
+    <ApplicationHighDpiMode>PerMonitorV2</ApplicationHighDpiMode>
+    <ForceDesignerDpiUnaware>true</ForceDesignerDpiUnaware>
+    <ApplicationVisualStyles>true</ApplicationVisualStyles>
+    <ApplicationUseCompatibleTextRendering>false</ApplicationUseCompatibleTextRendering>
+    <ApplicationDefaultFont>Microsoft Sans Serif, 8.25pt</ApplicationDefaultFont>
+    <CETCompat>false</CETCompat>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Web.WebView2" />
+    <PackageReference Include="Markdig" />
+    <PackageReference Include="AvalonEdit" />
+    <PackageReference Include="DiffPlex" />
+    <PackageReference Include="NAudio.Core" />
+    <PackageReference Include="NAudio.Wasapi" />
+    <PackageReference Include="org.k2fsa.sherpa.onnx" />
+    <PackageReference Include="Newtonsoft.Json" />
+    <PackageReference Include="System.Speech" />
+    <PackageReference Include="ZXing.Net" />
+    <PackageReference Include="ZXing.Net.Bindings.Windows.Compatibility" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ShareX.HistoryLib\ShareX.HistoryLib.csproj" />
+    <ProjectReference Include="..\ShareX.ImageEffectsLib\ShareX.ImageEffectsLib.csproj" />
+    <ProjectReference Include="..\ShareX.MediaLib\ShareX.MediaLib.csproj" />
+    <ProjectReference Include="..\ShareX.ScreenCaptureLib\ShareX.ScreenCaptureLib.csproj" />
+    <ProjectReference Include="..\ShareX.HelpersLib\ShareX.HelpersLib.csproj" />
+    <ProjectReference Include="..\ShareX.UploadersLib\ShareX.UploadersLib.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Defaults\*.json" LogicalName="ShareX.Defaults.%(Filename)%(Extension)" />
+    <EmbeddedResource Include="Assets\XiaomangFeatureOverview.pdf" LogicalName="ShareX.Assets.XiaomangFeatureOverview.pdf" />
+    <EmbeddedResource Include="Assets\ComponentBundles.json" LogicalName="ShareX.Assets.ComponentBundles.json" />
+    <EmbeddedResource Include="Assets\XiaomangVersionLog.txt" LogicalName="ShareX.Assets.XiaomangVersionLog.txt" />
+    <EmbeddedResource Include="Assets\XiaomangFeatureMindMap.html" LogicalName="ShareX.Assets.XiaomangFeatureMindMap.html" />
+    <EmbeddedResource Include="..\..\..\assets\xiaomang-robot-logo.png" LogicalName="ShareX.Assets.XiaomangRobotLogo.png" />
+    <EmbeddedResource Include="..\..\..\assets\xiaomang-robot-compact-transparent.png" LogicalName="ShareX.Assets.XiaomangCompactRobot.png" />
+    <EmbeddedResource Include="..\..\..\..\..\deliverables\新手使用培训\小蟒同学使用培训_全新教程版.pptx" LogicalName="ShareX.Assets.XiaomangTraining.pptx" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="ShareX_File_Icon.ico">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="ThirdParty\Everything\everything.exe">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="ThirdParty\Everything\Everything.lng">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="ThirdParty\Everything\Everything.ini">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="ThirdParty\Everything\LICENSE-Everything.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="ThirdParty\SevenZip\**\*">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="ThirdParty\Markdig\LICENSE-Markdig.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="ThirdParty\AvalonEdit\LICENSE-AvalonEdit.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="ThirdParty\DiffPlex\LICENSE-DiffPlex.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <RuntimeHostConfigurationOption Include="System.Globalization.UseNls" Value="true" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\..\Qingjian\runtime\**\*" Link="ThirdParty\XiaomangInputMethod\%(RecursiveDir)%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="..\..\..\..\NoteGen\runtime\**\*" Link="ThirdParty\LocalDiary\%(RecursiveDir)%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="..\..\..\..\FileFavoritesMenu\bundle\XiaomangFileFavoritesMenu.dll;..\..\..\..\FileFavoritesMenu\bundle\Xiaomang.FileFavoritesMenu.msix;..\..\..\..\FileFavoritesMenu\bundle\XiaomangMenuPublisher.cer" Link="ThirdParty\FileFavoritesMenu\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="..\..\..\..\FileFavoritesMenu\bundle\Assets\*.png" Link="ThirdParty\FileFavoritesMenu\Assets\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="..\..\..\..\FileFavoritesMenu\bundle\resources.pri" Link="resources.pri" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\VoiceInput\bin\VoiceInputSetup.exe" Link="ThirdParty\VoiceInput\VoiceInputSetup.exe" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="..\VoiceInput\Licenses\*.txt" Link="ThirdParty\VoiceInput\Licenses\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="..\VoiceInput\bin\x86_64\*.dll;..\VoiceInput\bin\x86_64\*.exe" Link="ThirdParty\VoiceInput\x86_64\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="..\VoiceInput\bin\i686\*.dll;..\VoiceInput\bin\i686\*.exe" Link="ThirdParty\VoiceInput\i686\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+</Project>

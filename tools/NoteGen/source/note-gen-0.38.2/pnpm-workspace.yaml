@@ -1,0 +1,5 @@
+overrides:
+  '@lezer/common': 1.5.2
+allowBuilds:
+  sharp: true
+  '@parcel/watcher': true

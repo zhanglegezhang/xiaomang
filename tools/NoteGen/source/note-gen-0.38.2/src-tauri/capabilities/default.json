@@ -1,0 +1,14 @@
+{
+  "identifier": "local-diary",
+  "description": "Local window and file chooser only; no network, OCR, microphone, updater or plugin permissions.",
+  "windows": [
+    "main"
+  ],
+  "permissions": [
+    "core:default",
+    "core:window:allow-close",
+    "core:window:allow-destroy",
+    "dialog:allow-open",
+    "dialog:allow-save"
+  ]
+}
