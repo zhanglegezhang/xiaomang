@@ -1,9 +1,13 @@
-param([string]$Output=(Join-Path $PSScriptRoot 'bundle'))
+param(
+ [string]$Output=(Join-Path $PSScriptRoot 'bundle'),
+ [Parameter(Mandatory=$true)][string]$Toolchain,
+ [Parameter(Mandatory=$true)][string]$WindowsSdkBin
+)
 $ErrorActionPreference='Stop'
 $workspace=Split-Path (Split-Path $PSScriptRoot -Parent) -Parent
-$compiler=Join-Path $workspace 'tools/native-toolchain/llvm-mingw-20261006-ucrt-x86_64/bin/x86_64-w64-mingw32-clang++.exe'
-$pack=Join-Path $workspace 'tools/windows-sdk-buildtools-10.0.26100.6584/bin/10.0.26100.0/x64/makeappx.exe'
-$pri=Join-Path $workspace 'tools/windows-sdk-buildtools-10.0.26100.6584/bin/10.0.26100.0/x64/makepri.exe'
+$compiler=Join-Path $Toolchain 'bin/x86_64-w64-mingw32-clang++.exe'
+$pack=Join-Path $WindowsSdkBin 'makeappx.exe'
+$pri=Join-Path $WindowsSdkBin 'makepri.exe'
 $Output=[IO.Path]::GetFullPath($Output)
 New-Item -ItemType Directory -Path $Output -Force|Out-Null
 & $compiler -std=c++17 -O2 -Werror -shared -static-libgcc -static-libstdc++ -o (Join-Path $Output 'XiaomangFileFavoritesMenu.dll') (Join-Path $PSScriptRoot 'source/Menu.cpp') (Join-Path $PSScriptRoot 'source/Menu.def') -lole32 -luuid
@@ -13,7 +17,7 @@ New-Item -ItemType Directory -Path $package -Force|Out-Null
 New-Item -ItemType Directory -Path (Join-Path $Output 'Assets') -Force|Out-Null
 Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'AppxManifest.xml') -Destination $package
 Add-Type -AssemblyName System.Drawing
-$image=[Drawing.Image]::FromFile((Join-Path $workspace 'tools/ShareX/assets/xiaomang-robot-logo.png'))
+$image=[Drawing.Image]::FromFile((Join-Path $workspace 'resources/Branding/xiaomang-robot-logo.png'))
 function Save-Icon([string]$Name,[int]$Size) {
  $bitmap=[Drawing.Bitmap]::new($Size,$Size)
  $graphics=[Drawing.Graphics]::FromImage($bitmap)

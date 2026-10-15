@@ -44,9 +44,9 @@
     <EmbeddedResource Include="Assets\ComponentBundles.json" LogicalName="ShareX.Assets.ComponentBundles.json" />
     <EmbeddedResource Include="Assets\XiaomangVersionLog.txt" LogicalName="ShareX.Assets.XiaomangVersionLog.txt" />
     <EmbeddedResource Include="Assets\XiaomangFeatureMindMap.html" LogicalName="ShareX.Assets.XiaomangFeatureMindMap.html" />
-    <EmbeddedResource Include="..\..\..\assets\xiaomang-robot-logo.png" LogicalName="ShareX.Assets.XiaomangRobotLogo.png" />
-    <EmbeddedResource Include="..\..\..\assets\xiaomang-robot-compact-transparent.png" LogicalName="ShareX.Assets.XiaomangCompactRobot.png" />
-    <EmbeddedResource Include="..\..\..\..\..\deliverables\新手使用培训\小蟒同学使用培训_全新教程版.pptx" LogicalName="ShareX.Assets.XiaomangTraining.pptx" />
+    <EmbeddedResource Include="..\..\..\resources\Branding\xiaomang-robot-logo.png" LogicalName="ShareX.Assets.XiaomangRobotLogo.png" />
+    <EmbeddedResource Include="..\..\..\resources\Branding\xiaomang-robot-compact-transparent.png" LogicalName="ShareX.Assets.XiaomangCompactRobot.png" />
+    <EmbeddedResource Include="..\..\..\resources\Training\小蟒同学使用培训_全新教程版.pptx" LogicalName="ShareX.Assets.XiaomangTraining.pptx" />
   </ItemGroup>
   <ItemGroup>
     <None Update="ShareX_File_Icon.ico">
@@ -81,11 +81,11 @@
     <RuntimeHostConfigurationOption Include="System.Globalization.UseNls" Value="true" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\..\..\Qingjian\runtime\**\*" Link="ThirdParty\XiaomangInputMethod\%(RecursiveDir)%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
-    <None Include="..\..\..\..\NoteGen\runtime\**\*" Link="ThirdParty\LocalDiary\%(RecursiveDir)%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
-    <None Include="..\..\..\..\FileFavoritesMenu\bundle\XiaomangFileFavoritesMenu.dll;..\..\..\..\FileFavoritesMenu\bundle\Xiaomang.FileFavoritesMenu.msix;..\..\..\..\FileFavoritesMenu\bundle\XiaomangMenuPublisher.cer" Link="ThirdParty\FileFavoritesMenu\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
-    <None Include="..\..\..\..\FileFavoritesMenu\bundle\Assets\*.png" Link="ThirdParty\FileFavoritesMenu\Assets\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
-    <None Include="..\..\..\..\FileFavoritesMenu\bundle\resources.pri" Link="resources.pri" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="..\..\..\artifacts\InputMethod\**\*" Link="ThirdParty\XiaomangInputMethod\%(RecursiveDir)%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="..\..\..\artifacts\Diary\**\*" Link="ThirdParty\LocalDiary\%(RecursiveDir)%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="..\..\FileFavoritesMenu\bundle\XiaomangFileFavoritesMenu.dll;..\..\FileFavoritesMenu\bundle\Xiaomang.FileFavoritesMenu.msix;..\..\FileFavoritesMenu\bundle\XiaomangMenuPublisher.cer" Link="ThirdParty\FileFavoritesMenu\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="..\..\FileFavoritesMenu\bundle\Assets\*.png" Link="ThirdParty\FileFavoritesMenu\Assets\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="..\..\FileFavoritesMenu\bundle\resources.pri" Link="resources.pri" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\VoiceInput\bin\VoiceInputSetup.exe" Link="ThirdParty\VoiceInput\VoiceInputSetup.exe" CopyToOutputDirectory="PreserveNewest" />

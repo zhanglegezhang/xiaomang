@@ -1,0 +1,19 @@
+# Build output, downloaded runtime and local data are not source.
+/artifacts/
+/test-results/
+/src/Desktop/**/bin/
+**/obj/
+**/target/
+**/node_modules/
+**/.next/
+**/out/
+/src/FileFavoritesMenu/bundle/
+!src/FileFavoritesMenu/bundle/XiaomangMenuPublisher.cer
+.vs/
+.idea/
+.env
+.env.*
+*.user
+*.pfx
+*.p12
+*.key
