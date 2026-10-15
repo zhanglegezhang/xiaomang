@@ -1,0 +1,62 @@
+{
+  "productVersion": "2.4",
+  "releaseTag": "v2.4-20261015",
+  "releaseDate": "2026-10-15",
+  "source": "https://github.com/zhanglegezhang/xiaomang/tree/v2.4-20261015",
+  "usagePackage": {
+    "sha256": "80183F67CDA82D1702C60720C84029A2E7C9E2DFF10ECB9E09873B04A7EE0F95",
+    "bytes": 113808148,
+    "uncompressedBytes": 274644028.0,
+    "url": "https://github.com/zhanglegezhang/xiaomang/releases/download/v2.4-20261015/xiaomang2.4_2026-10-15_usage.zip",
+    "files": 526,
+    "asset": "xiaomang2.4_2026-10-15_usage.zip"
+  },
+  "binaries": [
+    {
+      "File": "ShareX.dll",
+      "SHA256": "E5452183326E03C49AF9401931CB7A656C918872C9062B9B8D93AC24CE33EC1D",
+      "SourceDocuments": 265,
+      "Mismatches": 0
+    },
+    {
+      "File": "ShareX.HelpersLib.dll",
+      "SHA256": "2C8437AB0719835D4212F6AC963624F48E94D6BBD029A16C284BF0A5B081E0B1",
+      "SourceDocuments": 231,
+      "Mismatches": 0
+    },
+    {
+      "File": "ShareX.HistoryLib.dll",
+      "SHA256": "76D24EE1F1F22A0F8A6F7E631ACA2ABDD5CE2883A7E31D678A9CCF36D00D4DFF",
+      "SourceDocuments": 26,
+      "Mismatches": 0
+    },
+    {
+      "File": "ShareX.ImageEffectsLib.dll",
+      "SHA256": "7D7411AC6B5A4BA6D68861E9E9512A90C18DFC66398AA171470D4FE28CE0614B",
+      "SourceDocuments": 63,
+      "Mismatches": 0
+    },
+    {
+      "File": "ShareX.MediaLib.dll",
+      "SHA256": "C95D8D570BC77B512D10569EC03B897C09119D011371EDFE47A4950693D59C35",
+      "SourceDocuments": 26,
+      "Mismatches": 0
+    },
+    {
+      "File": "ShareX.ScreenCaptureLib.dll",
+      "SHA256": "0C83B0D8C6F816021E56473ACAE188D9F03A2790A77A133891CB29A8CA2083FE",
+      "SourceDocuments": 104,
+      "Mismatches": 0
+    },
+    {
+      "File": "ShareX.UploadersLib.dll",
+      "SHA256": "9DB7737EDD5A8DA7B9F4C35550438D01914CEE148C24DA7C7FC5535872B5906A",
+      "SourceDocuments": 189,
+      "Mismatches": 0
+    }
+  ],
+  "notes": [
+    "Desktop built from the source in this tag. Unchanged diary and native components retain verified binaries from the previous release.",
+    "Optional components remain pinned to xiaomang_component v1.0."
+  ]
+}

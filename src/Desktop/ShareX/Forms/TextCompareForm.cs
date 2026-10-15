@@ -54,8 +54,8 @@ namespace ShareX
         {
             internal Dictionary<int, DiffPiece> Lines = new Dictionary<int, DiffPiece>();
             private static Media.Brush Brush(byte r, byte g, byte b) { var brush = new Media.SolidColorBrush(Media.Color.FromRgb(r, g, b)); brush.Freeze(); return brush; }
-            private static readonly Media.Brush Deleted = Brush(100, 43, 49), Inserted = Brush(34, 87, 58), Modified = Brush(83, 70, 37);
-            private static readonly Media.Brush DeletedWord = Brush(162, 59, 71), InsertedWord = Brush(35, 132, 84);
+            private static readonly Media.Brush Deleted = Brush(252, 215, 220), Inserted = Brush(207, 239, 216), Modified = Brush(255, 233, 194);
+            private static readonly Media.Brush DeletedWord = Brush(246, 174, 185), InsertedWord = Brush(155, 221, 179);
             protected override void ColorizeLine(DocumentLine line)
             {
                 if (line.Length == 0 || !Lines.TryGetValue(line.LineNumber, out DiffPiece piece) || piece.Type == ChangeType.Unchanged) return;
@@ -83,8 +83,8 @@ namespace ShareX
                     DocumentLine line = visual.FirstDocumentLine;
                     if (line.Length != 0 || !colors.Lines.TryGetValue(line.LineNumber, out DiffPiece piece) ||
                         piece.Type == ChangeType.Unchanged) continue;
-                    Media.Color color = piece.Type == ChangeType.Deleted ? Media.Color.FromRgb(100, 43, 49) :
-                        piece.Type == ChangeType.Inserted ? Media.Color.FromRgb(34, 87, 58) : Media.Color.FromRgb(83, 70, 37);
+                    Media.Color color = piece.Type == ChangeType.Deleted ? Media.Color.FromRgb(252, 215, 220) :
+                        piece.Type == ChangeType.Inserted ? Media.Color.FromRgb(207, 239, 216) : Media.Color.FromRgb(255, 233, 194);
                     drawing.DrawRectangle(new Media.SolidColorBrush(color), null,
                         new Wpf.Rect(0, visual.VisualTop - view.VerticalOffset, Math.Max(12, view.ActualWidth), visual.Height));
                 }
@@ -110,11 +110,11 @@ namespace ShareX
 
         internal TextCompareForm()
         {
-            Text = "小蟒同学 · 文本对比"; Icon = ShareXResources.Icon; Font = new Font("Microsoft YaHei", 9f);
-            AutoScaleMode = AutoScaleMode.Dpi; BackColor = Color.FromArgb(43, 43, 43); ForeColor = Color.WhiteSmoke;
+            Text = "小蟒同学 · 文本对比"; Icon = ShareXResources.Icon; Font = new Font("Microsoft YaHei UI", 9f);
+            AutoScaleDimensions = new SizeF(96, 96); AutoScaleMode = AutoScaleMode.Dpi; BackColor = Color.FromArgb(28, 37, 44); ForeColor = Color.FromArgb(231, 237, 242);
             MinimumSize = new Size(780, 460); Size = new Size(1340, 840); StartPosition = FormStartPosition.CenterScreen;
             HandleCreated += (_, _) => NativeMethods.UseImmersiveDarkMode(Handle, true);
-            FlowLayoutPanel tools = new FlowLayoutPanel { Dock = DockStyle.Top, AutoSize = true, Padding = new Padding(8), WrapContents = true };
+            FlowLayoutPanel tools = new FlowLayoutPanel { Dock = DockStyle.Top, AutoSize = true, Padding = new Padding(8, 5, 8, 5), WrapContents = true, BackColor = Color.FromArgb(38, 48, 57) };
             tools.Controls.Add(ToolButton("交换左右", (_, _) =>
             {
                 string text = editors[0].Text;
@@ -122,18 +122,25 @@ namespace ShareX
                 (titles[0].Text, titles[1].Text) = (titles[1].Text, titles[0].Text);
                 (savedText[0], savedText[1]) = (savedText[1], savedText[0]);
             }));
-            previous = ToolButton("上一个差异", (_, _) => Navigate(-1)); next = ToolButton("下一个差异", (_, _) => Navigate(1));
+            previous = ToolButton("↑ 上一个差异", (_, _) => Navigate(-1)); next = ToolButton("↓ 下一个差异", (_, _) => Navigate(1));
             tools.Controls.Add(previous); tools.Controls.Add(next); tools.Controls.Add(ignoreWhitespace); tools.Controls.Add(ignoreCase);
-            tools.Controls.Add(new Label { Text = "红：删除  绿：新增  黄：修改", AutoSize = true, Margin = new Padding(14, 8, 0, 0) });
-            SplitContainer split = new SplitContainer { Dock = DockStyle.Fill, SplitterWidth = 8, BackColor = Color.FromArgb(65, 65, 65), Size = new Size(1080, 580), SplitterDistance = 540, Panel1MinSize = 250, Panel2MinSize = 250 };
+            foreach (var legend in new[] { ("● 删除", Color.FromArgb(255, 100, 110)), ("● 新增", Color.FromArgb(81, 210, 133)), ("● 修改", Color.FromArgb(255, 185, 79)) })
+                tools.Controls.Add(new Label { Text = legend.Item1, ForeColor = legend.Item2, AutoSize = true, Margin = new Padding(12, 10, 0, 0) });
+            tools.Controls[0].ForeColor = Color.FromArgb(255, 157, 72);
+            ((Button)tools.Controls[0]).FlatAppearance.BorderColor = Color.FromArgb(255, 136, 62);
+            SplitContainer split = new SplitContainer { Dock = DockStyle.Fill, SplitterWidth = 4, BackColor = Color.FromArgb(65, 82, 94), Size = new Size(1080, 580), SplitterDistance = 540, Panel1MinSize = 250, Panel2MinSize = 250 };
             for (int i = 0; i < 2; i++)
             {
                 int side = i; Panel panel = side == 0 ? split.Panel1 : split.Panel2;
-                FlowLayoutPanel header = new FlowLayoutPanel { Dock = DockStyle.Top, Height = 40, WrapContents = false, BackColor = BackColor };
-                header.Controls.Add(ToolButton("打开", (_, _) => PickFile(side)));
-                header.Controls.Add(ToolButton("另存", (_, _) => Save(side)));
-                header.Controls.Add(ToolButton("复制", (_, _) => Notice(ClipboardHelpers.CopyText(editors[side].Text) ? "已复制。" : "复制失败，请重试。")));
-                titles[side] = new Label { Text = side == 0 ? "左侧文本" : "右侧文本", AutoSize = true, Margin = new Padding(6, 8, 0, 0) }; header.Controls.Add(titles[side]);
+                var header = new TableLayoutPanel { Dock = DockStyle.Top, AutoSize = true, AutoSizeMode = AutoSizeMode.GrowAndShrink, ColumnCount = 2, RowCount = 1, Padding = new Padding(8, 3, 5, 3), BackColor = Color.FromArgb(38, 48, 57) };
+                header.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
+                header.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize));
+                titles[side] = new Label { Text = side == 0 ? "左侧文本" : "右侧文本", AutoEllipsis = true, Dock = DockStyle.Fill, TextAlign = ContentAlignment.MiddleLeft, Margin = new Padding(3), MinimumSize = new Size(40, 30) };
+                var actions = new FlowLayoutPanel { AutoSize = true, AutoSizeMode = AutoSizeMode.GrowAndShrink, WrapContents = false, Margin = Padding.Empty };
+                actions.Controls.Add(ToolButton("打开", (_, _) => PickFile(side)));
+                actions.Controls.Add(ToolButton("另存为", (_, _) => Save(side)));
+                actions.Controls.Add(ToolButton("复制", (_, _) => Notice(ClipboardHelpers.CopyText(editors[side].Text) ? "已复制。" : "复制失败，请重试。")));
+                header.Controls.Add(titles[side], 0, 0); header.Controls.Add(actions, 1, 0);
                 var host = editors[side]; host.Dock = DockStyle.Fill;
                 host.Editor.WordWrap = false; host.Editor.ShowLineNumbers = true;
                 host.Editor.HorizontalScrollBarVisibility = Wpf.Controls.ScrollBarVisibility.Auto;
@@ -150,6 +157,8 @@ namespace ShareX
                 host.Editor.PreviewDrop += (_, e) => { if (e.Data.GetData(Wpf.DataFormats.FileDrop) is string[] paths) { e.Handled = true; if (paths.Length == 1) LoadFile(side, paths[0]); else Notice("每侧一次拖入一个文本文件。"); } };
                 panel.Controls.Add(host); panel.Controls.Add(header);
             }
+            status.BackColor = Color.FromArgb(38, 48, 57);
+            status.Padding = new Padding(12, 0, 8, 0); status.AutoEllipsis = true;
             Controls.Add(split); Controls.Add(status); Controls.Add(tools);
             ignoreWhitespace.CheckedChanged += (_, _) => Changed(); ignoreCase.CheckedChanged += (_, _) => Changed();
             debounce.Tick += async (_, _) => { debounce.Stop(); await CompareAsync(); };
@@ -171,8 +180,8 @@ namespace ShareX
         }
         private Button ToolButton(string text, EventHandler click)
         {
-            var button = new Button { Text = text, AutoSize = true, MinimumSize = new Size(54, 30), FlatStyle = FlatStyle.Flat, BackColor = Color.FromArgb(58, 58, 58), ForeColor = ForeColor };
-            button.FlatAppearance.BorderColor = Color.FromArgb(85, 85, 85); button.Click += click; return button;
+            var button = new Button { Text = text, AutoSize = true, AutoSizeMode = AutoSizeMode.GrowAndShrink, MinimumSize = new Size(54, 32), Padding = new Padding(8, 3, 8, 3), Margin = new Padding(3), Cursor = Cursors.Hand, FlatStyle = FlatStyle.Flat, BackColor = Color.FromArgb(38, 48, 57), ForeColor = ForeColor };
+            button.FlatAppearance.BorderColor = Color.FromArgb(65, 82, 94); button.FlatAppearance.MouseOverBackColor = Color.FromArgb(53, 70, 82); button.Click += click; return button;
         }
         private bool ReplaceAllowed(int side) => editors[side].Text == savedText[side] ||
             MessageBox.Show(this, "此栏有未保存内容，打开文件将替换它。是否继续？", "文本对比", MessageBoxButtons.OKCancel, MessageBoxIcon.Question) == DialogResult.OK;

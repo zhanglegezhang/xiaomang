@@ -39,6 +39,9 @@ namespace ShareX
             internal readonly Button textCompareButton;
             internal readonly Button qingjianInputMethodButton;
             internal readonly Label newsStatusLabel;
+            private readonly Button[] editableToolButtons;
+            private readonly Button[] externalToolButtons;
+            internal int ToolRowCount => Math.Max(editableToolButtons.Length, externalToolButtons.Length);
 
             public void SetNewsUpdateStatus(string message, bool isError)
             {
@@ -71,35 +74,37 @@ namespace ShareX
 
             internal void LayoutNewsPanel()
             {
-                int edge = Owner.D(8);
-                int width = Math.Max(Owner.D(100), newsPanel.ClientSize.Width - edge * 2);
-                Owner.LayoutPageTitle(newsTitleLogo, newsTitleLabel, width - Owner.D(26));
-                int buttonGap = Owner.D(8);
-                int rowGap = Owner.D(16);
-                int buttonWidth = Math.Max(Owner.D(80), (width - buttonGap) / 2);
-                int buttonHeight = Owner.D(31);
-                int top = newsTitleLabel.Bottom + Owner.D(8);
-                int right = edge + buttonWidth + buttonGap;
-                int rightWidth = Math.Max(Owner.D(80), newsPanel.ClientSize.Width - edge - right);
-                int RowTop(int row) => top + row * (buttonHeight + rowGap);
-                Rectangle LeftCell(int row) => new Rectangle(edge, RowTop(row), buttonWidth, buttonHeight);
-                Rectangle RightCell(int row) => new Rectangle(right, RowTop(row), rightWidth, buttonHeight);
-                domesticNewsButton.Bounds = LeftCell(0);
-                presentationCanvasButton.Bounds = RightCell(0);
-                internationalNewsButton.Bounds = LeftCell(1);
-                everythingButton.Bounds = RightCell(1);
-                calculatorButton.Bounds = LeftCell(2);
-                videoToGifButton.Bounds = RightCell(2);
-                dataOrganizerButton.Bounds = LeftCell(3);
-                scratchTextButton.Bounds = LeftCell(4);
-                scratchMarkdownButton.Bounds = RightCell(4);
-                textCompareButton.Bounds = LeftCell(5);
-                qingjianInputMethodButton.Bounds = LeftCell(6);
-                collageButton.Bounds = LeftCell(7);
-                sevenZipButton.Bounds = RightCell(7);
-                msnWeatherButton.Bounds = LeftCell(8);
-                centralWeatherButton.Bounds = RightCell(8);
-                newsStatusLabel.Bounds = new Rectangle(edge, msnWeatherButton.Bottom + Owner.D(8), width, Owner.D(28));
+                Point scrollPosition = newsPanel.AutoScrollPosition;
+                newsPanel.SuspendLayout();
+                try
+                {
+                    int edge = Owner.D(8);
+                    int width = Math.Max(Owner.D(100), newsPanel.ClientSize.Width - edge * 2);
+                    Owner.LayoutPageTitle(newsTitleLogo, newsTitleLabel, width - Owner.D(26));
+                    newsTitleLogo.Top += scrollPosition.Y;
+                    newsTitleLabel.Top += scrollPosition.Y;
+                    int buttonGap = Owner.D(8);
+                    int rowGap = Owner.D(16);
+                    int buttonWidth = Math.Max(Owner.D(80), (width - buttonGap) / 2);
+                    int buttonHeight = Owner.D(31);
+                    int top = newsTitleLabel.Bottom + Owner.D(8);
+                    int right = edge + buttonWidth + buttonGap;
+                    int rightWidth = Math.Max(Owner.D(80), newsPanel.ClientSize.Width - edge - right);
+                    int RowTop(int row) => top + row * (buttonHeight + rowGap);
+                    Rectangle LeftCell(int row) => new Rectangle(edge, RowTop(row), buttonWidth, buttonHeight);
+                    Rectangle RightCell(int row) => new Rectangle(right, RowTop(row), rightWidth, buttonHeight);
+                    for (int row = 0; row < editableToolButtons.Length; row++)
+                        editableToolButtons[row].Bounds = LeftCell(row);
+                    for (int row = 0; row < externalToolButtons.Length; row++)
+                        externalToolButtons[row].Bounds = RightCell(row);
+                    int buttonsBottom = RowTop(ToolRowCount - 1) + buttonHeight;
+                    newsStatusLabel.Bounds = new Rectangle(edge, buttonsBottom + Owner.D(8), width, Owner.D(28));
+                }
+                finally
+                {
+                    newsPanel.ResumeLayout(true);
+                }
+                newsPanel.AutoScrollPosition = new Point(-scrollPosition.X, -scrollPosition.Y);
             }
 
             protected override void Dispose(bool disposing)
@@ -174,6 +179,14 @@ namespace ShareX
                 qingjianInputMethodButton = Owner.CreateOtherButton("输入法安装");
                 qingjianInputMethodButton.Click += (sender, e) => Program.MainForm?.OpenInputMethod();
                 newsPanel.Controls.Add(qingjianInputMethodButton);
+                editableToolButtons = new[] { scratchTextButton, presentationCanvasButton, scratchMarkdownButton,
+                    domesticNewsButton, internationalNewsButton, videoToGifButton, dataOrganizerButton,
+                    textCompareButton, qingjianInputMethodButton, collageButton };
+                externalToolButtons = new[] { calculatorButton, everythingButton, sevenZipButton,
+                    msnWeatherButton, centralWeatherButton };
+                int tabIndex = 0;
+                foreach (Button button in editableToolButtons.Concat(externalToolButtons))
+                    button.TabIndex = tabIndex++;
                 foreach (Button button in new[] { scratchTextButton, scratchMarkdownButton, videoToGifButton,
                     calculatorButton, sevenZipButton, centralWeatherButton, msnWeatherButton, collageButton, textCompareButton,
                     qingjianInputMethodButton })

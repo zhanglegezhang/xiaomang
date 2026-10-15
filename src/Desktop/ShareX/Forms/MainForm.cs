@@ -2055,6 +2055,10 @@ namespace ShareX
 
         internal void OpenImageCollage(IEnumerable<string> images = null)
         {
+            var timer = System.Diagnostics.Stopwatch.StartNew();
+            DebugHelper.WriteLine("Collage activation requested.");
+            try
+            {
             if (collageWindow == null || collageWindow.IsDisposed)
             {
                 collageWindow = new ImageCollageForm(images);
@@ -2065,8 +2069,21 @@ namespace ShareX
                 collageWindow.Show();
             }
             else if (images != null) collageWindow.AddFiles(images);
-            if (collageWindow.WindowState == FormWindowState.Minimized) collageWindow.WindowState = FormWindowState.Normal;
-            collageWindow.Activate();
+            DebugHelper.WriteLine($"Collage before activation: managed={collageWindow.Visible}; native={collageWindow.IsHandleCreated && NativeMethods.IsWindowVisible(collageWindow.Handle)}; state={collageWindow.WindowState}");
+            collageWindow.ShowForUser();
+            DebugHelper.WriteLine($"Collage activation finished: native={NativeMethods.IsWindowVisible(collageWindow.Handle)}; elapsedMs={timer.ElapsedMilliseconds}");
+            }
+            catch (Exception error)
+            {
+                DebugHelper.WriteException(error, "Collage activation failed.");
+                if (collageWindow != null && !collageWindow.IsDisposed && !collageWindow.Visible)
+                {
+                    collageWindow.Dispose();
+                    collageWindow = null;
+                }
+                MessageBox.Show("拼图窗口打开失败，请重试。错误详情已记录到日志。\n" + error.Message,
+                    Program.DisplayName, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
         }
 
         internal void OpenTextCompare()

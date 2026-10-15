@@ -404,7 +404,8 @@ namespace ShareX
             panel.AccessibleName = number;
             panel.MouseDown += (sender, e) =>
             {
-                if (e.Y >= D(8) && e.Y < D(36)) TitleLabel_MouseDown(sender, e);
+                int top = D(8) + panel.AutoScrollPosition.Y;
+                if (e.Y >= top && e.Y < top + D(28)) TitleLabel_MouseDown(sender, e);
             };
             panel.MouseMove += TitleLabel_MouseMove;
             panel.MouseUp += TitleLabel_MouseUp;
@@ -413,14 +414,15 @@ namespace ShareX
             {
                 float left = D(34); // Logo: 8 + 20; text gap: 6 logical pixels.
                 float right = panel.ClientSize.Width - D(8);
+                int scrollY = panel.AutoScrollPosition.Y;
                 foreach (Control control in panel.Controls)
                 {
                     bool reservesSaveStatus = ReferenceEquals(control, favoritesPage.favoriteSaveStatusLabel);
                     if (((control.Visible && control is Button) || reservesSaveStatus) &&
-                        control.Top < D(36) && control.Bottom > D(8) && control.Left >= left)
+                        control.Top < D(36) + scrollY && control.Bottom > D(8) + scrollY && control.Left >= left)
                         right = Math.Min(right, control.Left - D(6));
                 }
-                RectangleF bounds = new RectangleF(left, D(8), Math.Max(1, right - left), D(28));
+                RectangleF bounds = new RectangleF(left, D(8) + scrollY, Math.Max(1, right - left), D(28));
                 using Font numberFont = new Font("Microsoft YaHei UI", D(20), FontStyle.Bold, GraphicsUnit.Pixel);
                 using Brush brush = new SolidBrush(Color.FromArgb(38, Color.White));
                 using StringFormat format = new StringFormat(StringFormat.GenericTypographic) { Alignment = StringAlignment.Near, LineAlignment = StringAlignment.Center, FormatFlags = StringFormatFlags.NoWrap };
@@ -578,8 +580,9 @@ namespace ShareX
         private int GetNewsRequiredHeight()
         {
             int titleHeight = D(28);
+            int rows = toolsPage.ToolRowCount;
             return D(8) + titleHeight + D(8) +
-                9 * D(31) + 8 * D(16) + D(8) + D(28) + D(8);
+                rows * D(31) + (rows - 1) * D(16) + D(8) + D(28) + D(8);
         }
 
         private void EnsureNewsFits()
@@ -627,6 +630,8 @@ namespace ShareX
         private void LayoutContent()
         {
             if (!ready || !expanded) return;
+            WidgetPageComponent activePage = GetActivePage();
+            Point scrollPosition = activePage.AutoScrollPosition;
             LayoutModuleSidebar();
             if (!changingExpansion)
             {
@@ -634,8 +639,11 @@ namespace ShareX
                 SyncExpandedFrameCorners();
                 SyncStickerOverlay();
             }
-            GetActivePage().ArrangePage();
+            activePage.ArrangePage();
             LayoutResizeGrips();
+            // Overlay refresh can restore focus and scroll a short page back to its first button.
+            if (activePage.AutoScroll)
+                activePage.AutoScrollPosition = new Point(-scrollPosition.X, -scrollPosition.Y);
         }
 
         private void LayoutModuleSidebar()

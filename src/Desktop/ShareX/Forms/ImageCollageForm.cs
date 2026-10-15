@@ -173,15 +173,17 @@ namespace ShareX
         }
     }
 
-    internal sealed class ImageCollageForm : Form
+    internal sealed partial class ImageCollageForm : Form
     {
         private sealed class Item
         {
             internal string Path { get; }
+            internal Bitmap Thumbnail { get; set; }
+            internal Size ImageSize { get; set; }
             internal Item(string path) { Path = path; }
             public override string ToString() => System.IO.Path.GetFileName(Path);
         }
-        private readonly ListBox files = new ListBox { Dock = DockStyle.Fill, AllowDrop = true, SelectionMode = SelectionMode.One, HorizontalScrollbar = true };
+        private readonly ListBox files = new ListBox { Dock = DockStyle.Fill, AllowDrop = true, SelectionMode = SelectionMode.One, IntegralHeight = false, DrawMode = DrawMode.OwnerDrawFixed };
         private readonly PictureBox preview = new PictureBox { Dock = DockStyle.Fill, SizeMode = PictureBoxSizeMode.Zoom, BackColor = Color.FromArgb(32, 32, 32) };
         private readonly ComboBox direction = new ComboBox { DropDownStyle = ComboBoxStyle.DropDownList, Width = 88, BackColor = Color.FromArgb(58, 58, 58), ForeColor = Color.WhiteSmoke };
         private readonly CheckBox normalize = new CheckBox { Text = "统一宽度", Checked = true, AutoSize = true, Margin = new Padding(8, 7, 6, 0) };
@@ -199,27 +201,14 @@ namespace ShareX
         internal ImageCollageForm(IEnumerable<string> initialFiles = null)
         {
             Text = "小蟒同学 · 拼图"; Icon = ShareXResources.Icon;
-            Font = new Font("Microsoft YaHei", 8f); BackColor = Color.FromArgb(43, 43, 43); ForeColor = Color.WhiteSmoke;
-            AutoScaleMode = AutoScaleMode.Dpi; MinimumSize = new Size(760, 480); Size = new Size(1300, 900);
+            Font = new Font("Microsoft YaHei UI", 9f); BackColor = CanvasColor; ForeColor = Color.FromArgb(231, 237, 242);
+            AutoScaleDimensions = new SizeF(96, 96); AutoScaleMode = AutoScaleMode.Dpi; MinimumSize = new Size(760, 480); Size = new Size(1100, 760);
             StartPosition = FormStartPosition.CenterScreen; AllowDrop = true;
             HandleCreated += (_, _) => NativeMethods.UseImmersiveDarkMode(Handle, true);
-            gap.BackColor = Color.FromArgb(58, 58, 58); gap.ForeColor = ForeColor;
-            FlowLayoutPanel tools = new FlowLayoutPanel { Dock = DockStyle.Top, AutoSize = true, Padding = new Padding(8), WrapContents = true };
-            tools.Controls.Add(ToolButton("添加图片", (_, _) => PickFiles()));
-            tools.Controls.Add(ToolButton("移除", (_, _) => { if (files.SelectedIndex >= 0) { files.Items.RemoveAt(files.SelectedIndex); Changed(); } }));
-            tools.Controls.Add(ToolButton("上移", (_, _) => MoveSelected(-1)));
-            tools.Controls.Add(ToolButton("下移", (_, _) => MoveSelected(1)));
             direction.Items.AddRange(new object[] { "上下", "左右" }); direction.SelectedIndex = 0;
-            tools.Controls.Add(direction); tools.Controls.Add(normalize);
-            tools.Controls.Add(new Label { Text = "间距 px", AutoSize = true, Margin = new Padding(5, 7, 0, 0) }); tools.Controls.Add(gap);
-            tools.Controls.Add(ToolButton("背景色", (_, _) => { using ColorDialog d = new ColorDialog { Color = background }; if (d.ShowDialog(this) == DialogResult.OK) { background = d.Color; Changed(); } }));
             copy = ToolButton("复制", async (_, _) => await Export(false)); save = ToolButton("保存 PNG", async (_, _) => await Export(true));
-            tools.Controls.Add(copy); tools.Controls.Add(save);
-            SplitContainer split = new SplitContainer { Dock = DockStyle.Fill, SplitterWidth = 8, BackColor = BackColor, Size = new Size(950, 500), SplitterDistance = 220 };
-            files.BackColor = Color.FromArgb(37, 37, 37); files.ForeColor = ForeColor; files.BorderStyle = BorderStyle.None;
-            split.Panel1.Controls.Add(files); split.Panel2.Controls.Add(preview);
-            Controls.Add(split); Controls.Add(status); Controls.Add(tools);
-            direction.SelectedIndexChanged += (_, _) => { normalize.Text = direction.SelectedIndex == 0 ? "统一宽度" : "统一高度"; Changed(); };
+            BuildLayout();
+            direction.SelectedIndexChanged += (_, _) => { normalize.Text = direction.SelectedIndex == 0 ? "统一宽度" : "统一高度"; UpdateDirection(); Changed(); };
             normalize.CheckedChanged += (_, _) => Changed(); gap.ValueChanged += (_, _) => Changed();
             debounce.Tick += async (_, _) => { debounce.Stop(); await RefreshPreview(); };
             DragEnter += FileDragEnter; DragDrop += FileDragDrop;
@@ -234,18 +223,30 @@ namespace ShareX
                 }
                 else FileDragDrop(s, e);
             };
-            files.MouseDown += (_, e) => dragIndex = files.IndexFromPoint(e.Location);
-            files.MouseMove += (_, e) => { if (e.Button == MouseButtons.Left && dragIndex >= 0 && dragIndex < files.Items.Count) { Item item = (Item)files.Items[dragIndex]; dragIndex = -1; files.DoDragDrop(item, DragDropEffects.Move); } };
+            files.MouseDown += (_, e) => { dragIndex = files.IndexFromPoint(e.Location); dragOrigin = e.Location; };
+            files.MouseMove += (_, e) => { if (e.Button == MouseButtons.Left && dragIndex >= 0 && dragIndex < files.Items.Count && !new Rectangle(dragOrigin.X - SystemInformation.DragSize.Width / 2, dragOrigin.Y - SystemInformation.DragSize.Height / 2, SystemInformation.DragSize.Width, SystemInformation.DragSize.Height).Contains(e.Location)) { Item item = (Item)files.Items[dragIndex]; dragIndex = -1; files.DoDragDrop(item, DragDropEffects.Move); } };
             FormClosing += (_, e) => { if (exporting) { e.Cancel = true; status.Text = "正在输出图片，请等待完成。"; } };
             FormClosed += (_, _) => { closing = true; cancellation.Cancel(); debounce.Stop(); };
             if (initialFiles != null) AddFiles(initialFiles);
             copy.Enabled = save.Enabled = false;
         }
 
+        internal void ShowForUser()
+        {
+            Show();
+            if (WindowState == FormWindowState.Minimized) WindowState = FormWindowState.Normal;
+            // SW_HIDE supplied by a launcher can disagree with WinForms.Visible.
+            if (!NativeMethods.IsWindowVisible(Handle))
+                NativeMethods.ShowWindow(Handle, (int)WindowShowStyle.Show);
+            Activate();
+            BringToFront();
+            NativeMethods.SetForegroundWindow(Handle);
+        }
+
         private Button ToolButton(string text, EventHandler click)
         {
-            Button button = new Button { Text = text, AutoSize = true, MinimumSize = new Size(52, 27), FlatStyle = FlatStyle.Flat, BackColor = Color.FromArgb(58, 58, 58), ForeColor = ForeColor };
-            button.FlatAppearance.BorderColor = Color.FromArgb(85, 85, 85); button.Click += click; return button;
+            Button button = new Button { Text = text, AutoSize = true, AutoSizeMode = AutoSizeMode.GrowAndShrink, MinimumSize = new Size(60, 34), Padding = new Padding(8, 3, 8, 3), Margin = new Padding(3), FlatStyle = FlatStyle.Flat, BackColor = SurfaceColor, ForeColor = ForeColor, Cursor = Cursors.Hand };
+            button.FlatAppearance.BorderColor = Color.FromArgb(65, 82, 94); button.FlatAppearance.MouseOverBackColor = Color.FromArgb(53, 70, 82); button.Click += click; return button;
         }
         internal void AddFiles(IEnumerable<string> paths)
         {
@@ -259,6 +260,7 @@ namespace ShareX
                 files.Items.Add(new Item(System.IO.Path.GetFullPath(path)));
             }
             inputNotice = rejected.Count == 0 ? "" : "已跳过：" + string.Join("；", rejected) + "。 ";
+            if (files.SelectedIndex < 0 && files.Items.Count > 0) files.SelectedIndex = 0;
             Changed();
         }
         private void PickFiles() { using OpenFileDialog d = new OpenFileDialog { Multiselect = true, Filter = "图片|*.png;*.jpg;*.jpeg;*.bmp;*.gif;*.tif;*.tiff", InitialDirectory = Program.ScreenshotsParentFolder }; if (d.ShowDialog(this) == DialogResult.OK) AddFiles(d.FileNames); }
@@ -269,6 +271,7 @@ namespace ShareX
         private string[] Paths() => files.Items.Cast<Item>().Select(i => i.Path).ToArray();
         private void Changed()
         {
+            UpdateListState();
             revision++; pending = true; copy.Enabled = save.Enabled = false;
             previewVersions = null;
             Image old = preview.Image; preview.Image = null; old?.Dispose();
@@ -278,23 +281,22 @@ namespace ShareX
         {
             if (closing || working || exporting) return;
             pending = false;
-            if (files.Items.Count < 2) { status.Text = inputNotice + "请添加至少 2 张图片，可拖动列表调整顺序。"; return; }
+            if (files.Items.Count == 0) { status.Text = inputNotice + "请添加 2～50 张图片，可拖动列表调整顺序。"; return; }
             int version = revision; string[] paths = Paths(); CollageSettings settings = Settings();
             cancellation.Dispose(); cancellation = new CancellationTokenSource(); CancellationToken token = cancellation.Token;
             working = true; status.Text = "正在生成预览…";
             try
             {
-                var invalid = await Task.Run(() => paths.Distinct(StringComparer.OrdinalIgnoreCase)
-                    .Select(path => { token.ThrowIfCancellationRequested(); return (Path: path, Error: ImageCollageRenderer.ValidateImage(path)); })
-                    .Where(item => item.Error != null).ToArray(), token);
+                var invalid = await ValidateAndLoadThumbnails(paths, version, token);
                 if (closing || IsDisposed || version != revision) return;
                 if (invalid.Length > 0)
                 {
                     foreach (Item item in files.Items.Cast<Item>().ToArray())
-                        if (invalid.Any(bad => string.Equals(bad.Path, item.Path, StringComparison.OrdinalIgnoreCase))) files.Items.Remove(item);
+                        if (invalid.Any(bad => string.Equals(bad.Path, item.Path, StringComparison.OrdinalIgnoreCase))) { item.Thumbnail?.Dispose(); files.Items.Remove(item); }
                     inputNotice += "已跳过：" + string.Join("；", invalid.Select(bad => System.IO.Path.GetFileName(bad.Path) + "（" + bad.Error + "）")) + "。 ";
                     Changed(); return;
                 }
+                if (paths.Length < 2) { status.Text = inputNotice + "已添加 1 张图片，请再添加至少 1 张。"; return; }
                 var result = await Task.Run(() => ImageCollageRenderer.RenderWithVersions(paths, settings, true, token, null));
                 if (closing || IsDisposed || version != revision) { result.Image.Dispose(); return; }
                 Image old = preview.Image; preview.Image = result.Image; old?.Dispose();
@@ -348,7 +350,7 @@ namespace ShareX
         }
         protected override void Dispose(bool disposing)
         {
-            if (disposing && !resourcesDisposed) { resourcesDisposed = true; closing = true; cancellation.Cancel(); cancellation.Dispose(); debounce.Dispose(); Image old = preview.Image; preview.Image = null; old?.Dispose(); }
+            if (disposing && !resourcesDisposed) { resourcesDisposed = true; closing = true; cancellation.Cancel(); cancellation.Dispose(); debounce.Dispose(); Image old = preview.Image; preview.Image = null; old?.Dispose(); foreach (Item item in files.Items) item.Thumbnail?.Dispose(); preview.BackgroundImage?.Dispose(); uiTips.Dispose(); }
             base.Dispose(disposing);
         }
     }

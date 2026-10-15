@@ -11,6 +11,8 @@ namespace ShareX
     {
         internal readonly Label FileLabel;
         internal readonly Button SaveAsButton;
+        private readonly Label titleLabel;
+        private readonly Label statusLabel;
         private readonly Form owner;
         private readonly CaptionIcon icon;
         private readonly CaptionButton minimize;
@@ -27,7 +29,7 @@ namespace ShareX
         internal static int ResizeBorder(int dpi) => GetSystemMetricsForDpi(33, (uint)dpi) + GetSystemMetricsForDpi(92, (uint)dpi);
         internal static void RefreshFrame(IntPtr window) => SetWindowPos(window, IntPtr.Zero, 0, 0, 0, 0, 0x0037);
         private int Scale(int value) => (int)Math.Round(value * DeviceDpi / 96f);
-        internal int PreferredCaptionHeight => Math.Max(Scale(24), Font.Height + Scale(4));
+        internal int PreferredCaptionHeight => Math.Max(Scale(40), Font.Height + Scale(16));
         // WM_NCCALCSIZE already excludes the native top resize frame from the client area.
         private static Rectangle ContentBounds(Control control, Form owner) =>
             control.ClientRectangle;
@@ -42,6 +44,16 @@ namespace ShareX
             Font = owner.Font;
             DoubleBuffered = true;
             icon = new CaptionIcon(owner) { TabStop = false };
+            titleLabel = new CaptionLabel(owner)
+            {
+                Name = "ScratchTitle", Text = owner.Text, AutoEllipsis = true,
+                Font = new Font(Font, FontStyle.Bold), ForeColor = ForeColor, UseMnemonic = false
+            };
+            statusLabel = new CaptionLabel(owner)
+            {
+                Name = "ScratchStatus", AutoEllipsis = true, Font = Font,
+                ForeColor = Color.FromArgb(48, 107, 81), UseMnemonic = false
+            };
             FileLabel = new CaptionLabel(owner)
             {
                 AutoEllipsis = true, TextAlign = ContentAlignment.MiddleLeft,
@@ -63,7 +75,14 @@ namespace ShareX
             maximize.Click += (sender, args) => owner.WindowState = owner.WindowState == FormWindowState.Maximized
                 ? FormWindowState.Normal : FormWindowState.Maximized;
             close.Click += (sender, args) => owner.Close();
-            Controls.AddRange(new Control[] { icon, FileLabel, SaveAsButton, minimize, maximize, close });
+            Controls.AddRange(new Control[] { icon, titleLabel, FileLabel, statusLabel, SaveAsButton, minimize, maximize, close });
+        }
+
+        internal void SetStatus(string text, bool failed)
+        {
+            statusLabel.Text = text;
+            statusLabel.ForeColor = failed ? Color.FromArgb(155, 57, 43) : Color.FromArgb(48, 107, 81);
+            PerformLayout();
         }
 
         protected override void OnLayout(LayoutEventArgs args)
@@ -79,10 +98,34 @@ namespace ShareX
             }
             int saveWidth = Math.Max(Scale(76), TextRenderer.MeasureText(SaveAsButton.Text, SaveAsButton.Font).Width + Scale(20));
             right -= saveWidth;
-            SaveAsButton.SetBounds(right, 0, saveWidth, ClientSize.Height);
+            SaveAsButton.SetBounds(right, Scale(6), saveWidth - Scale(8), ClientSize.Height - Scale(12));
             SaveAsButton.Padding = Padding.Empty;
-            icon.SetBounds(Scale(8), 0, Scale(24), ClientSize.Height);
-            FileLabel.SetBounds(Scale(38), 0, Math.Max(0, right - Scale(46)), ClientSize.Height);
+            icon.SetBounds(Scale(12), 0, Scale(24), ClientSize.Height);
+            bool showTitle = right >= Scale(280);
+            titleLabel.Visible = showTitle;
+            int titleWidth = showTitle ? Math.Min(TextRenderer.MeasureText(titleLabel.Text, titleLabel.Font).Width + Scale(12), Math.Max(0, (right - Scale(50)) / 2)) : 0;
+            titleLabel.SetBounds(Scale(44), 0, titleWidth, ClientSize.Height);
+            int left = showTitle ? titleLabel.Right + Scale(14) : Scale(44);
+            int available = Math.Max(0, right - left - Scale(12));
+            bool showStatus = available >= Scale(130);
+            statusLabel.Visible = showStatus;
+            int statusWidth = showStatus ? Math.Min(TextRenderer.MeasureText(statusLabel.Text, Font).Width + Scale(8), available / 2) : 0;
+            FileLabel.SetBounds(left, 0, Math.Max(0, available - statusWidth - Scale(10)), ClientSize.Height);
+            statusLabel.SetBounds(FileLabel.Right + Scale(10), 0, statusWidth, ClientSize.Height);
+        }
+
+        protected override void OnPaint(PaintEventArgs args)
+        {
+            base.OnPaint(args);
+            using var pen = new Pen(Color.FromArgb(148, 181, 210));
+            args.Graphics.DrawLine(pen, 0, Height - 1, Width, Height - 1);
+            if (titleLabel?.Visible == true) args.Graphics.DrawLine(pen, titleLabel.Right + Scale(6), Scale(12), titleLabel.Right + Scale(6), Height - Scale(12));
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing) titleLabel?.Font.Dispose();
+            base.Dispose(disposing);
         }
 
         internal int HitTest(Point screen)
@@ -142,7 +185,7 @@ namespace ShareX
             protected override void OnPaint(PaintEventArgs args)
             {
                 base.OnPaint(args);
-                int size = (int)Math.Round(16 * DeviceDpi / 96f);
+                int size = (int)Math.Round(24 * DeviceDpi / 96f);
                 if (owner.Icon != null) args.Graphics.DrawIcon(owner.Icon,
                     new Rectangle((Width - size) / 2, (ContentBounds(this, owner).Height - size) / 2, size, size));
             }
@@ -177,6 +220,10 @@ namespace ShareX
                 graphics.Clear(hover ? kind == 2 ? Color.FromArgb(196, 43, 28) : Color.FromArgb(197, 217, 237) : BackColor);
                 if (kind == 3)
                 {
+                    using var fill = new SolidBrush(hover ? Color.FromArgb(231, 242, 252) : Color.FromArgb(215, 232, 247));
+                    using var border = new Pen(Color.FromArgb(155, 187, 215));
+                    graphics.FillRectangle(fill, 0, 0, Width - 1, Height - 1);
+                    graphics.DrawRectangle(border, 0, 0, Width - 1, Height - 1);
                     TextRenderer.DrawText(graphics, Text, Font, ClientRectangle, ForeColor,
                         TextFormatFlags.SingleLine | TextFormatFlags.HorizontalCenter | TextFormatFlags.VerticalCenter | TextFormatFlags.NoPrefix);
                     if (Focused && ShowFocusCues) ControlPaint.DrawFocusRectangle(graphics, Rectangle.Inflate(ClientRectangle, -3, -3));

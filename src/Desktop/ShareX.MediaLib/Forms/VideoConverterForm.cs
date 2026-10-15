@@ -1,4 +1,4 @@
-﻿#region License Information (GPL v3)
+#region License Information (GPL v3)
 
 /*
     ShareX - A program that allows you to take screenshots and share any file type
@@ -88,87 +88,59 @@ namespace ShareX.MediaLib
 
         private void ConfigureSimplifiedGifLayout()
         {
-            int outputRowHeight = txtOutputFileName.Top - txtOutputFolder.Top;
-
-            lblOutputFolder.Visible = txtOutputFolder.Visible = btnOutputFolderBrowse.Visible = false;
-            cbUseCustomArguments.Visible = txtArguments.Visible = false;
-            cbVideoEncoder.Visible = false;
-            lblVideoQuality.Visible = cbVideoQualityUseBitrate.Visible = tbVideoQuality.Visible = false;
-            lblVideoQualityValue.Visible = lblVideoQualityLower.Visible = lblVideoQualityHigher.Visible = false;
-            nudVideoQualityBitrate.Visible = lblVideoQualityBitrateHint.Visible = false;
-
-            foreach (Control control in new Control[]
+            SuspendLayout();
+            foreach (Control control in Controls) control.Visible = false;
+            Text = "小蟒 · 视频转 GIF";
+            BackColor = System.Drawing.Color.FromArgb(28, 37, 44);
+            ForeColor = System.Drawing.Color.FromArgb(231, 237, 242);
+            Font = new System.Drawing.Font("Microsoft YaHei UI", 9f);
+            foreach (Control control in new Control[] { lblInputFilePath, lblOutputFileName, lblVideoEncoder,
+                txtInputFilePath, txtOutputFileName, btnInputFilePathBrowse, btnEncode, cbAutoOpenFolder, pbProgress })
+                control.Font = Font;
+            int Px(int value) => (int)Math.Round(value * DeviceDpi / 96d);
+            var layout = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 3, RowCount = 4, Padding = new Padding(Px(18)), BackColor = BackColor };
+            layout.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, Px(110)));
+            layout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
+            layout.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, Px(112)));
+            for (int row = 0; row < 4; row++) layout.RowStyles.Add(new RowStyle(SizeType.Percent, 25));
+            lblInputFilePath.Text = "输入文件"; lblOutputFileName.Text = "输出名称"; lblVideoEncoder.Text = "输出格式";
+            var labels = new[] { lblInputFilePath, lblOutputFileName, lblVideoEncoder };
+            for (int row = 0; row < labels.Length; row++)
             {
-                lblOutputFileName, txtOutputFileName, lblVideoEncoder, cbVideoEncoder,
-                lblVideoQuality, cbVideoQualityUseBitrate, tbVideoQuality,
-                lblVideoQualityValue, lblVideoQualityLower, lblVideoQualityHigher,
-                nudVideoQualityBitrate, lblVideoQualityBitrateHint
-            })
-            {
-                control.Top -= outputRowHeight;
+                labels[row].AutoSize = false; labels[row].Dock = DockStyle.Fill;
+                labels[row].BackColor = BackColor; labels[row].ForeColor = ForeColor;
+                labels[row].TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+                layout.Controls.Add(labels[row], 0, row); labels[row].Visible = true;
             }
-
-            lblFixedGifCodec = new Label
+            foreach (TextBox input in new[] { txtInputFilePath, txtOutputFileName })
             {
-                AutoSize = true,
-                BackColor = System.Drawing.Color.Transparent,
-                ForeColor = lblVideoEncoder.ForeColor,
-                Font = cbVideoEncoder.Font,
-                Left = cbVideoEncoder.Left,
-                Top = lblVideoEncoder.Top,
-                Text = "GIF"
-            };
-            Controls.Add(lblFixedGifCodec);
-
-            int checkboxGap = Math.Max(12, (int)Math.Round(16 * DeviceDpi / 96f));
-            cbAutoOpenFolder.Left = lblFixedGifCodec.Right + checkboxGap;
-            cbAutoOpenFolder.Top = cbVideoEncoder.Top + (cbVideoEncoder.Height - cbAutoOpenFolder.Height) / 2;
-
-            int buttonGap = Math.Max(8, (int)Math.Round(12 * DeviceDpi / 96f));
-            int buttonTop = cbVideoEncoder.Bottom + buttonGap;
-            btnEncode.Top = pbProgress.Top = buttonTop;
-            btnEncode.Height /= 2;
-            pbProgress.Height /= 2;
-            SetCompactFont(btnEncode, btnEncode.Text);
-            SetCompactFont(pbProgress, "100%");
-            ReduceFontSize(btnEncode, 2f);
-            ReduceFontSize(pbProgress, 1f);
-            int progressRight = pbProgress.Right;
-            int progressGap = pbProgress.Left - btnEncode.Right;
-            btnEncode.Width /= 2;
-            pbProgress.Left = btnEncode.Right + progressGap;
-            pbProgress.Width = progressRight - pbProgress.Left;
-            int bottomPadding = Math.Max(12, (int)Math.Round(16 * DeviceDpi / 96f));
-            ClientSize = new System.Drawing.Size(ClientSize.Width, btnEncode.Bottom + bottomPadding);
-        }
-
-        private static void ReduceFontSize(Control control, float points)
-        {
-            System.Drawing.Font previous = control.Font;
-            control.Font = new System.Drawing.Font(previous.FontFamily,
-                Math.Max(4f, previous.SizeInPoints - points), previous.Style, System.Drawing.GraphicsUnit.Point);
-            previous.Dispose();
-        }
-
-        private static void SetCompactFont(Control control, string sampleText)
-        {
-            System.Drawing.Font original = control.Font;
-            for (float points = Math.Max(6f, original.SizeInPoints - 1f); points >= 6f; points -= 0.25f)
-            {
-                System.Drawing.Font candidate = new System.Drawing.Font(original.FontFamily, points, original.Style,
-                    System.Drawing.GraphicsUnit.Point);
-                if (TextRenderer.MeasureText(sampleText, candidate).Height <= control.Height - 2)
-                {
-                    control.Font = candidate;
-                    return;
-                }
-                candidate.Dispose();
+                input.BackColor = System.Drawing.Color.FromArgb(38, 48, 57); input.ForeColor = ForeColor;
+                input.BorderStyle = BorderStyle.FixedSingle; input.Anchor = AnchorStyles.Left | AnchorStyles.Right;
+                input.Margin = new Padding(Px(4), Px(6), Px(8), Px(6)); input.Visible = true;
             }
-
-            control.Font = new System.Drawing.Font(original.FontFamily, 6f, original.Style,
-                System.Drawing.GraphicsUnit.Point);
+            layout.Controls.Add(txtInputFilePath, 1, 0);
+            layout.Controls.Add(txtOutputFileName, 1, 1); layout.SetColumnSpan(txtOutputFileName, 2);
+            btnInputFilePathBrowse.Text = "选择文件";
+            layout.Controls.Add(btnInputFilePathBrowse, 2, 0);
+            var options = new FlowLayoutPanel { Dock = DockStyle.Fill, WrapContents = false, Padding = new Padding(0, Px(6), 0, 0) };
+            lblFixedGifCodec = new Label { Text = "GIF", AutoSize = true, Padding = new Padding(Px(12), Px(5), Px(12), Px(5)), BackColor = System.Drawing.Color.FromArgb(48, 62, 74), Margin = new Padding(Px(4), 0, Px(18), 0) };
+            cbAutoOpenFolder.Text = "完成后打开文件夹"; cbAutoOpenFolder.AutoSize = true; cbAutoOpenFolder.Margin = new Padding(0, Px(5), 0, 0);
+            options.Controls.Add(lblFixedGifCodec); options.Controls.Add(cbAutoOpenFolder); cbAutoOpenFolder.Visible = true;
+            layout.Controls.Add(options, 1, 2); layout.SetColumnSpan(options, 2);
+            layout.Controls.Add(btnEncode, 0, 3);
+            layout.Controls.Add(pbProgress, 1, 3); layout.SetColumnSpan(pbProgress, 2);
+            foreach (Button button in new[] { btnInputFilePathBrowse, btnEncode })
+            {
+                button.AutoSize = false; button.Dock = DockStyle.Fill; button.Margin = new Padding(Px(4), Px(5), Px(4), Px(5));
+                button.FlatStyle = FlatStyle.Flat; button.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(65, 82, 94);
+                button.BackColor = System.Drawing.Color.FromArgb(38, 48, 57); button.ForeColor = ForeColor; button.Visible = true;
+            }
+            btnEncode.Text = "开始转换"; btnEncode.BackColor = System.Drawing.Color.FromArgb(255, 136, 62); btnEncode.ForeColor = System.Drawing.Color.FromArgb(25, 33, 39);
+            pbProgress.Anchor = AnchorStyles.Left | AnchorStyles.Right; pbProgress.Height = Px(22); pbProgress.Margin = new Padding(Px(16), 0, Px(4), 0); pbProgress.Visible = true;
+            Controls.Add(layout);
+            ClientSize = new System.Drawing.Size(Px(800), Px(240));
+            ResumeLayout(true);
         }
-
         public VideoConverterForm(string inputFilePath, string ffmpegFilePath, VideoConverterOptions options) : this(ffmpegFilePath, options)
         {
             txtInputFilePath.Text = inputFilePath;
@@ -521,7 +493,7 @@ namespace ShareX.MediaLib
                     AllowDrop = false;
                 }
 
-                btnEncode.Text = Resources.StopEncoding;
+                btnEncode.Text = simplifiedGifMode ? "停止转换" : Resources.StopEncoding;
 
                 UpdateOptions();
                 pbProgress.Value = 0;
@@ -539,7 +511,7 @@ namespace ShareX.MediaLib
                         pbProgress.Value = 0;
                     }
 
-                    btnEncode.Text = Resources.StartEncoding;
+                    btnEncode.Text = simplifiedGifMode ? "开始转换" : Resources.StartEncoding;
                     if (simplifiedGifMode)
                     {
                         txtInputFilePath.Enabled = txtOutputFileName.Enabled = btnInputFilePathBrowse.Enabled = cbAutoOpenFolder.Enabled = true;
@@ -589,3 +561,4 @@ namespace ShareX.MediaLib
         }
     }
 }
+

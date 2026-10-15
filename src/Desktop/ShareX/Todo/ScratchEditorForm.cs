@@ -24,9 +24,9 @@ namespace ShareX
 {
     internal sealed class ScratchEditorForm : Form
     {
-        internal static readonly Color EditorBackgroundColor = Color.FromArgb(234, 243, 251);
+        internal static readonly Color EditorBackgroundColor = Color.FromArgb(243, 248, 253);
         internal static readonly Color EditorTextColor = Color.FromArgb(32, 48, 64);
-        internal static readonly Color CaptionBackgroundColor = Color.FromArgb(175, 203, 229);
+        internal static readonly Color CaptionBackgroundColor = Color.FromArgb(175, 202, 227);
         private static readonly Color ScrollThumbColor = Color.FromArgb(111, 141, 168);
         private const long MaximumOpenBytes = ScratchLargeTextEditor.MaximumBytes;
         private const string AssetHost = "scratch-assets.invalid";
@@ -174,7 +174,7 @@ namespace ShareX
                 ColumnCount = 2,
                 RowCount = 1,
                 Margin = Padding.Empty,
-                Padding = Padding.Empty,
+                Padding = new Padding(12, 8, 4, 8),
                 BackColor = EditorBackgroundColor
             };
             editorLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
@@ -192,10 +192,10 @@ namespace ShareX
                     Margin = Padding.Empty,
                     Dock = DockStyle.Fill,
                     Orientation = Orientation.Vertical,
-                    SplitterWidth = 12,
+                    SplitterWidth = 5,
                     BackColor = Color.FromArgb(200, 221, 240)
                 };
-                splitContainer.Panel1.Controls.Add(editorLayout);
+                splitContainer.Panel1.Controls.Add(CreatePane("编辑", editorLayout));
                 previewPanel = new Panel { Dock = DockStyle.Fill, BackColor = EditorBackgroundColor };
                 previewMessage = new Label
                 {
@@ -205,7 +205,7 @@ namespace ShareX
                     ForeColor = ForeColor
                 };
                 previewPanel.Controls.Add(previewMessage);
-                splitContainer.Panel2.Controls.Add(previewPanel);
+                splitContainer.Panel2.Controls.Add(CreatePane("预览", previewPanel));
                 layout.Controls.Add(splitContainer, 0, 1);
                 splitContainer.SizeChanged += (sender, args) => RestoreSplitRatio();
                 splitContainer.SplitterMoved += (sender, args) => RememberSplitRatio();
@@ -219,6 +219,26 @@ namespace ShareX
 
             UpdateFileLabel();
             Shown += (sender, args) => BeginInvoke(new Action(FocusEditorIfActive));
+        }
+
+        private Control CreatePane(string title, Control content)
+        {
+            var pane = new TableLayoutPanel
+            {
+                Dock = DockStyle.Fill, ColumnCount = 1, RowCount = 2,
+                Margin = Padding.Empty, Padding = Padding.Empty, BackColor = EditorBackgroundColor
+            };
+            pane.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
+            pane.RowStyles.Add(new RowStyle(SizeType.Absolute, (int)Math.Round(25 * DeviceDpi / 96f)));
+            pane.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
+            pane.Controls.Add(new Label
+            {
+                Text = title, Dock = DockStyle.Fill, Margin = Padding.Empty,
+                Padding = new Padding(12, 0, 0, 0), TextAlign = ContentAlignment.MiddleLeft,
+                BackColor = Color.FromArgb(231, 240, 249), ForeColor = Color.FromArgb(80, 104, 126)
+            }, 0, 0);
+            pane.Controls.Add(content, 0, 1);
+            return pane;
         }
 
         protected override void OnHandleCreated(EventArgs e)
@@ -611,11 +631,15 @@ namespace ShareX
             string status = saving ? "保存中…" : saveFailure != null ? "保存失败" : dirty ? "未保存" :
                 string.IsNullOrEmpty(filePath) ? "输入后自动保存" : "已保存";
             string notice = saveFailure ?? saveNotice;
-            ShowFileNotice(name + " · " + status + (string.IsNullOrEmpty(notice) ? "" : " · " + notice));
+            ShowFileNotice(name + (string.IsNullOrEmpty(notice) ? "" : " · " + notice));
+            captionBar.SetStatus(status == "已保存" ? "✓ 已保存" : status, saveFailure != null);
+            fileTip.SetToolTip(fileLabel, name + " · " + status + (string.IsNullOrEmpty(notice) ? "" : " · " + notice) +
+                (string.IsNullOrEmpty(filePath) ? "" : "\n保存位置：" + filePath));
         }
 
         private void ShowFileNotice(string message)
         {
+            captionBar.SetStatus("", false);
             fileLabel.Text = message;
             fileTip.SetToolTip(fileLabel, message + (string.IsNullOrEmpty(filePath) ? "" : "\n保存位置：" + filePath));
         }
@@ -885,9 +909,9 @@ namespace ShareX
             html.Append("<!doctype html><html lang=\"zh-CN\"><head><meta charset=\"utf-8\">");
             html.Append(
                 (baseUrl.Length == 0 ? "" : "<base href=\"" + baseUrl + "\">") + "<style>" +
-                "body{font:14px/1.35 'Microsoft YaHei',sans-serif;background:#eaf3fb;color:#203040;" +
-                "margin:0;padding:8px;overflow-wrap:anywhere}*{scrollbar-width:thin;scrollbar-color:#6f8da8 #eaf3fb}" +
-                "::-webkit-scrollbar{width:8px;height:8px;background:#eaf3fb}" +
+                "body{font:14px/1.35 'Microsoft YaHei',sans-serif;background:#f3f8fd;color:#203040;" +
+                "margin:0;padding:8px;overflow-wrap:anywhere}*{scrollbar-width:thin;scrollbar-color:#6f8da8 #f3f8fd}" +
+                "::-webkit-scrollbar{width:8px;height:8px;background:#f3f8fd}" +
                 "::-webkit-scrollbar-thumb{background:#6f8da8;border-radius:4px}" +
                 "a{color:#1767ad}pre,code{background:#d8e8f6;font-family:'Microsoft YaHei',sans-serif}" +
                 "p{margin:0 0 6px}h1,h2,h3,h4,h5,h6{line-height:1.25;margin:6px 0 4px}" +

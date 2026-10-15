@@ -83,6 +83,10 @@ namespace ShareX
         private bool canvasDirty;
         private bool allowClose;
         private bool saveOnClosePending;
+        private bool windowPositionChanged;
+        private readonly WpfMedia.MatrixTransform canvasZoom = new WpfMedia.MatrixTransform();
+        private WpfControls.Button zoomButton;
+        private double zoomScale = 1;
 
         public PresentationCanvasWindow()
         {
@@ -100,6 +104,21 @@ namespace ShareX
 
             BuildCanvas();
             BuildToolbar();
+            BuildResizeHandles();
+            root.Background = WpfMedia.Brushes.Transparent;
+            canvas.RenderTransform = canvasZoom;
+            root.PreviewMouseWheel += (_, e) =>
+            {
+                if (toolbar.IsMouseOver) return;
+                // Do not change coordinate space halfway through an ink/shape gesture.
+                if (e.LeftButton == WpfInput.MouseButtonState.Pressed || shapeDrawing) return;
+                var anchor = e.GetPosition(root);
+                ZoomCanvas(Math.Pow(1.1, e.Delta / 120d), anchor.X, anchor.Y);
+                e.Handled = true;
+            };
+            MinWidth = 420;
+            MinHeight = 280;
+            SizeChanged += (_, _) => UpdateToolbarWidth();
             SetBackgroundMode(1);
             SelectTool(CanvasTool.Pen);
 
@@ -108,7 +127,7 @@ namespace ShareX
             Loaded += async (sender, e) =>
             {
                 await Task.Delay(120);
-                ApplySelectedScreenBounds();
+                if (!windowPositionChanged) ApplySelectedScreenBounds();
             };
             PreviewKeyDown += Window_PreviewKeyDown;
         }
@@ -138,7 +157,7 @@ namespace ShareX
             toolbar.Margin = new Wpf.Thickness(8);
             toolbar.Padding = new Wpf.Thickness(7, 5, 7, 5);
             toolbar.CornerRadius = new Wpf.CornerRadius(6);
-            toolbar.Background = new WpfMedia.SolidColorBrush(WpfMedia.Color.FromArgb(128, 37, 37, 37));
+            toolbar.Background = new WpfMedia.SolidColorBrush(WpfMedia.Color.FromRgb(38, 48, 57));
             toolbar.LayoutTransform = new WpfMedia.ScaleTransform(ToolbarScale, ToolbarScale);
             toolbar.BorderBrush = new WpfMedia.SolidColorBrush(WpfMedia.Color.FromArgb(90, 255, 255, 255));
             toolbar.BorderThickness = new Wpf.Thickness(1);
@@ -146,7 +165,15 @@ namespace ShareX
 
             toolbarItems.Orientation = WpfControls.Orientation.Horizontal;
             toolbarItems.VerticalAlignment = Wpf.VerticalAlignment.Center;
-            toolbar.Child = toolbarItems;
+            var toolbarLayout = new WpfControls.DockPanel { LastChildFill = true };
+            var leftGrip = CreateMoveGrip();
+            var rightGrip = CreateMoveGrip();
+            WpfControls.DockPanel.SetDock(leftGrip, WpfControls.Dock.Left);
+            WpfControls.DockPanel.SetDock(rightGrip, WpfControls.Dock.Right);
+            toolbarLayout.Children.Add(leftGrip);
+            toolbarLayout.Children.Add(rightGrip);
+            toolbarLayout.Children.Add(toolbarItems);
+            toolbar.Child = toolbarLayout;
 
             AddToolButton(CanvasTool.Pen, "✎", "画笔");
             AddToolButton(CanvasTool.Eraser, "⌫", "橡皮擦");
@@ -161,7 +188,7 @@ namespace ShareX
             ConfigureSelector(colorSelector, 52);
             foreach ((string name, WpfMedia.Color color) in colors)
             {
-                colorSelector.Items.Add(CreateSelectorText(name, color));
+                colorSelector.Items.Add(CreateSelectorText("●", color));
             }
             colorSelector.SelectedIndex = 0;
             colorSelector.ToolTip = "颜色";
@@ -175,16 +202,16 @@ namespace ShareX
             };
             toolbarItems.Children.Add(colorSelector);
 
-            ConfigureSelector(widthSelector, 54);
+            ConfigureSelector(widthSelector, 68);
             foreach (int width in new[] { 2, 4, 6, 10, 16 })
             {
-                widthSelector.Items.Add(CreateSelectorText(width.ToString(), currentColor));
+                widthSelector.Items.Add(CreateSelectorText(width + " px", WpfMedia.Colors.WhiteSmoke));
             }
             widthSelector.SelectedIndex = 1;
             widthSelector.ToolTip = "线宽";
             widthSelector.SelectionChanged += (sender, e) =>
             {
-                if (double.TryParse((widthSelector.SelectedItem as WpfControls.TextBlock)?.Text, out double width))
+                if (double.TryParse((widthSelector.SelectedItem as WpfControls.TextBlock)?.Text.Replace(" px", ""), out double width))
                 {
                     currentWidth = width;
                     UpdateDrawingAttributes();
@@ -196,7 +223,7 @@ namespace ShareX
             ConfigureSelector(backgroundSelector, 76);
             backgroundSelector.Items.Add(CreateSelectorText("透明", WpfMedia.Colors.LightGray));
             backgroundSelector.Items.Add(CreateSelectorText("白板", WpfMedia.Colors.White));
-            backgroundSelector.Items.Add(CreateSelectorText("黑板", WpfMedia.Colors.Black));
+            backgroundSelector.Items.Add(CreateSelectorText("黑板", WpfMedia.Colors.WhiteSmoke));
             backgroundSelector.Items.Add(CreateSelectorText("网格", WpfMedia.Colors.LightSteelBlue));
             backgroundSelector.SelectedIndex = 1;
             backgroundSelector.ToolTip = "幕布背景";
@@ -206,6 +233,10 @@ namespace ShareX
                 canvasDirty = true;
             };
             toolbarItems.Children.Add(backgroundSelector);
+            zoomButton = CreateCommandButton("100%", "画布缩放；点击恢复 100%", (_, _) => ResetCanvasZoom());
+            zoomButton.Width = 58;
+            zoomButton.FontSize = 13;
+            toolbarItems.Children.Add(zoomButton);
 
             AddSeparator();
 
@@ -214,15 +245,101 @@ namespace ShareX
             WpfControls.Button clearButton = CreateCommandButton("清", "清空", (sender, e) => ClearCanvas());
             clearButton.FontFamily = new WpfMedia.FontFamily("Microsoft YaHei");
             toolbarItems.Children.Add(clearButton);
+            AddSeparator();
             toolbarItems.Children.Add(CreateCommandButton("▣", "保存为 PNG", async (sender, e) => await SaveCanvasAsync()));
             toolbarItems.Children.Add(CreateCommandButton("⧉", "复制整个幕布", async (sender, e) => await CopyCanvasAsync()));
 
+            AddSeparator();
             WpfControls.Button closeButton = CreateCommandButton("×", "关闭幕布（Esc）", (sender, e) => Close());
             closeButton.Foreground = WpfMedia.Brushes.White;
             closeButton.Background = new WpfMedia.SolidColorBrush(WpfMedia.Color.FromRgb(176, 48, 48));
             toolbarItems.Children.Add(closeButton);
 
             root.Children.Add(toolbar);
+        }
+
+        private void ZoomCanvas(double factor, double x, double y)
+        {
+            double next = Math.Clamp(zoomScale * factor, 0.25, 4);
+            double ratio = next / zoomScale;
+            WpfMedia.Matrix matrix = canvasZoom.Matrix;
+            matrix.ScaleAt(ratio, ratio, x, y);
+            canvasZoom.Matrix = matrix;
+            zoomScale = next;
+            zoomButton.Content = $"{Math.Round(zoomScale * 100)}%";
+        }
+
+        private void ResetCanvasZoom()
+        {
+            canvasZoom.Matrix = WpfMedia.Matrix.Identity;
+            zoomScale = 1;
+            zoomButton.Content = "100%";
+        }
+
+        private WpfControls.Border CreateMoveGrip()
+        {
+            var grip = new WpfControls.Border
+            {
+                Width = 24, Background = WpfMedia.Brushes.Transparent,
+                Cursor = WpfInput.Cursors.SizeAll, ToolTip = "拖动整个窗口",
+                Child = new WpfControls.TextBlock { Text = "⠿", FontSize = 22,
+                    Foreground = WpfMedia.Brushes.LightGray, HorizontalAlignment = Wpf.HorizontalAlignment.Center,
+                    VerticalAlignment = Wpf.VerticalAlignment.Center }
+            };
+            grip.MouseLeftButtonDown += (_, e) =>
+            {
+                e.Handled = true;
+                windowPositionChanged = true;
+                if (e.LeftButton == WpfInput.MouseButtonState.Pressed) DragMove();
+            };
+            return grip;
+        }
+
+        private void UpdateToolbarWidth()
+        {
+            double available = Math.Max(1, (ActualWidth - 16) / ToolbarScale);
+            toolbar.MaxWidth = available;
+            toolbarItems.MaxWidth = Math.Max(1, available - toolbar.Padding.Left - toolbar.Padding.Right - 50);
+        }
+
+        private void ResizeFromEdge(int horizontal, int vertical, double dx, double dy)
+        {
+            windowPositionChanged = true;
+            if (horizontal != 0)
+            {
+                double oldWidth = ActualWidth;
+                double nextWidth = Math.Max(MinWidth, oldWidth + horizontal * dx);
+                if (horizontal < 0) Left += oldWidth - nextWidth;
+                Width = nextWidth;
+            }
+            if (vertical != 0)
+            {
+                double oldHeight = ActualHeight;
+                double nextHeight = Math.Max(MinHeight, oldHeight + vertical * dy);
+                if (vertical < 0) Top += oldHeight - nextHeight;
+                Height = nextHeight;
+            }
+        }
+
+        private void BuildResizeHandles()
+        {
+            root.ClipToBounds = true;
+            foreach (var edge in new[] { (-1, 0), (1, 0), (0, -1), (0, 1), (-1, -1), (1, -1), (-1, 1), (1, 1) })
+            {
+                int x = edge.Item1, y = edge.Item2;
+                var grip = new WpfControls.Primitives.Thumb
+                {
+                    Width = x == 0 ? double.NaN : y == 0 ? 6 : 12,
+                    Height = y == 0 ? double.NaN : x == 0 ? 6 : 12,
+                    HorizontalAlignment = x < 0 ? Wpf.HorizontalAlignment.Left : x > 0 ? Wpf.HorizontalAlignment.Right : Wpf.HorizontalAlignment.Stretch,
+                    VerticalAlignment = y < 0 ? Wpf.VerticalAlignment.Top : y > 0 ? Wpf.VerticalAlignment.Bottom : Wpf.VerticalAlignment.Stretch,
+                    Cursor = x == 0 ? WpfInput.Cursors.SizeNS : y == 0 ? WpfInput.Cursors.SizeWE : x == y ? WpfInput.Cursors.SizeNWSE : WpfInput.Cursors.SizeNESW,
+                    Template = (WpfControls.ControlTemplate)Wpf.Markup.XamlReader.Parse("<ControlTemplate xmlns='http://schemas.microsoft.com/winfx/2006/xaml/presentation' TargetType='Thumb'><Border Background='Transparent'/></ControlTemplate>")
+                };
+                grip.DragDelta += (_, e) => ResizeFromEdge(x, y, e.HorizontalChange, e.VerticalChange);
+                WpfControls.Panel.SetZIndex(grip, 110);
+                root.Children.Add(grip);
+            }
         }
 
         private void AddToolButton(CanvasTool tool, string glyph, string tooltip)
@@ -236,7 +353,7 @@ namespace ShareX
         {
             WpfControls.Button button = new WpfControls.Button
             {
-                Content = text,
+                Content = CreateToolbarIcon(text),
                 Width = 34,
                 Height = 30,
                 Margin = new Wpf.Thickness(2, 0, 2, 0),
@@ -244,15 +361,52 @@ namespace ShareX
                 FontFamily = new WpfMedia.FontFamily("Microsoft YaHei UI"),
                 FontSize = 16,
                 Foreground = WpfMedia.Brushes.White,
-                Background = new WpfMedia.SolidColorBrush(WpfMedia.Color.FromRgb(55, 55, 55)),
+                Background = new WpfMedia.SolidColorBrush(WpfMedia.Color.FromRgb(38, 48, 57)),
                 BorderBrush = new WpfMedia.SolidColorBrush(WpfMedia.Color.FromArgb(80, 255, 255, 255)),
                 BorderThickness = new Wpf.Thickness(1),
                 ToolTip = tooltip,
                 Focusable = false
             };
+            button.Template = (WpfControls.ControlTemplate)Wpf.Markup.XamlReader.Parse(ToolButtonTemplate);
             button.Click += click;
             return button;
         }
+
+        private static object CreateToolbarIcon(string glyph)
+        {
+            string data = glyph switch
+            {
+                "✎" => "M4,17 L15,6 L19,10 L8,21 L3,22 Z M13,8 L17,12 M16,5 L18,3 L22,7 L20,9",
+                "⌫" => "M3,14 L13,4 L21,12 L11,22 L7,22 Z M8,9 L16,17 M11,22 L22,22",
+                "╱" => "M4,21 L21,4",
+                "➜" => "M3,12 L22,12 M15,5 L22,12 L15,19",
+                "□" => "M4,4 L21,4 L21,21 L4,21 Z",
+                "○" => "M12,3 A9,9 0 1 1 11.99,3",
+                "T" => "M4,4 L21,4 M12,4 L12,22",
+                "↶" => "M9,5 L3,11 L9,16 M3,11 L15,11 Q23,11 21,21",
+                "↷" => "M16,5 L22,11 L16,16 M22,11 L10,11 Q2,11 4,21",
+                "清" => "M3,6 L22,6 M9,6 L9,3 L16,3 L16,6 M6,6 L7,22 L18,22 L19,6 M10,10 L10,18 M15,10 L15,18",
+                "▣" => "M4,3 L18,3 L22,7 L22,22 L4,22 Z M8,3 L8,10 L17,10 L17,3 M8,22 L8,15 L18,15 L18,22",
+                "⧉" => "M9,8 L22,8 L22,22 L9,22 Z M17,8 L17,3 L3,3 L3,17 L9,17",
+                "×" => "M5,5 L20,20 M20,5 L5,20",
+                _ => null
+            };
+            if (data == null) return glyph;
+            var icon = new System.Windows.Shapes.Path { Data = WpfMedia.Geometry.Parse(data), Width = 19, Height = 19,
+                Stretch = WpfMedia.Stretch.Uniform, StrokeThickness = 1.8, StrokeStartLineCap = WpfMedia.PenLineCap.Round,
+                StrokeEndLineCap = WpfMedia.PenLineCap.Round, StrokeLineJoin = WpfMedia.PenLineJoin.Round };
+            icon.SetBinding(System.Windows.Shapes.Shape.StrokeProperty, new Wpf.Data.Binding("Foreground")
+                { RelativeSource = new Wpf.Data.RelativeSource(Wpf.Data.RelativeSourceMode.FindAncestor, typeof(WpfControls.Button), 1) });
+            return icon;
+        }
+
+        private const string ToolButtonTemplate = @"
+<ControlTemplate xmlns='http://schemas.microsoft.com/winfx/2006/xaml/presentation' TargetType='Button'>
+ <Border x:Name='surface' xmlns:x='http://schemas.microsoft.com/winfx/2006/xaml' Background='{TemplateBinding Background}' BorderBrush='{TemplateBinding BorderBrush}' BorderThickness='{TemplateBinding BorderThickness}' CornerRadius='4'>
+  <ContentPresenter HorizontalAlignment='Center' VerticalAlignment='Center'/>
+ </Border>
+ <ControlTemplate.Triggers><Trigger Property='IsMouseOver' Value='True'><Setter Property='Opacity' Value='0.8'/></Trigger></ControlTemplate.Triggers>
+</ControlTemplate>";
 
         private void ConfigureSelector(WpfControls.ComboBox selector, double width)
         {
@@ -262,8 +416,8 @@ namespace ShareX
             selector.Padding = new Wpf.Thickness(3, 0, 3, 0);
             selector.FontFamily = new WpfMedia.FontFamily("Microsoft YaHei UI");
             selector.FontSize = 13;
-            selector.Foreground = WpfMedia.Brushes.Black;
-            selector.Background = new WpfMedia.SolidColorBrush(WpfMedia.Color.FromRgb(142, 142, 142));
+            selector.Foreground = WpfMedia.Brushes.WhiteSmoke;
+            selector.Background = new WpfMedia.SolidColorBrush(WpfMedia.Color.FromRgb(48, 62, 74));
             selector.VerticalContentAlignment = Wpf.VerticalAlignment.Center;
             selector.HorizontalContentAlignment = Wpf.HorizontalAlignment.Center;
             selector.Template = (WpfControls.ControlTemplate)Wpf.Markup.XamlReader.Parse(SelectorTemplate);
@@ -289,7 +443,7 @@ namespace ShareX
     <ToggleButton Focusable='False' IsChecked='{Binding IsDropDownOpen, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}'>
       <ToggleButton.Template>
         <ControlTemplate TargetType='ToggleButton'>
-          <Border Background='#8E8E8E' BorderBrush='#80909090' BorderThickness='1' CornerRadius='3'>
+          <Border Background='#303E4A' BorderBrush='#41525E' BorderThickness='1' CornerRadius='3'>
             <Path Data='M 0,0 L 4,4 L 8,0' Stroke='#DDFFFFFF' StrokeThickness='1.2'
                   HorizontalAlignment='Right' VerticalAlignment='Center' Margin='0,0,5,0'/>
           </Border>
@@ -301,7 +455,7 @@ namespace ShareX
         HorizontalAlignment='Center' VerticalAlignment='Center' Margin='3,0,17,0'/>
     <Popup x:Name='PART_Popup' IsOpen='{TemplateBinding IsDropDownOpen}' Placement='Bottom'
            AllowsTransparency='True' Focusable='False'>
-      <Border Background='#8E8E8E' BorderBrush='#FFBBBBBB' BorderThickness='1' Padding='2'
+      <Border Background='#303E4A' BorderBrush='#FFBBBBBB' BorderThickness='1' Padding='2'
               MinWidth='{Binding ActualWidth, RelativeSource={RelativeSource TemplatedParent}}'>
         <ScrollViewer MaxHeight='260' CanContentScroll='True'><ItemsPresenter/></ScrollViewer>
       </Border>
@@ -354,7 +508,7 @@ namespace ShareX
             toolbar.Width = double.NaN;
             toolbar.MaxWidth = maximumToolbarWidth;
             toolbarItems.Width = double.NaN;
-            toolbarItems.MaxWidth = Math.Max(1, maximumToolbarWidth - toolbar.Padding.Left - toolbar.Padding.Right - 2);
+            toolbarItems.MaxWidth = Math.Max(1, maximumToolbarWidth - toolbar.Padding.Left - toolbar.Padding.Right - 50);
             toolbar.HorizontalAlignment = Wpf.HorizontalAlignment.Center;
             toolbar.Margin = new Wpf.Thickness(8);
             SetWindowPos(handle, HWND_TOPMOST, windowLeft, windowTop, windowWidth, windowHeight,
@@ -369,8 +523,10 @@ namespace ShareX
 
             foreach (KeyValuePair<CanvasTool, WpfControls.Button> pair in toolButtons)
             {
+                pair.Value.Foreground = pair.Key == tool ? new WpfMedia.SolidColorBrush(WpfMedia.Color.FromRgb(255, 136, 62)) : WpfMedia.Brushes.WhiteSmoke;
+                pair.Value.BorderBrush = pair.Key == tool ? pair.Value.Foreground : WpfMedia.Brushes.Transparent;
                 pair.Value.Background = new WpfMedia.SolidColorBrush(
-                    pair.Key == tool ? WpfMedia.Color.FromRgb(0, 120, 215) : WpfMedia.Color.FromRgb(55, 55, 55));
+                    pair.Key == tool ? WpfMedia.Color.FromRgb(99, 57, 30) : WpfMedia.Color.FromRgb(38, 48, 57));
             }
 
             switch (tool)
@@ -396,7 +552,7 @@ namespace ShareX
         {
             foreach (WpfControls.TextBlock item in widthSelector.Items)
             {
-                item.Foreground = new WpfMedia.SolidColorBrush(currentColor);
+                item.Foreground = WpfMedia.Brushes.WhiteSmoke;
             }
             canvas.DefaultDrawingAttributes = new WpfInk.DrawingAttributes
             {
@@ -935,3 +1091,4 @@ namespace ShareX
         private static extern uint GetDpiForWindow(IntPtr hWnd);
     }
 }
+
