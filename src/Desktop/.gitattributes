@@ -1,5 +1,5 @@
-# Auto detect text files and perform LF normalization
-* text=auto
+# Preserve reviewed source bytes; do not rewrite line endings on checkout.
+* -text
 
 # Custom for Visual Studio
 *.cs diff=csharp
@@ -16,8 +16,8 @@
 *.rtf diff=astextplain
 *.RTF diff=astextplain
 
-# Declare files that will always have CRLF line endings on checkout
-*.sln text eol=crlf
-*.csproj text eol=crlf
-*.cs text eol=crlf
-*.resx text eol=crlf
+# Keep existing line endings for project files and source alike.
+*.sln -text
+*.csproj -text
+*.cs -text
+*.resx -text
