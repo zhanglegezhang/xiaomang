@@ -66,8 +66,8 @@ function Build-Desktop {
  if(!(Test-Path -LiteralPath (Join-Path $root 'src/Desktop/VoiceInput/bin/VoiceInputSetup.exe'))){Build-Native}
  $project=Join-Path $root 'src/Desktop/ShareX/ShareX.csproj'
  $out=Join-Path $root 'artifacts/Desktop'
- Invoke-Checked 'dotnet' @('restore',$project,'-p:Platform=x64')
- Invoke-Checked 'dotnet' @('build',$project,'-c','Release','-p:Platform=x64','--no-restore',"-p:OutputPath=$out/")
+ Invoke-Checked 'dotnet' @('restore',$project,'-p:Platform=x64','-m:1')
+ Invoke-Checked 'dotnet' @('build',$project,'-c','Release','-p:Platform=x64','-m:1','-p:UseSharedCompilation=false','--no-restore',"-p:OutputPath=$out/")
  Move-Item -LiteralPath (Join-Path $out 'ShareX.exe') -Destination (Join-Path $out 'xiaomang.exe') -Force
 }
 switch($Component){

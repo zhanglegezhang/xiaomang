@@ -23,6 +23,7 @@ namespace ShareX
         internal static PersonalDataPaths Paths() => new() { Personal = Path.GetFullPath(Program.PersonalFolder), Input = XiaomangInputMethodManager.UserDirectory, Media = Path.GetFullPath(Program.ScreenshotsParentFolder), Hotkeys = Path.GetFullPath(SettingManager.HotkeysConfigFilePath), ConfigCodec = ConfigCodec };
         internal static async Task ConfigCodec(string mode, string input, string current, string output)
         {
+            PersonalDataInputPreflight.RequireComponent(XiaomangInputMethodManager.BundleDirectory);
             var start = new ProcessStartInfo(Path.Combine(XiaomangInputMethodManager.BundleDirectory, "XiaomangInputWorker.exe")) { UseShellExecute = false, CreateNoWindow = true, RedirectStandardError = true, WorkingDirectory = XiaomangInputMethodManager.BundleDirectory };
             foreach (var arg in new[] { "--personal-data-config", mode, input }) start.ArgumentList.Add(arg);
             if (mode == "merge") start.ArgumentList.Add(current);
@@ -104,6 +105,7 @@ namespace ShareX
         internal static async Task Export(Form transfer, PersonalDataKind[] selected, string destination, IProgress<string> progress, PersonalDataTransferControl control = null)
         {
             var paths = Paths();
+            selected = await Task.Run(() => PersonalDataInputPreflight.ForExport(paths.Input, selected, XiaomangInputMethodManager.BundleDirectory, control?.Token ?? default));
             using var scope = await Pause(paths, selected, transfer, control);
             var app = PersonalDataPreferences.Json(Program.Settings);
             await Task.Run(() => SettingManager.WaitHotkeysConfig());
@@ -112,6 +114,8 @@ namespace ShareX
         }
         internal static async Task QueueImport(Form transfer, PersonalDataKind[] selected, string source, IProgress<string> progress, PersonalDataTransferControl control = null)
         {
+            if (selected.Contains(PersonalDataKind.InputMethod))
+                await Task.Run(() => PersonalDataInputPreflight.RequireComponent(XiaomangInputMethodManager.BundleDirectory, control?.Token ?? default));
             var paths = Paths();
             var scope = await Pause(paths, selected, transfer, control);
             string stage = Path.Combine(paths.Personal, "PersonalDataRestore", Guid.NewGuid().ToString("N"));

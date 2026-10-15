@@ -95,12 +95,14 @@ namespace ShareX
             }));
             bool readyToImport = false;
             try {
-                status.Text = "保存编辑窗口并准备数据…";
+                status.Text = "检查所需组件并准备数据…";
                 if (importing) { await PersonalDataManager.QueueImport(this, selected, source, progress, operation); readyToImport = true; }
                 else {
                     await PersonalDataManager.Export(this, selected, destination, progress, operation);
                     var exported = await Task.Run(() => PersonalDataArchive.Inspect(destination));
                     status.Text = "导出完成：" + destination + (exported.InvalidDiaryFiles.Count > 0 ? "\n\n" + PersonalDataArchive.DiaryWarning(exported.InvalidDiaryFiles) : "");
+                    if (selected.Contains(PersonalDataKind.InputMethod) && !exported.Categories.Contains(PersonalDataKind.InputMethod))
+                        status.Text += "\n\n本机没有输入法个人数据，本次备份未包含该类别。";
                     action.Visible = false; cancel.Text = "关闭";
                 }
             } catch (OperationCanceledException) { status.Text = "已取消，原数据未替换。"; }

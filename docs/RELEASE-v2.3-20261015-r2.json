@@ -1,0 +1,69 @@
+{
+  "productVersion": "2.3",
+  "releaseTag": "v2.3-20261015-r2",
+  "releaseDate": "2026-10-15",
+  "source": "https://github.com/zhanglegezhang/xiaomang/tree/v2.3-20261015-r2",
+  "usagePackage": {
+    "asset": "xiaomang2.3_2026-10-15_usage.zip",
+    "url": "https://github.com/zhanglegezhang/xiaomang/releases/download/v2.3-20261015-r2/xiaomang2.3_2026-10-15_usage.zip",
+    "sha256": "A7DA4CACAC2755B20B25A49A2A573FF64F6B90871A9C1F72D432EA0E47FE1390",
+    "bytes": 109877687,
+    "uncompressedBytes": 274619458.0,
+    "files": 526
+  },
+  "binaries": [
+    {
+      "file": "ShareX.dll",
+      "sha256": "9B6BC680716DCDFB6058A95196C931263B5A8403C493EB28CF058895790DA269",
+      "verifiedSourceDocuments": 264
+    },
+    {
+      "file": "ShareX.HelpersLib.dll",
+      "sha256": "78457A17811D7F773CB0C57ABA7B079B9AB6F60BEF7133154ADEBC49A6D73BD4",
+      "verifiedSourceDocuments": 231
+    },
+    {
+      "file": "ShareX.HistoryLib.dll",
+      "sha256": "ADF743639A22BF9F9CD99E64C7810DA228B094CEAE8FBFDF5C756CA39528DC1C",
+      "verifiedSourceDocuments": 26
+    },
+    {
+      "file": "ShareX.ImageEffectsLib.dll",
+      "sha256": "FEA688A489F291F96B06A652A9D53F22F9AEC4958A1EC0697343A9DB8729B956",
+      "verifiedSourceDocuments": 63
+    },
+    {
+      "file": "ShareX.MediaLib.dll",
+      "sha256": "195C1FBEF862DCB16887CD8B528ED7A59E321958A33EE881C6EB7CD0A6651B65",
+      "verifiedSourceDocuments": 26
+    },
+    {
+      "file": "ShareX.ScreenCaptureLib.dll",
+      "sha256": "1A07E53AFDD178DDD8D60C0082BF76368B0A5182FFB6E48F7F9707C78509FF76",
+      "verifiedSourceDocuments": 104
+    },
+    {
+      "file": "ShareX.UploadersLib.dll",
+      "sha256": "4A41736374551C94F969F23B0B40F122558223726F53929B2AD951C340BBA694",
+      "verifiedSourceDocuments": 189
+    },
+    {
+      "file": "xiaomang.exe",
+      "sha256": "85ECAFBF115FDD12DD72DA06DDE12299B00318A6F4DF8F8D42500A24F461E4D5"
+    },
+    {
+      "file": "ThirdParty/LocalDiary/xiaomang-diary.exe",
+      "sha256": "10CAA6DCFDB458A86575614C0B7B56D40588D873190F9B4A9649A95C3EB908D7"
+    },
+    {
+      "file": "ThirdParty/FileFavoritesMenu/XiaomangFileFavoritesMenu.dll",
+      "sha256": "BCA4C51E24F132584ADAE588B5EAEFA90462FDABE942998102B07E09D439E8E8"
+    }
+  ],
+  "optionalComponents": "https://github.com/zhanglegezhang/xiaomang_component/releases/tag/v1.0",
+  "notes": [
+    "The release tag fixes the source corresponding to this package. Historical tags are not rewritten.",
+    "FFmpeg, SenseVoiceSmall and the text input method are downloaded on demand and are not included in this package.",
+    "The optional v1.0 component release is unchanged; new input-method icon source does not imply a rebuilt optional download."
+  ]
+}
