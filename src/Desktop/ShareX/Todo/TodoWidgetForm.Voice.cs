@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
@@ -55,6 +55,7 @@ namespace ShareX
         private void CompactLabel_MouseDown(object sender, MouseEventArgs e)
         {
             HideCompactHint();
+            if (e.Button == MouseButtons.Right) { ShowSearchMenu(); return; }
             if (e.Button != MouseButtons.Left) return;
             Control surface = (Control)sender;
             collapseTimer.Stop();

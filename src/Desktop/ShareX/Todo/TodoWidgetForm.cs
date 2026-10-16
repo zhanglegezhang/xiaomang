@@ -426,7 +426,7 @@ namespace ShareX
             compactLabel.Text = "";
             compactLabel.PendingCount = count;
             compactLabel.AccessibleName = $"小蟒同学，{module}，{count} 项待办未完成";
-            compactHintText = stoppingVoiceRecording ? "正在处理录音…" : $"{count}项待办\n长按录音";
+            compactHintText = stoppingVoiceRecording ? "正在处理录音…" : $"{count}项待办\n长按录音\n右键搜索";
             compactLabel.AccessibleDescription = stoppingVoiceRecording ? "正在处理录音" : "";
             if (compactHint?.Visible == true) UpdateCompactHintWindow();
             compactLabel.Invalidate();

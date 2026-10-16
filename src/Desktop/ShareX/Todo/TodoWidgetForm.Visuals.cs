@@ -497,6 +497,7 @@ namespace ShareX
             protected override void OnMouseClick(MouseEventArgs e)
             {
                 base.OnMouseClick(e);
+                if (e.Button == MouseButtons.Right) { widget.ShowSearchMenu(); return; }
                 if (e.Button != MouseButtons.Left) return;
                 int index = HitTest(e.Location);
                 if (index >= 0 && index < buttons.Length) buttons[index].PerformClick();

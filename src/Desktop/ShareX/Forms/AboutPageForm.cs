@@ -51,14 +51,14 @@ namespace ShareX
             {
                 Dock = DockStyle.Fill,
                 ColumnCount = 2,
-                RowCount = 9,
+                RowCount = 8,
                 Padding = new Padding(28, 0, 0, 0),
                 Margin = Padding.Empty,
                 BackColor = BackColor
             };
             details.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize));
             details.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100f));
-            for (int row = 0; row < 8; row++)
+            for (int row = 0; row < 7; row++)
                 details.RowStyles.Add(new RowStyle(SizeType.AutoSize));
             details.RowStyles.Add(new RowStyle(SizeType.Percent, 100f));
 
@@ -72,53 +72,14 @@ namespace ShareX
             LinkLabel diaryCredit = CreateCreditLabel(LocalDiaryManager.ProjectUrl);
             diaryCredit.Margin = new Padding(0, MainMenuAppearance.Scale(this, 6), 0, 0);
             details.Controls.Add(diaryCredit, 1, 2);
-            Label trainingHeading = CreateHeadingLabel("使用手册：");
-            details.Controls.Add(trainingHeading, 0, 3);
-            LinkLabel training = new LinkLabel
-            {
-                Dock = DockStyle.Fill,
-                AutoSize = true,
-                Text = "下载新手使用培训（PPT）",
-                LinkArea = new LinkArea(0, "下载新手使用培训（PPT）".Length),
-                LinkBehavior = LinkBehavior.NeverUnderline,
-                LinkColor = Color.FromArgb(111, 190, 255),
-                ActiveLinkColor = Color.FromArgb(165, 216, 255),
-                VisitedLinkColor = Color.FromArgb(111, 190, 255),
-                ForeColor = ForeColor,
-                TextAlign = ContentAlignment.TopLeft,
-                Margin = Padding.Empty,
-                Tag = VisibleBranding.PreserveText
-            };
-            training.LinkClicked += (sender, e) => SaveTrainingGuide();
-            details.Controls.Add(training, 1, 3);
-            Label featureHeading = CreateHeadingLabel("产品介绍：");
-            details.Controls.Add(featureHeading, 0, 4);
-            LinkLabel featureOverview = new LinkLabel
-            {
-                Name = "featureOverviewLink",
-                Dock = DockStyle.Fill,
-                AutoSize = true,
-                Text = "产品介绍一页纸PDF",
-                LinkArea = new LinkArea(0, "产品介绍一页纸PDF".Length),
-                LinkBehavior = LinkBehavior.NeverUnderline,
-                LinkColor = Color.FromArgb(111, 190, 255),
-                ActiveLinkColor = Color.FromArgb(165, 216, 255),
-                VisitedLinkColor = Color.FromArgb(111, 190, 255),
-                ForeColor = ForeColor,
-                TextAlign = ContentAlignment.TopLeft,
-                Margin = Padding.Empty,
-                Tag = VisibleBranding.PreserveText
-            };
-            featureOverview.LinkClicked += (sender, e) => SaveFeatureOverview();
-            details.Controls.Add(featureOverview, 1, 4);
             var mindMap=new LinkLabel {
                 Name="productMindMapLink",Text="产品功能思维导图.html",AutoSize=true,Dock=DockStyle.Fill,
                 LinkBehavior=LinkBehavior.NeverUnderline,LinkColor=Color.FromArgb(111,190,255),ActiveLinkColor=Color.FromArgb(165,216,255),
                 VisitedLinkColor=Color.FromArgb(111,190,255),Tag=VisibleBranding.PreserveText,Margin=new Padding(0,MainMenuAppearance.Scale(this,8),0,0)
             };
-            mindMap.LinkClicked += (_,_)=>OpenMindMap();details.Controls.Add(mindMap,1,5);
+            mindMap.LinkClicked += (_,_)=>OpenMindMap();details.Controls.Add(mindMap,1,3);
             Label versionLogHeading = CreateHeadingLabel("版本日志：");
-            details.Controls.Add(versionLogHeading, 0, 6);
+            details.Controls.Add(versionLogHeading, 0, 4);
             LinkLabel versionLog = new LinkLabel
             {
                 Name = "versionLogLink",
@@ -136,20 +97,26 @@ namespace ShareX
                 Tag = VisibleBranding.PreserveText
             };
             versionLog.LinkClicked += (sender, e) => SaveVersionLog();
-            details.Controls.Add(versionLog, 1, 6);
+            details.Controls.Add(versionLog, 1, 4);
+            var updateHeading = CreateHeadingLabel("软件更新：");
+            // Use a dedicated link handler; this is an in-app action, not a URL.
+            var updateButton = new ProductUpdateButton { Text = "检查更新", Name = "checkProductUpdateButton", RefreshGlyph = true, BackColor = BackColor, Anchor = AnchorStyles.Left, Margin = new Padding(0, 4, 0, 4) };
+            updateButton.Click += (_, _) => ProductUpdateForm.Open();
+            details.Controls.Add(updateHeading, 0, 5);
+            details.Controls.Add(updateButton, 1, 5);
             Label contactHeading = CreateHeadingLabel("联系方式：");
-            details.Controls.Add(contactHeading, 0, 7);
+            details.Controls.Add(contactHeading, 0, 6);
             Label contact = CreateInfoLabel("13711477110@139.com", ForeColor);
-            details.Controls.Add(contact, 1, 7);
+            details.Controls.Add(contact, 1, 6);
             int sectionSpacing = MainMenuAppearance.Scale(this, 22);
-            trainingHeading.Margin = new Padding(0, sectionSpacing, trainingHeading.Margin.Right, 0);
-            training.Margin = new Padding(0, sectionSpacing, 0, 0);
-            featureHeading.Margin = new Padding(0, sectionSpacing, featureHeading.Margin.Right, 0);
-            featureOverview.Margin = new Padding(0, sectionSpacing, 0, 0);
+            int rowSpacing = MainMenuAppearance.Scale(this, 12);
+            updateHeading.TextAlign = ContentAlignment.MiddleLeft;
+            updateHeading.Margin = new Padding(0, rowSpacing, updateHeading.Margin.Right, 0);
+            updateButton.Margin = new Padding(0, rowSpacing, 0, 0);
             versionLogHeading.Margin = new Padding(0, sectionSpacing, versionLogHeading.Margin.Right, 0);
             versionLog.Margin = new Padding(0, sectionSpacing, 0, 0);
-            contactHeading.Margin = new Padding(0, sectionSpacing, contactHeading.Margin.Right, 0);
-            contact.Margin = new Padding(0, sectionSpacing, 0, 0);
+            contactHeading.Margin = new Padding(0, rowSpacing, contactHeading.Margin.Right, 0);
+            contact.Margin = new Padding(0, rowSpacing, 0, 0);
             TableLayoutPanel content = new TableLayoutPanel
             {
                 Dock = DockStyle.Fill,

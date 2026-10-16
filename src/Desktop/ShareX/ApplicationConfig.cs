@@ -56,6 +56,8 @@ namespace ShareX
         public double ScratchMarkdownSplitRatio = 0.5;
         public Size ImageCollageWindowSize = new Size(1300, 900);
         public Size TextCompareWindowSize = new Size(1340, 840);
+        // Logical pixels at 96 DPI, so search-window dimensions survive display scaling changes.
+        public Size UnifiedSearchWindowSize = new Size(950, 620);
 
         public ApplicationConfig()
         {

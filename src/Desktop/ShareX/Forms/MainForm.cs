@@ -1,4 +1,4 @@
-﻿#region License Information (GPL v3)
+#region License Information (GPL v3)
 
 /*
     ShareX - A program that allows you to take screenshots and share any file type
@@ -226,9 +226,12 @@ namespace ShareX
             cmsTray.Items.Clear();
             cmsTray.Items.AddRange(new ToolStripItem[]
             {
+                new ToolStripMenuItem("全局搜索", null, (_, _) => UnifiedSearchForm.Open()),
                 tsmiTrayToggleHotkeys,
+                new ToolStripSeparator(),
                 tsmiTrayExit
             });
+            CompactContextMenuStyle.Apply(cmsTray);
 
             this.CloseOnEscape();
             cmsTray.IgnoreSeparatorClick();
@@ -813,7 +816,7 @@ namespace ShareX
             tsMain.Font = ShareXResources.Theme.MenuFont;
             tsMain.Renderer = new ToolStripDarkRenderer();
             tsMain.DrawCustomBorder = false;
-            ShareXResources.ApplyCustomThemeToContextMenuStrip(cmsTray);
+            CompactContextMenuStyle.Apply(cmsTray);
             ShareXResources.ApplyCustomThemeToContextMenuStrip(cmsTaskInfo);
             ttMain.BackColor = ShareXResources.Theme.BackgroundColor;
             ttMain.ForeColor = ShareXResources.Theme.TextColor;
@@ -1685,6 +1688,12 @@ namespace ShareX
             }
 
             DebugHelper.WriteLine($"Main menu activation finished ({source}). Managed visible: {Visible}; native visible: {IsHandleCreated && NativeMethods.IsWindowVisible(Handle)}; state: {WindowState}");
+        }
+
+        internal void OpenUnifiedSearchResult(SearchHit hit)
+        {
+            if (todoWidget == null || todoWidget.IsDisposed) todoWidget = new TodoWidgetForm(noteLogStore);
+            todoWidget.Show(); todoWidget.LocateSearchResult(hit);
         }
 
         internal void OpenInputMethod()

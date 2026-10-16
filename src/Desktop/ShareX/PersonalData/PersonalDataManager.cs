@@ -14,7 +14,8 @@ namespace ShareX
     internal static class PersonalDataManager
     {
         internal static bool Busy { get; private set; }
-        internal static bool RestartReady => pendingScope != null;
+        internal static bool RestartReady => pendingScope != null || updateReady;
+        private static bool updateReady;
         private static TransferScope pendingScope;
         private static string pendingStage;
         private static PersonalDataKind[] pendingKinds;
@@ -112,6 +113,22 @@ namespace ShareX
             var hotkeys = PersonalDataPreferences.Json(Program.HotkeysConfig);
             await Task.Run(() => PersonalDataArchive.Export(paths, app, hotkeys, selected, destination, Program.VersionText, progress, control: control));
         }
+        internal static async Task BackupForUpdate(Form transfer, string destination, IProgress<string> progress, Func<Task> install)
+        {
+            var paths = Paths();
+            var selected = await Task.Run(() => PersonalDataInputPreflight.ForExport(paths.Input, Enum.GetValues<PersonalDataKind>(), XiaomangInputMethodManager.BundleDirectory, default));
+            using var scope = await Pause(paths, selected, transfer);
+            try
+            {
+                var app = PersonalDataPreferences.Json(Program.Settings);
+                var hotkeys = PersonalDataPreferences.Json(Program.HotkeysConfig);
+                await Task.Run(() => PersonalDataArchive.Export(paths, app, hotkeys, selected, destination, Program.VersionText, progress));
+                updateReady = true;
+                await install();
+            }
+            finally { updateReady = false; }
+        }
+
         internal static async Task QueueImport(Form transfer, PersonalDataKind[] selected, string source, IProgress<string> progress, PersonalDataTransferControl control = null)
         {
             if (selected.Contains(PersonalDataKind.InputMethod))

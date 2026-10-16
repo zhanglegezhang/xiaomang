@@ -1,0 +1,63 @@
+{
+  "productVersion": "2.5",
+  "releaseTag": "v2.5-20261016",
+  "releaseDate": "2026-10-16",
+  "source": "https://github.com/zhanglegezhang/xiaomang/tree/v2.5-20261016",
+  "usagePackage": {
+    "sha256": "4FB8AB465CC05D9FAE4FCF8F3A8CD51411F82A337021B0384BF4E49296D3B7FD",
+    "files": 526,
+    "uncompressedBytes": 274739353.0,
+    "url": "https://github.com/zhanglegezhang/xiaomang/releases/download/v2.5-20261016/xiaomang2.5_2026-10-16_usage.zip",
+    "asset": "xiaomang2.5_2026-10-16_usage.zip",
+    "bytes": 117665802
+  },
+  "binaries": [
+    {
+      "File": "ShareX.dll",
+      "SHA256": "5C67D72CAA648E615F40618F28749E02588004CBC1B18ADBCEFDF0196C51CFDB",
+      "SourceDocuments": 272,
+      "Mismatches": 0
+    },
+    {
+      "File": "ShareX.HelpersLib.dll",
+      "SHA256": "80A8F25B63951DA937A087C6E4C2C90828189990EB1AD251F79D2B03AC434097",
+      "SourceDocuments": 231,
+      "Mismatches": 0
+    },
+    {
+      "File": "ShareX.HistoryLib.dll",
+      "SHA256": "FEC305977C0AEE6A69E4042690B4D219A9440D478FB9CDBD2402AAB0CDC31A0F",
+      "SourceDocuments": 26,
+      "Mismatches": 0
+    },
+    {
+      "File": "ShareX.ImageEffectsLib.dll",
+      "SHA256": "F20213104230D804D2EFB605452943CDB1A0D2CA383DEEC98E88BD4EFFF1FEA2",
+      "SourceDocuments": 63,
+      "Mismatches": 0
+    },
+    {
+      "File": "ShareX.MediaLib.dll",
+      "SHA256": "373A8A63744E684C44266EC474CE9AE0027C8AC111D09D1C0DE7457A1E5CBB8C",
+      "SourceDocuments": 26,
+      "Mismatches": 0
+    },
+    {
+      "File": "ShareX.ScreenCaptureLib.dll",
+      "SHA256": "2C04765BBB53FEB3B4D7200653B0E6C9DF6DAB361DA676277CC250E6FE39F53F",
+      "SourceDocuments": 104,
+      "Mismatches": 0
+    },
+    {
+      "File": "ShareX.UploadersLib.dll",
+      "SHA256": "7F1E320AAA2D88024473D2ECF33A5FC22FA7E4EB566991664713187ABADD2DF5",
+      "SourceDocuments": 189,
+      "Mismatches": 0
+    }
+  ],
+  "notes": [
+    "Desktop built from the source in this tag. Existing self-contained .NET 9 runtime and unchanged native/diary components are retained and verified.",
+    "Optional components remain pinned to xiaomang_component v1.0.",
+    "Personal data and verified first-use state are excluded. Files are listed in this release metadata; SHA256 applies to the entire usage ZIP."
+  ]
+}

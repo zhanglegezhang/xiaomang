@@ -137,6 +137,11 @@ namespace ShareX
 
         protected override void OnFormClosed(FormClosedEventArgs e)
         {
+            StopSearchMenuOutsideClickWatch();
+            searchMenu?.Dispose();
+            searchMenu = null;
+            searchMenuOutsideClickTimer?.Dispose();
+            searchMenuOutsideClickTimer = null;
             noteLogStore.WriteFailed -= NoteLogWriteFailed;
             genieAnimationTimer?.Dispose();
             genieAnimationClock?.Stop();
