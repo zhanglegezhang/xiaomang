@@ -39,7 +39,7 @@ namespace ShareX
             this.importing = importing; this.source = source;
             availableKinds = importing ? manifest.Categories.ToArray() : Enum.GetValues<PersonalDataKind>();
             Text = importing ? "导入个人数据" : "导出个人数据";
-            Icon = Program.MainForm?.Icon; StartPosition = FormStartPosition.CenterParent;
+            Icon = ShareXResources.Icon; StartPosition = FormStartPosition.CenterParent;
             AutoScaleDimensions = new SizeF(96F, 96F); AutoScaleMode = AutoScaleMode.Dpi; Font = new Font("Microsoft YaHei UI", 9F);
             FormBorderStyle = FormBorderStyle.FixedDialog; MaximizeBox = false; MinimizeBox = false;
             ClientSize = new Size(470, 410);
@@ -60,7 +60,7 @@ namespace ShareX
                 Add(new Label { AutoSize = true, MaximumSize = new Size(425, 0), Text = $"此备份注明 {manifest.MissingVoiceAttachments.Count} 个录音附件已缺失。待办文字可恢复，这些录音无法恢复。" });
             if (importing && manifest.InvalidDiaryFiles.Count > 0)
                 Add(new Label { AutoSize = true, MaximumSize = new Size(425, 0), Text = PersonalDataArchive.DiaryWarning(manifest.InvalidDiaryFiles) });
-            Add(new Label { AutoSize = true, MaximumSize = new Size(425, 0), Text = importing ? "勾选的类别将整体替换，未勾选的保持不变。导入前会自动备份；完成后重启小蟒。" : "截图和录屏默认不选。账号密钥、本机路径和程序文件不包含在备份中。" });
+            Add(new Label { AutoSize = true, MaximumSize = new Size(425, 0), Text = importing ? "勾选的类别将整体替换，未勾选的保持不变。缺少文本组件时，输入法数据保留待恢复，其他数据照常导入。导入前自动备份，完成后重启。" : "截图和录屏默认不选。账号密钥、本机路径和程序文件不包含在备份中。" });
             Add(new Label { AutoSize = true, MaximumSize = new Size(425, 0), Text = "操作时会保存并关闭临时编辑窗口及所选的日记窗口，暂时暂停所选的输入法后台。" });
             status = new Label { AutoSize = true, MaximumSize = new Size(425, 0), Text = "请选择数据类别。" }; Add(status);
             var buttons = new FlowLayoutPanel { AutoSize = true, FlowDirection = FlowDirection.RightToLeft, Dock = DockStyle.Bottom, Padding = new Padding(12, 8, 12, 12) };
@@ -114,15 +114,17 @@ namespace ShareX
             }
             if (readyToImport) { DialogResult = DialogResult.OK; Close(); }
         }
-        internal static async Task Open(Control owner, bool importing)
+        internal static async Task Open(Control owner, bool importing, string pendingSource = null)
         {
-            string source = null; PersonalDataManifest manifest = null;
+            string source = pendingSource; PersonalDataManifest manifest = null;
             if (importing) {
                 using var open = new OpenFileDialog { Filter = "小蟒个人数据备份 (*.xmbackup)|*.xmbackup", CheckFileExists = true };
-                if (open.ShowDialog(owner) != DialogResult.OK) return;
-                source = open.FileName;
+                if (source == null) {
+                    if (open.ShowDialog(owner) != DialogResult.OK) return;
+                    source = open.FileName;
+                }
                 try { manifest = await Task.Run(() => PersonalDataArchive.Inspect(source)); }
-                catch (Exception error) { MessageBox.Show(owner, "无法读取备份：" + error.Message, "个人数据", MessageBoxButtons.OK, MessageBoxIcon.Error); return; }
+                catch (Exception error) { PersonalDataMessage.Show(owner, "无法读取备份：" + error.Message, "个人数据", MessageBoxButtons.OK, MessageBoxIcon.Error); return; }
             }
             using var form = new PersonalDataTransferForm(importing, source, manifest);
             if (form.ShowDialog(Program.MainForm) == DialogResult.OK && importing) PersonalDataManager.RestartForImport();

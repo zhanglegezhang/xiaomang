@@ -729,6 +729,22 @@ namespace ShareX
             SettingManager.SaveApplicationConfigAsync();
         }
 
+        private static Task<CoreWebView2Environment> sharedPreviewEnvironment;
+        private static string sharedPreviewFolder;
+
+        private static Task<CoreWebView2Environment> GetPreviewEnvironmentAsync(string folder)
+        {
+            // Editors share the UI thread. Keep the browser environment across close/reopen,
+            // but never reuse another personal directory or a failed initialization.
+            if (sharedPreviewEnvironment == null || sharedPreviewEnvironment.IsFaulted ||
+                sharedPreviewEnvironment.IsCanceled || !string.Equals(sharedPreviewFolder, folder, StringComparison.OrdinalIgnoreCase))
+            {
+                sharedPreviewFolder = folder;
+                sharedPreviewEnvironment = CoreWebView2Environment.CreateAsync(null, folder);
+            }
+            return sharedPreviewEnvironment;
+        }
+
         private async Task InitializePreviewAsync()
         {
             try
@@ -736,7 +752,7 @@ namespace ShareX
                 preview = new WebView2 { Dock = DockStyle.Fill, DefaultBackgroundColor = EditorBackgroundColor, Visible = false };
                 previewPanel.Controls.Add(preview);
                 string userDataFolder = Path.Combine(Program.PersonalFolder, "ScratchMarkdownWebView");
-                CoreWebView2Environment environment = await CoreWebView2Environment.CreateAsync(null, userDataFolder);
+                CoreWebView2Environment environment = await GetPreviewEnvironmentAsync(userDataFolder);
                 if (IsDisposed) return;
                 await preview.EnsureCoreWebView2Async(environment);
                 if (IsDisposed) return;

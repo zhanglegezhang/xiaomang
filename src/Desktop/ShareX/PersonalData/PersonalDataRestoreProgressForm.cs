@@ -16,9 +16,11 @@ namespace ShareX
         private bool working = true;
         internal string Backup { get; private set; }
         internal Exception Failure { get; private set; }
+        internal bool Completed { get; private set; }
         internal PersonalDataRestoreProgressForm(Func<PersonalDataTransferControl, IProgress<string>, Task<string>> apply)
         {
             Text = "导入个人数据"; StartPosition = FormStartPosition.CenterScreen;
+            Icon = ShareXResources.Icon;
             AutoScaleMode = AutoScaleMode.Dpi; AutoScaleDimensions = new SizeF(96, 96);
             Font = new Font("Microsoft YaHei UI", 9F); ClientSize = new Size(470, 150);
             FormBorderStyle = FormBorderStyle.FixedDialog; MaximizeBox = MinimizeBox = false;
@@ -43,7 +45,7 @@ namespace ShareX
                 });
                 try { Backup = await Task.Run(() => apply(operation, progress)); }
                 catch (Exception error) { Failure = error; }
-                finally { working = false; Close(); }
+                finally { Completed = true; working = false; Close(); }
             };
             ShareXResources.ApplyTheme(this, true);
         }

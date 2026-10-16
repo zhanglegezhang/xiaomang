@@ -18,7 +18,7 @@ namespace ShareX
             this.store = store;
             AutoScaleDimensions = new SizeF(96f, 96f);
             AutoScaleMode = AutoScaleMode.Dpi;
-            ClientSize = new Size(420, 172);
+            ClientSize = new Size(420, 216);
             FormBorderStyle = FormBorderStyle.FixedDialog;
             StartPosition = FormStartPosition.CenterScreen;
             MaximizeBox = false;
@@ -81,11 +81,18 @@ namespace ShareX
                 Bounds = new Rectangle(24, 94, 372, 34),
                 ForeColor = Color.FromArgb(255, 157, 99)
             };
-            verifyButton = CreateButton("验证并进入", new Rectangle(182, 132, 112, 30), 1);
+            var registrationHint = new Label
+            {
+                Text = "使用输入法和录屏功能前，请先前往「全局设置 → 注册」完成组件安装与注册。",
+                Bounds = new Rectangle(24, 130, 372, 40),
+                Font = new Font("Microsoft YaHei", Font.Size, FontStyle.Bold),
+                ForeColor = Color.FromArgb(255, 140, 66)
+            };
+            verifyButton = CreateButton("验证并进入", new Rectangle(182, 176, 112, 30), 1);
             verifyButton.Click += (sender, e) => SubmitPassword();
-            var cancel = CreateButton("退出", new Rectangle(306, 132, 90, 30), 2);
+            var cancel = CreateButton("退出", new Rectangle(306, 176, 90, 30), 2);
             cancel.DialogResult = DialogResult.Cancel;
-            Controls.AddRange(new Control[] { instruction, explanation, passwordLabel, passwordFrame, status, verifyButton, cancel });
+            Controls.AddRange(new Control[] { instruction, explanation, passwordLabel, passwordFrame, status, registrationHint, verifyButton, cancel });
             AcceptButton = verifyButton;
             CancelButton = cancel;
             AutoScaleDimensions = new SizeF(96f, 96f);

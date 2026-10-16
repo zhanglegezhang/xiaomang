@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
@@ -21,6 +21,8 @@ namespace ShareX
         private static PersonalDataKind[] pendingKinds;
         private static PersonalDataPaths pendingPaths;
         private static Size pendingDisplay;
+        private static bool pendingDeferredInput;
+        private static string pendingConsumedArchive;
         internal static PersonalDataPaths Paths() => new() { Personal = Path.GetFullPath(Program.PersonalFolder), Input = XiaomangInputMethodManager.UserDirectory, Media = Path.GetFullPath(Program.ScreenshotsParentFolder), Hotkeys = Path.GetFullPath(SettingManager.HotkeysConfigFilePath), ConfigCodec = ConfigCodec };
         internal static async Task ConfigCodec(string mode, string input, string current, string output)
         {
@@ -111,7 +113,7 @@ namespace ShareX
             var app = PersonalDataPreferences.Json(Program.Settings);
             await Task.Run(() => SettingManager.WaitHotkeysConfig());
             var hotkeys = PersonalDataPreferences.Json(Program.HotkeysConfig);
-            await Task.Run(() => PersonalDataArchive.Export(paths, app, hotkeys, selected, destination, Program.VersionText, progress, control: control));
+            await Task.Run(() => PersonalDataArchive.Export(paths, app, hotkeys, selected, destination, Program.ProductVersion, progress, control: control));
         }
         internal static async Task BackupForUpdate(Form transfer, string destination, IProgress<string> progress, Func<Task> install)
         {
@@ -122,7 +124,7 @@ namespace ShareX
             {
                 var app = PersonalDataPreferences.Json(Program.Settings);
                 var hotkeys = PersonalDataPreferences.Json(Program.HotkeysConfig);
-                await Task.Run(() => PersonalDataArchive.Export(paths, app, hotkeys, selected, destination, Program.VersionText, progress));
+                await Task.Run(() => PersonalDataArchive.Export(paths, app, hotkeys, selected, destination, Program.ProductVersion, progress));
                 updateReady = true;
                 await install();
             }
@@ -131,23 +133,26 @@ namespace ShareX
 
         internal static async Task QueueImport(Form transfer, PersonalDataKind[] selected, string source, IProgress<string> progress, PersonalDataTransferControl control = null)
         {
-            if (selected.Contains(PersonalDataKind.InputMethod))
-                await Task.Run(() => PersonalDataInputPreflight.RequireComponent(XiaomangInputMethodManager.BundleDirectory, control?.Token ?? default));
+            bool deferInput = selected.Contains(PersonalDataKind.InputMethod) && !PersonalDataInputPreflight.ConverterPresent(XiaomangInputMethodManager.BundleDirectory);
+            var effective = deferInput ? selected.Where(k => k != PersonalDataKind.InputMethod).ToArray() : selected;
             var paths = Paths();
-            var scope = await Pause(paths, selected, transfer, control);
+            var scope = await Pause(paths, effective, transfer, control);
             string stage = Path.Combine(paths.Personal, "PersonalDataRestore", Guid.NewGuid().ToString("N"));
             try {
                 var app = PersonalDataPreferences.Json(Program.Settings);
                 await Task.Run(() => {
                     progress?.Report("检查导入空间…");
                     var manifest = PersonalDataArchive.Inspect(source);
-                    PersonalDataSpace.CheckImport(paths, app, manifest, selected, false, control);
+                    PersonalDataSpace.CheckImport(paths, app, manifest, effective, false, control);
+                    if (deferInput) PersonalDataDeferredInput.CheckSpace(paths.Personal, manifest, control);
                     PersonalDataArchive.Extract(source, stage, selected, progress, control);
                 });
                 control?.EnterCommit();
                 // Capture target paths now; they are never read from the backup.
                 pendingDisplay = Screen.FromControl(transfer).WorkingArea.Size;
                 pendingPaths = paths; pendingStage = stage; pendingKinds = selected; pendingScope = scope;
+                pendingDeferredInput = deferInput;
+                pendingConsumedArchive = !deferInput && PersonalDataDeferredInput.List(paths.Personal).Contains(Path.GetFullPath(source), StringComparer.OrdinalIgnoreCase) ? Path.GetFullPath(source) : null;
             } catch { scope.Dispose(); PersonalDataArchive.Remove(stage); throw; }
         }
         internal static async void RestartForImport()
@@ -156,36 +161,67 @@ namespace ShareX
             if (!await Program.RestartAsync()) {
                 Program.CancelRestart(); pendingScope.Dispose(); pendingScope = null;
                 PersonalDataArchive.Remove(pendingStage); pendingStage = null;
-                MessageBox.Show("有窗口阻止退出，导入已取消，原数据未修改。", "个人数据");
+                PersonalDataMessage.Show("有窗口阻止退出，导入已取消，原数据未修改。", "个人数据");
             }
         }
         internal static void ApplyAfterExit()
         {
             if (pendingScope == null) return;
+            // Application.Exit has stopped the original WinForms thread context.
+            // A new STA owns the recovery message loop and all its dialogs.
+            var recovery = new Thread(ApplyAfterExitCore);
+            recovery.SetApartmentState(ApartmentState.STA);
+            recovery.Start();
+            recovery.Join();
+        }
+        private static void ApplyAfterExitCore()
+        {
             try {
                 var incoming = PersonalDataArchive.ReadJson(Path.Combine(pendingStage, PersonalDataArchive.ManifestName)).ToObject<PersonalDataManifest>(PersonalDataPreferences.Serializer());
-                using var restore = new PersonalDataRestoreProgressForm((control, progress) => PersonalDataRestore.Apply(pendingPaths, pendingStage, pendingKinds, Program.VersionText, pendingDisplay, control: control, progress: progress));
+                using var restore = new PersonalDataRestoreProgressForm((control, progress) => PersonalDataRestore.Apply(pendingPaths, pendingStage, pendingKinds, Program.ProductVersion, pendingDisplay, control: control, progress: progress, deferInput: pendingDeferredInput));
                 restore.ShowDialog();
+                if (!restore.Completed) throw new IOException("恢复窗口未能执行，请保留备份并重试导入。");
                 if (restore.Failure != null) throw restore.Failure;
                 string backup = restore.Backup;
                 int missing = 0;
                 var previousInvalid = new List<string>();
-                try { var previous = PersonalDataArchive.Inspect(backup); missing = previous.MissingVoiceAttachments.Count; previousInvalid.AddRange(previous.InvalidDiaryFiles); }
+                try { var previous = backup == null ? new PersonalDataManifest() : PersonalDataArchive.Inspect(backup); missing = previous.MissingVoiceAttachments.Count; previousInvalid.AddRange(previous.InvalidDiaryFiles); }
                 catch (Exception error) { DebugHelper.WriteException(error, "Reading completed import backup notice"); }
                 string warning = missing > 0 ? $"\n\n导入前有 {missing} 个录音附件已缺失，自动备份已注明，并保留了待办文字及现有附件。" : "";
                 if (incoming.InvalidDiaryFiles.Count > 0) warning += "\n\n" + PersonalDataArchive.DiaryWarning(incoming.InvalidDiaryFiles);
                 if (previousInvalid.Count > 0) warning += "\n\n导入前的自动备份保留了异常日记辅助原件（" + string.Join("、", previousInvalid) + "），供核对。";
-                MessageBox.Show("个人数据导入完成，即将重新打开小蟒。\n\n导入前的备份：\n" + backup + warning, "个人数据", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                if (pendingConsumedArchive != null) File.Move(pendingConsumedArchive, pendingConsumedArchive + ".restored-" + Guid.NewGuid().ToString("N"));
+                if (pendingDeferredInput) warning += "\n\n输入法个人数据已保留待恢复。组件准备好后，可在全局设置 → 常规 → 恢复待处理输入法数据中恢复。";
+                PersonalDataMessage.Show("个人数据导入完成，即将重新打开小蟒。" + (backup == null ? "" : "\n\n导入前的备份：\n" + backup) + warning, "个人数据", MessageBoxButtons.OK, MessageBoxIcon.Information);
             } catch (OperationCanceledException) {
-                MessageBox.Show("导入已取消，原数据未替换，即将重新打开小蟒。已生成的导入前备份保留在 PersonalDataBackups 文件夹。", "个人数据", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                PersonalDataMessage.Show("导入已取消，原数据未替换，即将重新打开小蟒。已生成的导入前备份保留在 PersonalDataBackups 文件夹。", "个人数据", MessageBoxButtons.OK, MessageBoxIcon.Information);
             } catch (Exception error) {
                 DebugHelper.WriteException(error, "Personal data import");
-                MessageBox.Show("导入未完成：" + error.Message + "\n\n已尝试恢复原数据；自动备份位于个人数据目录的 PersonalDataBackups 文件夹。", "个人数据", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                PersonalDataMessage.Show("导入未完成：" + error.Message + "\n\n已尝试恢复原数据；自动备份位于个人数据目录的 PersonalDataBackups 文件夹。", "个人数据", MessageBoxButtons.OK, MessageBoxIcon.Error);
             } finally {
                 pendingScope.Dispose(); pendingScope = null;
                 // Retain the verified payload if a journal remains and manual recovery is needed.
                 if (!File.Exists(PersonalDataRestore.JournalPath(pendingPaths.Personal))) PersonalDataArchive.Remove(pendingStage);
             }
+        }
+        internal static async Task OpenDeferredInput(Control owner)
+        {
+            try {
+                var pending = PersonalDataDeferredInput.List(Program.PersonalFolder);
+                if (pending.Length == 0) { PersonalDataMessage.Show(owner, "没有待恢复的输入法数据。", "个人数据"); return; }
+                if (!PersonalDataInputPreflight.ConverterPresent(XiaomangInputMethodManager.BundleDirectory)) {
+                    PersonalDataMessage.Show(owner, "输入法数据已安全保留。请先到全局设置 → 注册下载文本输入组件，再点击此处恢复；无需先完成系统注册。", "个人数据"); return;
+                }
+                if (PersonalDataMessage.Show(owner, "发现 " + pending.Length + " 份待恢复的输入法数据，将先恢复最早的一份。\n恢复将替换当前词库及个人输入记录，恢复前会自动备份当前数据。是否继续？", "恢复输入法数据", MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes) return;
+                await PersonalDataTransferForm.Open(owner, true, pending[0]);
+            } catch (Exception error) { PersonalDataMessage.Show(owner, "待恢复数据仍保留：" + error.Message, "个人数据"); }
+        }
+        internal static void NotifyDeferredInput()
+        {
+            try {
+                if (PersonalDataInputPreflight.ConverterPresent(XiaomangInputMethodManager.BundleDirectory) && PersonalDataDeferredInput.List(Program.PersonalFolder).Length > 0)
+                    TaskHelpers.ShowNotificationTip("有待恢复的输入法数据。请到全局设置 → 常规 → 恢复待处理输入法数据，确认后恢复。", "个人数据", 8000);
+            } catch (Exception error) { DebugHelper.WriteException(error, "Checking deferred input data"); }
         }
         internal static bool RecoverBeforeStartup()
         {
@@ -200,7 +236,7 @@ namespace ShareX
                 PersonalDataRestore.Recover(Program.PersonalFolder); return true;
             } catch (Exception error) {
                 DebugHelper.WriteException(error, "Personal data recovery");
-                MessageBox.Show("上次导入尚未完成，自动恢复遇到问题：" + error.Message + "\n\n为保护原数据，小蟒暂不启动。请关闭相关编辑窗口并重新启动，勿删除个人数据目录。", "个人数据恢复", MessageBoxButtons.OK, MessageBoxIcon.Error); return false;
+                PersonalDataMessage.Show("上次导入尚未完成，自动恢复遇到问题：" + error.Message + "\n\n为保护原数据，小蟒暂不启动。请关闭相关编辑窗口并重新启动，勿删除个人数据目录。", "个人数据恢复", MessageBoxButtons.OK, MessageBoxIcon.Error); return false;
             }
         }
     }

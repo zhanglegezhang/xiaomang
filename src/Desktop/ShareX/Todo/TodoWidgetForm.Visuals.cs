@@ -27,6 +27,7 @@ namespace ShareX
         private sealed class OtherActionButton : Button
         {
             public bool LeftAlignedText { get; set; }
+            public bool PersistentAccentBorder { get; set; }
             private bool pointerInside;
             private bool pointerDown;
 
@@ -72,10 +73,12 @@ namespace ShareX
                 if (fill.IsEmpty) fill = BackColor;
                 e.Graphics.Clear(Parent?.BackColor ?? WidgetBackgroundColor);
                 e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
+                float borderWidth = PersistentAccentBorder ? 2f * DeviceDpi / 96f : 1f;
+                float borderInset = borderWidth / 2f;
                 using GraphicsPath card = CreateRoundedRectanglePath(
-                    new RectangleF(0.5f, 0.5f, Width - 1f, Height - 1f), 7f * DeviceDpi / 96f, false);
+                    new RectangleF(borderInset, borderInset, Math.Max(1f, Width - borderWidth), Math.Max(1f, Height - borderWidth)), 7f * DeviceDpi / 96f, false);
                 using (Brush background = new SolidBrush(fill)) e.Graphics.FillPath(background, card);
-                using (Pen border = new Pen(pointerInside ? WidgetAccentColor : WidgetBorderColor, 1f))
+                using (Pen border = new Pen(PersistentAccentBorder || pointerInside ? WidgetAccentColor : WidgetBorderColor, borderWidth))
                     e.Graphics.DrawPath(border, card);
 
                 int iconCenter = (int)Math.Round(20d * DeviceDpi / 96d);

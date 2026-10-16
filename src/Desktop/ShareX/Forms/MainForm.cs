@@ -211,8 +211,8 @@ namespace ShareX
             tsMain.Items.Clear();
             tsMain.Items.AddRange(new ToolStripItem[]
             {
-                tsbHotkeySettings,
                 tsbApplicationSettings,
+                tsbHotkeySettings,
                 tsbInputMethod,
                 tsbNoteFolder,
                 tsbScreenshotsFolder,
@@ -1111,6 +1111,7 @@ namespace ShareX
         private void MainForm_Shown(object sender, EventArgs e)
         {
             AfterShownJobs();
+            PersonalDataManager.NotifyDeferredInput();
         }
 
         private void MainForm_Resize(object sender, EventArgs e)

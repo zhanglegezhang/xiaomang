@@ -130,14 +130,45 @@ namespace ShareX
             btnLanguages.MinimumSize = new Size(0, layout.Scale(30));
             layout.Add(content, layout.Row(lblLanguage, btnLanguages));
             layout.Heading(content, "个人数据", "Personal data");
-            var export = new Button { Text = SettingsPageLayout.Caption("导出个人数据…", "Export personal data…"), AutoSize = true, MinimumSize = new Size(layout.Scale(180), layout.Scale(32)) };
-            var import = new Button { Text = SettingsPageLayout.Caption("导入个人数据…", "Import personal data…"), AutoSize = true, MinimumSize = new Size(layout.Scale(180), layout.Scale(32)) };
+            var export = CreatePersonalDataButton(layout, SettingsPageLayout.Caption("导出个人数据…", "Export personal data…"), "export");
+            var import = CreatePersonalDataButton(layout, SettingsPageLayout.Caption("导入个人数据…", "Import personal data…"), "import");
             export.Click += async (_, _) => await PersonalDataTransferForm.Open(this, false);
             import.Click += async (_, _) => await PersonalDataTransferForm.Open(this, true);
-            layout.Add(content, layout.Inline(export, import));
+            layout.Add(content, layout.Inline(export));
+            layout.Add(content, layout.Inline(import));
+            var pendingInput = CreatePersonalDataButton(layout, "恢复待处理输入法数据…", "restore");
+            pendingInput.Click += async (_, _) => await PersonalDataManager.OpenDeferredInput(this);
+            layout.Add(content, layout.Inline(pendingInput));
             content.ResumeLayout(false);
             layout.Install(tpGeneral, content);
             tpGeneral.ResumeLayout(true);
+        }
+
+        private static Button CreatePersonalDataButton(SettingsPageLayout layout, string text, string glyph)
+        {
+            var button = new Button
+            {
+                Text = text, AutoSize = true,
+                MinimumSize = new Size(layout.Scale(200), layout.Scale(32)),
+                ImageAlign = ContentAlignment.MiddleLeft,
+                TextAlign = ContentAlignment.MiddleLeft,
+                TextImageRelation = TextImageRelation.ImageBeforeText
+            };
+            void RefreshIcon()
+            {
+                int size = MainMenuAppearance.Scale(button, 16);
+                var image = new Bitmap(size, size);
+                using (Graphics graphics = Graphics.FromImage(image))
+                    MainMenuRenderer.DrawGlyph(graphics, glyph, new Rectangle(0, 0, size, size), button.ForeColor);
+                Image previous = button.Image;
+                button.Image = image;
+                previous?.Dispose();
+            }
+            button.ForeColorChanged += (_, _) => RefreshIcon();
+            button.DpiChangedAfterParent += (_, _) => RefreshIcon();
+            button.Disposed += (_, _) => { Image image = button.Image; button.Image = null; image?.Dispose(); };
+            RefreshIcon();
+            return button;
         }
 
         private void UpdateControls()

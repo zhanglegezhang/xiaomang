@@ -51,14 +51,14 @@ namespace ShareX
             {
                 Dock = DockStyle.Fill,
                 ColumnCount = 2,
-                RowCount = 8,
+                RowCount = 7,
                 Padding = new Padding(28, 0, 0, 0),
                 Margin = Padding.Empty,
                 BackColor = BackColor
             };
             details.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize));
             details.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100f));
-            for (int row = 0; row < 7; row++)
+            for (int row = 0; row < 6; row++)
                 details.RowStyles.Add(new RowStyle(SizeType.AutoSize));
             details.RowStyles.Add(new RowStyle(SizeType.Percent, 100f));
 
@@ -77,6 +77,9 @@ namespace ShareX
                 LinkBehavior=LinkBehavior.NeverUnderline,LinkColor=Color.FromArgb(111,190,255),ActiveLinkColor=Color.FromArgb(165,216,255),
                 VisitedLinkColor=Color.FromArgb(111,190,255),Tag=VisibleBranding.PreserveText,Margin=new Padding(0,MainMenuAppearance.Scale(this,8),0,0)
             };
+            Label productHeading = CreateHeadingLabel("产品介绍：");
+            productHeading.Margin = new Padding(0, mindMap.Margin.Top, productHeading.Margin.Right, 0);
+            details.Controls.Add(productHeading, 0, 3);
             mindMap.LinkClicked += (_,_)=>OpenMindMap();details.Controls.Add(mindMap,1,3);
             Label versionLogHeading = CreateHeadingLabel("版本日志：");
             details.Controls.Add(versionLogHeading, 0, 4);
@@ -104,10 +107,6 @@ namespace ShareX
             updateButton.Click += (_, _) => ProductUpdateForm.Open();
             details.Controls.Add(updateHeading, 0, 5);
             details.Controls.Add(updateButton, 1, 5);
-            Label contactHeading = CreateHeadingLabel("联系方式：");
-            details.Controls.Add(contactHeading, 0, 6);
-            Label contact = CreateInfoLabel("13711477110@139.com", ForeColor);
-            details.Controls.Add(contact, 1, 6);
             int sectionSpacing = MainMenuAppearance.Scale(this, 22);
             int rowSpacing = MainMenuAppearance.Scale(this, 12);
             updateHeading.TextAlign = ContentAlignment.MiddleLeft;
@@ -115,8 +114,6 @@ namespace ShareX
             updateButton.Margin = new Padding(0, rowSpacing, 0, 0);
             versionLogHeading.Margin = new Padding(0, sectionSpacing, versionLogHeading.Margin.Right, 0);
             versionLog.Margin = new Padding(0, sectionSpacing, 0, 0);
-            contactHeading.Margin = new Padding(0, rowSpacing, contactHeading.Margin.Right, 0);
-            contact.Margin = new Padding(0, rowSpacing, 0, 0);
             TableLayoutPanel content = new TableLayoutPanel
             {
                 Dock = DockStyle.Fill,

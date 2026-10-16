@@ -10,14 +10,14 @@ namespace ShareX
         {
             MainMenuAppearance.Apply(this);
             int S(int value) => MainMenuAppearance.Scale(this, value);
-            Height = S(52);
-            Margin = new System.Windows.Forms.Padding(0, 0, 0, S(8));
+            Height = S(40);
+            Margin = new System.Windows.Forms.Padding(0, 0, 0, S(4));
             void LayoutCard()
             {
-                int inset = S(8), gap = S(8), height = Height - inset * 2;
+                int inset = S(8), verticalInset = S(4), gap = S(8), height = Height - verticalInset * 2;
                 int keyWidth = Math.Max(S(130), Math.Min(S(184), Width / 3));
-                btnHotkey.Bounds = new Rectangle(Width - inset - keyWidth, inset, keyWidth, height);
-                btnTask.Bounds = new Rectangle(inset, inset, Math.Max(S(80), btnHotkey.Left - gap - inset), height);
+                btnHotkey.Bounds = new Rectangle(Width - inset - keyWidth, verticalInset, keyWidth, height);
+                btnTask.Bounds = new Rectangle(inset, verticalInset, Math.Max(S(80), btnHotkey.Left - gap - inset), height);
             }
             SizeChanged += (s, e) => LayoutCard();
             Paint += (s, e) =>

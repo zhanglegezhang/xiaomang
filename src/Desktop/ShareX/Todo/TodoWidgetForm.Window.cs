@@ -504,11 +504,7 @@ namespace ShareX
                 grip.MouseDown += (sender, e) =>
                 {
                     if (e.Button != MouseButtons.Left) return;
-                    resizing = true;
-                    collapseTimer.Stop();
-                    resizeStartMouse = grip.PointToScreen(e.Location);
-                    resizeStartBounds = Bounds;
-                    grip.Capture = true;
+                    BeginGripResize(grip, grip.PointToScreen(e.Location));
                 };
                 grip.MouseMove += (sender, e) =>
                 {
@@ -529,6 +525,8 @@ namespace ShareX
                 Controls.Add(grip);
                 resizeGrips.Add(grip);
             }
+            bottomResizeHitFilter = new BottomResizeHitFilter(this);
+            Disposed += (_, _) => bottomResizeHitFilter.SetEnabled(false);
         }
 
         private void ResizeFromDelta(string edge, Point delta)
@@ -879,6 +877,7 @@ namespace ShareX
             try
             {
                 expanded = value;
+                bottomResizeHitFilter.SetEnabled(value);
                 Padding = Padding.Empty;
                 if (!value)
                 {

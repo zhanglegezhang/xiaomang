@@ -88,6 +88,16 @@ namespace ShareX
                 void Lines(params PointF[] points) => g.DrawLines(pen, points);
                 switch (icon)
                 {
+                    case "export": case "import":
+                        Lines(new PointF(4, 15), new PointF(4, 21), new PointF(20, 21), new PointF(20, 15));
+                        Line(12, 3, 12, 16);
+                        if (icon == "export") Lines(new PointF(7, 8), new PointF(12, 3), new PointF(17, 8));
+                        else Lines(new PointF(7, 11), new PointF(12, 16), new PointF(17, 11));
+                        break;
+                    case "restore":
+                        g.DrawArc(pen, 4, 4, 16, 16, -90, 285);
+                        Lines(new PointF(3, 4), new PointF(3, 10), new PointF(9, 10));
+                        Line(12, 8, 12, 12); Line(12, 12, 16, 14); break;
                     case "capture":
                         Lines(new PointF(3, 9), new PointF(3, 3), new PointF(9, 3)); Lines(new PointF(15, 3), new PointF(21, 3), new PointF(21, 9));
                         Lines(new PointF(21, 15), new PointF(21, 21), new PointF(15, 21)); Lines(new PointF(9, 21), new PointF(3, 21), new PointF(3, 15)); break;

@@ -44,7 +44,7 @@ namespace ShareX
             string target = Path.GetFullPath(Path.Combine(root, op.Relative.Replace('/', Path.DirectorySeparatorChar)));
             if (!target.StartsWith(Path.GetFullPath(root).TrimEnd(Path.DirectorySeparatorChar) + Path.DirectorySeparatorChar, StringComparison.OrdinalIgnoreCase)) throw new InvalidDataException("恢复日志路径无效。");
             if (op.Root == "hotkeys" && !target.Equals(journal.Hotkeys, StringComparison.OrdinalIgnoreCase)) throw new InvalidDataException("快捷键恢复路径无效。");
-            if (op.Root == "personal" && !(new[] { "ApplicationConfig.json", "临时文件夹", "VoiceNotes", "剪切板归档" }.Contains(op.Relative) || op.Relative.StartsWith("便签日志/") || op.Relative.StartsWith("Diary/") || FileFavoritesStore.FileNames.Any(name => op.Relative == "data/" + name))) throw new InvalidDataException("个人数据恢复范围无效。");
+            if (op.Root == "personal" && !(new[] { "ApplicationConfig.json", "临时文件夹", "VoiceNotes", "剪切板归档" }.Contains(op.Relative) || op.Relative.StartsWith("便签日志/") || op.Relative.StartsWith("Diary/") || PersonalDataDeferredInput.IsPendingRelative(op.Relative) || FileFavoritesStore.FileNames.Any(name => op.Relative == "data/" + name))) throw new InvalidDataException("个人数据恢复范围无效。");
             if (op.Root == "input" && !(PersonalDataArchive.InputFiles.Contains(op.Relative) || PersonalDataArchive.GlossaryFiles.Contains(op.Relative) || new[] { "config.toml", "dicts", "codes" }.Contains(op.Relative))) throw new InvalidDataException("输入法恢复范围无效。");
             if (op.Root == "media" && !PersonalDataArchive.IsMedia(target)) throw new InvalidDataException("截图恢复范围无效。");
             PersonalDataArchive.SafePath(target); return target;
@@ -123,8 +123,10 @@ namespace ShareX
             catch (IOException error) { DebugHelper.WriteException(error, "Finished personal data cleanup deferred"); }
             catch (UnauthorizedAccessException error) { DebugHelper.WriteException(error, "Finished personal data cleanup deferred"); }
         }
-        internal static async Task<string> Apply(PersonalDataPaths paths, string extracted, IReadOnlyCollection<PersonalDataKind> selected, string version, Size display, Action<int> afterCommit = null, PersonalDataTransferControl control = null, IProgress<string> progress = null)
+        internal static async Task<string> Apply(PersonalDataPaths paths, string extracted, IReadOnlyCollection<PersonalDataKind> selected, string version, Size display, Action<int> afterCommit = null, PersonalDataTransferControl control = null, IProgress<string> progress = null, bool deferInput = false)
         {
+            deferInput = deferInput && selected.Contains(PersonalDataKind.InputMethod);
+            if (deferInput) selected = selected.Where(k => k != PersonalDataKind.InputMethod).ToArray();
             var token = control?.Token ?? CancellationToken.None; token.ThrowIfCancellationRequested();
             Recover(paths.Personal);
             if (File.Exists(JournalPath(paths.Personal))) throw new IOException("上次导入的临时文件尚未清理，请关闭相关编辑窗口后重试。");
@@ -138,7 +140,8 @@ namespace ShareX
             PersonalDataSpace.CheckImport(paths, original, manifest, selected, true, control);
             string backup = Path.Combine(paths.Personal, "PersonalDataBackups", "导入前_" + DateTime.Now.ToString("yyyyMMdd-HHmmss") + "_" + Guid.NewGuid().ToString("N")[..6] + ".xmbackup");
             progress?.Report("保存导入前备份…");
-            await PersonalDataArchive.Export(paths, original, hotkeys, selected, backup, version, progress, internalBackup: true, control: control);
+            if (selected.Count > 0) await PersonalDataArchive.Export(paths, original, hotkeys, selected, backup, version, progress, internalBackup: true, control: control);
+            else backup = null;
             var journal = new PersonalDataJournal { Id = Guid.NewGuid().ToString("N"), Input = paths.Input, Media = paths.Media, Hotkeys = paths.Hotkeys, ProgressVersion = 1 };
             var targetNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
             var sources = new List<string>();
@@ -153,6 +156,12 @@ namespace ShareX
                 sources.Add(source);
             }
             try {
+                if (deferInput) {
+                    PersonalDataDeferredInput.CheckSpace(paths.Personal, manifest, control);
+                    string archive = Payload("deferred-input.xmbackup");
+                    PersonalDataDeferredInput.Create(extracted, archive);
+                    Add("personal", PersonalDataDeferredInput.Folder + "/" + Guid.NewGuid().ToString("N") + ".xmbackup", archive, false);
+                }
                 var app = (JObject)original.DeepClone();
                 if (app["TodoSettings"] is not JObject) app["TodoSettings"] = new JObject();
                 var todo = (JObject)app["TodoSettings"];

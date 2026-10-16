@@ -26,6 +26,7 @@ namespace ShareX
 
         internal static (SearchHit[] Hits, int Skipped) Search(SearchHit[] snapshot, string notes, string query, CancellationToken token)
         {
+            UnifiedSearchCache.Prepare(notes);
             var hits = new List<SearchHit>();
             int skipped = 0, visited = 0;
             bool Match(string text) => text?.Contains(query, StringComparison.OrdinalIgnoreCase) == true;
@@ -56,12 +57,8 @@ namespace ShareX
                             string relative = System.IO.Path.GetRelativePath(notes, file).Replace('\\', '/');
                             if (name == ".xiaomang-folder.md") relative = System.IO.Path.GetDirectoryName(relative)?.Replace('\\', '/');
                             if (string.IsNullOrEmpty(relative)) continue;
-                            string content = "";
-                            using (var stream = new FileStream(file, FileMode.Open, FileAccess.Read, FileShare.ReadWrite | FileShare.Delete))
-                            {
-                                if (stream.Length > 4 * 1024 * 1024) skipped++;
-                                else using (var reader = new StreamReader(stream)) content = reader.ReadToEnd();
-                            }
+                            string content = UnifiedSearchCache.Read(file, out bool oversized);
+                            if (oversized) skipped++;
                             if (Match(relative) || Match(content)) hits.Add(new SearchHit("本地笔记", relative, Snippet(content, query), Guid.Empty, relative));
                         }
                         catch (Exception error) when (error is IOException or UnauthorizedAccessException) { skipped++; }
@@ -89,6 +86,7 @@ namespace ShareX
         private readonly System.Windows.Forms.Timer delay = new() { Interval = 250 };
         private CancellationTokenSource search;
         private int generation;
+        private readonly Stopwatch queryElapsed = new();
         private bool sizeMemoryReady;
         internal static void Open()
         {
@@ -167,11 +165,11 @@ namespace ShareX
         }
         private void Schedule()
         {
-            generation++; search?.Cancel(); delay.Stop(); results.SetHits(Array.Empty<SearchHit>(), query.Text.Trim());
+            generation++; search?.Cancel(); delay.Stop(); queryElapsed.Restart();
             elapsed.Text = ""; LayoutSearchChrome();
-            if (query.Text.Trim().Length == 0) { status.Text = "输入关键词开始搜索"; results.EmptyMessage = "输入关键词，搜索待办、收藏和本地笔记"; return; }
+            if (query.Text.Trim().Length == 0) { results.SetHits(Array.Empty<SearchHit>(), ""); status.Text = "输入关键词开始搜索"; results.EmptyMessage = "输入关键词，搜索待办、收藏和本地笔记"; return; }
             results.EmptyMessage = "正在搜索…";
-            status.Text = "搜索中…"; delay.Start();
+            status.Text = results.HitCount > 0 ? "搜索中…暂时显示上次结果" : "搜索中…"; delay.Start();
         }
         private async Task Search()
         {
@@ -182,7 +180,6 @@ namespace ShareX
             snapshot.AddRange(settings.FavoriteItems.Select(x => new SearchHit("手动收藏", x.Text, x.Text, x.Id)));
             if (clipboard.Checked) snapshot.AddRange(settings.ClipboardItems.Select(x => new SearchHit("剪切板", x.GetDisplayText(), x.Text, x.Id)));
             snapshot.AddRange((FileFavoritesService.Store?.Pinned ?? Array.Empty<FavoriteFile>()).Select(x => new SearchHit("固定文件", x.Name, x.Path, Guid.Empty, x.Path)));
-            var watch = Stopwatch.StartNew();
             try
             {
                 await UnifiedSearchEngine.ReadGate.WaitAsync(cancellation.Token);
@@ -193,7 +190,7 @@ namespace ShareX
                 results.SetHits(found.Hits, term);
                 results.EmptyMessage = "没有找到匹配结果，请换个关键词";
                 status.Text = $"显示 {found.Hits.Length} 条 · 最多 300 条" + (found.Skipped > 0 ? $" · {found.Skipped} 项未完整检索（过大、不可读或链接）" : "");
-                elapsed.Text = $"{watch.ElapsedMilliseconds} 毫秒"; LayoutSearchChrome();
+                elapsed.Text = $"{queryElapsed.ElapsedMilliseconds} 毫秒"; LayoutSearchChrome();
             }
             catch (OperationCanceledException) { }
             catch (Exception error) { if (!IsDisposed && generation == version) { status.Text = "搜索失败，可重新输入重试：" + error.Message; results.EmptyMessage = "搜索未完成，请重新输入关键词重试"; } }

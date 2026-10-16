@@ -50,7 +50,7 @@ namespace ShareX
                 TaskSettingsForm owner = GetDefaultTaskSettingsForm();
                 TabPage capture = owner.LoadDefaultSettingsPage("tpCaptureGeneral", DeviceDpi);
                 TabPage region = owner.LoadDefaultSettingsPage("tpRegionCapture", DeviceDpi);
-                var layout = new SettingsPageLayout(this);
+                using var layout = new SettingsPageLayout(this, deferLayout: true);
                 var rows = layout.Stack();
                 layout.Heading(rows, "截图设置", "Capture settings");
                 var capturePanel = (Panel)capture.Controls["pCapture"];
@@ -78,3 +78,5 @@ namespace ShareX
         }
     }
 }
+
+

@@ -1387,6 +1387,6 @@ Would you like to download and install it?</value>
     <value>Drawing</value>
   </data>
   <data name="HotkeyType_SwitchToXiaomangInputMethod" xml:space="preserve">
-    <value>Switch to Xiaomang input method</value>
+    <value>切换到小蟒输入法</value>
   </data>
 </root>

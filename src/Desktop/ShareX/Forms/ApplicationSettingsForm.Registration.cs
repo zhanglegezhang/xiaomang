@@ -193,6 +193,7 @@ namespace ShareX
             if(voice)await ChangeVoice(true,repair);else await XiaomangInputMethodManager.RegisterAsync(true);
             if(!await InputReady(voice,token))throw new IOException("组件已下载，但注册未通过检查，请重试注册。");
             progress?.Report(100);
+            if (!voice) PersonalDataManager.NotifyDeferredInput();
         }
         private async Task PrepareInputSingle(bool voice,CancellationToken token)
         {

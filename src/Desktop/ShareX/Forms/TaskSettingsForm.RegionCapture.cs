@@ -25,6 +25,7 @@ namespace ShareX
                 Dock = DockStyle.Top, Margin = Padding.Empty, Size = new Size(1, 1)
             };
             rows.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
+            rows.SuspendLayout();
 
             void AddRow(Control control, bool indent = false)
             {
@@ -49,6 +50,7 @@ namespace ShareX
                 row.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, Px(150)));
                 row.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, Px(100)));
                 row.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
+                row.SuspendLayout();
                 label.AutoSize = true;
                 label.Anchor = AnchorStyles.Left | AnchorStyles.Right;
                 label.Margin = new Padding(0, 0, Px(10), 0);
@@ -64,6 +66,7 @@ namespace ShareX
                     unit.Margin = Padding.Empty;
                     row.Controls.Add(unit, 2, 0);
                 }
+                row.ResumeLayout(false);
                 return row;
             }
 
@@ -79,6 +82,7 @@ namespace ShareX
             pCapture.Dock = DockStyle.Top;
             pCapture.Controls.Add(rows);
             tpCaptureGeneral.AutoScroll = true;
+            rows.ResumeLayout(false);
             pCapture.ResumeLayout(true);
         }
 

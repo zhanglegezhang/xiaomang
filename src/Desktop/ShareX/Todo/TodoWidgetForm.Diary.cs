@@ -24,7 +24,9 @@ namespace ShareX
             internal Panel diaryPanel => this;
             internal readonly Label diaryTitleLabel;
             internal readonly Button localDiaryButton;
-            internal readonly Panel diaryRecordsPanel;
+            internal readonly VirtualClipboardPanel diaryRecordsPanel;
+            internal readonly SlimListScrollBar diarySlimScrollBar;
+            private bool arrangingDiary;
             internal readonly Label diaryRecentLabel, diaryFrequentLabel;
             internal readonly Button[] diaryRecordButtons = new Button[LocalDiaryManager.ShortcutLimit * 2];
             internal readonly Timer diaryActivityTimer;
@@ -103,39 +105,62 @@ namespace ShareX
 
             internal void LayoutDiaryPanel()
             {
-                Owner.LayoutPageTitle(diaryTitleLogo, diaryTitleLabel, diaryPanel.ClientSize.Width - Owner.D(26));
-                int width = Math.Max(Owner.D(80), diaryPanel.ClientSize.Width - Owner.D(16));
-                int inset = Owner.D(12), gap = Owner.D(10);
-                int titleWidth = TextRenderer.MeasureText(diaryEntryLabel.Text, diaryEntryLabel.Font).Width;
-                int hintWidth = TextRenderer.MeasureText(diaryHintLabel.Text, diaryHintLabel.Font).Width;
-                bool wrap = titleWidth + hintWidth + gap + inset * 2 > width;
-                int titleHeight = diaryEntryLabel.Font.Height;
-                int hintHeight = TextRenderer.MeasureText(diaryHintLabel.Text, diaryHintLabel.Font,
-                    new Size(Math.Max(1, width - inset * 2), int.MaxValue), TextFormatFlags.WordBreak | TextFormatFlags.NoPrefix).Height;
-                int height = wrap ? titleHeight + hintHeight + Owner.D(18) : Math.Max(Owner.D(34), Math.Max(titleHeight, hintHeight) + Owner.D(12));
-                localDiaryButton.Bounds = new Rectangle(Owner.D(8), diaryTitleLabel.Bottom + Owner.D(12), width, height);
-                diaryEntryLabel.Bounds = new Rectangle(inset, wrap ? Owner.D(6) : (height - titleHeight) / 2, Math.Min(titleWidth, width - inset * 2), titleHeight);
-                diaryHintLabel.Bounds = wrap
-                    ? new Rectangle(inset, diaryEntryLabel.Bottom + Owner.D(4), width - inset * 2, hintHeight)
-                    : new Rectangle(diaryEntryLabel.Right + gap, 0, width - diaryEntryLabel.Right - gap - inset, height);
-                int recordsTop = localDiaryButton.Bottom + Owner.D(8);
-                diaryRecordsPanel.Bounds = new Rectangle(Owner.D(8), recordsTop, Math.Max(1, diaryPanel.ClientSize.Width - Owner.D(16)), Math.Max(Owner.D(24), diaryPanel.ClientSize.Height - recordsTop - Owner.D(12)));                int rowWidth = Math.Max(Owner.D(60), diaryRecordsPanel.ClientSize.Width - Owner.D(20));
-                Point scroll = diaryRecordsPanel.AutoScrollPosition;
-                int y = 0;
-                for (int group = 0; group < 2; group++)
+                if (arrangingDiary) return;
+                arrangingDiary = true;
+                try
                 {
-                    Label heading = group == 0 ? diaryRecentLabel : diaryFrequentLabel;
-                    heading.Bounds = new Rectangle(0, y + scroll.Y, rowWidth, Owner.D(22));
-                    y += Owner.D(26);
-                    foreach (Button button in diaryRecordButtons.Skip(group * LocalDiaryManager.ShortcutLimit).Take(LocalDiaryManager.ShortcutLimit))
+                    Owner.LayoutPageTitle(diaryTitleLogo, diaryTitleLabel, diaryPanel.ClientSize.Width - Owner.D(26));
+                    int fullWidth = Math.Max(Owner.D(80), diaryPanel.ClientSize.Width - Owner.D(16));
+                    int contentHeight = 2 * (Owner.D(26) + Owner.D(4)) + diaryRecordButtons.Count(button => button.Tag != null) * Owner.D(36);
+                    int width = fullWidth;
+                    int inset = Owner.D(12), gap = Owner.D(10);
+                    int titleWidth = TextRenderer.MeasureText(diaryEntryLabel.Text, diaryEntryLabel.Font).Width;
+                    int hintWidth = TextRenderer.MeasureText(diaryHintLabel.Text, diaryHintLabel.Font).Width;
+                    int titleHeight = diaryEntryLabel.Font.Height;
+                    bool wrap = false;
+                    int hintHeight = 0;
+                    int MeasureEntryHeight()
                     {
-                        if (button.Tag == null) continue;
-                        button.Bounds = new Rectangle(0, y + scroll.Y, rowWidth, Owner.D(30));
-                        y += Owner.D(36);
+                        wrap = titleWidth + hintWidth + gap + inset * 2 > width;
+                        hintHeight = TextRenderer.MeasureText(diaryHintLabel.Text, diaryHintLabel.Font,
+                            new Size(Math.Max(1, width - inset * 2), int.MaxValue), TextFormatFlags.WordBreak | TextFormatFlags.NoPrefix).Height;
+                        return wrap ? titleHeight + hintHeight + Owner.D(18) : Math.Max(Owner.D(34), Math.Max(titleHeight, hintHeight) + Owner.D(12));
                     }
-                    y += Owner.D(4);
+                    int height = MeasureEntryHeight();
+                    int entryTop = diaryTitleLabel.Bottom + Owner.D(12);
+                    int AvailableRecordsHeight() => Math.Max(Owner.D(24), diaryPanel.ClientSize.Height - entryTop - height - Owner.D(8) - Owner.D(12));
+                    if (contentHeight > AvailableRecordsHeight())
+                    {
+                        width = Math.Max(Owner.D(60), fullWidth - Owner.D(12));
+                        height = MeasureEntryHeight();
+                    }
+                    localDiaryButton.Bounds = new Rectangle(Owner.D(8), diaryTitleLabel.Bottom + Owner.D(12), width, height);
+                    diaryEntryLabel.Bounds = new Rectangle(inset, wrap ? Owner.D(6) : (height - titleHeight) / 2, Math.Min(titleWidth, width - inset * 2), titleHeight);
+                    diaryHintLabel.Bounds = wrap
+                        ? new Rectangle(inset, diaryEntryLabel.Bottom + Owner.D(4), width - inset * 2, hintHeight)
+                        : new Rectangle(diaryEntryLabel.Right + gap, 0, width - diaryEntryLabel.Right - gap - inset, height);
+                    int recordsTop = localDiaryButton.Bottom + Owner.D(8);
+                    diaryRecordsPanel.Bounds = new Rectangle(Owner.D(8), recordsTop, fullWidth, AvailableRecordsHeight());
+                    diaryRecordsPanel.SetContentHeight(contentHeight);
+                    int rowWidth = width;
+                    Point scroll = diaryRecordsPanel.AutoScrollPosition;
+                    int y = 0;
+                    for (int group = 0; group < 2; group++)
+                    {
+                        Label heading = group == 0 ? diaryRecentLabel : diaryFrequentLabel;
+                        heading.Bounds = new Rectangle(0, y + scroll.Y, rowWidth, Owner.D(22));
+                        y += Owner.D(26);
+                        foreach (Button button in diaryRecordButtons.Skip(group * LocalDiaryManager.ShortcutLimit).Take(LocalDiaryManager.ShortcutLimit))
+                        {
+                            if (button.Tag == null) continue;
+                            button.Bounds = new Rectangle(0, y + scroll.Y, rowWidth, Owner.D(30));
+                            y += Owner.D(36);
+                        }
+                        y += Owner.D(4);
+                    }
+                    Owner.LayoutSlimScrollBar(diaryRecordsPanel, diarySlimScrollBar);
                 }
-                diaryRecordsPanel.AutoScrollMinSize = new Size(0, y);
+                finally { arrangingDiary = false; }
             }
 
             protected override void Dispose(bool disposing)
@@ -155,6 +180,7 @@ namespace ShareX
                 diaryPanel.Controls.Add(diaryTitleLabel);
                 diaryTitleLogo = Owner.CreateTitleLogo(diaryPanel);
                 localDiaryButton = Owner.CreateOtherButton("");
+                ((OtherActionButton)localDiaryButton).PersistentAccentBorder = true;
                 localDiaryButton.Font = new Font(localDiaryButton.Font.FontFamily, localDiaryButton.Font.SizeInPoints + 2f, localDiaryButton.Font.Style);
                 localDiaryButton.AccessibleName = "打开本地日记";
                 localDiaryButton.Click += async (sender, e) => await OpenDiaryAsync();
@@ -168,11 +194,15 @@ namespace ShareX
                 diaryEntryLabel.Click += (sender, e) => localDiaryButton.PerformClick();
                 diaryHintLabel.Click += (sender, e) => localDiaryButton.PerformClick();
                 diaryHintLabel.TextChanged += (sender, e) => { if (diaryRecordsPanel != null && Owner.expanded) ArrangePage(); };
-                diaryRecordsPanel = new Panel { AutoScroll = true, BackColor = TodoWidgetForm.WidgetBackgroundColor };
+                diaryRecordsPanel = Owner.CreateVirtualClipboardList();
                 diaryPanel.Controls.Add(diaryRecordsPanel);
+                diarySlimScrollBar = new SlimListScrollBar(diaryRecordsPanel, Owner.D(12));
+                diaryRecordsPanel.Controls.Add(diarySlimScrollBar);
                 diaryRecentLabel = new Label { Text = "最近编辑", AutoSize = false, BackColor = Color.Transparent, ForeColor = TodoWidgetForm.HalfWhiteColor };
                 diaryFrequentLabel = new Label { Text = "最常使用", AutoSize = false, BackColor = Color.Transparent, ForeColor = TodoWidgetForm.HalfWhiteColor };
                 diaryRecordsPanel.Controls.AddRange(new Control[] { diaryRecentLabel, diaryFrequentLabel });
+                Owner.AttachListWheel(diaryRecentLabel, diaryRecordsPanel);
+                Owner.AttachListWheel(diaryFrequentLabel, diaryRecordsPanel);
                 for (int i = 0; i < diaryRecordButtons.Length; i++)
                 {
                     Button button = Owner.CreateOtherButton("");
@@ -184,7 +214,9 @@ namespace ShareX
                     button.Visible = false;
                     button.Click += async (sender, e) => { if (button.Tag is LocalDiaryManager.DiaryEntry entry) await OpenDiaryAsync(entry.path); };
                     diaryRecordButtons[i] = button; diaryRecordsPanel.Controls.Add(button);
+                    Owner.AttachListWheel(button, diaryRecordsPanel);
                 }
+                diaryRecordsPanel.ViewportChanged += (_, _) => LayoutDiaryPanel();
                 diaryActivityTimer = new Timer { Interval = 1500 };
                 diaryActivityTimer.Tick += async (sender, e) => { if (Owner.expanded && Owner.Settings.ActiveModule == "Diary") await RefreshDiaryShortcutsAsync(); };
                 diaryActivityTimer.Start();

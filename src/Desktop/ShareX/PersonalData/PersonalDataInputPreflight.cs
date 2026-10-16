@@ -9,7 +9,7 @@ namespace ShareX
     {
         internal const string MissingComponent = "迁移输入法个人数据需要文本输入法组件。请先到“全局设置 → 注册”下载或修复文本输入组件，或取消勾选“输入法个人数据”后重试。";
 
-        private static bool ConverterPresent(string bundleDirectory)
+        internal static bool ConverterPresent(string bundleDirectory)
         {
             // Configuration conversion exits before engine initialization. It only
             // needs the worker, not dictionaries, settings UI or TSF registration.

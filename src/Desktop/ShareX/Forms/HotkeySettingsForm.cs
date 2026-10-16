@@ -159,7 +159,7 @@ namespace ShareX
         private HotkeySelectionControl AddHotkeySelectionControl(HotkeySettings hotkeySettings)
         {
             HotkeySelectionControl control = new HotkeySelectionControl(hotkeySettings);
-            control.Margin = new Padding(0, 0, 0, MainMenuAppearance.Scale(control, 8));
+            control.Margin = new Padding(0, 0, 0, MainMenuAppearance.Scale(control, 4));
             control.SelectedChanged += control_SelectedChanged;
             control.HotkeyChanged += control_HotkeyChanged;
             flpHotkeys.Controls.Add(control);
