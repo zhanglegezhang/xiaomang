@@ -1,0 +1,62 @@
+{
+  "productVersion": "2.7",
+  "releaseTag": "v2.7-20261017",
+  "releaseDate": "2026-10-17",
+  "source": "https://github.com/zhanglegezhang/xiaomang/tree/v2.7-20261017",
+  "usagePackage": {
+    "asset": "xiaomang2.7_2026-10-17_usage.zip",
+    "bytes": 117681958,
+    "url": "https://github.com/zhanglegezhang/xiaomang/releases/download/v2.7-20261017/xiaomang2.7_2026-10-17_usage.zip",
+    "sha256": "54CAC86EBACAA4F43FE3523CA5132BA9B26282FCFB8355D70B3CA97C9BAFC1CF",
+    "files": 526,
+    "uncompressedBytes": 274778761.0
+  },
+  "binaries": [
+    {
+      "File": "ShareX.dll",
+      "SHA256": "CEF424A5EAF4EAEA0D1420D454C9B9A3CA988B731F50EDD841F198009EBA337D",
+      "SourceDocuments": 276,
+      "Mismatches": 0
+    },
+    {
+      "File": "ShareX.HelpersLib.dll",
+      "SHA256": "D715D5E785F51455DDDDDAD05765AF76ACBDC62358887BF77E8A90A0B02D8BF5",
+      "SourceDocuments": 231,
+      "Mismatches": 0
+    },
+    {
+      "File": "ShareX.HistoryLib.dll",
+      "SHA256": "8F7AE375632F2FB6C10A5095F37ADE2A2715630FE8C03F51207F0AD295833A50",
+      "SourceDocuments": 26,
+      "Mismatches": 0
+    },
+    {
+      "File": "ShareX.ImageEffectsLib.dll",
+      "SHA256": "D1F796501BFF1C8F3B9691C7A307DA58284824DC7F0BE65E52F3943731A11469",
+      "SourceDocuments": 63,
+      "Mismatches": 0
+    },
+    {
+      "File": "ShareX.MediaLib.dll",
+      "SHA256": "84CBABAA7F481CF593439B48F611C8935ECE303C995FFA517CB3CCC20CBDBE93",
+      "SourceDocuments": 26,
+      "Mismatches": 0
+    },
+    {
+      "File": "ShareX.ScreenCaptureLib.dll",
+      "SHA256": "E619352A895D8FFE0B20E055B0EEB4F62C79B39C70E30EE331797A65F5478E09",
+      "SourceDocuments": 105,
+      "Mismatches": 0
+    },
+    {
+      "File": "ShareX.UploadersLib.dll",
+      "SHA256": "E759C4C494765CA3B549F585CEDF15D2C3C59B6554F56A525AB1E858E7469275",
+      "SourceDocuments": 189,
+      "Mismatches": 0
+    }
+  ],
+  "notes": [
+    "Desktop rebuilt from this tag; unchanged native and diary binaries verified against previous release.",
+    "Optional components remain v1.0; personal data and development backups excluded."
+  ]
+}

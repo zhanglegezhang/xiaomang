@@ -46,6 +46,11 @@ namespace ShareX.ScreenCaptureLib
         public bool DrawCursor { get; set; }
         public FFmpegOptions FFmpeg { get; set; } = new FFmpegOptions();
 
+        // Session-only local stream; never stored in FFmpegOptions or preferences.
+        internal string MixedAudioInputUrl { get; set; }
+        internal bool UsesMixedAudio => FFmpeg.IsAudioSourceSelected &&
+            string.Equals(FFmpeg.AudioSource, FFmpegCaptureDevice.SystemAndMicrophone.Value, StringComparison.Ordinal);
+
         public string GetFFmpegCommands()
         {
             string commands;
@@ -65,6 +70,8 @@ namespace ShareX.ScreenCaptureLib
 
             if (!IsLossless && FFmpeg.UseCustomCommands && !string.IsNullOrEmpty(FFmpeg.CustomCommands))
             {
+                if (IsRecording && UsesMixedAudio)
+                    throw new InvalidOperationException("电脑声音＋麦克风不能与自定义 FFmpeg 命令同时使用，请关闭自定义命令。");
                 commands = FFmpeg.CustomCommands.
                     Replace("$fps$", FPS.ToString(), StringComparison.OrdinalIgnoreCase).
                     Replace("$area_x$", CaptureArea.X.ToString(), StringComparison.OrdinalIgnoreCase).
@@ -96,11 +103,17 @@ namespace ShareX.ScreenCaptureLib
 
             if (IsRecording)
             {
+                if (UsesMixedAudio)
+                {
+                    string inputUrl = MixedAudioInputUrl ?? "tcp://127.0.0.1:$audio_port$";
+                    args.Append("-thread_queue_size 64 -probesize 32 -analyzeduration 1 -f f32le -ar 48000 -ac 2 ");
+                    args.Append($"-i \"{inputUrl}\" ");
+                }
                 if (FFmpeg.IsVideoSourceSelected)
                 {
                     if (FFmpeg.VideoSource.Equals(FFmpegCaptureDevice.GDIGrab.Value, StringComparison.OrdinalIgnoreCase))
                     {
-                        if (FFmpeg.IsAudioSourceSelected)
+                        if (FFmpeg.IsAudioSourceSelected && !UsesMixedAudio)
                         {
                             AppendInputDevice(args, "dshow", true);
                             args.Append($"-i audio={Helpers.EscapeCLIText(FFmpeg.AudioSource)} ");
@@ -123,7 +136,7 @@ namespace ShareX.ScreenCaptureLib
                     }
                     else if (FFmpeg.VideoSource.Equals(FFmpegCaptureDevice.DDAGrab.Value, StringComparison.OrdinalIgnoreCase))
                     {
-                        if (FFmpeg.IsAudioSourceSelected)
+                        if (FFmpeg.IsAudioSourceSelected && !UsesMixedAudio)
                         {
                             AppendInputDevice(args, "dshow", true);
                             args.Append($"-i audio={Helpers.EscapeCLIText(FFmpeg.AudioSource)} ");
@@ -176,11 +189,11 @@ namespace ShareX.ScreenCaptureLib
                     else
                     {
                         // https://ffmpeg.org/ffmpeg-devices.html#dshow
-                        AppendInputDevice(args, "dshow", FFmpeg.IsAudioSourceSelected);
+                        AppendInputDevice(args, "dshow", FFmpeg.IsAudioSourceSelected && !UsesMixedAudio);
                         args.Append($"-framerate {framerate} ");
                         args.Append($"-i video={Helpers.EscapeCLIText(FFmpeg.VideoSource)}");
 
-                        if (FFmpeg.IsAudioSourceSelected)
+                        if (FFmpeg.IsAudioSourceSelected && !UsesMixedAudio)
                         {
                             args.Append($":audio={Helpers.EscapeCLIText(FFmpeg.AudioSource)} ");
                         }
@@ -190,7 +203,7 @@ namespace ShareX.ScreenCaptureLib
                         }
                     }
                 }
-                else if (FFmpeg.IsAudioSourceSelected)
+                else if (FFmpeg.IsAudioSourceSelected && !UsesMixedAudio)
                 {
                     AppendInputDevice(args, "dshow", true);
                     args.Append($"-i audio={Helpers.EscapeCLIText(FFmpeg.AudioSource)} ");
@@ -330,6 +343,11 @@ namespace ShareX.ScreenCaptureLib
                 args.Append($"-t {duration} "); // duration limit
             }
 
+            // AAC adds a negative priming packet. Normalize each recording segment so
+            // pause/resume stream-copy concatenation has strictly monotonic timestamps.
+            if (IsRecording && UsesMixedAudio)
+                args.Append("-avoid_negative_ts make_zero ");
+
             args.Append("-y "); // overwrite file
 
             string output = isCustom ? "$output$" : Path.ChangeExtension(OutputPath, IsLossless ? "mp4" : FFmpeg.Extension);
@@ -340,6 +358,10 @@ namespace ShareX.ScreenCaptureLib
 
         private void AppendInputDevice(StringBuilder args, string inputDevice, bool audioSource)
         {
+            // FFmpeg otherwise probes several seconds of video before consuming the
+            // already-running PCM input, overflowing it and delaying the start.
+            if (UsesMixedAudio && !audioSource)
+                args.Append("-probesize 32 -analyzeduration 1 -fpsprobesize 0 ");
             args.Append($"-f {inputDevice} ");
             args.Append("-thread_queue_size 1024 "); // This option sets the maximum number of queued packets when reading from the file or device.
             args.Append("-rtbufsize 256M "); // Default real time buffer size is 3041280 (3M)

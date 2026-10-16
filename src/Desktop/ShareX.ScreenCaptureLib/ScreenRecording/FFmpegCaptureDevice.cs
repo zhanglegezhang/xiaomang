@@ -37,6 +37,7 @@ namespace ShareX.ScreenCaptureLib
         }
 
         public static FFmpegCaptureDevice None { get; } = new FFmpegCaptureDevice("", "None");
+        public static FFmpegCaptureDevice SystemAndMicrophone { get; } = new FFmpegCaptureDevice("xiaomang-system-and-microphone", "电脑声音＋麦克风（系统默认设备）");
         public static FFmpegCaptureDevice GDIGrab { get; } = new FFmpegCaptureDevice("gdigrab", "gdigrab (Graphics Device Interface)");
         public static FFmpegCaptureDevice DDAGrab { get; } = new FFmpegCaptureDevice("ddagrab", "ddagrab (Desktop Duplication API)");
         public static FFmpegCaptureDevice ScreenCaptureRecorder { get; } = new FFmpegCaptureDevice("screen-capture-recorder", "dshow (screen-capture-recorder)");

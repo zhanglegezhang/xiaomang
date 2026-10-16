@@ -103,6 +103,7 @@ namespace ShareX.ScreenCaptureLib
         private ImageCache imgCache;
         private FFmpegCLIManager ffmpeg;
         private bool stopRequested;
+        private RecordingAudioMixer audioMixer;
 
         public ScreenRecorder(ScreenRecordOutput outputType, ScreenRecordingOptions options, Screenshot screenshot, Rectangle captureRectangle)
         {
@@ -154,10 +155,30 @@ namespace ShareX.ScreenCaptureLib
                 {
                     try
                     {
-                        if (!ffmpeg.Run(Options.GetFFmpegCommands()))
+                        if (Options.UsesMixedAudio)
+                        {
+                            ffmpeg.ShowError = false;
+                            if (!Options.IsLossless && Options.FFmpeg.UseCustomCommands)
+                                throw new InvalidOperationException("电脑声音＋麦克风不能与自定义 FFmpeg 命令同时使用，请关闭自定义命令。");
+                            audioMixer = new RecordingAudioMixer(() => ffmpeg.Close());
+                            audioMixer.Start();
+                            Options.MixedAudioInputUrl = audioMixer.InputUrl;
+                        }
+                        if (stopRequested) return;
+                        if (!ffmpeg.Run(Options.GetFFmpegCommands()) && audioMixer?.Error == null)
                             throw new IOException("FFmpeg 录制失败，已保留已有录制文件。" + Environment.NewLine + ffmpeg.Output);
                     }
-                    finally { IsRecording = false; }
+                    finally
+                    {
+                        try { audioMixer?.Dispose(); }
+                        finally
+                        {
+                            Options.MixedAudioInputUrl = null;
+                            IsRecording = false;
+                        }
+                    }
+                    if (audioMixer?.Error != null)
+                        throw new IOException("录屏声音采集失败，已有录制文件已保留。" + Environment.NewLine + audioMixer.Error.Message, audioMixer.Error);
                 }
                 else
                 {
@@ -206,6 +227,7 @@ namespace ShareX.ScreenCaptureLib
         public void StopRecording()
         {
             stopRequested = true;
+            audioMixer?.RequestStop();
 
             if (ffmpeg != null)
             {
@@ -319,6 +341,7 @@ namespace ShareX.ScreenCaptureLib
 
         public void Dispose()
         {
+            audioMixer?.Dispose();
             if (ffmpeg != null)
             {
                 ffmpeg.Dispose();

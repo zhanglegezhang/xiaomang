@@ -9,7 +9,7 @@
 也可以从 [Releases](https://github.com/zhanglegezhang/xiaomang/releases) 下载使用包，完整解压后运行 `xiaomang.exe`。
 
 - 系统要求：Windows 11 22H2 及以上，x64。部分功能需要 WebView2，缺少时按程序提示安装。
-- 启动入口首次下载约 118 MB（112.2 MiB），解压约 275 MB，保存在 `%LOCALAPPDATA%\XiaomangSourceLauncher\v2.6-20261016`。个人记录不会写入源码仓库。
+- 启动入口首次下载约 118 MB（112.2 MiB），解压约 275 MB，保存在 `%LOCALAPPDATA%\XiaomangSourceLauncher\v2.7-20261017`。个人记录不会写入源码仓库。
 - 从旧版本迁移时，先在旧程序导出个人数据，再在新版本导入。启动入口按版本使用独立目录，不会自动迁移旧目录中的记录；首次切换本版本会重新下载，后续复用。
 - 下载或校验失败不执行程序，可重新运行重试。需要代理时，在 PowerShell 中运行 `./scripts/Start-Xiaomang.ps1 -Proxy http://你的代理地址:端口`。
 - 首次使用密码向发布者索取；功能思维导图、版本日志和检查更新在程序“关于”中。
@@ -45,15 +45,17 @@
 
 ## 版本与对应源码
 
-当前启动入口固定使用 [小蟒 2.6 / 2026-10-16](https://github.com/zhanglegezhang/xiaomang/releases/tag/v2.6-20261016)，不跟随 latest 自动更换版本。
+当前启动入口固定使用 [小蟒 2.7 / 2026-10-17](https://github.com/zhanglegezhang/xiaomang/releases/tag/v2.7-20261017)，不跟随 latest 自动更换版本。
 
-- 使用包：`xiaomang2.6_2026-10-16_usage.zip`
-- SHA256：`CB4661AC1EF3AF337EE0AF2F4B3BD76AD2E537C1AFE7061C9BEC8BE715A009AC`
-- 对应源码标签：`v2.6-20261016`。本次小版本升级为 2.6。
-- 优化全局搜索缓存、Markdown预览复用与截图设置排版；搜索时保留上次结果。
-- 修复个人数据导入与重启，支持缺少输入法组件时暂存并恢复词库；优化日记入口、便签拖拽、快捷键及关于页布局。
+- 使用包：`xiaomang2.7_2026-10-17_usage.zip`
+- SHA256：`54CAC86EBACAA4F43FE3523CA5132BA9B26282FCFB8355D70B3CA97C9BAFC1CF`
+- 对应源码标签：`v2.7-20261017`。本次小版本升级为 2.7。
+- 修复更新助手准备超时与取消等待，增强更新过程稳定性。
+- 录屏支持电脑声音与麦克风混音，完善设备选择、暂停和设备中断处理。
 
-该标签包含完整维护源码、资源与构建入口，和同一 Release 的使用包对应，详细校验信息见 [发布对应关系](docs/RELEASE-v2.6-20261016.json) 和 [验证说明](docs/VERIFICATION.md)。历史标签与使用包保留。GitHub 自动生成的 Source code 附件是源码，不是预编译程序。按需组件仍固定使用 [xiaomang_component v1.0](https://github.com/zhanglegezhang/xiaomang_component/releases/tag/v1.0)，本次没有重新发布该组件仓库；输入法图标源码已更新，v1.0 下载包中的图标仍以原组件为准。
+该标签包含完整维护源码、资源与构建入口，和同一 Release 的使用包对应，详细校验信息见 [发布对应关系](docs/RELEASE-v2.7-20261017.json) 和 [验证说明](docs/VERIFICATION.md)。历史标签与使用包保留。GitHub 自动生成的 Source code 附件是源码，不是预编译程序。按需组件仍固定使用 [xiaomang_component v1.0](https://github.com/zhanglegezhang/xiaomang_component/releases/tag/v1.0)，本次没有重新发布该组件仓库；输入法图标源码已更新，v1.0 下载包中的图标仍以原组件为准。
+
+旧版更新器首次升级到2.7仍可能遇到原有超时，可重试或手动下载使用包并迁移个人数据；升级后才使用新的等待逻辑。
 
 ## 开源来源与许可证
 

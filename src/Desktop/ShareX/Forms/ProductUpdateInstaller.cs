@@ -24,12 +24,19 @@ namespace ShareX
             { UseShellExecute = false, CreateNoWindow = true, WorkingDirectory = stage };
             foreach (string arg in new[] { "-NoProfile", "-NonInteractive", "-ExecutionPolicy", "Bypass", "-File", script, "-Config", config }) info.ArgumentList.Add(arg);
             using var helper = Process.Start(info) ?? throw new IOException("更新助手无法启动。");
-            for (int i = 0; i < 50; i++)
+            await WaitUntilReady(stage, helper);
+        }
+
+        internal static async Task WaitUntilReady(string stage, Process helper)
+        {
+            var elapsed = Stopwatch.StartNew();
+            while (elapsed.Elapsed < TimeSpan.FromSeconds(60))
             {
-                if (File.Exists(Path.Combine(stage, "ready"))) return;
                 if (helper.HasExited) throw new IOException("更新助手准备失败，请查看更新目录中的 result.txt。");
+                if (File.Exists(Path.Combine(stage, "ready"))) return;
                 await Task.Delay(100);
             }
+            if (!helper.HasExited && File.Exists(Path.Combine(stage, "ready"))) return;
             File.WriteAllText(Path.Combine(stage, "cancel"), "cancel");
             throw new IOException("更新助手准备超时，原程序保留。");
         }
@@ -44,6 +51,9 @@ $backup=Join-Path $c.Stage 'program-backup'
 $result=Join-Path $c.Stage 'result.txt'
 $entry=Join-Path $c.App 'xiaomang.exe'
 $changed=$false
+function CheckCancelled {
+ if(Test-Path -LiteralPath (Join-Path $c.Stage 'cancel')){throw 'Update cancelled'}
+}
 function Hash([string]$path) {
  $stream=[IO.File]::OpenRead($path);$sha=[Security.Cryptography.SHA256]::Create()
  try{return [BitConverter]::ToString($sha.ComputeHash($stream)).Replace('-','')}finally{$sha.Dispose();$stream.Dispose()}
@@ -60,6 +70,7 @@ try {
  $items=@(Get-ChildItem -LiteralPath $c.Payload -Recurse -File)
  if(!$items.Count){throw 'Empty payload'}
  foreach($file in $items) {
+  CheckCancelled
   Safe $file.FullName
   $rel=$file.FullName.Substring($payloadRoot.Length)
   $target=[IO.Path]::GetFullPath((Join-Path $c.App $rel))
@@ -68,10 +79,15 @@ try {
   $journal.Add([pscustomobject]@{Relative=$rel;Existed=(Test-Path -LiteralPath $target -PathType Leaf);Hash=(Hash $file.FullName)})
  }
  $journal|ConvertTo-Json -Depth 4|Set-Content -LiteralPath (Join-Path $c.Stage 'journal.json') -Encoding UTF8
+ CheckCancelled
  Set-Content -LiteralPath (Join-Path $c.Stage 'ready') -Value 'ready'
  $old=Get-Process -Id $c.ProcessId -ErrorAction SilentlyContinue
  if($old -and $old.StartTime.ToUniversalTime().Ticks -eq $c.Started) {
-  if(!$old.WaitForExit(90000)){throw 'Application did not exit; no files replaced'}
+  $waiting=[Diagnostics.Stopwatch]::StartNew()
+  while(!$old.WaitForExit(100)) {
+   CheckCancelled
+   if($waiting.ElapsedMilliseconds -ge 90000){throw 'Application did not exit; no files replaced'}
+  }
  }
  if(Test-Path -LiteralPath (Join-Path $c.Stage 'cancel')){throw 'Update cancelled'}
  foreach($running in Get-Process xiaomang -ErrorAction SilentlyContinue){if($running.Path -eq $entry){throw 'Application was reopened; no files replaced'}}

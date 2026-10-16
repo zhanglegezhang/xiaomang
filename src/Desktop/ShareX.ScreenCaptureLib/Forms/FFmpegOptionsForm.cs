@@ -195,6 +195,8 @@ namespace ShareX.ScreenCaptureLib
 
             if (!IsDisposed)
             {
+                string videoSource = Options.FFmpeg.VideoSource;
+                string audioSource = Options.FFmpeg.AudioSource;
                 cbVideoSource.Items.Clear();
                 cbVideoSource.Items.Add(FFmpegCaptureDevice.None);
                 cbVideoSource.Items.Add(FFmpegCaptureDevice.GDIGrab);
@@ -206,12 +208,18 @@ namespace ShareX.ScreenCaptureLib
 
                 cbAudioSource.Items.Clear();
                 cbAudioSource.Items.Add(FFmpegCaptureDevice.None);
+                cbAudioSource.Items.Add(FFmpegCaptureDevice.SystemAndMicrophone);
 
                 if (devices != null)
                 {
                     cbVideoSource.Items.AddRange(devices.VideoDevices.Select(x => new FFmpegCaptureDevice(x, $"dshow ({x})")).ToArray());
                     cbAudioSource.Items.AddRange(devices.AudioDevices.Select(x => new FFmpegCaptureDevice(x, $"dshow ({x})")).ToArray());
                 }
+
+                // Clearing a selected ComboBox raises SelectedIndexChanged. Keep preferences
+                // across device refreshes rather than silently replacing them with None.
+                Options.FFmpeg.VideoSource = videoSource;
+                Options.FFmpeg.AudioSource = audioSource;
 
                 if (selectDevices && cbVideoSource.Items.Cast<FFmpegCaptureDevice>().
                     Any(x => x.Value.Equals(FFmpegCaptureDevice.ScreenCaptureRecorder.Value, StringComparison.OrdinalIgnoreCase)))
