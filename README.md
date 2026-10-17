@@ -9,7 +9,7 @@
 也可以从 [Releases](https://github.com/zhanglegezhang/xiaomang/releases) 下载使用包，完整解压后运行 `xiaomang.exe`。
 
 - 系统要求：Windows 11 22H2 及以上，x64。部分功能需要 WebView2，缺少时按程序提示安装。
-- 启动入口首次下载约 118 MB（112.2 MiB），解压约 275 MB，保存在 `%LOCALAPPDATA%\XiaomangSourceLauncher\v2.8-20261017`。个人记录不会写入源码仓库。
+- 启动入口首次下载约 118 MB（112.2 MiB），解压约 275 MB，保存在 `%LOCALAPPDATA%\XiaomangSourceLauncher\v2.9-20261017`。个人记录不会写入源码仓库。
 - 从旧版本迁移时，先在旧程序导出个人数据，再在新版本导入。启动入口按版本使用独立目录，不会自动迁移旧目录中的记录；首次切换本版本会重新下载，后续复用。
 - 下载或校验失败不执行程序，可重新运行重试。需要代理时，在 PowerShell 中运行 `./scripts/Start-Xiaomang.ps1 -Proxy http://你的代理地址:端口`。
 - 首次使用密码向发布者索取；功能思维导图、版本日志和检查更新在程序“关于”中。
@@ -45,15 +45,16 @@
 
 ## 版本与对应源码
 
-当前启动入口固定使用 [小蟒 2.8 / 2026-10-17](https://github.com/zhanglegezhang/xiaomang/releases/tag/v2.8-20261017)，不跟随 latest 自动更换版本。
+当前启动入口固定使用 [小蟒 2.9 / 2026-10-17](https://github.com/zhanglegezhang/xiaomang/releases/tag/v2.9-20261017)，不跟随 latest 自动更换版本。
 
-- 使用包：`xiaomang2.8_2026-10-17_usage.zip`
-- SHA256：`3CCD59AAEBCE2385A788A435278CB4FF58A2D0D7AF91F90FEC57E1C54C0542DB`
-- 对应源码标签：`v2.8-20261017`。本次小版本升级为 2.8。
+- 使用包：`xiaomang2.9_2026-10-17_usage.zip`
+- SHA256：`8A92C28A565663419ACDFC7E95DEEEC9561143612E560A4A8515FE3A57D1D760`
+- 对应源码标签：`v2.9-20261017`。本次小版本升级为 2.9。
+- 修复鼠标右键收藏注册失败：可修复旧目录失效的菜单入口，失败时显示具体步骤、错误码、路径并保存诊断日志。
 - 更新准备显示文件检查进度；持续有进展时继续等待，停滞时安全自动重试一次并复用下载包。
 - 录屏支持电脑声音与麦克风混音，完善设备选择、暂停和设备中断处理。
 
-该标签包含完整维护源码、资源与构建入口，和同一 Release 的使用包对应，详细校验信息见 [发布对应关系](docs/RELEASE-v2.8-20261017.json) 和 [验证说明](docs/VERIFICATION.md)。历史标签与使用包保留。GitHub 自动生成的 Source code 附件是源码，不是预编译程序。按需组件仍固定使用 [xiaomang_component v1.0](https://github.com/zhanglegezhang/xiaomang_component/releases/tag/v1.0)，本次没有重新发布该组件仓库；输入法图标源码已更新，v1.0 下载包中的图标仍以原组件为准。
+该标签包含完整维护源码、资源与构建入口，和同一 Release 的使用包对应，详细校验信息见 [发布对应关系](docs/RELEASE-v2.9-20261017.json) 和 [验证说明](docs/VERIFICATION.md)。历史标签与使用包保留。GitHub 自动生成的 Source code 附件是源码，不是预编译程序。按需组件仍固定使用 [xiaomang_component v1.0](https://github.com/zhanglegezhang/xiaomang_component/releases/tag/v1.0)，本次没有重新发布该组件仓库；输入法图标源码已更新，v1.0 下载包中的图标仍以原组件为准。
 
 已发布的旧版更新器不会被本版反向修改；旧版升级若遇到超时，可下载使用包并通过个人数据导出、导入迁移。2.8 内的更新准备支持进度显示与安全自动重试。
 

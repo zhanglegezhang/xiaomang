@@ -73,7 +73,7 @@ namespace ShareX
             try
             {
                 var result=await manager.AddPackageByUriAsync(new Uri(path),options);
-                return (result.ExtendedErrorCode,result.ErrorText);
+                return (result.ExtendedErrorCode,result.ErrorText+(result.ExtendedErrorCode!=null?"\nWindows 部署活动 ID："+result.ActivityId:""));
             }
             catch(Exception error){return (error,error.Message);}
         }
@@ -83,15 +83,117 @@ namespace ShareX
             {
                 var package=new PackageManager().FindPackagesForUser("",Name,Publisher).FirstOrDefault();
                 if(package==null)return "外层菜单尚未注册。";
-                string location=package.EffectiveExternalLocation?.Path;
-                if(string.IsNullOrEmpty(location) || !Path.TrimEndingDirectorySeparator(location).Equals(Path.TrimEndingDirectorySeparator(AppContext.BaseDirectory),StringComparison.OrdinalIgnoreCase))
+                string location=ReadRegisteredLocation(()=>package.EffectiveExternalPath);
+                if(location==null)return "外层菜单需要修复，旧注册目录已失效。";
+                if(!SameLocation(location,AppContext.BaseDirectory))
                     return "外层菜单需要修复，注册位置与当前程序目录不同。";
                 return "外层菜单已注册；右键文件或目录即可添加到收藏夹。";
             }
             catch(Exception error){return "无法读取外层菜单状态："+error.Message;}
         }
+        private static bool SameLocation(string first,string second)=>
+            Path.TrimEndingDirectorySeparator(Path.GetFullPath(first)).Equals(Path.TrimEndingDirectorySeparator(Path.GetFullPath(second)),StringComparison.OrdinalIgnoreCase);
+
+        internal static string ReadRegisteredLocation(Func<string> read)
+        {
+            try
+            {
+                string location=read();
+                if(string.IsNullOrWhiteSpace(location))throw new IOException("系统未返回菜单注册目录，保留原入口。请查看诊断日志。");
+                string full=Path.GetFullPath(location);
+                // Unlike Directory.Exists, this preserves access-denied and other errors.
+                if((File.GetAttributes(full)&FileAttributes.Directory)==0)throw new IOException("菜单注册位置不是目录，保留原入口："+full);
+                return full;
+            }
+            catch(Exception error) when(error.HResult==unchecked((int)0x80070002)||error.HResult==unchecked((int)0x80070003))
+            {
+                return null; // Only a confirmed missing file/path permits stale-entry repair.
+            }
+        }
+
+        internal static async Task RepairConflictAsync(Func<string> readLocation,string current,Func<Task> remove,
+            Func<string,Task> add,Action<string,string> stage)
+        {
+            stage("读取旧菜单注册目录",Name+"（Windows 已注册菜单）");
+            string previous=ReadRegisteredLocation(readLocation);
+            if(previous!=null && SameLocation(previous,current))return;
+            stage(previous==null?"清理小蟒失效菜单入口":"移除旧位置菜单入口",previous??Name);
+            await remove();
+            stage("将菜单注册到当前目录",current);
+            try { await add(current); }
+            catch(Exception failure)
+            {
+                if(previous==null)throw new IOException("旧菜单目录已失效，已清理失效入口，但注册当前目录失败；收藏数据不受影响，请按诊断信息重试。",failure);
+                stage("恢复旧位置菜单入口",previous);
+                try { await add(previous); }
+                catch(Exception rollback)
+                {
+                    throw new IOException("修复和恢复旧入口均失败；收藏数据不受影响。恢复错误："+rollback.Message+
+                        "（0x"+rollback.HResult.ToString("X8")+"）",failure);
+                }
+                throw new IOException("修复失败，已恢复之前的入口。",failure);
+            }
+        }
         internal static async Task ChangeAsync(bool install,bool trustPublisher)
         {
+            string step=install?"检查菜单文件":"读取已注册菜单";
+            string related=AppContext.BaseDirectory;
+            try
+            {
+                if(install) ValidateFiles(AppContext.BaseDirectory);
+                await ChangeCoreAsync(install,trustPublisher,(name,path)=>{step=name;related=path;});
+            }
+            catch(System.ComponentModel.Win32Exception error) when(error.NativeErrorCode==1223){throw;}
+            catch(Exception error)
+            {
+                string detail=FormatFailure(step,related,error);
+                string log=SaveFailure(detail,error);
+                throw new IOException(detail+"\n"+log,error);
+            }
+        }
+        internal static void ValidateFiles(string root)
+        {
+            string bundle=Path.Combine(root,"ThirdParty","FileFavoritesMenu");
+            foreach(string path in new[]{Path.Combine(root,"xiaomang.exe"),Path.Combine(root,"resources.pri"),
+                Path.Combine(bundle,"Xiaomang.FileFavoritesMenu.msix"),Path.Combine(bundle,"XiaomangFileFavoritesMenu.dll"),
+                Path.Combine(bundle,"XiaomangMenuPublisher.cer"),Path.Combine(bundle,"Assets","Logo.png"),
+                Path.Combine(bundle,"Assets","Square44x44Logo.scale-100.png"),Path.Combine(bundle,"Assets","Square150x150Logo.scale-100.png")})
+            {
+                // Open rather than File.Exists so access failures retain their native error.
+                using var file=new FileStream(path,FileMode.Open,FileAccess.Read,FileShare.ReadWrite|FileShare.Delete);
+                if(file.Length==0)throw new IOException("菜单所需文件为空："+path);
+            }
+        }
+        internal static string FormatFailure(string step,string related,Exception error)
+        {
+            Exception cause=error;
+            while(cause.InnerException!=null)cause=cause.InnerException;
+            string missing=cause is FileNotFoundException file?file.FileName:null;
+            return "鼠标右键收藏注册失败\n步骤："+step+"\n错误码：0x"+cause.HResult.ToString("X8")+
+                (cause is System.ComponentModel.Win32Exception native?"（系统错误 "+native.NativeErrorCode+"）":"")+
+                "\n相关路径："+(string.IsNullOrEmpty(missing)?related:missing)+"\n详情："+error.Message;
+        }
+        private static string SaveFailure(string detail,Exception error)
+        {
+            string temporary=Path.Combine(Path.GetTempPath(),"Xiaomang","Logs");
+            string[] folders={string.IsNullOrEmpty(Program.PersonalFolder)?temporary:Path.Combine(Program.PersonalFolder,"Logs"),temporary};
+            foreach(string folder in folders)
+            {
+                try
+                {
+                    Directory.CreateDirectory(folder);
+                    string path=Path.Combine(folder,"FileFavoritesMenu-"+DateTime.Now.ToString("yyyyMMdd-HHmmssfff")+"-"+Guid.NewGuid().ToString("N")+".txt");
+                    File.WriteAllText(path,"时间："+DateTimeOffset.Now.ToString("O")+"\n版本："+Program.ProductVersion+
+                        "\n系统："+Environment.OSVersion+"\n程序目录："+AppContext.BaseDirectory+"\n"+detail+"\n\n"+error,new System.Text.UTF8Encoding(false));
+                    return "诊断日志："+path;
+                }
+                catch { /* Keep the original failure visible even if logging is unavailable. */ }
+            }
+            return "诊断日志无法写入，请截图保存以上错误信息。";
+        }
+        private static async Task ChangeCoreAsync(bool install,bool trustPublisher,Action<string,string> stage)
+        {
+            stage("读取系统菜单注册状态",AppContext.BaseDirectory);
             var manager=new PackageManager();
             if(!install)
             {
@@ -104,37 +206,37 @@ namespace ShareX
             }
             string packagePath=Path.Combine(Bundle,"Xiaomang.FileFavoritesMenu.msix");
             if(!File.Exists(packagePath)||!File.Exists(Path.Combine(Bundle,"XiaomangFileFavoritesMenu.dll")))throw new IOException("菜单组件不完整，请重新获取完整使用包。");
+            stage("校验菜单发布证书",CertificatePath);
             using var certificate=ValidatedCertificate();
+            stage("检查本机证书信任",CertificatePath);
             bool trusted=IsMachineTrusted(certificate);
             if(!trusted && !trustPublisher)throw new IOException("尚未信任组件发布证书，未更改注册。");
-                if(!trusted)await TrustMachinePublisherAsync();
+                if(!trusted){stage("请求管理员授权并信任证书",System.Windows.Forms.Application.ExecutablePath);await TrustMachinePublisherAsync();}
+                stage("复核本机证书信任",CertificatePath);
                 if(!IsMachineTrusted(certificate))throw new IOException("本机证书信任校验失败，未注册菜单。");
                 var options=new AddPackageOptions { ExternalLocationUri=new Uri(AppContext.BaseDirectory), ForceUpdateFromAnyVersion=true };
+                stage("注册 Windows 外层菜单",packagePath);
                 var result=await AddPackageAsync(manager,packagePath,options);
                 if(result.Error?.HResult==unchecked((int)0x80073CFB) || result.Error?.HResult==unchecked((int)0x80073D0B))
                 {
                     var existing=manager.FindPackagesForUser("",Name,Publisher).SingleOrDefault();
                     if(existing==null)throw new IOException(result.Text,result.Error);
-                    string previousLocation=existing.EffectiveExternalLocation.Path;
-                    if(!Path.TrimEndingDirectorySeparator(previousLocation).Equals(Path.TrimEndingDirectorySeparator(AppContext.BaseDirectory),StringComparison.OrdinalIgnoreCase))
+                    await RepairConflictAsync(()=>existing.EffectiveExternalPath,AppContext.BaseDirectory,async()=>
                     {
-                        // Only known installed-version/external-location conflicts can
-                        // repair this owned registration; other failures preserve it.
                         var removed=await manager.RemovePackageAsync(existing.Id.FullName);
                         if(removed.ExtendedErrorCode!=null)throw new IOException(removed.ErrorText,removed.ExtendedErrorCode);
-                        var replacement=await AddPackageAsync(manager,packagePath,options);
-                        if(replacement.Error!=null)
-                        {
-                            var rollbackOptions=new AddPackageOptions {ExternalLocationUri=new Uri(Path.GetFullPath(previousLocation)+Path.DirectorySeparatorChar)};
-                            var restored=await AddPackageAsync(manager,packagePath,rollbackOptions);
-                            if(restored.Error!=null)throw new IOException("修复和恢复旧入口均失败，请重试注册；收藏数据不受影响。",replacement.Error);
-                            throw new IOException("修复失败，已恢复之前的入口。",replacement.Error);
-                        }
-                    }
+                    },async location=>
+                    {
+                        var repairOptions=new AddPackageOptions {ExternalLocationUri=new Uri(Path.GetFullPath(location)+Path.DirectorySeparatorChar),ForceUpdateFromAnyVersion=true};
+                        var added=await AddPackageAsync(manager,packagePath,repairOptions);
+                        if(added.Error!=null)throw new IOException(added.Text,added.Error);
+                    },stage);
                 }
                 else if(result.Error!=null)throw new IOException(result.Text,result.Error);
+                stage("核对注册后的程序目录",AppContext.BaseDirectory);
                 var installed=manager.FindPackagesForUser("",Name,Publisher).SingleOrDefault();
-                if(installed==null || !Path.TrimEndingDirectorySeparator(installed.EffectiveExternalLocation.Path).Equals(Path.TrimEndingDirectorySeparator(AppContext.BaseDirectory),StringComparison.OrdinalIgnoreCase))
+                string installedLocation=installed==null?null:ReadRegisteredLocation(()=>installed.EffectiveExternalPath);
+                if(installedLocation==null || !SameLocation(installedLocation,AppContext.BaseDirectory))
                     throw new IOException("外层菜单安装位置校验失败，请重新修复。");
         }
     }
