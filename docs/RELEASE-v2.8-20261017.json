@@ -1,0 +1,58 @@
+{
+  "usagePackage": {
+    "uncompressedBytes": 274782873.0,
+    "sha256": "3CCD59AAEBCE2385A788A435278CB4FF58A2D0D7AF91F90FEC57E1C54C0542DB",
+    "files": 526,
+    "url": "https://github.com/zhanglegezhang/xiaomang/releases/download/v2.8-20261017/xiaomang2.8_2026-10-17_usage.zip",
+    "bytes": 117682614,
+    "asset": "xiaomang2.8_2026-10-17_usage.zip"
+  },
+  "binaries": [
+    {
+      "File": "ShareX.dll",
+      "SHA256": "E63DB5FFCF94C95431B532A968BF0384A0059696770E457261579A9D31B824CE",
+      "SourceDocuments": 276,
+      "Mismatches": 0
+    },
+    {
+      "File": "ShareX.HelpersLib.dll",
+      "SHA256": "17675E21C16582246D3C64E9AAB23DD0E2C25E37522BC344DB1215E3BA96C65E",
+      "SourceDocuments": 231,
+      "Mismatches": 0
+    },
+    {
+      "File": "ShareX.HistoryLib.dll",
+      "SHA256": "B32538BC9C982A5C47C313D3022FEF72268808CFB796969F328F8BDD9643257F",
+      "SourceDocuments": 26,
+      "Mismatches": 0
+    },
+    {
+      "File": "ShareX.ImageEffectsLib.dll",
+      "SHA256": "2F7854CF949AEEBAFD7E83000656B12B2866DBF5B5B0FBA125589286FF5C332F",
+      "SourceDocuments": 63,
+      "Mismatches": 0
+    },
+    {
+      "File": "ShareX.MediaLib.dll",
+      "SHA256": "1F4BC240B14D72B47A01501DBCD8D25F580F90C7D971A3E24A4A3A17E3462812",
+      "SourceDocuments": 26,
+      "Mismatches": 0
+    },
+    {
+      "File": "ShareX.ScreenCaptureLib.dll",
+      "SHA256": "D78BE0B1B77027705792C5353493160FDD93B80046B51F0993823D882B555506",
+      "SourceDocuments": 105,
+      "Mismatches": 0
+    },
+    {
+      "File": "ShareX.UploadersLib.dll",
+      "SHA256": "2F01C11B77BA679EA182A5E3DE7C29E86081547E093C245D7F62F92420099752",
+      "SourceDocuments": 189,
+      "Mismatches": 0
+    }
+  ],
+  "source": "https://github.com/zhanglegezhang/xiaomang/tree/v2.8-20261017",
+  "releaseDate": "2026-10-17",
+  "productVersion": "2.8",
+  "releaseTag": "v2.8-20261017"
+}

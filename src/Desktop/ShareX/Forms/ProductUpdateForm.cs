@@ -255,7 +255,11 @@ namespace ShareX
                 await PersonalDataManager.BackupForUpdate(this, backup, new Progress<string>(text => { if (!IsDisposed) { detail.Text = "正在保存并备份个人数据…"; notes.Text = text; } }), async () =>
                 {
                     if (!await Program.MainForm.PrepareApplicationExitAsync()) throw new IOException("保存或退出准备未完成，已取消更新。");
-                    await ProductUpdateInstaller.Start(stage, payload);
+                    SetState("installing", "正在准备更新", "正在启动更新助手…");
+                    await ProductUpdateInstaller.Start(stage, payload, new Progress<string>(text =>
+                    {
+                        if (!IsDisposed) detail.Text = text;
+                    }));
                     committing = false; Program.MainForm.ForceClose();
                 });
             }

@@ -10,7 +10,21 @@ namespace ShareX
     internal static class ProductUpdateInstaller
     {
         // The helper receives paths as JSON data, never interpolated PowerShell commands.
-        internal static async Task Start(string stage, string payload)
+        internal static async Task Start(string stage, string payload, IProgress<string> progress = null)
+        {
+            for (int attempt = 1; attempt <= 2; attempt++)
+            {
+                string preparation = Path.Combine(stage, "attempt-" + attempt + "-" + Guid.NewGuid().ToString("N"));
+                Directory.CreateDirectory(preparation);
+                try { await StartAttempt(preparation, payload, progress); return; }
+                catch (TimeoutException) when (attempt == 1)
+                {
+                    progress?.Report("准备较慢，正在自动重试；无需重新下载。");
+                }
+            }
+        }
+
+        private static async Task StartAttempt(string stage, string payload, IProgress<string> progress)
         {
             string app = Path.GetFullPath(AppContext.BaseDirectory);
             string executable = Path.Combine(app, "xiaomang.exe");
@@ -24,21 +38,54 @@ namespace ShareX
             { UseShellExecute = false, CreateNoWindow = true, WorkingDirectory = stage };
             foreach (string arg in new[] { "-NoProfile", "-NonInteractive", "-ExecutionPolicy", "Bypass", "-File", script, "-Config", config }) info.ArgumentList.Add(arg);
             using var helper = Process.Start(info) ?? throw new IOException("更新助手无法启动。");
-            await WaitUntilReady(stage, helper);
+            try { await WaitForPreparation(stage, helper, progress); }
+            catch
+            {
+                File.WriteAllText(Path.Combine(stage, "cancel"), "cancel");
+                // The caller is still alive: this helper cannot have started replacement.
+                // Never start a second helper until the first is confirmed stopped.
+                if (!helper.HasExited)
+                {
+                    var stop = Stopwatch.StartNew();
+                    while (!helper.HasExited && stop.Elapsed < TimeSpan.FromSeconds(5)) await Task.Delay(100);
+                    if (!helper.HasExited) { helper.Kill(); await helper.WaitForExitAsync(); }
+                }
+                throw;
+            }
         }
 
         internal static async Task WaitUntilReady(string stage, Process helper)
+            => await WaitForPreparation(stage, helper, null);
+
+        private static async Task WaitForPreparation(string stage, Process helper, IProgress<string> progress)
         {
             var elapsed = Stopwatch.StartNew();
-            while (elapsed.Elapsed < TimeSpan.FromSeconds(60))
+            var idle = Stopwatch.StartNew();
+            string previous = null;
+            progress?.Report("正在启动更新助手并检查程序文件…");
+            while (elapsed.Elapsed < TimeSpan.FromMinutes(10) && idle.Elapsed < TimeSpan.FromSeconds(60))
             {
                 if (helper.HasExited) throw new IOException("更新助手准备失败，请查看更新目录中的 result.txt。");
                 if (File.Exists(Path.Combine(stage, "ready"))) return;
-                await Task.Delay(100);
+                try
+                {
+                    string path = Path.Combine(stage, "progress.txt");
+                    if (File.Exists(path))
+                    {
+                        string value = File.ReadAllText(path).Trim();
+                        if (value.Length > 0 && value != previous)
+                        {
+                            previous = value; idle.Restart();
+                            progress?.Report("正在检查程序文件：" + value);
+                        }
+                    }
+                }
+                catch (IOException) { /* The helper may be replacing the progress file. */ }
+                await Task.Delay(200);
             }
             if (!helper.HasExited && File.Exists(Path.Combine(stage, "ready"))) return;
             File.WriteAllText(Path.Combine(stage, "cancel"), "cancel");
-            throw new IOException("更新助手准备超时，原程序保留。");
+            throw new TimeoutException("更新助手长时间没有进展，原程序保留。");
         }
 
         internal const string Script = """
@@ -69,6 +116,7 @@ try {
  $payloadRoot=[IO.Path]::GetFullPath($c.Payload).TrimEnd('\')+'\'
  $items=@(Get-ChildItem -LiteralPath $c.Payload -Recurse -File)
  if(!$items.Count){throw 'Empty payload'}
+ $completed=0
  foreach($file in $items) {
   CheckCancelled
   Safe $file.FullName
@@ -77,6 +125,10 @@ try {
   if(!$target.StartsWith($appRoot,[StringComparison]::OrdinalIgnoreCase)){throw 'Outside application directory'}
   Safe $target
   $journal.Add([pscustomobject]@{Relative=$rel;Existed=(Test-Path -LiteralPath $target -PathType Leaf);Hash=(Hash $file.FullName)})
+  $completed++
+  if($completed -eq 1 -or $completed % 10 -eq 0 -or $completed -eq $items.Count){
+   Set-Content -LiteralPath (Join-Path $c.Stage 'progress.txt') -Value "$completed / $($items.Count)" -Encoding UTF8
+  }
  }
  $journal|ConvertTo-Json -Depth 4|Set-Content -LiteralPath (Join-Path $c.Stage 'journal.json') -Encoding UTF8
  CheckCancelled
