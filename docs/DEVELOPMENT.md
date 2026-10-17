@@ -52,3 +52,5 @@ $env:WINDOWS_SDK_BIN = 'C:/Program Files (x86)/Windows Kits/10/bin/10.0.26100.0/
 当前发布 v2.8-20261017，源码及使用包对应关系见 RELEASE-v2.8-20261017.json。
 
 当前发布 v2.9-20261017，源码及使用包对应关系见 RELEASE-v2.9-20261017.json。
+
+2.9 重新压缩发布：v2.9-20261017-r2。运行程序未修改；压缩规则及入口见 PACKAGING.md。

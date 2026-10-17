@@ -1,0 +1,63 @@
+{
+  "source": "https://github.com/zhanglegezhang/xiaomang/tree/v2.9-20261017-r2",
+  "productVersion": "2.9",
+  "releaseDate": "2026-10-17",
+  "usagePackage": {
+    "files": 526,
+    "uncompressedBytes": 274790047.0,
+    "asset": "xiaomang2.9_2026-10-17_usage.zip",
+    "url": "https://github.com/zhanglegezhang/xiaomang/releases/download/v2.9-20261017-r2/xiaomang2.9_2026-10-17_usage.zip",
+    "sha256": "8E6C6EBA978B7E5157B688A8ADD6080D7EF662E340E2496A0F1D3ADEACB332EE",
+    "bytes": 109905302
+  },
+  "releaseTag": "v2.9-20261017-r2",
+  "binaries": [
+    {
+      "File": "ShareX.dll",
+      "SHA256": "FFFD3E9240E3F78DE4835318AC1BD706EB411A029164C97F8C3B561723CB22DD",
+      "SourceDocuments": 276,
+      "Mismatches": 0
+    },
+    {
+      "File": "ShareX.HelpersLib.dll",
+      "SHA256": "037C3A492BF89C0AE4D15A8D5CD97C039B51C2ADC448F776AE12AF5636A2D483",
+      "SourceDocuments": 231,
+      "Mismatches": 0
+    },
+    {
+      "File": "ShareX.HistoryLib.dll",
+      "SHA256": "7FC98FD8DD23EDFD0B34334F29EE15EE40FFFE2844E1488C818490C9E581B44C",
+      "SourceDocuments": 26,
+      "Mismatches": 0
+    },
+    {
+      "File": "ShareX.ImageEffectsLib.dll",
+      "SHA256": "459CEE5ED769763F89721F0C9A704387636848D15E2476DE0C6721D67F15BD13",
+      "SourceDocuments": 63,
+      "Mismatches": 0
+    },
+    {
+      "File": "ShareX.MediaLib.dll",
+      "SHA256": "A0024A5E5EACF5F7E064B4A32FCDD31B3C5974C1A0D2C0CBBECA8C4194B9CEFC",
+      "SourceDocuments": 26,
+      "Mismatches": 0
+    },
+    {
+      "File": "ShareX.ScreenCaptureLib.dll",
+      "SHA256": "C28EA9D518381CB311348C1774DBCD6E8C01CBAE38FBFA1DA51BF53AC646ECEC",
+      "SourceDocuments": 105,
+      "Mismatches": 0
+    },
+    {
+      "File": "ShareX.UploadersLib.dll",
+      "SHA256": "3525E9F33AA579DE7DAD0AACA3FF431E9860404BF3D87FEFA6547C9A569E771C",
+      "SourceDocuments": 189,
+      "Mismatches": 0
+    }
+  ],
+  "packaging": {
+    "runtime": "Same binaries as v2.9-20261017; only source-access documentation updated in usage package",
+    "tool": "7-Zip 26.03",
+    "parameters": "-tzip -mm=Deflate -mx=9 -mfb=258 -mpass=15 -mmt=off -mcu=on -scsUTF-8"
+  }
+}
