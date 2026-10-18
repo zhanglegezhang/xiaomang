@@ -32,7 +32,9 @@ namespace ShareX
             string probe = Path.Combine(app, ".update-write-" + Guid.NewGuid().ToString("N"));
             File.WriteAllText(probe, ""); File.Delete(probe);
             string config = Path.Combine(stage, "install.json"), script = Path.Combine(stage, "install.ps1");
-            File.WriteAllText(config, JsonSerializer.Serialize(new { App = app, Stage = stage, Payload = payload, ProcessId = Environment.ProcessId, Started = Process.GetCurrentProcess().StartTime.ToUniversalTime().Ticks }));
+            File.WriteAllText(config, JsonSerializer.Serialize(new { App = app, Stage = stage, Payload = payload,
+                Snapshot = Path.Combine(Path.GetDirectoryName(stage), "data-snapshot.json"),
+                ProcessId = Environment.ProcessId, Started = Process.GetCurrentProcess().StartTime.ToUniversalTime().Ticks }));
             File.WriteAllText(script, Script, new UTF8Encoding(true));
             var info = new ProcessStartInfo(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.System), "WindowsPowerShell", "v1.0", "powershell.exe"))
             { UseShellExecute = false, CreateNoWindow = true, WorkingDirectory = stage };
@@ -98,6 +100,7 @@ $backup=Join-Path $c.Stage 'program-backup'
 $result=Join-Path $c.Stage 'result.txt'
 $entry=Join-Path $c.App 'xiaomang.exe'
 $changed=$false
+$new=$null
 function CheckCancelled {
  if(Test-Path -LiteralPath (Join-Path $c.Stage 'cancel')){throw 'Update cancelled'}
 }
@@ -143,6 +146,51 @@ try {
  }
  if(Test-Path -LiteralPath (Join-Path $c.Stage 'cancel')){throw 'Update cancelled'}
  foreach($running in Get-Process xiaomang -ErrorAction SilentlyContinue){if($running.Path -eq $entry){throw 'Application was reopened; no files replaced'}}
+ if(!$c.Snapshot -or !(Test-Path -LiteralPath $c.Snapshot)){throw 'Missing data path manifest'}
+ $snapshot=Get-Content -LiteralPath $c.Snapshot -Raw -Encoding UTF8|ConvertFrom-Json
+ # Save the final on-disk state AFTER normal application shutdown, including last exit saves.
+ Add-Type -AssemblyName System.IO.Compression.FileSystem
+ Add-Type -AssemblyName System.IO.Compression
+ $finalBackup=Join-Path $c.Stage 'final-data-backup.zip'
+ $dataFiles=[Collections.Generic.List[object]]::new()
+ $seen=[Collections.Generic.HashSet[string]]::new([StringComparer]::OrdinalIgnoreCase)
+ $roots=@($snapshot.Personal,$snapshot.Input,$snapshot.Media)|Where-Object {$_}|Select-Object -Unique
+ $zip=[IO.Compression.ZipFile]::Open($finalBackup,[IO.Compression.ZipArchiveMode]::Create)
+ try {
+  foreach($root in $roots){
+   Safe $root
+   if(!(Test-Path -LiteralPath $root)){continue}
+   foreach($file in Get-ChildItem -LiteralPath $root -Recurse -File -Force){
+    Safe $file.FullName
+    $rel=$file.FullName.Substring($root.TrimEnd('\').Length).TrimStart('\')
+    if($rel -match '^Logs\\' -or $file.Name -eq '.personal-transfer.lock' -or !$seen.Add($file.FullName)){continue}
+    $hash=Hash $file.FullName;$name=[string]$dataFiles.Count
+    [IO.Compression.ZipFileExtensions]::CreateEntryFromFile($zip,$file.FullName,$name,[IO.Compression.CompressionLevel]::Fastest)|Out-Null
+    if((Hash $file.FullName) -ne $hash){throw 'Data changed while backing up'}
+    $dataFiles.Add(@{Source=$file.FullName;Archive=$name;Hash=$hash})
+   }
+  }
+  if($snapshot.Hotkeys -and (Test-Path -LiteralPath $snapshot.Hotkeys) -and $seen.Add($snapshot.Hotkeys)){
+   Safe $snapshot.Hotkeys;$hash=Hash $snapshot.Hotkeys;$name=[string]$dataFiles.Count
+   [IO.Compression.ZipFileExtensions]::CreateEntryFromFile($zip,$snapshot.Hotkeys,$name,[IO.Compression.CompressionLevel]::Fastest)|Out-Null
+   $dataFiles.Add(@{Source=$snapshot.Hotkeys;Archive=$name;Hash=$hash})
+  }
+ }finally{$zip.Dispose()}
+ $zip=[IO.Compression.ZipFile]::OpenRead($finalBackup)
+ try {foreach($file in $dataFiles){$stream=$zip.GetEntry($file.Archive).Open();$sha=[Security.Cryptography.SHA256]::Create();try{$hash=[BitConverter]::ToString($sha.ComputeHash($stream)).Replace('-','')}finally{$stream.Dispose();$sha.Dispose()};if($hash -ne $file.Hash){throw 'Final data backup verification failed'}}}finally{$zip.Dispose()}
+ $snapshot.Files=$dataFiles.ToArray();$snapshot.Backup=$finalBackup
+ $snapshot|ConvertTo-Json -Depth 6|Set-Content -LiteralPath $c.Snapshot -Encoding UTF8
+ $localManifest=Join-Path $c.Stage 'data-snapshot.json'
+ if([IO.Path]::GetFullPath($localManifest) -ne [IO.Path]::GetFullPath($c.Snapshot)){Copy-Item -LiteralPath $c.Snapshot -Destination $localManifest}
+ foreach($root in $roots){
+  if(!(Test-Path -LiteralPath $root)){continue}
+  foreach($file in Get-ChildItem -LiteralPath $root -Recurse -File -Force){
+   $rel=$file.FullName.Substring($root.TrimEnd('\').Length).TrimStart('\')
+   if($rel -match '^Logs\\' -or $file.Name -eq '.personal-transfer.lock'){continue}
+   if(!$seen.Contains($file.FullName)){throw 'New data appeared during backup; update cancelled'}
+  }
+ }
+ foreach($file in $dataFiles){if((Hash $file.Source) -ne $file.Hash){throw 'Data changed after backup; update cancelled'}}
  New-Item -ItemType Directory -Path $backup -Force|Out-Null
  foreach($item in $journal) {
   $target=Join-Path $c.App $item.Relative; Safe $target
@@ -162,12 +210,30 @@ try {
   } finally {if(Test-Path -LiteralPath $temporary){Remove-Item -LiteralPath $temporary}; if(Test-Path -LiteralPath ($temporary+'.old')){Remove-Item -LiteralPath ($temporary+'.old')}}
   if((Hash $target) -ne $item.Hash){throw 'Installed file mismatch'}
  }
- $new=Start-Process -FilePath $entry -ArgumentList '-silent' -WorkingDirectory $c.App -WindowStyle Hidden -PassThru
- if($new.WaitForExit(10000)){throw 'Updated application exited during startup'}
+ if(!$c.Snapshot -or !(Test-Path -LiteralPath $c.Snapshot)){throw 'Missing verified data snapshot'}
+ $snapshot=Get-Content -LiteralPath $c.Snapshot -Raw -Encoding UTF8|ConvertFrom-Json
+ foreach($file in $snapshot.Files){if(!(Test-Path -LiteralPath $file.Source) -or (Hash $file.Source) -ne $file.Hash){throw 'Personal data changed during upgrade'}}
+ $receipt=$c.Snapshot+'.result'
+ if(Test-Path -LiteralPath $receipt){Remove-Item -LiteralPath $receipt}
+ $env:XIAOMANG_UPGRADE_CHECK=$c.Snapshot
+ try {$new=Start-Process -FilePath $entry -WorkingDirectory $c.App -PassThru}finally{Remove-Item Env:XIAOMANG_UPGRADE_CHECK -ErrorAction SilentlyContinue}
+ $timer=[Diagnostics.Stopwatch]::StartNew()
+ while(!(Test-Path -LiteralPath $receipt)){
+  if($new.WaitForExit(200)){throw 'Updated application exited before loading data'}
+  if($timer.Elapsed.TotalSeconds -gt 90){throw 'Updated application did not confirm data loading'}
+ }
+ $loaded=Get-Content -LiteralPath $receipt -Raw -Encoding UTF8|ConvertFrom-Json
+ if(!$loaded.Success -or $loaded.ProcessId -ne $new.Id -or $loaded.Personal -ne $snapshot.Personal){throw ('Updated application failed data loading validation: '+$loaded.Error)}
  Set-Content -LiteralPath $result -Value '更新成功。个人数据备份和旧程序保留在此目录。' -Encoding UTF8
+ if(!$NoUI){Add-Type -AssemblyName System.Windows.Forms;[Windows.Forms.MessageBox]::Show(('升级完成，原数据已加载。备份与日志：'+$c.Stage),'小蟒升级完成')|Out-Null}
 } catch {
  $reason=$_.Exception.Message
  try {
+  if($new -and !$new.HasExited){$new.Kill();$new.WaitForExit()}
+  if($new -and $finalBackup -and (Test-Path -LiteralPath $finalBackup)){
+   $zip=[IO.Compression.ZipFile]::OpenRead($finalBackup)
+   try {foreach($file in $dataFiles){Safe $file.Source;[IO.Compression.ZipFileExtensions]::ExtractToFile($zip.GetEntry($file.Archive),$file.Source,$true);if((Hash $file.Source) -ne $file.Hash){throw 'Data rollback verification failed'}}}finally{$zip.Dispose()}
+  }
   if($changed){
    $restoreErrors=[Collections.Generic.List[string]]::new()
    for($i=$applied.Count-1;$i -ge 0;$i--){
@@ -183,7 +249,7 @@ try {
   $stillRunning=@(Get-Process xiaomang -ErrorAction SilentlyContinue|Where-Object Path -eq $entry)
   if(!$stillRunning.Count){Start-Process -FilePath $entry -ArgumentList '-silent' -WorkingDirectory $c.App -WindowStyle Hidden}
   Set-Content -LiteralPath $result -Value ('更新未完成，已保留或恢复旧程序：'+$reason) -Encoding UTF8
- } catch {Set-Content -LiteralPath $result -Value ('恢复未完成，请保留 program-backup 和 personal-backup.zip：'+$_.Exception.Message+'；原错误：'+$reason) -Encoding UTF8}
+ } catch {Set-Content -LiteralPath $result -Value ('恢复未完成，请保留 program-backup、final-data-backup.zip 和 data-snapshot.json：'+$_.Exception.Message+'；原错误：'+$reason) -Encoding UTF8}
  if(!$NoUI){
   Add-Type -AssemblyName System.Windows.Forms
   [Windows.Forms.MessageBox]::Show((Get-Content -LiteralPath $result -Raw -Encoding UTF8), '小蟒更新结果')|Out-Null

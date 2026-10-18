@@ -50,7 +50,7 @@ namespace ShareX
         public const string DisplayName = "小蟒";
         public const string ProductName = "小蟒";
         public const int ProductVersionMajor = 2;
-        public const int ProductVersionMinor = 11;
+        public const int ProductVersionMinor = 12;
         public static string ProductVersion => $"{ProductVersionMajor}.{ProductVersionMinor}";
         public const string MutexName = "82E6AC09-0FEF-4390-AD9F-0DD3F5561EFC";
         public static readonly string PipeName = $"{Environment.MachineName}-{Environment.UserName}-{AppName}";
@@ -361,6 +361,7 @@ namespace ShareX
             DebugWriteFlags();
 
             if (!PersonalDataManager.RecoverBeforeStartup()) return;
+            UpgradeStartupCheck.BeforeLoad();
             bool newPersonalProfile = !File.Exists(Path.Combine(PersonalFolder,"ApplicationConfig.json"));
             SettingManager.LoadInitialSettings();
             StartupManager.ApplyFirstProfileDefault(newPersonalProfile);
@@ -372,6 +373,7 @@ namespace ShareX
 
             DebugHelper.WriteLine("MainForm init started.");
             MainForm = new MainForm();
+            UpgradeStartupCheck.Schedule();
             DebugHelper.WriteLine("MainForm init finished.");
 
             XiaomangInputMethodManager.ObserveInputProfile();

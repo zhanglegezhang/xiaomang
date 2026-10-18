@@ -118,13 +118,12 @@ namespace ShareX
         internal static async Task BackupForUpdate(Form transfer, string destination, IProgress<string> progress, Func<Task> install)
         {
             var paths = Paths();
-            var selected = await Task.Run(() => PersonalDataInputPreflight.ForExport(paths.Input, Enum.GetValues<PersonalDataKind>(), XiaomangInputMethodManager.BundleDirectory, default));
+            // Upgrade preserves the original files; it must not require an input-method converter.
+            var selected = Enum.GetValues<PersonalDataKind>();
             using var scope = await Pause(paths, selected, transfer);
             try
             {
-                var app = PersonalDataPreferences.Json(Program.Settings);
-                var hotkeys = PersonalDataPreferences.Json(Program.HotkeysConfig);
-                await Task.Run(() => PersonalDataArchive.Export(paths, app, hotkeys, selected, destination, Program.ProductVersion, progress));
+                await Task.Run(() => UpgradeDataSnapshot.Create(paths, destination, progress));
                 updateReady = true;
                 await install();
             }

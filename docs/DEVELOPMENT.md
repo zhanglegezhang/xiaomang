@@ -63,3 +63,6 @@ $env:WINDOWS_SDK_BIN = 'C:/Program Files (x86)/Windows Kits/10/bin/10.0.26100.0/
 
 当前发布 v2.11-20261018；产品小版本从2.10增加为2.11，源码与使用包对应关系见 RELEASE-v2.11-20261018.json。日常内部修改不自动增加发布版本。
 
+
+当前发布 v2.12-20261019；升级工具维护于 https://github.com/zhanglegezhang/xiaomang_upgrade 。2.12 启动确认协议源码见 src/Desktop/ShareX/PersonalData/UpgradeStartupCheck.cs。
+
