@@ -57,12 +57,14 @@ namespace ShareX
                 };
                 fileRefreshTimer.Start();
                 if (FileFavoritesService.Store != null) FileFavoritesService.Store.Changed += FilesChanged;
+                FileFavoritesService.StatusChanged += FilesChanged;
                 VisibleChanged += (s, e) => { if (Visible) RefreshFileFavorites(true); };
             }
             private void FilesChanged() => filesDirty = true;
             private void DisposeFileFavorites()
             {
                 if (FileFavoritesService.Store != null) FileFavoritesService.Store.Changed -= FilesChanged;
+                FileFavoritesService.StatusChanged -= FilesChanged;
                 fileRefreshTimer?.Dispose(); fileMenu?.Dispose();
                 if(fileWheelFilter!=null)Application.RemoveMessageFilter(fileWheelFilter);
             }
@@ -105,7 +107,7 @@ namespace ShareX
                 bool Match(FavoriteFile item) => search.Length == 0 || item.Name.Contains(search, StringComparison.OrdinalIgnoreCase) || item.Path.Contains(search, StringComparison.OrdinalIgnoreCase);
                 pinnedFiles.SetItems(store.Pinned.Where(Match).ToArray());
                 discoveredFiles.SetItems(store.Discovered.Where(Match).Take(10).ToArray());
-                fileEmpty.Text = search.Length > 0 ? "没有匹配的文件或目录" : FileFavoritesService.Error ?? store.Warning ?? "可在资源管理器右键添加文件或目录";
+                fileEmpty.Text = search.Length > 0 ? "没有匹配的文件或目录" : FileFavoritesService.Error ?? store.Warning ?? "暂无使用记录，打开本地文件或目录后自动更新";
                 ArrangeFileLists();
             }
             private async void FileAction(Func<Task> action)

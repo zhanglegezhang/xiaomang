@@ -42,6 +42,10 @@
     <EmbeddedResource Include="Defaults\*.json" LogicalName="ShareX.Defaults.%(Filename)%(Extension)" />
     <EmbeddedResource Include="Assets\XiaomangFeatureOverview.pdf" LogicalName="ShareX.Assets.XiaomangFeatureOverview.pdf" />
     <EmbeddedResource Include="Assets\ComponentBundles.json" LogicalName="ShareX.Assets.ComponentBundles.json" />
+    <EmbeddedResource Include="Assets\MixedOcrManifest.json" LogicalName="ShareX.MixedOcrManifest.json" />
+    <EmbeddedResource Include="Assets\MixedOcrKeys.txt" LogicalName="ShareX.MixedOcrKeys.txt" />
+    <EmbeddedResource Include="Assets\MixedOcrLicense.txt" LogicalName="ShareX.MixedOcrLicense.txt" />
+    <EmbeddedResource Include="Assets\MixedOcrNotice.txt" LogicalName="ShareX.MixedOcrNotice.txt" />
     <EmbeddedResource Include="Assets\XiaomangVersionLog.txt" LogicalName="ShareX.Assets.XiaomangVersionLog.txt" />
     <EmbeddedResource Include="Assets\XiaomangFeatureMindMap.html" LogicalName="ShareX.Assets.XiaomangFeatureMindMap.html" />
     <EmbeddedResource Include="..\..\..\resources\Branding\xiaomang-robot-logo.png" LogicalName="ShareX.Assets.XiaomangRobotLogo.png" />
@@ -93,4 +97,9 @@
     <None Include="..\VoiceInput\bin\x86_64\*.dll;..\VoiceInput\bin\x86_64\*.exe" Link="ThirdParty\VoiceInput\x86_64\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
     <None Include="..\VoiceInput\bin\i686\*.dll;..\VoiceInput\bin\i686\*.exe" Link="ThirdParty\VoiceInput\i686\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
+  <Target Name="BuildMixedOcrBridge" BeforeTargets="AssignTargetPaths">
+    <MSBuild Projects="../../OcrBridge/OcrBridge.csproj" Targets="Build" RemoveProperties="OutputPath;RuntimeIdentifier;Platform" Properties="Configuration=$(Configuration)" />
+    <ItemGroup><EmbeddedResource Include="../../OcrBridge/bin/$(Configuration)/net9.0/Xiaomang.OcrBridge.dll" LogicalName="ShareX.OcrBridge.dll" /></ItemGroup>
+  </Target>
+  <ItemGroup><ProjectReference Include="../../OcrBridge/OcrBridge.csproj" ReferenceOutputAssembly="false" Private="false" GlobalPropertiesToRemove="OutputPath;RuntimeIdentifier;Platform" /></ItemGroup>
 </Project>

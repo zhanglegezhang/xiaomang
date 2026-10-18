@@ -1,0 +1,68 @@
+{
+  "productVersion": "2.9",
+  "releaseTag": "v2.9-20261018",
+  "releaseDate": "2026-10-18",
+  "source": "https://github.com/zhanglegezhang/xiaomang/tree/v2.9-20261018",
+  "usagePackage": {
+    "files": 526,
+    "sha256": "8017557826FE37BFE22D2D28470B66A01AAFA0D39477027E09A0DB5E8367D447",
+    "uncompressedBytes": 274952683.0,
+    "url": "https://github.com/zhanglegezhang/xiaomang/releases/download/v2.9-20261018/xiaomang2.9_2026-10-18_usage.zip",
+    "bytes": 109966450,
+    "asset": "xiaomang2.9_2026-10-18_usage.zip"
+  },
+  "binaries": [
+    {
+      "File": "ShareX.dll",
+      "SHA256": "846939B32FC5308B4DC2B31802F36B9279049DA6AD23B3D42AF4CE82FAAB83AD",
+      "SourceDocuments": 281,
+      "Mismatches": 0
+    },
+    {
+      "File": "ShareX.HelpersLib.dll",
+      "SHA256": "2CEEF852FE92A12A299147065A0B6310C34F25523802EEA51B82729684446E4A",
+      "SourceDocuments": 231,
+      "Mismatches": 0
+    },
+    {
+      "File": "ShareX.HistoryLib.dll",
+      "SHA256": "1DF7673C8F2BAE19D033095D84FBFA6FF410220D8BAC0C4C43DC444BB725981B",
+      "SourceDocuments": 26,
+      "Mismatches": 0
+    },
+    {
+      "File": "ShareX.ImageEffectsLib.dll",
+      "SHA256": "38F61D46E8C024C04039C8A69415ED8DDC88063CC75339CE1134DF1115C1FB58",
+      "SourceDocuments": 63,
+      "Mismatches": 0
+    },
+    {
+      "File": "ShareX.MediaLib.dll",
+      "SHA256": "5EAE3E3EE638ED91B390C52B86AC87BA8223DA0246D35D35AA91EB31C7F7F551",
+      "SourceDocuments": 26,
+      "Mismatches": 0
+    },
+    {
+      "File": "ShareX.ScreenCaptureLib.dll",
+      "SHA256": "ECF3BA99AAEB8F635A1585C5FAD3C387F69EDB874C332B1CCD46EE3777049705",
+      "SourceDocuments": 105,
+      "Mismatches": 0
+    },
+    {
+      "File": "ShareX.UploadersLib.dll",
+      "SHA256": "C568988F5689D5E6D4ABAA50DB1038E938A44B3C046DE6CC5FD40160F22F917C",
+      "SourceDocuments": 189,
+      "Mismatches": 0
+    }
+  ],
+  "packaging": {
+    "tool": "7-Zip 26.03",
+    "parameters": "-tzip -mm=Deflate -mx=9 -mfb=258 -mpass=15 -mmt=off -mcu=on -scsUTF-8"
+  },
+  "optionalOcr": {
+    "url": "https://github.com/zhanglegezhang/xiaomang_component/releases/download/v1.0/xiaomang-ocr-ppocrv5-v1-win-x64.zip",
+    "includedInUsage": false,
+    "sha256": "65587d5b864a1de3d8c31639c13ee03c541bc7ace2ac3aaa149753b54dfcceef",
+    "bytes": 29854102
+  }
+}

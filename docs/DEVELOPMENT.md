@@ -54,3 +54,6 @@ $env:WINDOWS_SDK_BIN = 'C:/Program Files (x86)/Windows Kits/10/bin/10.0.26100.0/
 当前发布 v2.9-20261017，源码及使用包对应关系见 RELEASE-v2.9-20261017.json。
 
 2.9 重新压缩发布：v2.9-20261017-r2。运行程序未修改；压缩规则及入口见 PACKAGING.md。
+
+当前发布 v2.9-20261018：主程序和 OCR 桥接工程从本标签源码构建。src/OcrBridge 位于桌面中央包管理目录之外，固定 RapidOcrNet 4.2.0。识别运行组件不进入使用包，通过固定校验的 GitHub 组件附件按需下载。已有日记和原生组件复用已核验运行文件。
+

@@ -187,7 +187,7 @@ namespace ShareX
             collapseTimer = new Timer { Interval = 300 };
             collapseTimer.Tick += (sender, e) =>
             {
-                if (!animatingGenie && !resizing && !titleDragging && !compactDragging && !showingWidgetOverlay && !todoPage.choosingSchedule && !HasEditorFocus() &&
+                if (!ocrPanelHeldOpen && !animatingGenie && !resizing && !titleDragging && !compactDragging && !showingWidgetOverlay && !todoPage.choosingSchedule && !HasEditorFocus() &&
                     !ContainsWidgetPoint(Cursor.Position)) SetExpanded(false);
                 collapseTimer.Stop();
             };
@@ -261,15 +261,33 @@ namespace ShareX
 
         public void AddOcrText(string text)
         {
-            if (pendingWritesPaused) return;
+            if (pendingWritesPaused) throw new InvalidOperationException("数据正在处理中，请稍后再添加待办。");
             if (string.IsNullOrWhiteSpace(text)) return;
             TodoItem item = new TodoItem { Text = "**From OCR**" + Environment.NewLine + text.Trim() };
             Settings.Items.Add(item);
             WriteNoteLog(NoteLogKind.Todo, "OCR 新增", item.Text, item.CreatedAt);
-            SaveAndRender();
-            OpenPanel();
-            int index = Array.FindIndex(todoPage.todoViewItems, x => x.Id == item.Id);
-            if (index >= 0)
+            SettingManager.SaveApplicationConfigAsync();
+            try
+            {
+                HoldOcrPanelOpen();
+                SelectModule("Todo");
+                OpenPanel();
+                todoPage.RenderItems();
+                ScrollToOcrItem(item.Id);
+            }
+            catch (Exception ex)
+            {
+                DebugHelper.WriteException(ex);
+                MessageBox.Show("文字已加入待办，但自动显示失败。请打开待办查看，无需重复添加。",
+                    "添加到待办", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+        }
+
+        private void ScrollToOcrItem(Guid id)
+        {
+            int index = Array.FindIndex(todoPage.todoViewItems, x => x.Id == id);
+            if (index >= 0 && index < todoPage.todoRowOffsets.Length &&
+                index < todoPage.todoRowHeights.Length && todoPage.todoList.ClientSize.Height > 0)
             {
                 int scrollY = Math.Max(0, -todoPage.todoList.AutoScrollPosition.Y);
                 int rowTop = todoPage.todoRowOffsets[index];
@@ -278,6 +296,7 @@ namespace ShareX
                 else if (rowBottom > scrollY + todoPage.todoList.ClientSize.Height)
                     scrollY = rowBottom - todoPage.todoList.ClientSize.Height;
                 todoPage.todoList.AutoScrollPosition = new Point(0, scrollY);
+                todoPage.UpdateTodoViewport();
             }
         }
 

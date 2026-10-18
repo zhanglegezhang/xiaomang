@@ -1,0 +1,141 @@
+[
+  {
+    "Url": "https://github.com/zhanglegezhang/xiaomang_component/releases/download/v1.0/xiaomang-ocr-ppocrv5-v1-win-x64.zip",
+    "Length": 29854102,
+    "Sha256": "65587d5b864a1de3d8c31639c13ee03c541bc7ace2ac3aaa149753b54dfcceef",
+    "Files": [
+      {
+        "Entry": "MixedOCR/ch_PP-OCRv5_det_mobile.onnx",
+        "Name": "ch_PP-OCRv5_det_mobile.onnx",
+        "Length": 4819576,
+        "Sha256": "4d97c44a20d30a81aad087d6a396b08f786c4635742afc391f6621f5c6ae78ae"
+      },
+      {
+        "Entry": "MixedOCR/ch_PP-OCRv5_rec_mobile.onnx",
+        "Name": "ch_PP-OCRv5_rec_mobile.onnx",
+        "Length": 16631306,
+        "Sha256": "5825fc7ebf84ae7a412be049820b4d86d77620f204a041697b0494669b1742c5"
+      },
+      {
+        "Entry": "MixedOCR/ch_ppocr_mobile_v2.0_cls_mobile.onnx",
+        "Name": "ch_ppocr_mobile_v2.0_cls_mobile.onnx",
+        "Length": 585532,
+        "Sha256": "e47acedf663230f8863ff1ab0e64dd2d82b838fceb5957146dab185a89d6215c"
+      },
+      {
+        "Entry": "MixedOCR/clipper2-License.txt",
+        "Name": "clipper2-License.txt",
+        "Length": 1359,
+        "Sha256": "36266a8fd073568394cb81cdb2b124f7fdae2c64c1a7ed09db34b4d22efa2951"
+      },
+      {
+        "Entry": "MixedOCR/Clipper2Lib.dll",
+        "Name": "Clipper2Lib.dll",
+        "Length": 103936,
+        "Sha256": "e9bf01e01f494ef6072cd46c792ed4f3004288a92b1e98c1f44931e558b8a5d0"
+      },
+      {
+        "Entry": "MixedOCR/keys.txt",
+        "Name": "keys.txt",
+        "Length": 92393,
+        "Sha256": "53685c8981fdc5233ad64a62b00f6c05a061da55ccc60bff92ba0dc482f735a6"
+      },
+      {
+        "Entry": "MixedOCR/libSkiaSharp.dll",
+        "Name": "libSkiaSharp.dll",
+        "Length": 11391008,
+        "Sha256": "de22ab3e7b83644614efb55da18ef0965c3976ba4df99017f1025fbdb1893ff1"
+      },
+      {
+        "Entry": "MixedOCR/microsoft.ml.onnxruntime-LICENSE",
+        "Name": "microsoft.ml.onnxruntime-LICENSE",
+        "Length": 1094,
+        "Sha256": "c250d6278f0b47a6439fb7592b08b58a55eb9f535aa49a1db63211c3f982b674"
+      },
+      {
+        "Entry": "MixedOCR/microsoft.ml.onnxruntime-ThirdPartyNotices.txt",
+        "Name": "microsoft.ml.onnxruntime-ThirdPartyNotices.txt",
+        "Length": 343249,
+        "Sha256": "4c5b864d8974c94b37461f38163facef79a1bb5dea461667ee9e5be6a8e73f83"
+      },
+      {
+        "Entry": "MixedOCR/Microsoft.ML.OnnxRuntime.dll",
+        "Name": "Microsoft.ML.OnnxRuntime.dll",
+        "Length": 240440,
+        "Sha256": "4e55e8695bb4c858b969580746f23f1c058d340d48db8b5b65072155b3c7f032"
+      },
+      {
+        "Entry": "MixedOCR/microsoft.ml.onnxruntime.managed-LICENSE.txt",
+        "Name": "microsoft.ml.onnxruntime.managed-LICENSE.txt",
+        "Length": 1094,
+        "Sha256": "c250d6278f0b47a6439fb7592b08b58a55eb9f535aa49a1db63211c3f982b674"
+      },
+      {
+        "Entry": "MixedOCR/microsoft.ml.onnxruntime.managed-ThirdPartyNotices.txt",
+        "Name": "microsoft.ml.onnxruntime.managed-ThirdPartyNotices.txt",
+        "Length": 343249,
+        "Sha256": "4c5b864d8974c94b37461f38163facef79a1bb5dea461667ee9e5be6a8e73f83"
+      },
+      {
+        "Entry": "MixedOCR/MixedOcrLicense.txt",
+        "Name": "MixedOcrLicense.txt",
+        "Length": 11357,
+        "Sha256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4"
+      },
+      {
+        "Entry": "MixedOCR/MixedOcrNotice.txt",
+        "Name": "MixedOcrNotice.txt",
+        "Length": 611,
+        "Sha256": "fe492bb607c388e448b9fd64fea0c115d6b4511632aecef7f0d35f519e64d590"
+      },
+      {
+        "Entry": "MixedOCR/onnxruntime_providers_shared.dll",
+        "Name": "onnxruntime_providers_shared.dll",
+        "Length": 21856,
+        "Sha256": "87f6878cdc1f80b3a9afa5b0c84663315030b4957f5bbb6b66470557cb2f48d8"
+      },
+      {
+        "Entry": "MixedOCR/onnxruntime.dll",
+        "Name": "onnxruntime.dll",
+        "Length": 16149344,
+        "Sha256": "69d8e6d3879a3b4001cdc74c8ed9ccc7e7f799a5b847059738323404519ec471"
+      },
+      {
+        "Entry": "MixedOCR/RapidOcrNet.dll",
+        "Name": "RapidOcrNet.dll",
+        "Length": 80896,
+        "Sha256": "5b60e6e2d7f0234356f500a1126e18bcb3f8e4c09f5702f2819f6388d1cecf09"
+      },
+      {
+        "Entry": "MixedOCR/skiasharp-LICENSE.txt",
+        "Name": "skiasharp-LICENSE.txt",
+        "Length": 1129,
+        "Sha256": "89101e35a8c66fd4d6dffc1763259161d35cb564c169714ec227a768c89f2938"
+      },
+      {
+        "Entry": "MixedOCR/SkiaSharp.dll",
+        "Name": "SkiaSharp.dll",
+        "Length": 490016,
+        "Sha256": "3df1b742b4b2cdbe2b29b676123be4ab75b4078751c27fc171d3de9d49767be4"
+      },
+      {
+        "Entry": "MixedOCR/skiasharp.nativeassets.win32-LICENSE.txt",
+        "Name": "skiasharp.nativeassets.win32-LICENSE.txt",
+        "Length": 1129,
+        "Sha256": "89101e35a8c66fd4d6dffc1763259161d35cb564c169714ec227a768c89f2938"
+      },
+      {
+        "Entry": "MixedOCR/system.numerics.tensors-LICENSE.TXT",
+        "Name": "system.numerics.tensors-LICENSE.TXT",
+        "Length": 1139,
+        "Sha256": "d7a68596ab69b06f51ca278a6545148e4269a9381c26d597c13df5d88e08cf5b"
+      },
+      {
+        "Entry": "MixedOCR/System.Numerics.Tensors.dll",
+        "Name": "System.Numerics.Tensors.dll",
+        "Length": 410936,
+        "Sha256": "9d96dc759fdb54cbc3c26ee65cfd78ff32e3745f418119cc0811e63d3f29ecb9"
+      }
+    ]
+  }
+]

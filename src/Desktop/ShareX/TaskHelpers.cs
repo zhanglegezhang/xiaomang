@@ -1565,16 +1565,22 @@ namespace ShareX
                     }
                     else
                     {
-                        using (OCRForm form = new OCRForm(bmp, options))
+                        DebugHelper.WriteLine("[OCR] window-requested");
+                        if (Program.MainForm == null || Program.MainForm.IsDisposed || !Program.MainForm.IsHandleCreated)
+                            throw new InvalidOperationException("主窗口尚未就绪，无法打开文字识别窗口。");
+                        Program.MainForm.InvokeSafe(() =>
                         {
-                            form.ShowDialog();
-
-                            if (!string.IsNullOrEmpty(form.Result) && !string.IsNullOrEmpty(filePath))
+                            using (OCRForm form = new OCRForm(bmp, options))
                             {
-                                string textFilePath = Path.ChangeExtension(filePath, "txt");
-                                File.WriteAllText(textFilePath, form.Result, Encoding.UTF8);
+                                form.ShowDialog();
+
+                                if (!string.IsNullOrEmpty(form.Result) && !string.IsNullOrEmpty(filePath))
+                                {
+                                    string textFilePath = Path.ChangeExtension(filePath, "txt");
+                                    File.WriteAllText(textFilePath, form.Result, Encoding.UTF8);
+                                }
                             }
-                        }
+                        });
                     }
                 }
             }

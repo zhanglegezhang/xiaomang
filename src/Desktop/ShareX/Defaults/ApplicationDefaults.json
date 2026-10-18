@@ -515,7 +515,7 @@
         "Vorbis_QScale": 3,
         "MP3_QScale": 4,
         "VideoSource": "gdigrab",
-        "AudioSource": ""
+        "AudioSource": "xiaomang-system-and-microphone"
       },
       "ScrollingCaptureOptions": {
         "StartDelay": 300,

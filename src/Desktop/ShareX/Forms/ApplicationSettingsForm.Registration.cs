@@ -23,7 +23,7 @@ namespace ShareX
         private Label registrationSummary;
         private Control recordingRow,voiceRegistrationRow,textRegistrationRow,fileRegistrationRow;
         private VisibleSettingsStatusRefresh<RegistrationSnapshot> registrationRefresh;
-        private sealed record RegistrationSnapshot(bool Recording,VoiceInputRegistrationState Voice,bool VoiceFiles,bool Text,bool TextFiles,string Modern);
+        private sealed record RegistrationSnapshot(bool Recording,VoiceInputRegistrationState Voice,bool VoiceFiles,bool Text,bool TextFiles,string Modern,bool Mixed);
 
         private void InitializeRegistrationTab()
         {
@@ -91,9 +91,15 @@ namespace ShareX
             var summaryRow=layout.Row(registrationSummary,summaryActions,stackNarrow:false);summaryRow.Tag="registration-surface";
             layout.Add(summary,summaryRow);
             registrationProgress=new ProgressBar{Name="registrationOverallProgress",Visible=false,Height=layout.Scale(6),Minimum=0,Maximum=100};layout.Add(summary,registrationProgress);
-            registrationMessage=new Label{Name="registrationOperationMessage",AutoSize=true,Tag="registration-surface",Text="缺失组件自动下载后注册；录屏约65MB、语音约149MB、文本输入约129MB。已有组件复用。"};layout.Add(summary,registrationMessage);
+            registrationMessage=new Label{Name="registrationOperationMessage",AutoSize=true,Tag="registration-surface",Text="缺失组件自动下载；录屏约65MB、语音约149MB、文本输入约129MB、中英识别约29MiB。已有组件复用，中英识别无需注册。"};layout.Add(summary,registrationMessage);
 
             group=content;
+            var mixedStatus=Status("mixedOcrStatus");mixedStatus.Text=MixedOcrComponent.IsPresent?"已就绪":"未下载";
+            Row("中英文字识别",mixedStatus,Action("下载 / 修复","downloadMixedOCR",async token=>
+            {
+                await MixedOcrComponent.DownloadAsync(new Progress<int>(value=>{if(!IsDisposed){registrationProgress.Value=value;registrationMessage.Text=$"中英识别组件下载、校验：{value}%";}}),token);
+                if(!IsDisposed){mixedStatus.Text="已就绪";registrationMessage.Text="中英识别组件已就绪，无需注册；识别全程离线。";}
+            }));
             var recordingStatus=Status("recordingComponentStatus");
             recordingDownloadButton=Action("下载录屏组件","downloadRecordingComponent",async token=>
             {
@@ -143,7 +149,7 @@ namespace ShareX
             registrationRefresh=new VisibleSettingsStatusRefresh<RegistrationSnapshot>(this,()=>registrationTab.Visible && !registrationBusy,
                 ()=>new RegistrationSnapshot(RecordingComponent.IsInstalled,VoiceInputComponent.RegistrationState,
                     SenseVoiceModelManager.IsInstalled(Program.PersonalFolder),XiaomangInputMethodManager.IsRegistered,
-                    ComponentBundles.IsPresent(ComponentBundles.Text,XiaomangInputMethodManager.BundleDirectory),ModernFileFavoritesMenu.Status()),
+                    ComponentBundles.IsPresent(ComponentBundles.Text,XiaomangInputMethodManager.BundleDirectory),ModernFileFavoritesMenu.Status(),MixedOcrComponent.IsPresent),
                 state=>
                 {
                     recordingStatus.Text=state.Recording?"已就绪":"未下载（约65MB）";recordingDownloadButton.Enabled=state.Recording?false:!registrationBusy;
@@ -156,7 +162,10 @@ namespace ShareX
                     ((RegistrationStatus)textStatus).UpdateState(!state.TextFiles?"待下载组件":state.Text?"已注册":"待注册",textReady);
                     ((RegistrationStatus)modernStatus).UpdateState(modernReady?"已注册":"待准备",modernReady);
                     int count=(state.Recording?1:0)+(voiceReady?1:0)+(textReady?1:0)+(modernReady?1:0);
-                    registrationSummary.Text=count==4?"✓ 全部已就绪   4 / 4 项":$"组件准备   {count} / 4 项";
+                    bool mixedReady=state.Mixed;
+                    ((RegistrationStatus)mixedStatus).UpdateState(mixedReady?"已就绪":"未下载",mixedReady);
+                    if(mixedReady)count++;
+                    registrationSummary.Text=count==5?"✓ 全部已就绪   5 / 5 项":$"组件准备   {count} / 5 项";
                 },error=>{if(!registrationBusy)registrationMessage.Text="状态检查失败："+error.Message;});
             registrationTab.VisibleChanged+=(_,_)=>registrationRefresh.UpdateVisibility();
             Disposed+=(_,_)=>{registrationCancellation?.Cancel();registrationRefresh.Dispose();};
@@ -207,6 +216,7 @@ namespace ShareX
             var steps=new[]
             {
                 new RegistrationStep("录屏组件",()=>RecordingComponent.IsValidAsync(cancellation),RecordingComponent.DownloadAsync),
+                new RegistrationStep("中英识别组件",()=>MixedOcrComponent.IsValidAsync(cancellation),MixedOcrComponent.DownloadAsync),
                 new RegistrationStep("语音输入",()=>InputReady(true,cancellation),(p,t)=>PrepareInput(true,false,p,t)),
                 new RegistrationStep("文本输入",()=>InputReady(false,cancellation),(p,t)=>PrepareInput(false,false,p,t)),
                 new RegistrationStep("外层收藏菜单",()=>Task.Run(ModernMenuReady),(_,_)=>ModernFileFavoritesMenu.ChangeAsync(true,true))

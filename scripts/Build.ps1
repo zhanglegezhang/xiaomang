@@ -63,7 +63,7 @@ function Build-InputMethod {
 }
 function Build-Desktop {
  Require-Command 'dotnet'
- if(!(Test-Path -LiteralPath (Join-Path $root 'src/Desktop/VoiceInput/bin/VoiceInputSetup.exe'))){Build-Native}
+ if(!(Test-Path -LiteralPath (Join-Path $root 'src/Desktop/VoiceInput/bin/VoiceInputSetup.exe')) -or !(Test-Path -LiteralPath (Join-Path $root 'src/FileFavoritesMenu/bundle/resources.pri'))){Build-Native}
  $project=Join-Path $root 'src/Desktop/ShareX/ShareX.csproj'
  $out=Join-Path $root 'artifacts/Desktop'
  Invoke-Checked 'dotnet' @('restore',$project,'-p:Platform=x64','-m:1')

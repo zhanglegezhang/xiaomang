@@ -1746,6 +1746,7 @@ namespace ShareX
 
         internal async void AddCaptureToTodo(Bitmap capture, string language, float scale)
         {
+            bool recognized = false;
             using (capture)
             {
                 try
@@ -1757,6 +1758,7 @@ namespace ShareX
                         MessageBox.Show("截图中未识别到文字，请重新框选清晰的文字区域。", "添加到待办", MessageBoxButtons.OK, MessageBoxIcon.Information);
                         return;
                     }
+                    recognized = true;
                     if (todoWidget == null || todoWidget.IsDisposed) todoWidget = new TodoWidgetForm(noteLogStore);
                     todoWidget.AddOcrText(text);
                 }
@@ -1764,7 +1766,8 @@ namespace ShareX
                 {
                     DebugHelper.WriteException(ex);
                     if (!IsDisposed && !Disposing)
-                        MessageBox.Show("识别失败，未添加待办：" + ex.Message, "添加到待办", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        MessageBox.Show((recognized ? "文字已识别，但添加待办时出错，请先检查待办列表：" : "识别失败，未添加待办：") + ex.Message,
+                            "添加到待办", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 }
             }
         }

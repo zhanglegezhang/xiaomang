@@ -1,4 +1,4 @@
-﻿#region License Information (GPL v3)
+#region License Information (GPL v3)
 
 /*
     ShareX - A program that allows you to take screenshots and share any file type
@@ -41,6 +41,7 @@ namespace ShareX
         private Bitmap bmpSource;
         private bool loaded;
         private bool busy;
+        private readonly Point openingPoint = Cursor.Position;
 
         public OCRForm(Bitmap bmp, OCROptions options)
         {
@@ -50,68 +51,35 @@ namespace ShareX
             InitializeComponent();
             InitializeTranslationPanel();
             ShareXResources.ApplyTheme(this, true);
+            ApplyOcrStyle();
 
-            OCRLanguage[] languages = OCRHelper.AvailableLanguages.OrderBy(x => x.DisplayName).ToArray();
-
-            if (languages.Length > 0)
-            {
-                cbLanguages.Items.AddRange(languages);
-
-                if (Options.Language == null)
-                {
-                    cbLanguages.SelectedIndex = 0;
-                    Options.Language = languages[0].LanguageTag;
-                }
-                else
-                {
-                    int index = Array.FindIndex(languages, x => x.LanguageTag.Equals(Options.Language, StringComparison.OrdinalIgnoreCase));
-
-                    if (index >= 0)
-                    {
-                        cbLanguages.SelectedIndex = index;
-                    }
-                    else
-                    {
-                        cbLanguages.SelectedIndex = 0;
-                        Options.Language = languages[0].LanguageTag;
-                    }
-                }
-            }
-            else
-            {
-                cbLanguages.Enabled = false;
-            }
-
+            Options.ScaleFactor = 2f;
+            Options.SingleLine = false;
             nudScaleFactor.SetValue((decimal)Options.ScaleFactor);
             cbSingleLine.Checked = Options.SingleLine;
 
-            if (Helpers.IsDefaultSettings(Options.ServiceLinks, OCROptions.DefaultServiceLinks, (x, y) => x.Name == y.Name))
-            {
-                Options.ServiceLinks = OCROptions.DefaultServiceLinks;
-            }
-
-            if (Options.ServiceLinks.Count > 0)
-            {
-                cbServices.Items.AddRange(Options.ServiceLinks.ToArray());
-                cbServices.SelectedIndex = Options.SelectedServiceLink;
-            }
-            else
-            {
-                cbServices.Enabled = false;
-            }
+            // Keep saved custom services intact; this simplified window always uses Baidu.
+            cbServices.Items.Add(new ServiceLink("百度翻译", "https://fanyi.baidu.com/mtpe-individual/transText#/auto/zh/{0}"));
+            cbServices.SelectedIndex = 0;
 
             txtResult.SupportSelectAll();
             UpdateControls();
 
-            loaded = true;
+            busy = true;
+            translationStatus.Text = "正在准备识别…";
+            UpdateControls();
         }
 
         protected override void Dispose(bool disposing)
         {
             if (disposing)
             {
+                ocrCancellation.Cancel();
                 components?.Dispose();
                 bmpSource?.Dispose();
+                foreach (Control control in new Control[] { btnSelectRegion, lblScaleFactor, nudScaleFactor,
+                    cbSingleLine, cbServices, cbEditServices, cbLanguages, btnOpenOCRHelp })
+                    if (control.Parent == null) control.Dispose();
             }
 
             base.Dispose(disposing);
@@ -129,22 +97,39 @@ namespace ShareX
             }
 
             btnSelectRegion.Enabled = !busy;
-            cbLanguages.Enabled = !busy;
+            cbLanguages.Enabled = !busy && cbLanguages.Items.Count > 0;
+            UpdateLanguageButtons();
             nudScaleFactor.Enabled = !busy;
             cbSingleLine.Enabled = !busy;
         }
 
         private async Task OCR(Bitmap bmp)
         {
-            if (bmp != null && !string.IsNullOrEmpty(Options.Language))
+            if (bmp != null && (mixedSelected || !string.IsNullOrEmpty(Options.Language)))
             {
                 busy = true;
+                Result = null;
                 txtResult.Text = "";
+                translationStatus.Text = "正在识别…";
+                var timer = System.Diagnostics.Stopwatch.StartNew();
                 UpdateControls();
 
                 try
                 {
-                    Result = await OCRHelper.OCR(bmp, Options.Language, Options.ScaleFactor, Options.SingleLine);
+                    using var snapshot = (Bitmap)bmp.Clone();
+                    if(mixedSelected)
+                    {
+                        var recognized=await MixedOcrClient.RecognizeAsync(snapshot,Options.Language,ocrCancellation.Token);
+                        Result=recognized.Text;
+                        if(!IsDisposed)lblResult.Text=recognized.Notice;
+                    }
+                    else
+                    {
+                        Result = await OCRHelper.OCR(snapshot, Options.Language, Options.ScaleFactor, Options.SingleLine,false);
+                        if(!IsDisposed)lblResult.Text="Windows OCR · "+(Options.Language.StartsWith("zh")?"中文":"英语");
+                    }
+                    DebugHelper.WriteLine($"[OCR] recognition-completed ms={timer.ElapsedMilliseconds}; chars={Result?.Length ?? 0}");
+                    if (IsDisposed || Disposing) return;
 
                     if (Options.AutoCopy && !string.IsNullOrEmpty(Result))
                     {
@@ -153,13 +138,15 @@ namespace ShareX
                 }
                 catch (Exception e)
                 {
-                    e.ShowError(false);
+                    DebugHelper.WriteException(e);
+                    if (!IsDisposed && !Disposing) translationStatus.Text = "识别失败，请重新选择区域或切换语言重试。";
                 }
 
                 if (!IsDisposed)
                 {
                     busy = false;
                     txtResult.Text = Result;
+                    if (Result != null && string.IsNullOrWhiteSpace(Result)) translationStatus.Text = "未识别到文字，请重新选择区域或切换语言。";
                     txtResult.Focus();
                     txtResult.DeselectAll();
                     UpdateControls();
@@ -173,7 +160,81 @@ namespace ShareX
 
         private async void OCRForm_Shown(object sender, EventArgs e)
         {
-            await OCR(bmpSource);
+            var timer = System.Diagnostics.Stopwatch.StartNew();
+            DebugHelper.WriteLine($"[OCR] window-shown bounds={Bounds}; visible={Visible}; state={WindowState}; foreground={NativeMethods.GetForegroundWindow()}; hwnd={Handle}");
+            Rectangle saved = Program.Settings.OcrWindowBounds;
+            bool remembered = saved.Width > 0 && saved.Height > 0 && Screen.AllScreens.Any(s => s.WorkingArea.IntersectsWith(saved));
+            Rectangle area = remembered ? Screen.FromRectangle(saved).WorkingArea : Screen.FromPoint(openingPoint).WorkingArea;
+            StartPosition = FormStartPosition.Manual;
+            WindowState = FormWindowState.Normal;
+            MinimumSize = new Size(Math.Min(MinimumSize.Width, area.Width), Math.Min(MinimumSize.Height, area.Height));
+            Size = new Size(Math.Min(saved.Width > 0 ? saved.Width : Width, area.Width), Math.Min(saved.Height > 0 ? saved.Height : Height, area.Height));
+            Location = remembered
+                ? new Point(Math.Clamp(saved.X, area.Left, area.Right - Width), Math.Clamp(saved.Y, area.Top, area.Bottom - Height))
+                : new Point(area.Left + (area.Width - Width) / 2, area.Top + (area.Height - Height) / 2);
+            BeginInvoke(new Action(() =>
+            {
+                if (IsDisposed || Disposing) return;
+                this.ForceActivate();
+                bool activated = NativeMethods.SetForegroundWindow(Handle);
+                DebugHelper.WriteLine($"[OCR] window-activated bounds={Bounds}; visible={Visible}; state={WindowState}; foreground={NativeMethods.GetForegroundWindow()}; hwnd={Handle}; accepted={activated}; topmost={TopMost}");
+            }));
+            try
+            {
+                await Task.Yield();
+                var available = await Task.Run(() => OCRHelper.AvailableLanguages);
+                if (IsDisposed || Disposing) return;
+                OCRLanguage[] languages = available
+                    .Where(x => x.LanguageTag.StartsWith("zh", StringComparison.OrdinalIgnoreCase) ||
+                        x.LanguageTag.StartsWith("en", StringComparison.OrdinalIgnoreCase))
+                    .GroupBy(x => x.LanguageTag.StartsWith("zh", StringComparison.OrdinalIgnoreCase) ? "中文" : "英语")
+                    .OrderBy(x => x.Key == "中文" ? 0 : 1)
+                    .Select(g => new OCRLanguage(g.Key, g.OrderBy(x =>
+                        x.LanguageTag.Equals("zh-CN", StringComparison.OrdinalIgnoreCase) ||
+                        x.LanguageTag.Equals("en-US", StringComparison.OrdinalIgnoreCase) ? 0 : 1).First().LanguageTag))
+                    .ToArray();
+
+                if (languages.Length > 0)
+                {
+                    cbLanguages.Items.AddRange(languages);
+
+                    cbLanguages.SelectedIndex = 0;
+                    Options.Language = languages[0].LanguageTag;
+                }
+                else
+                {
+                    Options.Language = null;
+                    cbLanguages.Enabled = false;
+                    translationStatus.Text = "未安装中文或英语识别语言，请在 Windows 语言设置中安装对应文字识别组件。";
+                }
+
+
+                loaded = true;
+                busy = false;
+                UpdateControls();
+                DebugHelper.WriteLine($"[OCR] languages-ready ms={timer.ElapsedMilliseconds}; count={languages.Length}");
+                await OCR(bmpSource);
+            }
+            catch (Exception ex)
+            {
+                DebugHelper.WriteException(ex);
+                if (!IsDisposed && !Disposing)
+                {
+                    busy = false;
+                    UpdateControls();
+                    translationStatus.Text = "识别初始化失败，请关闭窗口重试；详情已记录到日志。";
+                }
+            }
+        }
+
+        protected override void OnFormClosing(FormClosingEventArgs e)
+        {
+            base.OnFormClosing(e);
+            if (e.Cancel || !Visible || Program.Settings == null) return;
+            Rectangle bounds = WindowState == FormWindowState.Normal ? Bounds : RestoreBounds;
+            if (bounds.Width <= 0 || bounds.Height <= 0 || bounds == Program.Settings.OcrWindowBounds) return;
+            Program.Settings.OcrWindowBounds = bounds;
+            SettingManager.SaveApplicationConfigAsync();
         }
 
         private async void btnSelectRegion_Click(object sender, EventArgs e)
@@ -230,7 +291,7 @@ namespace ShareX
 
         private void cbServices_SelectedIndexChanged(object sender, EventArgs e)
         {
-            Options.SelectedServiceLink = cbServices.SelectedIndex;
+            if (loaded) Options.SelectedServiceLink = cbServices.SelectedIndex;
             InvalidateTranslation();
         }
 

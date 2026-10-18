@@ -1,0 +1,186 @@
+[
+  {
+    "Url": "https://api.nuget.org/v3-flatcontainer/rapidocrnet/4.2.0/rapidocrnet.4.2.0.nupkg",
+    "Length": 12824593,
+    "Sha256": "df7424e3b613bf356c5cf53e546aaacdfd000181a49840bc05ee49c7e35e4574",
+    "Files": [
+      {
+        "Entry": "lib/net8.0/RapidOcrNet.dll",
+        "Name": "RapidOcrNet.dll",
+        "Length": 80896,
+        "Sha256": "5b60e6e2d7f0234356f500a1126e18bcb3f8e4c09f5702f2819f6388d1cecf09"
+      }
+    ]
+  },
+  {
+    "Url": "https://api.nuget.org/v3-flatcontainer/clipper2/2.0.0/clipper2.2.0.0.nupkg",
+    "Length": 68644,
+    "Sha256": "f07dfcf6adccd035fde042f0ff6fd6d746b989e9bb361cda38216f185304172b",
+    "Files": [
+      {
+        "Entry": "lib/netstandard2.0/Clipper2Lib.dll",
+        "Name": "Clipper2Lib.dll",
+        "Length": 103936,
+        "Sha256": "e9bf01e01f494ef6072cd46c792ed4f3004288a92b1e98c1f44931e558b8a5d0"
+      },
+      {
+        "Entry": "License.txt",
+        "Name": "clipper2-License.txt",
+        "Length": 1359,
+        "Sha256": "36266a8fd073568394cb81cdb2b124f7fdae2c64c1a7ed09db34b4d22efa2951"
+      }
+    ]
+  },
+  {
+    "Url": "https://api.nuget.org/v3-flatcontainer/microsoft.ml.onnxruntime/1.29.0/microsoft.ml.onnxruntime.1.29.0.nupkg",
+    "Length": 155008437,
+    "Sha256": "4557021fec4da3924e2e12ff44b1cc50b176de0d2c5c7daa89ab11c208b3a454",
+    "Files": [
+      {
+        "Entry": "runtimes/win-x64/native/onnxruntime.dll",
+        "Name": "onnxruntime.dll",
+        "Length": 16149344,
+        "Sha256": "69d8e6d3879a3b4001cdc74c8ed9ccc7e7f799a5b847059738323404519ec471"
+      },
+      {
+        "Entry": "runtimes/win-x64/native/onnxruntime_providers_shared.dll",
+        "Name": "onnxruntime_providers_shared.dll",
+        "Length": 21856,
+        "Sha256": "87f6878cdc1f80b3a9afa5b0c84663315030b4957f5bbb6b66470557cb2f48d8"
+      },
+      {
+        "Entry": "LICENSE",
+        "Name": "microsoft.ml.onnxruntime-LICENSE",
+        "Length": 1094,
+        "Sha256": "c250d6278f0b47a6439fb7592b08b58a55eb9f535aa49a1db63211c3f982b674"
+      },
+      {
+        "Entry": "ThirdPartyNotices.txt",
+        "Name": "microsoft.ml.onnxruntime-ThirdPartyNotices.txt",
+        "Length": 343249,
+        "Sha256": "4c5b864d8974c94b37461f38163facef79a1bb5dea461667ee9e5be6a8e73f83"
+      }
+    ]
+  },
+  {
+    "Url": "https://api.nuget.org/v3-flatcontainer/microsoft.ml.onnxruntime.managed/1.29.0/microsoft.ml.onnxruntime.managed.1.29.0.nupkg",
+    "Length": 1013591,
+    "Sha256": "81484c028e827d90028f4a4229c4a5bdc444952d02da8463d819139b13aa7e27",
+    "Files": [
+      {
+        "Entry": "lib/net8.0/Microsoft.ML.OnnxRuntime.dll",
+        "Name": "Microsoft.ML.OnnxRuntime.dll",
+        "Length": 240440,
+        "Sha256": "4e55e8695bb4c858b969580746f23f1c058d340d48db8b5b65072155b3c7f032"
+      },
+      {
+        "Entry": "ThirdPartyNotices.txt",
+        "Name": "microsoft.ml.onnxruntime.managed-ThirdPartyNotices.txt",
+        "Length": 343249,
+        "Sha256": "4c5b864d8974c94b37461f38163facef79a1bb5dea461667ee9e5be6a8e73f83"
+      },
+      {
+        "Entry": "LICENSE.txt",
+        "Name": "microsoft.ml.onnxruntime.managed-LICENSE.txt",
+        "Length": 1094,
+        "Sha256": "c250d6278f0b47a6439fb7592b08b58a55eb9f535aa49a1db63211c3f982b674"
+      }
+    ]
+  },
+  {
+    "Url": "https://api.nuget.org/v3-flatcontainer/skiasharp/3.119.1/skiasharp.3.119.1.nupkg",
+    "Length": 4651523,
+    "Sha256": "4c856be7636943d71a6f978909c1ff3981e334e4ca8700aaa4294ad9cf12e133",
+    "Files": [
+      {
+        "Entry": "LICENSE.txt",
+        "Name": "skiasharp-LICENSE.txt",
+        "Length": 1129,
+        "Sha256": "89101e35a8c66fd4d6dffc1763259161d35cb564c169714ec227a768c89f2938"
+      },
+      {
+        "Entry": "lib/net8.0/SkiaSharp.dll",
+        "Name": "SkiaSharp.dll",
+        "Length": 490016,
+        "Sha256": "3df1b742b4b2cdbe2b29b676123be4ab75b4078751c27fc171d3de9d49767be4"
+      }
+    ]
+  },
+  {
+    "Url": "https://api.nuget.org/v3-flatcontainer/skiasharp.nativeassets.win32/3.119.1/skiasharp.nativeassets.win32.3.119.1.nupkg",
+    "Length": 13364090,
+    "Sha256": "c923e49fc4ab4a13aa862842df7109e0726df5d7ac0c8482e20008e054018b65",
+    "Files": [
+      {
+        "Entry": "runtimes/win-x64/native/libSkiaSharp.dll",
+        "Name": "libSkiaSharp.dll",
+        "Length": 11391008,
+        "Sha256": "de22ab3e7b83644614efb55da18ef0965c3976ba4df99017f1025fbdb1893ff1"
+      },
+      {
+        "Entry": "LICENSE.txt",
+        "Name": "skiasharp.nativeassets.win32-LICENSE.txt",
+        "Length": 1129,
+        "Sha256": "89101e35a8c66fd4d6dffc1763259161d35cb564c169714ec227a768c89f2938"
+      }
+    ]
+  },
+  {
+    "Url": "https://api.nuget.org/v3-flatcontainer/system.numerics.tensors/9.0.0/system.numerics.tensors.9.0.0.nupkg",
+    "Length": 453618,
+    "Sha256": "b750243c36002a62b28b1ac5d3fbc284ad340ba1494cc36aca110611a0b1f959",
+    "Files": [
+      {
+        "Entry": "lib/net9.0/System.Numerics.Tensors.dll",
+        "Name": "System.Numerics.Tensors.dll",
+        "Length": 410936,
+        "Sha256": "9d96dc759fdb54cbc3c26ee65cfd78ff32e3745f418119cc0811e63d3f29ecb9"
+      },
+      {
+        "Entry": "LICENSE.TXT",
+        "Name": "system.numerics.tensors-LICENSE.TXT",
+        "Length": 1139,
+        "Sha256": "d7a68596ab69b06f51ca278a6545148e4269a9381c26d597c13df5d88e08cf5b"
+      }
+    ]
+  },
+  {
+    "Url": "https://www.modelscope.cn/models/RapidAI/RapidOCR/resolve/v3.9.2/onnx/PP-OCRv5/det/ch_PP-OCRv5_det_mobile.onnx",
+    "Length": 4819576,
+    "Sha256": "4d97c44a20d30a81aad087d6a396b08f786c4635742afc391f6621f5c6ae78ae",
+    "Files": [
+      {
+        "Entry": "",
+        "Name": "ch_PP-OCRv5_det_mobile.onnx",
+        "Length": 4819576,
+        "Sha256": "4d97c44a20d30a81aad087d6a396b08f786c4635742afc391f6621f5c6ae78ae"
+      }
+    ]
+  },
+  {
+    "Url": "https://www.modelscope.cn/models/RapidAI/RapidOCR/resolve/v3.9.2/onnx/PP-OCRv5/rec/ch_PP-OCRv5_rec_mobile.onnx",
+    "Length": 16631306,
+    "Sha256": "5825fc7ebf84ae7a412be049820b4d86d77620f204a041697b0494669b1742c5",
+    "Files": [
+      {
+        "Entry": "",
+        "Name": "ch_PP-OCRv5_rec_mobile.onnx",
+        "Length": 16631306,
+        "Sha256": "5825fc7ebf84ae7a412be049820b4d86d77620f204a041697b0494669b1742c5"
+      }
+    ]
+  },
+  {
+    "Url": "https://www.modelscope.cn/models/RapidAI/RapidOCR/resolve/v3.9.2/onnx/PP-OCRv4/cls/ch_ppocr_mobile_v2.0_cls_mobile.onnx",
+    "Length": 585532,
+    "Sha256": "e47acedf663230f8863ff1ab0e64dd2d82b838fceb5957146dab185a89d6215c",
+    "Files": [
+      {
+        "Entry": "",
+        "Name": "ch_ppocr_mobile_v2.0_cls_mobile.onnx",
+        "Length": 585532,
+        "Sha256": "e47acedf663230f8863ff1ab0e64dd2d82b838fceb5957146dab185a89d6215c"
+      }
+    ]
+  }
+]

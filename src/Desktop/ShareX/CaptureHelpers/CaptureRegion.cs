@@ -151,7 +151,18 @@ namespace ShareX
                     {
                         // Transfer the rendered selection (including annotations) to the UI workflow.
                         var options = taskSettings.CaptureSettings.OCROptions;
+                        // Quick todo capture is Chinese-first; the OCR window keeps its
+                        // explicit language selection for English-only documents.
                         string language = options.Language;
+                        foreach (var candidate in OCRHelper.AvailableLanguages)
+                        {
+                            if (candidate.LanguageTag.StartsWith("zh", System.StringComparison.OrdinalIgnoreCase))
+                            {
+                                language = candidate.LanguageTag;
+                                if (language.StartsWith("zh-Hans", System.StringComparison.OrdinalIgnoreCase) ||
+                                    language.Equals("zh-CN", System.StringComparison.OrdinalIgnoreCase)) break;
+                            }
+                        }
                         float scale = options.ScaleFactor;
                         try
                         {

@@ -274,6 +274,7 @@ namespace ShareX
         [STAThread]
         private static void Main(string[] args)
         {
+            if (MixedOcrWorker.TryRun(args)) return;
             if (ModernFileFavoritesMenu.TryRun(args)) return;
             if (FileFavoritesMenu.TryRun(args)) return;
             if (TextCompareWorker.TryRun(args)) return;

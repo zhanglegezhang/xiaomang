@@ -567,36 +567,47 @@ namespace ShareX.ScreenCaptureLib
                     using (SolidBrush brush = new SolidBrush(fill)) e.Graphics.FillPath(brush, path);
                 }
 
-                using (Pen icon = new Pen(Color.White, 3.6f))
+                using (Pen icon = new Pen(Enabled ? Color.White : Color.FromArgb(145, 155, 150), 2.4f))
                 {
                     icon.StartCap = LineCap.Round;
                     icon.EndCap = LineCap.Round;
                     icon.LineJoin = LineJoin.Round;
                     if (kind == LongCaptureButtonKind.Copy)
                     {
+                        // Offset sheets: the rear outline stays clear of the front sheet.
                         e.Graphics.DrawLines(icon, new[] {
-                            new PointF(10, 18), new PointF(16, 24), new PointF(26, 12) });
+                            new PointF(11, 22), new PointF(9, 22), new PointF(9, 9),
+                            new PointF(22, 9), new PointF(22, 11) });
+                        using (GraphicsPath sheet = new GraphicsPath())
+                        {
+                            sheet.AddArc(14, 14, 4, 4, 180, 90);
+                            sheet.AddArc(23, 14, 4, 4, 270, 90);
+                            sheet.AddArc(23, 23, 4, 4, 0, 90);
+                            sheet.AddArc(14, 23, 4, 4, 90, 90);
+                            sheet.CloseFigure();
+                            e.Graphics.DrawPath(icon, sheet);
+                        }
                     }
                     else if (kind == LongCaptureButtonKind.Cancel)
                     {
-                        e.Graphics.DrawLine(icon, 12, 12, 24, 24);
-                        e.Graphics.DrawLine(icon, 24, 12, 12, 24);
+                        e.Graphics.DrawLine(icon, 11.5f, 11.5f, 24.5f, 24.5f);
+                        e.Graphics.DrawLine(icon, 24.5f, 11.5f, 11.5f, 24.5f);
                     }
                     else if (kind == LongCaptureButtonKind.Horizontal)
                     {
                         e.Graphics.DrawLine(icon, 9, 18, 27, 18);
                         e.Graphics.DrawLines(icon, new[] {
-                            new PointF(15, 12), new PointF(9, 18), new PointF(15, 24) });
+                            new PointF(14, 13), new PointF(9, 18), new PointF(14, 23) });
                         e.Graphics.DrawLines(icon, new[] {
-                            new PointF(21, 12), new PointF(27, 18), new PointF(21, 24) });
+                            new PointF(22, 13), new PointF(27, 18), new PointF(22, 23) });
                     }
                     else
                     {
                         e.Graphics.DrawLine(icon, 18, 9, 18, 27);
                         e.Graphics.DrawLines(icon, new[] {
-                            new PointF(12, 15), new PointF(18, 9), new PointF(24, 15) });
+                            new PointF(13, 14), new PointF(18, 9), new PointF(23, 14) });
                         e.Graphics.DrawLines(icon, new[] {
-                            new PointF(12, 21), new PointF(18, 27), new PointF(24, 21) });
+                            new PointF(13, 22), new PointF(18, 27), new PointF(23, 22) });
                     }
                 }
             }

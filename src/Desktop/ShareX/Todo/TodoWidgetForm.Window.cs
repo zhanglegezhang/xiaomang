@@ -137,6 +137,7 @@ namespace ShareX
 
         protected override void OnFormClosed(FormClosedEventArgs e)
         {
+            ReleaseOcrPanelHold();
             StopSearchMenuOutsideClickWatch();
             searchMenu?.Dispose();
             searchMenu = null;
@@ -220,7 +221,7 @@ namespace ShareX
         {
             favoritesPage.CommitPendingFavorites();
             base.OnDeactivate(e);
-            if (expanded && !animatingGenie && !closingWidget && !showingWidgetOverlay && !todoPage.choosingSchedule && !ContainsWidgetPoint(Cursor.Position))
+            if (!ocrPanelHeldOpen && expanded && !animatingGenie && !closingWidget && !showingWidgetOverlay && !todoPage.choosingSchedule && !ContainsWidgetPoint(Cursor.Position))
             {
                 SetExpanded(false);
             }
@@ -849,6 +850,7 @@ namespace ShareX
 
         private void SetExpanded(bool value)
         {
+            if (!value) ReleaseOcrPanelHold();
             HideCompactHint();
             if (!value && animatingGenie) FinishGenieAnimation();
             collapseTimer.Stop();

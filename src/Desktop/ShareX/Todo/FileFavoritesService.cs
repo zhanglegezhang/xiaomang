@@ -16,6 +16,14 @@ namespace ShareX
     {
         internal static FileFavoritesStore Store { get; private set; }
         internal static string Error { get; private set; }
+        internal static event Action StatusChanged;
+        private static void SetError(string message)
+        {
+            if (Error == message) return;
+            Error = message;
+            DebugHelper.WriteLine("File discovery: " + (message ?? "recovered"));
+            StatusChanged?.Invoke();
+        }
         private static readonly ManualResetEvent stop = new(false);
         private static Thread worker;
         private static readonly ConcurrentQueue<FavoriteFile> opened = new();
@@ -60,8 +68,6 @@ namespace ShareX
             try
             {
                 Store.Ready.GetAwaiter().GetResult();
-                script = Activator.CreateInstance(Type.GetTypeFromProgID("WScript.Shell"));
-                shell = Activator.CreateInstance(Type.GetTypeFromProgID("Shell.Application"));
                 var previousFolders = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
                 var recentSeen = new Dictionary<string, DateTime>(StringComparer.OrdinalIgnoreCase);
                 string recent = recentOverride ?? Environment.GetFolderPath(Environment.SpecialFolder.Recent);
@@ -72,9 +78,20 @@ namespace ShareX
                     {
                         var observations = new List<FavoriteFile>();
                         while (opened.TryDequeue(out var inApp)) observations.Add(inApp);
+                        // Persist app events before touching optional Windows discovery sources.
+                        if (observations.Count > 0)
+                        {
+                            try { Store.Observe(observations).GetAwaiter().GetResult(); }
+                            catch { foreach (var item in observations) if (opened.Count < 256) opened.Enqueue(item); throw; }
+                            observations.Clear();
+                        }
+                        var failures = new List<string>();
                         DateTime checkpoint = Store.Checkpoint().GetAwaiter().GetResult(), nextCheckpoint = checkpoint;
                         var acceptedRecent = new Dictionary<string, DateTime>(StringComparer.OrdinalIgnoreCase);
                         // Only the Windows Recent shortcut directory: no recursion, no drive search.
+                        try
+                        {
+                        script ??= Activator.CreateInstance(Type.GetTypeFromProgID("WScript.Shell"));
                         foreach (var info in new DirectoryInfo(recent).EnumerateFiles("*.lnk").OrderByDescending(x => x.LastWriteTimeUtc).Take(512))
                         {
                             if (stop.WaitOne(0)) break;
@@ -86,16 +103,24 @@ namespace ShareX
                                 string target = ((dynamic)link).TargetPath;
                                 var observed = Observation(target, modified);
                                 if (observed != null) observations.Add(observed);
-                            } catch (COMException) { }
+                            } catch (COMException) { continue; }
                             finally { Release(link); }
                             acceptedRecent[info.FullName] = modified;
                             if (modified > nextCheckpoint) nextCheckpoint = modified;
+                        }
+                        }
+                        catch (Exception ex)
+                        {
+                            failures.Add("最近文件读取失败，将自动重试");
+                            if (Error == null || !Error.Contains("最近文件")) DebugHelper.WriteException(ex);
+                            Release(script); script = null;
                         }
                         if (recentSeen.Count > 1024) recentSeen.Clear();
                         object windows = null;
                         var folders = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
                         try
                         {
+                            shell ??= Activator.CreateInstance(Type.GetTypeFromProgID("Shell.Application"));
                             windows = ((dynamic)shell).Windows();
                             int count = Math.Min(32, (int)((dynamic)windows).Count);
                             for (int i = 0; i < count; i++)
@@ -108,13 +133,16 @@ namespace ShareX
                                         var observed = Observation(uri.LocalPath, DateTime.UtcNow);
                                         if (observed != null) observations.Add(observed);
                                     }
-                                } catch (COMException) { }
+                                } catch (COMException ex) { failures.Add("部分目录读取失败，将自动重试"); if (Error == null || !Error.Contains("目录读取")) DebugHelper.WriteException(ex); }
                                 finally { Release(window); }
                             }
                         }
-                        catch (COMException ex) { DebugHelper.WriteException(ex); }
+                        catch (Exception ex) {
+                            failures.Add("目录读取失败，将自动重试");
+                            if (Error == null || !Error.Contains("目录读取")) DebugHelper.WriteException(ex);
+                            Release(shell); shell = null;
+                        }
                         finally { Release(windows); }
-                        previousFolders = folders;
                         // At most 32 already-known active local files once per minute.
                         if (++iteration % 4 == 0) foreach (var item in Store.Discovered.Concat(Store.Pinned).Where(x => x.Type == "file").DistinctBy(x => x.Path).Take(32)) {
                             var observed = Observation(item.Path, item.LastUse);
@@ -122,13 +150,15 @@ namespace ShareX
                         }
                         if (!stop.WaitOne(0)) {
                             Store.Observe(observations, nextCheckpoint).GetAwaiter().GetResult();
+                            previousFolders = folders;
                             foreach (var accepted in acceptedRecent) recentSeen[accepted.Key] = accepted.Value;
+                            SetError(failures.Count == 0 ? null : string.Join("；", failures.Distinct()));
                         }
                     }
-                    catch (Exception ex) { Error = "文件使用记录暂时无法更新：" + ex.Message; DebugHelper.WriteException(ex); iteration++; }
+                    catch (Exception ex) { SetError("文件使用记录暂时无法更新，将自动重试：" + ex.Message); DebugHelper.WriteException(ex); iteration++; }
                 }
             }
-            catch (Exception ex) { Error = "文件收藏初始化失败：" + ex.Message; DebugHelper.WriteException(ex); }
+            catch (Exception ex) { SetError("文件收藏数据读取失败，请检查日志或恢复备份：" + ex.Message); DebugHelper.WriteException(ex); }
             finally { Release(shell); Release(script); }
         }
         internal static async Task Open(FavoriteFile item)

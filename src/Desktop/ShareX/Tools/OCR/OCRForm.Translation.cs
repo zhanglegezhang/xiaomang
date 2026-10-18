@@ -1,4 +1,4 @@
-using Microsoft.Web.WebView2.Core;
+﻿using Microsoft.Web.WebView2.Core;
 using Microsoft.Web.WebView2.WinForms;
 using ShareX.HelpersLib;
 using System;
@@ -17,73 +17,6 @@ namespace ShareX
         private Task initializeTranslationBrowser;
         private int translationRevision;
         private int navigatingRevision;
-
-        private void InitializeTranslationPanel()
-        {
-            SuspendLayout();
-            int margin = Math.Max(12, ClientSize.Width - txtResult.Right);
-            int rightLeft = txtResult.Left;
-            int headerHeight = btnCopyAll.Height + margin / 2;
-            Size originalSize = ClientSize;
-            ClientSize = new Size((int)(originalSize.Width * 1.3), (int)(originalSize.Height * 1.55));
-            MinimumSize = Size;
-
-            var layout = new TableLayoutPanel
-            {
-                Location = new Point(rightLeft, lblResult.Top),
-                Size = new Size(ClientSize.Width - rightLeft - margin, ClientSize.Height - lblResult.Top - margin),
-                Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right,
-                ColumnCount = 1,
-                RowCount = 4,
-                Margin = Padding.Empty
-            };
-            layout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
-            layout.RowStyles.Add(new RowStyle(SizeType.Absolute, headerHeight));
-            layout.RowStyles.Add(new RowStyle(SizeType.Percent, 24));
-            layout.RowStyles.Add(new RowStyle(SizeType.Absolute, headerHeight));
-            layout.RowStyles.Add(new RowStyle(SizeType.Percent, 76));
-
-            var originalHeader = new Panel { Dock = DockStyle.Fill, Margin = Padding.Empty };
-            lblResult.Text = "识别原文";
-            lblResult.AutoSize = true;
-            lblResult.Location = new Point(0, margin / 2);
-            btnCopyAll.Text = "复制原文";
-            btnCopyAll.Dock = DockStyle.Right;
-            originalHeader.Controls.Add(lblResult);
-            originalHeader.Controls.Add(btnCopyAll);
-            txtResult.Dock = DockStyle.Fill;
-            txtResult.Margin = Padding.Empty;
-            translationStatus = new Label
-            {
-                Text = "翻译结果 · 选择百度翻译后，识别完成会自动显示",
-                AutoEllipsis = true,
-                Dock = DockStyle.Fill,
-                TextAlign = ContentAlignment.MiddleLeft,
-                Margin = Padding.Empty
-            };
-            translationHost = new Panel { Dock = DockStyle.Fill, Margin = Padding.Empty, BorderStyle = BorderStyle.FixedSingle };
-            layout.Controls.Add(originalHeader, 0, 0);
-            layout.Controls.Add(txtResult, 0, 1);
-            layout.Controls.Add(translationStatus, 0, 2);
-            layout.Controls.Add(translationHost, 0, 3);
-            Controls.Add(layout);
-            btnOpenServiceLink.Text = "翻译并显示";
-
-            var openExternal = new LinkLabel
-            {
-                Text = "在浏览器中打开",
-                AutoSize = true,
-                Location = new Point(btnOpenServiceLink.Left, btnOpenServiceLink.Bottom + margin),
-                TabStop = true
-            };
-            openExternal.LinkClicked += (sender, e) =>
-            {
-                if (!string.IsNullOrWhiteSpace(Result) && cbServices.SelectedItem is ServiceLink service)
-                    service.OpenLink(Result);
-            };
-            Controls.Add(openExternal);
-            ResumeLayout(true);
-        }
 
         private bool IsBaiduTranslationSelected()
         {

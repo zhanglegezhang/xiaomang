@@ -69,8 +69,15 @@ namespace ShareX
             }
         }
 
-        public static async Task<string> OCR(Bitmap bmp, string languageTag = "en", float scaleFactor = 1f, bool singleLine = false)
+        public static Task<string> OCR(Bitmap bmp, string languageTag = "en", float scaleFactor = 1f, bool singleLine = false) => OCR(bmp, languageTag, scaleFactor, singleLine, true);
+        public static async Task<string> OCR(Bitmap bmp, string languageTag, float scaleFactor, bool singleLine, bool preferMixed)
         {
+            if (preferMixed && MixedOcrComponent.IsPresent && (languageTag.StartsWith("zh", StringComparison.OrdinalIgnoreCase) || languageTag.StartsWith("en", StringComparison.OrdinalIgnoreCase)))
+            {
+                var mixed = await MixedOcrClient.RecognizeAsync(bmp, languageTag, default);
+                DebugHelper.WriteLine(mixed.Notice);
+                return singleLine ? mixed.Text.Replace("\r", "").Replace("\n", " ") : mixed.Text;
+            }
             ThrowIfNotSupported();
 
             scaleFactor = Math.Max(scaleFactor, 1f);
