@@ -1570,16 +1570,7 @@ namespace ShareX
                             throw new InvalidOperationException("主窗口尚未就绪，无法打开文字识别窗口。");
                         Program.MainForm.InvokeSafe(() =>
                         {
-                            using (OCRForm form = new OCRForm(bmp, options))
-                            {
-                                form.ShowDialog();
-
-                                if (!string.IsNullOrEmpty(form.Result) && !string.IsNullOrEmpty(filePath))
-                                {
-                                    string textFilePath = Path.ChangeExtension(filePath, "txt");
-                                    File.WriteAllText(textFilePath, form.Result, Encoding.UTF8);
-                                }
-                            }
+                            ShowIndependentOcr(new OCRForm(bmp, options), filePath);
                         });
                     }
                 }
@@ -1590,6 +1581,24 @@ namespace ShareX
             }
         }
 
+        internal static void ShowIndependentOcr(OCRForm form, string filePath)
+        {
+            form.FormClosed += (_, _) =>
+            {
+                try
+                {
+                    if (!string.IsNullOrEmpty(form.Result) && !string.IsNullOrEmpty(filePath))
+                        File.WriteAllText(Path.ChangeExtension(filePath, ".txt"), form.Result, Encoding.UTF8);
+                }
+                catch (Exception error)
+                {
+                    DebugHelper.WriteException(error);
+                    MessageBox.Show("OCR 原文保存失败，请检查目标文件权限及磁盘空间。", "保存失败", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
+                finally { form.Dispose(); }
+            };
+            try { form.Show(); } catch { form.Dispose(); throw; }
+        }
         private static async Task AsyncOCRImage(Bitmap bmp, string filePath = null, TaskSettings taskSettings = null)
         {
             if (bmp != null)

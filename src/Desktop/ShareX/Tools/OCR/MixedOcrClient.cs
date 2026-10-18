@@ -20,6 +20,12 @@ internal static class MixedOcrClient
     private static void Stop()
     {try{if(child!=null&&!child.HasExited){child.Kill();child.WaitForExit(3000);}}catch{} child?.Dispose();child=null;try{reader?.Dispose();}catch{}reader=null;try{writer?.Dispose();}catch{}writer=null;try{pipe?.Dispose();}catch{}pipe=null;}
     internal static async Task StopAsync(){await gate.WaitAsync();try{Stop();}finally{gate.Release();}}
+    internal static async Task WithIdleWorkerAsync(Action action, CancellationToken token)
+    {
+        if (!await gate.WaitAsync(0, token)) throw new IOException("OCR 正在识别，请结束识别后再管理组件。");
+        try { Stop(); token.ThrowIfCancellationRequested(); action(); }
+        finally { gate.Release(); }
+    }
     internal static async Task<Result> RecognizeAsync(Bitmap image,string fallbackLanguage,CancellationToken token)
     {
         string failure="未安装中英识别组件，使用 Windows OCR";

@@ -27,6 +27,7 @@ namespace ShareX
 
         private void InvalidateTranslation()
         {
+            CancelApiTranslation();
             translationRevision++;
             if (translationStatus == null) return;
             translationStatus.Text = string.IsNullOrWhiteSpace(Result)
@@ -47,7 +48,7 @@ namespace ShareX
             if (IsDisposed || Disposing) return;
             translationBrowser.CoreWebView2.NavigationCompleted += (sender, e) =>
             {
-                if (navigatingRevision != translationRevision || IsDisposed) return;
+                if (apiMode || navigatingRevision != translationRevision || IsDisposed) return;
                 translationStatus.Text = e.IsSuccess
                     ? "翻译结果 · 可在下方网页切换目标语言、复制译文"
                     : "翻译页面加载失败 · 请点击“翻译并显示”重试，或在浏览器中打开";
@@ -60,8 +61,54 @@ namespace ShareX
             };
         }
 
-        private async Task ShowTranslationAsync()
+        private async Task CopyTranslationAsync()
         {
+            if (IsDisposed || Disposing) return;
+            if (apiMode)
+            {
+                apiFeedback.Text = apiResultRevision == translationRevision && !string.IsNullOrWhiteSpace(apiResult?.Text)
+                    ? ClipboardHelpers.CopyText(apiResult.Text) ? "已复制译文" : "复制失败，请重试"
+                    : "暂无可复制的译文";
+                return;
+            }
+            var browser = translationBrowser;
+            int revision = translationRevision;
+            if (browser?.CoreWebView2 == null || !browser.Visible || navigatingRevision != revision)
+            {
+                translationStatus.Text = "暂无可复制的译文";
+                return;
+            }
+            copyTranslationButton.Enabled = false;
+            try
+            {
+                string json = await browser.CoreWebView2.ExecuteScriptAsync("""
+                    (() => {
+                        if (location.hostname !== 'fanyi.baidu.com' || location.pathname !== '/mtpe-individual/transText') return '';
+                        const node = document.querySelector('#machineResContent');
+                        if (!node || !node.getClientRects().length) return '';
+                        const style = getComputedStyle(node);
+                        return style.display === 'none' || style.visibility === 'hidden' ? '' : node.innerText;
+                    })()
+                    """);
+                if (IsDisposed || Disposing || revision != translationRevision || browser != translationBrowser || !browser.Visible) return;
+                string text = System.Text.Json.JsonSerializer.Deserialize<string>(json);
+                if (string.IsNullOrWhiteSpace(text)) translationStatus.Text = "暂无可复制的译文";
+                else translationStatus.Text = ClipboardHelpers.CopyText(text)
+                    ? "已复制当前显示的译文" : "复制失败，请重试";
+            }
+            catch (Exception)
+            {
+                if (!IsDisposed && !Disposing) translationStatus.Text = "无法读取译文，请稍后重试或使用网页内复制";
+            }
+            finally { if (!IsDisposed && !Disposing) copyTranslationButton.Enabled = true; }
+        }
+
+        private async Task ShowWebTranslationAsync()
+        {
+            CancelApiTranslation();
+            apiMode = false;
+            UpdateApiHeader();
+            if (apiPanel != null) apiPanel.Visible = false;
             if (string.IsNullOrWhiteSpace(Result) || cbServices.SelectedItem is not ServiceLink service) return;
             string url = service.GenerateLink(Result);
             if (!Uri.TryCreate(url, UriKind.Absolute, out Uri uri) || (uri.Scheme != "https" && uri.Scheme != "http"))

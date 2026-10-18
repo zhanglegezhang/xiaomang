@@ -6,6 +6,7 @@ param(
 )
 $ErrorActionPreference='Stop'
 $payloadPath=(Resolve-Path -LiteralPath $Payload).Path
+if(Get-ChildItem -LiteralPath $payloadPath -Recurse -Force | Where-Object { $_.Name -eq 'PrivateCredentials' -or $_.Name -like 'baidu-translation.dpapi*' }){throw 'Private translation credentials must never be distributed.'}
 $archivePath=[IO.Path]::GetFullPath($Archive)
 $tool=(Resolve-Path -LiteralPath $SevenZipPath).Path
 if(!(Test-Path -LiteralPath $payloadPath -PathType Container)){throw 'Payload must be a prepared release directory.'}

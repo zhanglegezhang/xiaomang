@@ -74,6 +74,7 @@ namespace ShareX
         {
             if (disposing)
             {
+                CancelApiTranslation();
                 ocrCancellation.Cancel();
                 components?.Dispose();
                 bmpSource?.Dispose();
@@ -160,6 +161,8 @@ namespace ShareX
 
         private async void OCRForm_Shown(object sender, EventArgs e)
         {
+            // Switching the existing dialog to a modeless window must retain its result.
+            if (loaded) return;
             var timer = System.Diagnostics.Stopwatch.StartNew();
             DebugHelper.WriteLine($"[OCR] window-shown bounds={Bounds}; visible={Visible}; state={WindowState}; foreground={NativeMethods.GetForegroundWindow()}; hwnd={Handle}");
             Rectangle saved = Program.Settings.OcrWindowBounds;
@@ -321,7 +324,10 @@ namespace ShareX
 
         private void btnCopyAll_Click(object sender, EventArgs e)
         {
-            ClipboardHelpers.CopyText(txtResult.Text);
+            string message = string.IsNullOrWhiteSpace(txtResult.Text) ? "暂无可复制的原文"
+                : ClipboardHelpers.CopyText(txtResult.Text) ? "已复制原文" : "复制失败，请重试";
+            translationStatus.Text = message;
+            if (apiMode && apiFeedback != null) apiFeedback.Text = message;
         }
 
         private void txtResult_TextChanged(object sender, EventArgs e)

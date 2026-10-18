@@ -13,7 +13,7 @@ class Check
  using var form=new Preview(new Bitmap(20,20));form.Show();if(scale!=1)form.Scale(new SizeF(scale,scale));
  foreach(int width in new[]{760,1180}){
  form.ClientSize=new Size((int)(width*scale),(int)(740*scale));form.PerformLayout();Application.DoEvents();
- foreach(var name in new[]{"ocrMixed","ocrChinese","ocrEnglish","ocrMixedDownload","btnCopyAll","btnOpenServiceLink"}){
+ foreach(var name in new[]{"ocrMixed","ocrChinese","ocrEnglish","ocrRegistration","btnCopyAll","btnOpenServiceLink"}){
  var c=All(form).Single(x=>x.Name==name);if(!c.Visible || c.Right>c.Parent.ClientSize.Width+1 || c.Bottom>c.Parent.ClientSize.Height+1)throw new Exception("Clipped: "+name);
  }
  var editor=All(form).OfType<TextBox>().Single(x=>x.Name=="txtResult");editor.Text="MIT 剑桥 University";

@@ -21,7 +21,7 @@ namespace ShareX
         private ProgressBar registrationProgress;
         private Label registrationMessage;
         private Label registrationSummary;
-        private Control recordingRow,voiceRegistrationRow,textRegistrationRow,fileRegistrationRow;
+        private Control recordingRow,voiceRegistrationRow,textRegistrationRow,fileRegistrationRow,mixedOcrRow;
         private VisibleSettingsStatusRefresh<RegistrationSnapshot> registrationRefresh;
         private sealed record RegistrationSnapshot(bool Recording,VoiceInputRegistrationState Voice,bool VoiceFiles,bool Text,bool TextFiles,string Modern,bool Mixed);
 
@@ -43,27 +43,38 @@ namespace ShareX
             using var layout=new SettingsPageLayout(this,45);
             var content=layout.Stack();content.Name="registrationContent";content.SuspendLayout();
             TableLayoutPanel group=content;
-            Button Action(string text,string name,Func<CancellationToken,Task> run)
+            Button Action(string text,string name,Func<CancellationToken,Task> run,bool managesComponent=true)
             {
                 var button=new Button{Text=text,Name=name,AutoSize=true,MinimumSize=new Size(layout.Scale(100),layout.Scale(30))};
-                button.Click+=async(_,_)=>await RunRegistrationAction(run);
+                button.Click+=async(_,_)=>
+                {
+                    if(managesComponent)await RunRegistrationAction(run);
+                    else
+                    {
+                        try{await run(CancellationToken.None);}
+                        catch(Exception error){DebugHelper.WriteException(error);registrationMessage.Text="无法打开配置窗口，请重试。";}
+                    }
+                };
                 registrationActions.Add(button);return button;
             }
             Label Status(string name)=>new RegistrationStatus{Name=name,Text="检查中…"};
             Control Row(string title,Label status,params Control[] buttons)
             {
-                var visible=buttons.Take(title=="FFmpeg"?1:2).ToList();
+                var visible=buttons.Take(2).ToList();
                 if(buttons.Length>visible.Count)
                 {
                     var more=new Button{Text="⋯",Name=title+"Maintenance",AccessibleName=title+"更多操作",AutoSize=false,Size=new Size(layout.Scale(34),layout.Scale(30))};
-                    var menu=new ContextMenuStrip();
-                    foreach(var control in buttons.Skip(visible.Count))
+                    var menu=new RegistrationMaintenanceMenu();
+                    foreach(var control in buttons.Skip(visible.Count).OrderBy(control=>RegistrationMaintenanceMenu.Destructive(control.Name)))
                     {
                         var action=(Button)control;
                         var item=new ToolStripMenuItem(action.Text){Name=action.Name};
-                        item.Click+=(_,_)=>action.PerformClick();menu.Items.Add(item);
+                        item.Click+=(_,_)=>action.PerformClick();
+                        if(RegistrationMaintenanceMenu.Destructive(item) && menu.Items.Count>0)menu.Items.Add(new ToolStripSeparator());
+                        menu.Items.Add(item);
                     }
-                    more.Click+=(_,_)=>{if(!registrationBusy){MainMenuAppearance.ApplyMenu(menu);menu.Show(more,new Point(0,more.Height));}};
+                    more.ContextMenuStrip=menu;
+                    more.Click+=(_,_)=>{if(!registrationBusy)menu.Show(more,new Point(more.Width,more.Height),ToolStripDropDownDirection.BelowLeft);};
                     more.Disposed+=(_,_)=>{menu.Dispose();foreach(var c in buttons.Skip(visible.Count))c.Dispose();};
                     registrationActions.Add(more);visible.Add(more);
                 }
@@ -91,22 +102,29 @@ namespace ShareX
             var summaryRow=layout.Row(registrationSummary,summaryActions,stackNarrow:false);summaryRow.Tag="registration-surface";
             layout.Add(summary,summaryRow);
             registrationProgress=new ProgressBar{Name="registrationOverallProgress",Visible=false,Height=layout.Scale(6),Minimum=0,Maximum=100};layout.Add(summary,registrationProgress);
-            registrationMessage=new Label{Name="registrationOperationMessage",AutoSize=true,Tag="registration-surface",Text="缺失组件自动下载；录屏约65MB、语音约149MB、文本输入约129MB、中英识别约29MiB。已有组件复用，中英识别无需注册。"};layout.Add(summary,registrationMessage);
+            registrationMessage=new Label{Name="registrationOperationMessage",AutoSize=true,Tag="registration-surface",Text="缺失组件自动下载；录屏约65MB、语音约149MB、文本输入约129MB、OCR识别约29MiB。已有组件复用，OCR识别组件无需注册。"};layout.Add(summary,registrationMessage);
 
             group=content;
             var mixedStatus=Status("mixedOcrStatus");mixedStatus.Text=MixedOcrComponent.IsPresent?"已就绪":"未下载";
-            Row("中英文字识别",mixedStatus,Action("下载 / 修复","downloadMixedOCR",async token=>
+            mixedOcrRow=Row("OCR 识别组件",mixedStatus,Action("下载 / 修复","downloadMixedOCR",async token=>
             {
-                await MixedOcrComponent.DownloadAsync(new Progress<int>(value=>{if(!IsDisposed){registrationProgress.Value=value;registrationMessage.Text=$"中英识别组件下载、校验：{value}%";}}),token);
-                if(!IsDisposed){mixedStatus.Text="已就绪";registrationMessage.Text="中英识别组件已就绪，无需注册；识别全程离线。";}
-            }));
+                await MixedOcrComponent.DownloadAsync(new Progress<int>(value=>{if(!IsDisposed){registrationProgress.Value=value;registrationMessage.Text=$"OCR识别组件下载、校验：{value}%";}}),token);
+                if(!IsDisposed){mixedStatus.Text="已就绪";registrationMessage.Text="OCR识别组件已就绪，无需注册；识别全程离线。";}
+            }), Action("移除组件", "removeMixedOCR", token => RemoveDownloadedComponent(true, token)),
+                Action("百度翻译 API 配置", "configureBaiduTranslation", token =>
+                {
+                    using var dialog = new BaiduTranslationSettingsForm();
+                    dialog.ShowDialog(this);
+                    return Task.CompletedTask;
+                },managesComponent:false));
             var recordingStatus=Status("recordingComponentStatus");
             recordingDownloadButton=Action("下载录屏组件","downloadRecordingComponent",async token=>
             {
                 var progress=new Progress<int>(value=>{if(!IsDisposed && registrationBusy){registrationProgress.Value=Math.Clamp(value,0,100);registrationMessage.Text=value==100?"录屏组件已就绪。":value<90?$"录屏组件下载：{value*100/90}%":"校验并安装录屏组件…";}});
                 await RecordingComponent.DownloadAsync(progress,token);
             });
-            recordingRow=Row("FFmpeg",recordingStatus,recordingDownloadButton);
+            recordingRow=Row("FFmpeg",recordingStatus,recordingDownloadButton,
+                Action("移除组件", "removeRecordingComponent", token => RemoveDownloadedComponent(false, token)));
 
 
             var voiceStatus=Status("voiceInputRegistrationStatus");
@@ -177,6 +195,27 @@ namespace ShareX
             if(result.StartsWith("无法")||result.StartsWith("失败"))throw new IOException(result);
             return Task.CompletedTask;
         }
+        private async Task RemoveDownloadedComponent(bool ocr, CancellationToken token)
+        {
+            string title = ocr ? "OCR 识别组件" : "FFmpeg 录屏组件";
+            string effect = ocr ? "移除后将使用 Windows OCR，中英混合识别效果可能下降。" :
+                "移除后，依赖 FFmpeg 的录屏、视频转换等功能需要重新下载组件才能使用。";
+            if (MessageBox.Show(this, effect + "\n只移除小蟒管理的组件文件，保留个人数据。\n是否移除？",
+                "移除" + title, MessageBoxButtons.YesNo, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2) != DialogResult.Yes)
+            {
+                registrationProgress.Visible = false;
+                registrationMessage.Text = "已取消移除，组件保留。";
+                return;
+            }
+            registrationMessage.Text = "正在移除" + title + "…";
+            if (ocr) await MixedOcrComponent.RemoveAsync(token); else await RecordingComponent.RemoveAsync(token);
+            if (!IsDisposed)
+            {
+                registrationProgress.Value = 100;
+                registrationMessage.Text = ocr ? "OCR 组件已移除，将使用 Windows OCR；可随时重新下载。" :
+                    "FFmpeg 组件已移除；需要录屏或转换时可重新下载。";
+            }
+        }
         private static async Task ChangeVoice(bool install,bool repair)
         {
             var setup=VoiceInputSetupCoordinator.Default;
@@ -216,7 +255,7 @@ namespace ShareX
             var steps=new[]
             {
                 new RegistrationStep("录屏组件",()=>RecordingComponent.IsValidAsync(cancellation),RecordingComponent.DownloadAsync),
-                new RegistrationStep("中英识别组件",()=>MixedOcrComponent.IsValidAsync(cancellation),MixedOcrComponent.DownloadAsync),
+                new RegistrationStep("OCR 识别组件",()=>MixedOcrComponent.IsValidAsync(cancellation),MixedOcrComponent.DownloadAsync),
                 new RegistrationStep("语音输入",()=>InputReady(true,cancellation),(p,t)=>PrepareInput(true,false,p,t)),
                 new RegistrationStep("文本输入",()=>InputReady(false,cancellation),(p,t)=>PrepareInput(false,false,p,t)),
                 new RegistrationStep("外层收藏菜单",()=>Task.Run(ModernMenuReady),(_,_)=>ModernFileFavoritesMenu.ChangeAsync(true,true))
@@ -254,8 +293,35 @@ namespace ShareX
         {
             tttvMain.NavigateToTabPage(registrationTab);
             if(!EnsureSettingsPage(registrationTab))return;
-            var target=section switch{"recording"=>recordingRow,"voice"=>voiceRegistrationRow,"text"=>textRegistrationRow,_=>fileRegistrationRow};
-            registrationTab.ScrollControlIntoView(target);
+            registrationTab.ScrollControlIntoView(RegistrationRow(section));
+        }
+
+        private Control RegistrationRow(string section) => section switch
+        {
+            "ocr" => mixedOcrRow, "recording" => recordingRow,
+            "voice" => voiceRegistrationRow, "text" => textRegistrationRow, _ => fileRegistrationRow
+        };
+
+        internal void PrepareRegistrationDialog(string section)
+        {
+            SelectRegistrationPage(section);
+            // The OCR dialog owns a modal loop; reuse this registration page in an
+            // owned window so the main window does not remain disabled behind it.
+            tttvMain.Visible = false;
+            registrationTab.Parent?.Controls.Remove(registrationTab);
+            var tabs = new TablessControl { Dock = DockStyle.Fill };
+            tabs.TabPages.Add(registrationTab);
+            Controls.Add(tabs);
+            tabs.BringToFront();
+            registrationTab.Show();
+            Name = "registrationComponentsDialog";
+            Text = "小蟒 · 注册组件";
+            Icon = ShareXResources.Icon;
+            StartPosition = FormStartPosition.CenterParent;
+            MinimumSize = new Size(MainMenuAppearance.Scale(this, 600), MainMenuAppearance.Scale(this, 420));
+            ClientSize = new Size(MainMenuAppearance.Scale(this, 900), MainMenuAppearance.Scale(this, 560));
+            MainMenuAppearance.Apply(this);
+            Shown += (_, _) => registrationTab.ScrollControlIntoView(RegistrationRow(section));
         }
     }
 }

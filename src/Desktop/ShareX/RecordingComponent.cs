@@ -14,13 +14,30 @@ namespace ShareX
         internal const string ArchiveHash="1838932e32f01e0e7b65fde5ca0ebb2ab131cb6a9ff1a84025ee5b784075576c";
         internal static string Path => System.IO.Path.Combine(AppContext.BaseDirectory,"ffmpeg.exe");
         internal static bool IsInstalled { get { try { return new FileInfo(Path).Length == 202259968; } catch { return false; } } }
-        internal static async Task<bool> IsValidAsync(CancellationToken token)
+        internal static Task<bool> IsValidAsync(CancellationToken token) => IsExecutableValidAsync(Path, token);
+        private static async Task<bool> IsExecutableValidAsync(string path, CancellationToken token)
         {
-            if(!IsInstalled)return false;
-            await using var file=File.OpenRead(Path);
+            if(!File.Exists(path) || new FileInfo(path).Length != 202259968)return false;
+            await using var file=File.OpenRead(path);
             return Convert.ToHexString(await SHA256.HashDataAsync(file,token).ConfigureAwait(false))=="958AEAA0EA3E74E5E273157E6F045C94804BB72913261D8EF6C3D772743D13DF";
         }
         private static readonly SemaphoreSlim downloadGate=new(1,1);
+        internal static Task RemoveAsync(CancellationToken token) => Task.Run(async () =>
+        {
+            if (!await downloadGate.WaitAsync(0, token)) throw new IOException("录屏组件正在下载或移除，请稍后重试。");
+            try
+            {
+                if (ScreenRecordManager.IsRecording) throw new IOException("正在录屏，请结束录屏后再移除组件。");
+                ComponentBundles.SafePath(AppContext.BaseDirectory, "ffmpeg.exe");
+                if (!File.Exists(Path)) return;
+                using var lease = new FileStream(Path + ".component-lock", FileMode.OpenOrCreate, FileAccess.ReadWrite,
+                    FileShare.None, 1, FileOptions.DeleteOnClose);
+                try { ManagedComponentRemoval.RemoveFiles(AppContext.BaseDirectory, new[] { "ffmpeg.exe" }, token); }
+                catch (IOException error) when (File.Exists(Path))
+                { throw new IOException("无法移除录屏组件：可能正在录屏、转换或被其他程序占用。原文件已保留。", error); }
+            }
+            finally { downloadGate.Release(); }
+        }, token);
         internal static async Task DownloadAsync(IProgress<int> progress,CancellationToken cancellation)
         {
             if(!await downloadGate.WaitAsync(0,cancellation)) throw new IOException("录屏组件正在下载，请稍候。");
@@ -68,6 +85,7 @@ namespace ShareX
                 string hash=Convert.ToHexString(await SHA256.HashDataAsync(file,cancellation).ConfigureAwait(false));
                 if(!hash.Equals(ArchiveHash,StringComparison.OrdinalIgnoreCase)) throw new IOException("录屏组件校验失败，请重新下载。");
             }
+            if(await IsExecutableValidAsync(destination, cancellation).ConfigureAwait(false)) return;
             using var zip=ZipFile.OpenRead(archive);
             ZipArchiveEntry executable=null;
             foreach(var entry in zip.Entries)
@@ -84,6 +102,8 @@ namespace ShareX
                 }
                 cancellation.ThrowIfCancellationRequested();
                 // The fully verified replacement is on the same volume; a locked target stays intact.
+                using var lease = new FileStream(destination + ".component-lock", FileMode.OpenOrCreate, FileAccess.ReadWrite,
+                    FileShare.None, 1, FileOptions.DeleteOnClose);
                 File.Move(temporary,destination,true);
             }
             finally { if(File.Exists(temporary))File.Delete(temporary); }
