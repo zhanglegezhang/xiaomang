@@ -50,6 +50,15 @@ namespace ShareX.ScreenCaptureLib
         }
 
         public int Size { get; set; }
+        internal PointF? SelectionDragAnchor { get; set; }
+        internal bool SelectionAnchorPending { get; set; }
+
+        public override void OnMouseUp(Point position)
+        {
+            base.OnMouseUp(position);
+            SelectionDragAnchor = null;
+            SelectionAnchorPending = false;
+        }
 
         public bool AutoSetSize { get; set; } = true;
 

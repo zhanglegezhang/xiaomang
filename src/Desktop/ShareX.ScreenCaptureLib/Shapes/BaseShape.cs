@@ -349,9 +349,10 @@ namespace ShareX.ScreenCaptureLib
                 {
                     Manager.IsResizing = true;
 
-                    if (!InputManager.IsBeforeMouseDown(MouseButtons.Left))
+                    if (!InputManager.IsBeforeMouseDown(MouseButtons.Left) || node.SelectionAnchorPending)
                     {
-                        tempNodePos = node.Position;
+                        tempNodePos = node.SelectionDragAnchor ?? node.Position;
+                        node.SelectionAnchorPending = false;
                         tempStartPos = Rectangle.Location;
                         tempEndPos = new PointF(Rectangle.X + Rectangle.Width - 1, Rectangle.Y + Rectangle.Height - 1);
                         tempRectangle = Rectangle;
@@ -367,7 +368,7 @@ namespace ShareX.ScreenCaptureLib
                         tempRectangle.LocationOffset(Manager.Form.ScaledClientMouseVelocity);
                     }
 
-                    PointF pos = Manager.Form.ScaledClientMousePosition;
+                    PointF pos = Manager.SelectionPointerPosition ?? Manager.Form.ScaledClientMousePosition;
                     PointF startPos = tempStartPos;
                     PointF endPos = tempEndPos;
 

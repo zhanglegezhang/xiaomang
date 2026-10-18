@@ -37,7 +37,7 @@ using System.Windows.Forms;
 
 namespace ShareX.ScreenCaptureLib
 {
-    public sealed class RegionCaptureForm : Form
+    public sealed partial class RegionCaptureForm : Form
     {
         public static GraphicsPath LastRegionFillPath { get; private set; }
 
@@ -217,7 +217,8 @@ namespace ShareX.ScreenCaptureLib
             SuspendLayout();
 
             AutoScaleMode = AutoScaleMode.None;
-            defaultCursor = Helpers.CreateCursor(Resources.Crosshair);
+            defaultCursor = IsEditorMode ? Helpers.CreateCursor(Resources.Crosshair) : SelectionCursor.Create(DeviceDpi);
+            if (!IsEditorMode) CreateSelectionAffordances();
             openHandCursor = Helpers.CreateCursor(Resources.openhand);
             closedHandCursor = Helpers.CreateCursor(Resources.closedhand);
             SetDefaultCursor();
@@ -1322,6 +1323,18 @@ namespace ShareX.ScreenCaptureLib
 
         internal void DrawRegionArea(Graphics g, RectangleF rect, bool isAnimated)
         {
+            if (!IsEditorMode && isAnimated && ShapeManager.CurrentShape is RectangleRegionShape && rect == ShapeManager.CurrentRectangle)
+            {
+                if (ShapeManager.UsesSelectionResize && ShapeManager.IsCursorOnObject)
+                    g.DrawRectangleProper(selectionHover, rect);
+                else
+                {
+                    selectionDashes.DashOffset = borderDotPen.DashOffset;
+                    g.DrawRectangleProper(selectionBorder, rect);
+                    g.DrawRectangleProper(selectionDashes, rect);
+                }
+                return;
+            }
             g.DrawRectangleProper(borderPen, rect);
 
             if (isAnimated)
@@ -1997,6 +2010,7 @@ namespace ShareX.ScreenCaptureLib
             markerPen?.Dispose();
             canvasBorderPen?.Dispose();
             defaultCursor?.Dispose();
+            DisposeSelectionAffordances();
             openHandCursor?.Dispose();
             closedHandCursor?.Dispose();
             CustomNodeImage?.Dispose();

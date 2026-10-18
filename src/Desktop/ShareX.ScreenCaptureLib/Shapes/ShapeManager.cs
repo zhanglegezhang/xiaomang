@@ -369,19 +369,19 @@ namespace ShareX.ScreenCaptureLib
 
             foreach (ImageEditorControl control in DrawableObjects)
             {
-                control.MouseDown += (sender, e) => Form.SetHandCursor(true);
+                control.MouseDown += (sender, e) => SetObjectCursor(control, true);
                 control.MouseUp += (sender, e) =>
                 {
                     if (control.IsCursorHover)
                     {
-                        Form.SetHandCursor(false);
+                        SetObjectCursor(control, false);
                     }
                     else
                     {
                         Form.SetDefaultCursor();
                     }
                 };
-                control.MouseEnter += () => Form.SetHandCursor(false);
+                control.MouseEnter += () => SetObjectCursor(control, false);
                 control.MouseLeave += () => Form.SetDefaultCursor();
             }
 
@@ -429,6 +429,8 @@ namespace ShareX.ScreenCaptureLib
                     CreateDoubleClickMemento();
                 }
 
+                if (TryStartSelectionResize(new PointF(e.X / Form.ZoomFactor, e.Y / Form.ZoomFactor))) return;
+
                 if (!IsCreating)
                 {
                     StartRegionSelection();
@@ -447,6 +449,7 @@ namespace ShareX.ScreenCaptureLib
         {
             if (e.Button == MouseButtons.Left)
             {
+                if (FinishSelectionResize(new PointF(e.X / Form.ZoomFactor, e.Y / Form.ZoomFactor))) return;
                 if (IsMoving || IsCreating)
                 {
                     // The mouse-up message can arrive between scheduled frames. Commit
@@ -1094,6 +1097,7 @@ namespace ShareX.ScreenCaptureLib
         {
             if (objects.All(x => !x.IsDragging))
             {
+                if (UpdateSelectionObjects(objects, mousePosition)) return;
                 for (int i = 0; i < objects.Length; i++)
                 {
                     ImageEditorControl obj = objects[i];
