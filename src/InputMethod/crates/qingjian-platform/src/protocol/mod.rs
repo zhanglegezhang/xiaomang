@@ -33,7 +33,7 @@ pub mod frame;
 pub mod key;
 
 pub use client::ClientMessage;
-pub use codec::{CodecError, DEFAULT_PIPE_NAME, default_pipe_name, read_message, write_message};
+pub use codec::{CodecError, DEFAULT_PIPE_NAME, default_pipe_name, read_message, read_message_limited, write_message};
 pub use frame::{Frame, PreeditKind, PreeditSegment};
 pub use indicator::{IndicatorCommand, IndicatorState};
 pub use key::{KeyEvent, KeyModifiers, KeyOutcome};

@@ -26,6 +26,7 @@ type DataConflict = { current: string; requested: string }
 export default function Diary() {
   const [tree, setTree] = useState<TreeNode[]>([]), [root, setRoot] = useState('');
   const [initialized, setInitialized] = useState(false);
+  const [storageWarning, setStorageWarning] = useState('');
   const [tabs, setTabs] = useState<string[]>([]), [active, setActive] = useState(''), [selected, setSelectedPath] = useState('');
   const [selection, setSelection] = useState<Set<string>>(new Set());
   const selectionAnchor = useRef('');
@@ -175,8 +176,8 @@ export default function Diary() {
   }, [text, active, flush]);
   useEffect(() => {
     let live = true;
-    call<{ root: string; tree: TreeNode[]; dataConflict?: DataConflict | null }>('init').then(async result => {
-      if (!live) return; setRoot(result.root); setTree(result.tree); setStatus('已就绪 · 纯本地');
+    call<{ root: string; tree: TreeNode[]; dataConflict?: DataConflict | null; storageWarning?: string }>('init').then(async result => {
+      if (!live) return; setRoot(result.root); setTree(result.tree); setStatus('已就绪 · 纯本地'); setStorageWarning(result.storageWarning || '');
       if (result.dataConflict) showDataConflict(result.dataConflict);
       const saved = localStorage.getItem('diary-session:' + result.root);
       if (saved) {
@@ -228,8 +229,9 @@ export default function Diary() {
   }, [flush]);
   const parent = multiple ? '' : treeNode(tree, selected)?.folder ? selected : parentOf(selected);
   function create(folder: boolean, targetParent = parent, initialFormat:'md'|'txt' = 'md') {
+    if (tabsRef.current.length >= 20) { fail('最多打开20个页签，请先关闭一个页签再新建。'); return; }
     setModal({ title: folder ? '新建文件夹' : '新建日记', value: folder ? '' : new Date().toLocaleDateString('sv-SE'), input: true, format: folder ? undefined : initialFormat,
-      onAccept: async (name, _solid, format='md') => { await flush(); const path = await call<string>('create', { parent:targetParent, name: name.trim(), folder, format }); await refresh();
+      onAccept: async (name, _solid, format='md') => { if(tabsRef.current.length >= 20) throw new Error('最多打开20个页签，请先关闭一个页签再新建。'); await flush(); const path = await call<string>('create', { parent:targetParent, name: name.trim(), folder, format }); await refresh();
         setExpanded(old => new Set([...old, targetParent])); await openNote(path); } });
   }
   async function closeTab(path: string) {
@@ -265,11 +267,12 @@ export default function Diary() {
       row?.scrollIntoView({block:'nearest'});row?.querySelector<HTMLElement>('.tree-open')?.focus({preventScroll:true});});
   }
   function duplicate(path:string) {
+    if (tabsRef.current.length >= 20) { fail('最多打开20个页签，请先关闭一个页签再复制。'); return; }
     const folder=index.get(path)?.folder===true;
     setError('');
     setModal({title:'复制副本',value:(folder?path.split('/').pop()!:basename(path))+' - 副本',input:true,
       message:folder?'复制目录说明、子目录、文件和图标样式到同级目录。':'复制当前已保存内容到同级目录，保留原格式和图标样式。',
-      onAccept:async name=>{await flush();const next=await call<string>('duplicate',{path,name:name.trim()});await refresh();
+      onAccept:async name=>{if(tabsRef.current.length >= 20) throw new Error('最多打开20个页签，请先关闭一个页签再复制。');await flush();const next=await call<string>('duplicate',{path,name:name.trim()});await refresh();
         setExpanded(old=>new Set([...old,parentOf(next)]));await openNote(next);setStatus('已创建副本');}});
   }
   function remapItem(path: string, next: string) {
@@ -443,7 +446,7 @@ export default function Diary() {
   async function importBackup() {
     const source = await open({ directory: true, multiple: false, title: '选择“小蟒日记备份”文件夹' });
     if (typeof source !== 'string') return;
-    await flush(); const path = await call<string>('import_backup', { source }); await refresh(); setExpanded(old => new Set([...old,path])); setStatus(path ? '已导入到独立文件夹，原日记保留' : '已恢复到日记根目录');
+    await flush(); const path = await call<string>('import_backup', { source }); setStorageWarning(await call<string>('storage_warning')); await refresh(); setExpanded(old => new Set([...old,path])); setStatus(path ? '已导入到独立文件夹，原日记保留' : '已恢复到日记根目录');
   }
   const run = async (fn: () => Promise<void>) => { if (working.current || exporting.current) return; working.current = true; try { await Promise.all([...pendingPastes.current]); setBusy(true); await fn(); setError(''); } catch(e) { fail(e) } finally { setBusy(false); working.current = false } };
   actions.current = { save: async () => { await flush(); setError(''); }, create: () => create(false), search: () => { setSearching(true); setShowTrash(false); setSidebar(true); }, closeTab: () => closeTab(activeRef.current) };
@@ -501,6 +504,7 @@ export default function Diary() {
     });
   }
   function treeKeyDown(event: React.KeyboardEvent<HTMLDivElement>) {
+    if ((event.target as HTMLElement).closest('.tree-toggle') && ['Enter',' '].includes(event.key)) return;
     if (busy || navigating || working.current || exporting.current || modal || event.nativeEvent.isComposing || event.altKey || event.metaKey) return;
     const row=(event.target as HTMLElement).closest<HTMLElement>('.tree-row');
     const path=row?.title || selected, node=index.get(path);
@@ -557,6 +561,7 @@ export default function Diary() {
       {showTrash&&<div className="tree-scroll">{trash.length?trash.map(item=><div className="trash-item" key={item.id}><strong>{item.path}</strong><small>{new Date(item.time).toLocaleString()}</small><button onClick={()=>void run(async()=>{await call('restore',{id:item.id});setTrash(await call<TrashItem[]>('trash'));await refresh()})}>恢复</button></div>):<div className="sidebar-empty">回收站为空</div>}</div>}
     </aside>}
     <main className="workspace"><header className="tabs" onContextMenu={event=>event.preventDefault()}><IconButton title={sidebar?'收起目录':'展开目录'} icon={sidebar?PanelLeftClose:PanelLeftOpen} action={()=>setSidebar(!sidebar)}/><div className="tab-scroll" ref={tabScroll}>{tabs.map(path=><div className={'tab '+(active===path?'active':'')} key={path} onContextMenu={event=>openContext(event,path,index.get(path)?.folder===true)}><button className="tab-open" disabled={busy||navigating} title={path} aria-label={index.get(path)?.folder?index.get(path)!.name:basename(path)} onClick={()=>void openNote(path)}><ItemIcon folder={index.get(path)?.folder === true} path={path} size={14} color={index.get(path)?.color} solid={index.get(path)?.solid}/><span>{displayName(index.get(path)?.folder?index.get(path)!.name:basename(path))}</span>{drafts.current.get(path)?.content!==drafts.current.get(path)?.saved&&<i/>}</button>{active!==path&&<button className="tab-close" disabled={busy||navigating} title="关闭日记" aria-label={'关闭 '+basename(path)} onClick={()=>void closeTab(path)}><X size={13}/></button>}</div>)}</div></header>
+      {storageWarning && <div className="error-banner" role="status">{storageWarning}</div>}
       {error&&<div role="alert" className="error-banner"><span>{error}</span><button aria-label="关闭错误提示" onClick={()=>setError('')}><X size={16}/></button></div>}
       {treeWarning&&<div role="alert" className="error-banner">{treeWarning}</div>}
       {active?<div className="editor-container" key={active+'-'+sourceMode}>{plainText?<><PlainToolbar controller={controller} undoRedo={plainUndoRedo} fontSize={plainFontSize} wrapping={plainWrapping} disabled={busy||navigating} onFontSize={setPlainFontSize} onWrapping={setPlainWrapping}/><div className="source-editor-body"><SourceMarkdownEditor session={activeSession} language="plain" value={text} onChange={update} editable={!busy&&!navigating} onUndoRedoChange={setPlainUndoRedo} showLineNumbers lineWrapping={plainWrapping} fontSize={plainFontSize} lineHeight={1.7} ariaLabel="日记 TXT 纯文本" onControllerChange={c=>controller.current=c}/></div></>:sourceMode?<><div className="format-bar source-format-bar" role="toolbar" aria-label="源码工具栏"><div className="toolbar-mode-switch">{modeSwitch}</div></div><div className="source-editor-body"><SourceMarkdownEditor session={activeSession} value={text} onChange={update} onPasteImages={pasteImages} editable={!busy&&!navigating} showLineNumbers lineWrapping fontSize={14} lineHeight={1.7} ariaLabel="日记 Markdown 源码" onControllerChange={c=>controller.current=c}/></div></>:<RichEditor session={activeSession} value={text} onChange={update} onPasteImages={pasteImages} readonly={busy||navigating} toolbarActions={modeSwitch} onContextActionsChange={setRichActions}/>}</div>:<div className="welcome"><img src="/xiaomang-logo.png" width={46} height={46} alt="小蟒标志" style={{marginBottom:10}}/><h1>留一点时间，给自己</h1><p>用目录整理日记，用搜索找回记忆。<br/>所有内容保存在这台电脑，随时可以导出和备份。</p><button className="primary" onClick={()=>create(false)} disabled={!root||busy}><FilePlus2 size={17}/>新建日记</button><small>Ctrl+N 新建 · Ctrl+S 保存 · Ctrl+Shift+F 全文搜索</small></div>}

@@ -17,6 +17,7 @@ namespace ShareX
             private SlimListScrollBar pinnedFilesScroll, discoveredFilesScroll;
             private Panel fileArea, fileDivider, fileTopDivider;
             private Label fileEmpty;
+            private Label fileWarning;
             private Timer fileRefreshTimer;
             private ContextMenuStrip fileMenu;
             private volatile bool filesDirty = true;
@@ -40,8 +41,11 @@ namespace ShareX
                 fileEmpty = new Label { Text = "可在资源管理器右键添加文件或目录", ForeColor = HalfWhiteColor,
                     Font = favoriteMetadataFont, BackColor = Color.Transparent, TextAlign = ContentAlignment.MiddleLeft, AutoEllipsis = true };
                 fileArea.Controls.Add(fileEmpty);
+                fileWarning = new Label { AutoEllipsis = true, ForeColor = Color.FromArgb(255,160,90), Font = favoriteMetadataFont, TextAlign = ContentAlignment.MiddleLeft };
+                fileArea.Controls.Add(fileWarning);
                 foreach (var list in new[] { pinnedFiles, discoveredFiles })
                 {
+                    list.MouseUp += (_, e) => { if(e.Button == MouseButtons.Right && list.IndexFromPoint(e.Location) < 0) ShowFileMenu(list, null, e.Location); };
                     list.OpenItem += item => FileAction(() => FileFavoritesService.Open(item));
                     list.UnpinItem += item => FileAction(() => FileFavoritesService.Store.Unpin(item.Path));
                     list.MenuItem += (item, point) => ShowFileMenu(list, item, point);
@@ -51,6 +55,7 @@ namespace ShareX
                 fileRefreshTimer = new Timer { Interval = 1000 };
                 fileRefreshTimer.Tick += (s, e) => {
                     if (!Visible || fileBusy || fileMenu?.Visible == true) return;
+                    pinnedFiles.Invalidate();
                     // Never move a target while the pointer is over either file list.
                     if (fileArea.RectangleToScreen(fileArea.ClientRectangle).Contains(Cursor.Position) || pinnedFiles.Focused || discoveredFiles.Focused) return;
                     if (filesDirty) RefreshFileFavorites(false);
@@ -76,7 +81,9 @@ namespace ShareX
             }
             private void ArrangeFileLists()
             {
-                int width = fileArea.ClientSize.Width, top = Owner.D(5), height = Math.Max(1, fileArea.Height - top);
+                int width = fileArea.ClientSize.Width, top = string.IsNullOrEmpty(fileWarning.Text) ? Owner.D(5) : Owner.D(28), height = Math.Max(1, fileArea.Height - top);
+                fileWarning.Visible = !string.IsNullOrEmpty(fileWarning.Text);
+                fileWarning.SetBounds(Owner.D(4),Owner.D(2),Math.Max(1,width-Owner.D(8)),Owner.D(24));
                 fileTopDivider.SetBounds(0, 0, width, 1);
                 bool pins = pinnedFiles.Items.Count > 0, discovered = discoveredFiles.Items.Count > 0;
                 pinnedFiles.Visible = pins; discoveredFiles.Visible = discovered;
@@ -103,6 +110,7 @@ namespace ShareX
                 if (store == null || !store.Ready.IsCompleted) return;
                 if (store.Ready.IsFaulted) { fileEmpty.Text = "文件收藏读取失败，请恢复个人数据备份"; return; }
                 filesDirty = false;
+                fileWarning.Text = store.Warning ?? "";
                 string search = favoriteSearchBox.Text.Trim();
                 bool Match(FavoriteFile item) => search.Length == 0 || item.Name.Contains(search, StringComparison.OrdinalIgnoreCase) || item.Path.Contains(search, StringComparison.OrdinalIgnoreCase);
                 pinnedFiles.SetItems(store.Pinned.Where(Match).ToArray());
@@ -128,6 +136,7 @@ namespace ShareX
             private void ShowFileMenu(FileFavoriteList list, FavoriteFile item, Point point)
             {
                 fileMenu?.Dispose(); fileMenu = new ContextMenuStrip();
+                if (item != null) {
                 fileMenu.Items.Add("打开", null, (s, e) => FileAction(() => FileFavoritesService.Open(item)));
                 if (item.Pinned) {
                     fileMenu.Items.Add("取消固定", null, (s, e) => FileAction(() => FileFavoritesService.Store.Unpin(item.Path)));
@@ -137,10 +146,39 @@ namespace ShareX
                     fileMenu.Items.Add("固定", null, (s, e) => FileAction(() => FileFavoritesService.Store.Pin(item.Path)));
                     fileMenu.Items.Add("不再推荐", null, (s, e) => FileAction(() => FileFavoritesService.Store.Exclude(item.Path)));
                 }
+                }
+                fileMenu.Items.Add("管理不再推荐…", null, (_, _) => BeginInvoke(new Action(ManageExcluded)));
                 fileMenu.Opening += (s, e) => { Owner.showingWidgetOverlay = true; Owner.collapseTimer.Stop(); };
                 fileMenu.Closed += (s, e) => { Owner.showingWidgetOverlay = false; Owner.ScheduleCollapseIfPointerOutside(); };
                 ShareXResources.ApplyCustomThemeToContextMenuStrip(fileMenu);
                 fileMenu.Show(list, point);
+            }
+            private void ManageExcluded()
+            {
+                Owner.showingWidgetOverlay = true; Owner.collapseTimer.Stop();
+                try {
+                    var store = FileFavoritesService.Store;
+                    using var form = new Form { Text = "管理不再推荐", Icon = ShareXResources.Icon, Size = new Size(560, 360),
+                        StartPosition = FormStartPosition.CenterParent, MinimizeBox = false, MaximizeBox = false };
+                    var list = new ListBox { Dock = DockStyle.Fill, SelectionMode = SelectionMode.MultiExtended, HorizontalScrollbar = true };
+                    list.Items.AddRange(store.Excluded.Cast<object>().ToArray());
+                    var buttons = new FlowLayoutPanel { Dock = DockStyle.Bottom, Height = 48 };
+                    var selected = new Button { Text = "恢复所选", AutoSize = true };
+                    var all = new Button { Text = "全部恢复", AutoSize = true };
+                    var notice = new Label { Text = "恢复后按使用热度推荐，不会自动固定。", Dock = DockStyle.Top, Height = 30 };
+                    async Task Restore(string[] paths) {
+                        selected.Enabled = all.Enabled = false;
+                        try { await store.RestoreRecommendations(paths); list.Items.Clear(); list.Items.AddRange(store.Excluded.Cast<object>().ToArray()); filesDirty = true; }
+                        catch(Exception error) { MessageBox.Show(form, error.Message, "未恢复"); }
+                        finally { selected.Enabled = all.Enabled = true; }
+                    }
+                    selected.Click += async (_, _) => await Restore(list.SelectedItems.Cast<string>().ToArray());
+                    all.Click += async (_, _) => await Restore(store.Excluded);
+                    buttons.Controls.Add(selected); buttons.Controls.Add(all);
+                    form.Controls.Add(list); form.Controls.Add(notice); form.Controls.Add(buttons);
+                    ShareXResources.ApplyTheme(form, true); form.ShowDialog(Owner);
+                }
+                finally { Owner.showingWidgetOverlay = false; Owner.ScheduleCollapseIfPointerOutside(); }
             }
             private void RepointFile(FavoriteFile item)
             {
@@ -185,6 +223,9 @@ namespace ShareX
             private string hoverPath;
             private bool hidingScroll;
             private double wheelRemainder;
+            private Point pressedPoint;
+            private string pressedPath;
+            private int pressedAction;
             internal void ScrollWheel(int delta)
             {
                 if(delta==0 || ScrollMaximum==0){wheelRemainder=0;return;}
@@ -247,6 +288,15 @@ namespace ShareX
                 int textX = left + d + owner.D(8);
                 TextRenderer.DrawText(e.Graphics, item.Name, Font, new Rectangle(textX, e.Bounds.Top, Math.Max(1, e.Bounds.Right - textX - owner.D(4)), e.Bounds.Height), ForeColor,
                     TextFormatFlags.VerticalCenter | TextFormatFlags.EndEllipsis | TextFormatFlags.SingleLine | TextFormatFlags.NoPrefix | TextFormatFlags.NoPadding);
+                if (pins) {
+                    string status = FavoritePathStatus.Label(FavoritePathStatus.Get(item.Path));
+                    if (status.Length > 0) {
+                        int width = TextRenderer.MeasureText(status, Font).Width + owner.D(8);
+                        var bounds = new Rectangle(e.Bounds.Right-width, e.Bounds.Top, width, e.Bounds.Height);
+                        e.Graphics.FillRectangle(background, bounds);
+                        TextRenderer.DrawText(e.Graphics, status, Font, bounds, Color.FromArgb(255,160,90), TextFormatFlags.VerticalCenter | TextFormatFlags.SingleLine);
+                    }
+                }
                 if (Focused) e.DrawFocusRectangle();
             }
             private Rectangle NameHitBounds(int index)
@@ -255,8 +305,24 @@ namespace ShareX
                 int left = row.Left + owner.D(30);
                 Size text = TextRenderer.MeasureText(((FavoriteFile)Items[index]).Name, Font, Size.Empty,
                     TextFormatFlags.SingleLine | TextFormatFlags.NoPrefix | TextFormatFlags.NoPadding);
+                int badgeWidth = 0;
+                if(pins) { string badge=FavoritePathStatus.Label(FavoritePathStatus.Get(((FavoriteFile)Items[index]).Path)); if(badge.Length>0)badgeWidth=TextRenderer.MeasureText(badge,Font).Width+owner.D(8); }
                 return new Rectangle(left, row.Top + (row.Height - Font.Height) / 2,
-                    Math.Min(text.Width, Math.Max(0, row.Right - left - owner.D(4))), Font.Height);
+                    Math.Min(text.Width, Math.Max(0, row.Right - left - owner.D(4)-badgeWidth)), Font.Height);
+            }
+            private int ActionAt(int index, Point location)
+            {
+                if (index < 0 || index >= Items.Count) return 0;
+                Rectangle row = GetItemRectangle(index); int size = owner.D(16);
+                Rectangle icon = new(row.Left + owner.D(6), row.Top + (row.Height - size) / 2, size, size);
+                return pins && icon.Contains(location) ? 2 : NameHitBounds(index).Contains(location) ? 1 : 0;
+            }
+            protected override void OnMouseDown(MouseEventArgs e)
+            {
+                int index = IndexFromPoint(e.Location);
+                pressedPoint = e.Location; pressedAction = e.Button == MouseButtons.Left ? ActionAt(index,e.Location) : 0;
+                pressedPath = index < 0 ? null : ((FavoriteFile)Items[index]).Path;
+                base.OnMouseDown(e);
             }
             protected override void OnMouseUp(MouseEventArgs e)
             {
@@ -265,11 +331,10 @@ namespace ShareX
                 var item = (FavoriteFile)Items[index]; SelectedIndex = index;
                 if (e.Button == MouseButtons.Right) MenuItem?.Invoke(item, e.Location);
                 else if (e.Button == MouseButtons.Left) {
-                                        Rectangle row = GetItemRectangle(index);
-                    int size = owner.D(16);
-                    Rectangle icon = new Rectangle(row.Left + owner.D(6), row.Top + (row.Height - size) / 2, size, size);
-                    if (pins && icon.Contains(e.Location)) UnpinItem?.Invoke(item);
-                    else if (NameHitBounds(index).Contains(e.Location)) OpenItem?.Invoke(item);
+                    int action = pressedAction; pressedAction = 0;
+                    if (pressedPath != item.Path || action == 0 || ActionAt(index,e.Location) != action ||
+                        Math.Abs(e.X-pressedPoint.X) > SystemInformation.DragSize.Width/2 || Math.Abs(e.Y-pressedPoint.Y) > SystemInformation.DragSize.Height/2) return;
+                    if (action == 2) UnpinItem?.Invoke(item); else OpenItem?.Invoke(item);
                 }
             }
             protected override void OnKeyDown(KeyEventArgs e)
@@ -282,6 +347,7 @@ namespace ShareX
             }
             protected override void OnMouseMove(MouseEventArgs e)
             {
+                if(pressedAction!=0 && (Math.Abs(e.X-pressedPoint.X)>SystemInformation.DragSize.Width/2 || Math.Abs(e.Y-pressedPoint.Y)>SystemInformation.DragSize.Height/2))pressedAction=0;
                 base.OnMouseMove(e); int index = IndexFromPoint(e.Location);
                 string text = index >= 0 ? ((FavoriteFile)Items[index]).Path : null;
                 if (text != hoverPath) { hoverPath = text; tip.SetToolTip(this, text); }

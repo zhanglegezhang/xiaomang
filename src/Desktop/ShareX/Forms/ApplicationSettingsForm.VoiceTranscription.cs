@@ -156,7 +156,7 @@ namespace ShareX
             bool arranging = false;
             void ArrangeVoiceModelPage()
             {
-                if (arranging || table.IsDisposed) return;
+                if (arranging || table.IsDisposed || designedSettingsPages.Contains(voiceTranscriptionTab)) return;
                 arranging = true;
                 try
                 {
@@ -271,12 +271,14 @@ namespace ShareX
             voiceModelRemoveButton.Enabled = !downloading && SenseVoiceModelManager.HasLocalFiles(Program.PersonalFolder);
             voiceModelCancelButton.Visible = downloading;
             voiceModelProgress.Visible = downloading;
+            if(voiceProgressLayoutRow!=null)voiceDesignSurface?.SetRowVisible(voiceProgressLayoutRow,downloading);
             if (downloading) voiceModelProgress.Value = 0;
         }
 
         private void RefreshVoiceModelStatus()
         {
             bool installed = SenseVoiceModelManager.IsInstalled(Program.PersonalFolder);
+            voiceState?.SetInstalled(installed);
             long size = SenseVoiceModelManager.GetInstalledSize(Program.PersonalFolder);
             voiceModelStatus.Text = installed ? $"已安装 {SenseVoiceModelManager.DisplayName}（{FormatFileSize(size)}）" : "未安装，将使用 Windows 语音识别";
             if (!installed && size > 0) voiceModelStatus.Text += $"；存在不完整模型文件（{FormatFileSize(size)}），可删除后重新安装";

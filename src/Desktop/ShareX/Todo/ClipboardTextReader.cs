@@ -19,7 +19,7 @@ namespace ShareX
         public static bool TryReadItem(IDataObject data, out ClipboardTextItem item)
         {
             item = null;
-            if (data == null || data.GetDataPresent(VoiceTypingClipboard.HistoryExclusionFormat, false)) return false;
+            if (ClipboardPrivacy.ExcludesHistory(data)) return false;
             if (data.GetDataPresent(DataFormats.FileDrop, false))
             {
                 if (data.GetData(DataFormats.FileDrop, false) is not string[] paths || paths.Length == 0) return false;

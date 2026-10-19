@@ -280,7 +280,7 @@
     }
   },
   "DailyNewsSettings": {
-    "Enabled": true,
+    "Enabled": false,
     "MaxPerSource": 1,
     "MaxTotal": 12,
     "RecentHours": 24,

@@ -18,6 +18,7 @@ namespace ShareX
                 DataObject data = new DataObject();
                 data.SetData(DataFormats.UnicodeText, false, text);
                 data.SetData(HistoryExclusionFormat, false, "1");
+                ClipboardPrivacy.ExcludeFromHistoryAndCloud(data);
                 Clipboard.SetDataObject(data, true, 4, 50);
                 return true;
             }

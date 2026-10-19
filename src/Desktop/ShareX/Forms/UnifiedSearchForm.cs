@@ -25,6 +25,8 @@ namespace ShareX
         }
 
         internal static (SearchHit[] Hits, int Skipped) Search(SearchHit[] snapshot, string notes, string query, CancellationToken token)
+            => SearchFiltered(snapshot, notes, query, token, null);
+        internal static (SearchHit[] Hits, int Skipped) SearchFiltered(SearchHit[] snapshot, string notes, string query, CancellationToken token, string source)
         {
             UnifiedSearchCache.Prepare(notes);
             var hits = new List<SearchHit>();
@@ -33,7 +35,7 @@ namespace ShareX
             foreach (var item in snapshot)
             {
                 token.ThrowIfCancellationRequested();
-                if (Match(item.Title) || Match(item.Text)) hits.Add(item);
+                if ((source == null || item.Source == source) && (Match(item.Title) || Match(item.Text))) hits.Add(item);
             }
             void Scan(string directory, int depth)
             {
@@ -66,8 +68,10 @@ namespace ShareX
                 }
                 catch (Exception error) when (error is IOException or UnauthorizedAccessException) { skipped++; }
             }
-            if (Directory.Exists(notes)) Scan(notes, 0);
-            return (hits.OrderBy(x => x.Source).ThenByDescending(x => Match(x.Title)).Take(300).ToArray(), skipped);
+            if ((source == null || source == "本地笔记") && Directory.Exists(notes)) Scan(notes, 0);
+            return (hits.OrderByDescending(x => string.Equals(x.Title, query, StringComparison.OrdinalIgnoreCase))
+                .ThenByDescending(x => x.Title?.StartsWith(query, StringComparison.OrdinalIgnoreCase) == true)
+                .ThenByDescending(x => Match(x.Title)).ThenBy(x => x.Title, StringComparer.OrdinalIgnoreCase).Take(300).ToArray(), skipped);
         }
     }
 
@@ -76,6 +80,8 @@ namespace ShareX
         private static UnifiedSearchForm current;
         private readonly TextBox query = new() { BorderStyle = BorderStyle.None, PlaceholderText = "搜索待办、收藏、笔记和固定文件…" };
         private readonly CheckBox clipboard = new SearchHistoryCheckBox { Text = "包含剪切板历史", AutoSize = false };
+        private readonly ComboBox sourceFilter = new() { Name = "searchSource", DropDownStyle = ComboBoxStyle.DropDownList,
+            BackColor = SearchAppearance.Surface, ForeColor = SearchAppearance.Text, FlatStyle = FlatStyle.Flat };
         private readonly UnifiedSearchResultsView results = new() { Dock = DockStyle.Fill };
         private readonly Label status = new() { Text = "输入关键词开始搜索", AutoEllipsis = true, TextAlign = ContentAlignment.MiddleLeft };
         private readonly Label elapsed = new() { TextAlign = ContentAlignment.MiddleRight };
@@ -88,6 +94,8 @@ namespace ShareX
         private int generation;
         private readonly Stopwatch queryElapsed = new();
         private bool sizeMemoryReady;
+        private int completedGeneration = -1;
+        private int? pendingOpen;
         internal static void Open()
         {
             if (current == null || current.IsDisposed) current = new UnifiedSearchForm();
@@ -102,7 +110,17 @@ namespace ShareX
             Font = new Font("Microsoft YaHei UI", 9f); BackColor = SearchAppearance.Background; ForeColor = SearchAppearance.Text;
             HandleCreated += (_, _) => NativeMethods.UseImmersiveDarkMode(Handle, true);
             input = new SearchInputPanel(query);
-            top.Controls.Add(input); top.Controls.Add(clipboard);
+            sourceFilter.Items.AddRange(new object[] { "全部来源", "待办", "手动收藏", "本地笔记", "固定文件", "剪切板" });
+            sourceFilter.SelectedIndex = 0;
+            sourceFilter.DrawMode = DrawMode.OwnerDrawFixed;
+            sourceFilter.DrawItem += (_, e) => {
+                if (e.Index < 0) return;
+                using var brush = new SolidBrush((e.State & DrawItemState.Selected) != 0 ? Color.FromArgb(47,64,77) : SearchAppearance.Surface);
+                e.Graphics.FillRectangle(brush,e.Bounds);
+                TextRenderer.DrawText(e.Graphics,sourceFilter.Items[e.Index].ToString(),sourceFilter.Font,e.Bounds,SearchAppearance.Text,
+                    TextFormatFlags.VerticalCenter | TextFormatFlags.Left | TextFormatFlags.NoPrefix);
+            };
+            top.Controls.Add(input); top.Controls.Add(clipboard); top.Controls.Add(sourceFilter);
             status.ForeColor = elapsed.ForeColor = keyboardHint.ForeColor = SearchAppearance.Muted;
             footer.Controls.Add(status); footer.Controls.Add(keyboardHint); footer.Controls.Add(elapsed);
             footer.Paint += (_, e) => { using Pen pen = new(SearchAppearance.Border); e.Graphics.DrawLine(pen, 0, 0, footer.Width, 0); };
@@ -111,9 +129,17 @@ namespace ShareX
             Shown += (_, _) => LayoutSearchChrome(); DpiChanged += (_, _) => LayoutSearchChrome();
             LayoutSearchChrome();
             query.TextChanged += (_, _) => Schedule(); clipboard.CheckedChanged += (_, _) => Schedule();
+            sourceFilter.SelectedIndexChanged += (_, _) => Schedule();
             delay.Tick += async (_, _) => { delay.Stop(); await Search(); };
             results.ResultInvoked += async (_, _) => await OpenResult();
-            query.KeyDown += (_, e) => { if (e.KeyCode == Keys.Down && results.HitCount > 0) { results.FocusFirst(); e.SuppressKeyPress = true; } };
+            query.KeyDown += (_, e) => {
+                if (e.KeyCode == Keys.Down && results.HitCount > 0) { results.FocusFirst(); e.SuppressKeyPress = true; }
+                else if (e.KeyCode == Keys.Enter) {
+                    e.SuppressKeyPress = true;
+                    if (completedGeneration == generation) { if (results.SelectedHit == null) results.FocusFirst(); results.InvokeSelected(); }
+                    else if (query.Text.Trim().Length > 0) pendingOpen = generation;
+                }
+            };
             Load += (_, _) => RestoreRememberedSize();
             ResizeEnd += (_, _) => RememberWindowSize();
             FormClosing += (_, _) => RememberWindowSize();
@@ -147,14 +173,22 @@ namespace ShareX
             SettingManager.SaveApplicationConfigAsync();
         }
         private int D(int value) => (int)Math.Round(value * DeviceDpi / 96d);
+        protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+        {
+            if (keyData == Keys.Escape) { Close(); return true; }
+            if (keyData == (Keys.Control | Keys.L)) { query.Focus(); query.SelectAll(); return true; }
+            return base.ProcessCmdKey(ref msg, keyData);
+        }
         private void LayoutSearchChrome()
         {
             if (input == null) return;
-            top.Height = D(68); footer.Height = D(30);
+            top.Height = D(108); footer.Height = D(30);
             int margin = D(14), gap = D(14);
             int checkWidth = TextRenderer.MeasureText(clipboard.Text, clipboard.Font).Width + D(26);
             clipboard.Bounds = new Rectangle(Math.Max(margin, top.ClientSize.Width - margin - checkWidth), D(14), checkWidth, D(40));
             input.Bounds = new Rectangle(margin, D(14), Math.Max(D(120), clipboard.Left - gap - margin), D(40));
+            sourceFilter.Bounds = new Rectangle(margin, D(63), D(160), D(30));
+            sourceFilter.ItemHeight = D(22);
             int elapsedWidth = elapsed.Text.Length == 0 ? 0 : TextRenderer.MeasureText(elapsed.Text, elapsed.Font).Width + D(14);
             elapsed.Bounds = new Rectangle(footer.Width - margin - elapsedWidth, 0, elapsedWidth, footer.Height);
             int hintWidth = TextRenderer.MeasureText(keyboardHint.Text, keyboardHint.Font).Width + gap;
@@ -165,7 +199,7 @@ namespace ShareX
         }
         private void Schedule()
         {
-            generation++; search?.Cancel(); delay.Stop(); queryElapsed.Restart();
+            generation++; pendingOpen = null; search?.Cancel(); delay.Stop(); queryElapsed.Restart();
             elapsed.Text = ""; LayoutSearchChrome();
             if (query.Text.Trim().Length == 0) { results.SetHits(Array.Empty<SearchHit>(), ""); status.Text = "输入关键词开始搜索"; results.EmptyMessage = "输入关键词，搜索待办、收藏和本地笔记"; return; }
             results.EmptyMessage = "正在搜索…";
@@ -174,6 +208,7 @@ namespace ShareX
         private async Task Search()
         {
             int version = generation; string term = query.Text.Trim();
+            string selectedSource = sourceFilter.SelectedIndex > 0 ? sourceFilter.SelectedItem.ToString() : null;
             var cancellation = new CancellationTokenSource(); search = cancellation;
             var snapshot = new List<SearchHit>(); var settings = Program.Settings.TodoSettings;
             snapshot.AddRange(settings.Items.Select(x => new SearchHit("待办", x.Text, x.Text, x.Id)));
@@ -184,13 +219,15 @@ namespace ShareX
             {
                 await UnifiedSearchEngine.ReadGate.WaitAsync(cancellation.Token);
                 (SearchHit[] Hits, int Skipped) found;
-                try { found = await Task.Run(() => UnifiedSearchEngine.Search(snapshot.ToArray(), System.IO.Path.Combine(LocalDiaryManager.DataFolder, "notes"), term, cancellation.Token)); }
+                try { found = await Task.Run(() => UnifiedSearchEngine.SearchFiltered(snapshot.ToArray(), System.IO.Path.Combine(LocalDiaryManager.DataFolder, "notes"), term, cancellation.Token, selectedSource)); }
                 finally { UnifiedSearchEngine.ReadGate.Release(); }
                 if (IsDisposed || generation != version) return;
                 results.SetHits(found.Hits, term);
+                completedGeneration = version;
                 results.EmptyMessage = "没有找到匹配结果，请换个关键词";
                 status.Text = $"显示 {found.Hits.Length} 条 · 最多 300 条" + (found.Skipped > 0 ? $" · {found.Skipped} 项未完整检索（过大、不可读或链接）" : "");
                 elapsed.Text = $"{queryElapsed.ElapsedMilliseconds} 毫秒"; LayoutSearchChrome();
+                if (pendingOpen == version) { pendingOpen = null; if (results.SelectedHit == null) results.FocusFirst(); results.InvokeSelected(); }
             }
             catch (OperationCanceledException) { }
             catch (Exception error) { if (!IsDisposed && generation == version) { status.Text = "搜索失败，可重新输入重试：" + error.Message; results.EmptyMessage = "搜索未完成，请重新输入关键词重试"; } }
@@ -198,6 +235,7 @@ namespace ShareX
         }
         private async Task OpenResult()
         {
+            if (completedGeneration != generation) return;
             var hit = results.SelectedHit;
             if (hit == null) return;
             try

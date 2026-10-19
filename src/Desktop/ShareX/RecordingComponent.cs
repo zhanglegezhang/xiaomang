@@ -14,7 +14,26 @@ namespace ShareX
         internal const string ArchiveHash="1838932e32f01e0e7b65fde5ca0ebb2ab131cb6a9ff1a84025ee5b784075576c";
         internal static string Path => System.IO.Path.Combine(AppContext.BaseDirectory,"ffmpeg.exe");
         internal static bool IsInstalled { get { try { return new FileInfo(Path).Length == 202259968; } catch { return false; } } }
-        internal static Task<bool> IsValidAsync(CancellationToken token) => IsExecutableValidAsync(Path, token);
+        private static readonly SemaphoreSlim validationGate = new(1, 1);
+        private static (long Length, long Write, long Created)? validatedStamp;
+        private static bool validatedResult;
+        private static (long Length, long Write, long Created) Stamp(string path)
+        { var file = new FileInfo(path); return (file.Length, file.LastWriteTimeUtc.Ticks, file.CreationTimeUtc.Ticks); }
+        internal static async Task<bool> IsValidAsync(CancellationToken token)
+        {
+            await validationGate.WaitAsync(token).ConfigureAwait(false);
+            try {
+                token.ThrowIfCancellationRequested();
+                var stamp = Stamp(Path);
+                if (validatedStamp == stamp) return validatedResult;
+                bool result = await IsExecutableValidAsync(Path, token).ConfigureAwait(false);
+                if (Stamp(Path) != stamp) return false;
+                validatedStamp = stamp; validatedResult = result; return result;
+            }
+            catch (IOException) { validatedStamp = null; return false; }
+            catch (UnauthorizedAccessException) { validatedStamp = null; return false; }
+            finally { validationGate.Release(); }
+        }
         private static async Task<bool> IsExecutableValidAsync(string path, CancellationToken token)
         {
             if(!File.Exists(path) || new FileInfo(path).Length != 202259968)return false;

@@ -29,6 +29,7 @@ namespace ShareX
                 initialize();
                 ShareXResources.ApplyCustomThemeToControl(page);
                 MainMenuAppearance.RefreshIfStyled(page);
+                DesignSettingsPage(page);
                 pendingSettingsPages.Remove(page);
                 return true;
             }

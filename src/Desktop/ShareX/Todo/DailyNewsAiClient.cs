@@ -84,11 +84,15 @@ namespace ShareX
 
         private readonly DailyNewsSettings settings;
         private readonly HttpClient client;
+        private readonly Uri endpoint;
 
         public DailyNewsAiClient(DailyNewsSettings settings, string apiKey)
         {
             this.settings = settings;
-            client = new HttpClient { Timeout = TimeSpan.FromSeconds(Math.Max(30, settings.TimeoutSeconds * 3)) };
+            endpoint = new Uri(DailyNewsEndpoint.Validate(settings.ApiBase).AbsoluteUri.TrimEnd('/') + "/chat/completions");
+            // A redirect must never silently select a different key recipient or
+            // turn a permitted local HTTP address into a remote HTTP request.
+            client = new HttpClient(new HttpClientHandler { AllowAutoRedirect = false }) { Timeout = TimeSpan.FromSeconds(Math.Max(30, settings.TimeoutSeconds * 3)) };
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", apiKey);
             client.DefaultRequestHeaders.UserAgent.ParseAdd("xiaomangtongxue/1.0");
         }
@@ -248,7 +252,6 @@ namespace ShareX
                 }
             };
 
-            string endpoint = settings.ApiBase.TrimEnd('/') + "/chat/completions";
             for (int attempt = 0; attempt < 3; attempt++)
             {
                 using HttpRequestMessage message = new HttpRequestMessage(HttpMethod.Post, endpoint)

@@ -57,12 +57,20 @@ pub fn write_message<W: Write, T: Serialize>(writer: &mut W, value: &T) -> Resul
 /// 读一帧。对端在帧边界干净关闭（读长度前缀时就是 EOF）返回 `Ok(None)`；
 /// 读到一半断开算错误（`UnexpectedEof`）。
 pub fn read_message<R: Read, T: DeserializeOwned>(reader: &mut R) -> Result<Option<T>, CodecError> {
+    read_message_limited(reader, MAX_FRAME)
+}
+
+/// A transport may choose a smaller budget without changing the wire protocol.
+pub fn read_message_limited<R: Read, T: DeserializeOwned>(
+    reader: &mut R,
+    limit: u32,
+) -> Result<Option<T>, CodecError> {
     let mut len_buf = [0u8; 4];
     if !read_fully_or_eof(reader, &mut len_buf)? {
         return Ok(None);
     }
     let len = u32::from_le_bytes(len_buf);
-    if len > MAX_FRAME {
+    if len > limit.min(MAX_FRAME) {
         return Err(CodecError::TooLarge(len as usize));
     }
     let mut body = vec![0u8; len as usize];

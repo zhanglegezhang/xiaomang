@@ -42,6 +42,7 @@ namespace ShareX
         {
             InitializeControls();
             ShareXResources.ApplyTheme(this, true);
+            DesignSettingsPage(tpGeneral);
             InitializeChangeTracking();
         }
 
@@ -148,7 +149,7 @@ namespace ShareX
         {
             var button = new Button
             {
-                Text = text, AutoSize = true,
+                Name = "personalData_" + glyph, Text = text, AutoSize = true,
                 MinimumSize = new Size(layout.Scale(200), layout.Scale(32)),
                 ImageAlign = ContentAlignment.MiddleLeft,
                 TextAlign = ContentAlignment.MiddleLeft,

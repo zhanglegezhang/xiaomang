@@ -169,6 +169,7 @@ namespace ShareX
         }
         private void MeasureRows() => contentHeight = rows.Sum(RowHeight);
         internal void FocusFirst() { Focus(); SelectHit(0); }
+        internal void InvokeSelected() { if (SelectedHit != null) ResultInvoked?.Invoke(this, EventArgs.Empty); }
         private void UpdateAccessibility()
         {
             AccessibleDescription = SelectedHit == null ? "没有选中的结果" : $"{SelectedHit.Source}：{SelectedHit.Title}";
@@ -201,7 +202,7 @@ namespace ShareX
                 case Keys.End: SelectHit(hits.Length - 1); break;
                 case Keys.PageDown: SelectHit(selectedIndex + page); break;
                 case Keys.PageUp: SelectHit(selectedIndex - page); break;
-                case Keys.Enter: if (SelectedHit != null) ResultInvoked?.Invoke(this, EventArgs.Empty); break;
+                case Keys.Enter: InvokeSelected(); break;
                 default: return;
             }
             e.Handled = true; e.SuppressKeyPress = true;

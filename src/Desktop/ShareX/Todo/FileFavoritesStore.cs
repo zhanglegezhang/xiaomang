@@ -38,6 +38,8 @@ namespace ShareX
         private readonly SemaphoreSlim gate = new(1, 1);
         private List<FavoriteFile> pinned = new(), usage = new();
         private FileFavoritePreferences preferences = new();
+        private readonly HashSet<string> damagedFiles = new(StringComparer.OrdinalIgnoreCase);
+        internal string[] Excluded => preferences.ExcludedPaths.ToArray();
         private FavoriteFile[] pinnedView = Array.Empty<FavoriteFile>(), usageView = Array.Empty<FavoriteFile>();
         internal FavoriteFile[] Pinned => Volatile.Read(ref pinnedView);
         internal FavoriteFile[] Discovered => Volatile.Read(ref usageView);
@@ -114,9 +116,18 @@ namespace ShareX
         }
         private void Load()
         {
-            pinned = Read("pinned_files.json", x => ValidateItems(x, true), new List<FavoriteFile>());
-            usage = Read("usage_stats.json", x => ValidateItems(x, false), new List<FavoriteFile>());
-            preferences = Read("settings.json", ValidatePreferences, new FileFavoritePreferences());
+            T Independently<T>(string name, Func<string, T> parse, T empty)
+            {
+                try { return Read(name, parse, empty); }
+                catch (Exception error) {
+                    damagedFiles.Add(name);
+                    Warning = (Warning == null ? "" : Warning + "\n") + error.Message + "；其他完好类别仍可使用。";
+                    return empty;
+                }
+            }
+            pinned = Independently("pinned_files.json", x => ValidateItems(x, true), new List<FavoriteFile>());
+            usage = Independently("usage_stats.json", x => ValidateItems(x, false), new List<FavoriteFile>());
+            preferences = Independently("settings.json", ValidatePreferences, new FileFavoritePreferences());
             if (pinned.Any(x => x.PinnedAt == default))
             {
                 // Legacy files stored newest first without a timestamp. Persist this
@@ -136,6 +147,7 @@ namespace ShareX
         }
         private void Save(string name, object value)
         {
+            if (damagedFiles.Contains(name)) throw new IOException("此类别数据损坏，原文件已保留，请先恢复备份：" + name);
             Directory.CreateDirectory(directory);
             string target = System.IO.Path.Combine(directory, name), temp = target + ".new-" + Guid.NewGuid().ToString("N");
             try
@@ -188,6 +200,13 @@ namespace ShareX
             return added;
         }
         internal Task Unpin(string path) => Change(() => { var next = pinned.Where(x => !x.Path.Equals(path, StringComparison.OrdinalIgnoreCase)).ToList(); Save("pinned_files.json", next); pinned = next; });
+        internal Task RestoreRecommendations(string[] paths) => Change(() =>
+        {
+            var restore = new HashSet<string>(paths.Select(Normalize), StringComparer.OrdinalIgnoreCase);
+            var next = new FileFavoritePreferences { RecentCheckpoint = preferences.RecentCheckpoint,
+                ExcludedPaths = preferences.ExcludedPaths.Where(x => !restore.Contains(x)).ToList() };
+            Save("settings.json", next); preferences = next;
+        });
         internal Task Exclude(string path) => Change(() =>
         {
             var next = new FileFavoritePreferences { RecentCheckpoint = preferences.RecentCheckpoint,

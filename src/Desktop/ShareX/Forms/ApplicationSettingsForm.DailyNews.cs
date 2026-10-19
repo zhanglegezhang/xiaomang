@@ -162,7 +162,7 @@ namespace ShareX
 
             dailyNewsEnabled.CheckedChanged += DailyNewsSettingChanged;
             dailyNewsApiKey.TextChanged += DailyNewsSettingChanged;
-            dailyNewsApiBase.TextChanged += DailyNewsSettingChanged;
+            dailyNewsApiBase.Leave += CommitDailyNewsEndpoint;
             dailyNewsModel.TextChanged += DailyNewsSettingChanged;
             dailyNewsMaxTotal.ValueChanged += DailyNewsSettingChanged;
             dailyNewsMaxPerSource.ValueChanged += DailyNewsSettingChanged;
@@ -183,7 +183,7 @@ namespace ShareX
             int arrangedDpi = -1;
             void ArrangeNewsPage()
             {
-                if (arranging || table.IsDisposed) return;
+                if (arranging || table.IsDisposed || designedSettingsPages.Contains(dailyNewsTab)) return;
                 int width = Math.Max(1, dailyNewsTab.ClientSize.Width - dailyNewsTab.Padding.Horizontal);
                 if (width == arrangedWidth && dailyNewsTab.DeviceDpi == arrangedDpi) return;
                 arranging = true;
@@ -293,7 +293,6 @@ namespace ShareX
             DailyNewsSettings settings = DailyNewsSettings;
             settings.Enabled = dailyNewsEnabled.Checked;
             settings.SetApiKey(dailyNewsApiKey.Text);
-            settings.ApiBase = dailyNewsApiBase.Text;
             settings.Model = dailyNewsModel.Text;
             settings.MaxTotal = (int)dailyNewsMaxTotal.Value;
             settings.MaxPerSource = (int)dailyNewsMaxPerSource.Value;
@@ -307,6 +306,30 @@ namespace ShareX
             settings.EnableDigest = dailyNewsDigest.Checked;
             settings.EnableTopicGroup = dailyNewsTopicGroup.Checked;
             settings.Normalize();
+        }
+
+        private void CommitDailyNewsEndpoint(object sender, EventArgs e)
+        {
+            if (!ready || dailyNewsApiBase.Text.Trim().TrimEnd('/') == DailyNewsSettings.ApiBase) return;
+            string value = dailyNewsApiBase.Text.Trim().TrimEnd('/');
+            try
+            {
+                string recipient = DailyNewsEndpoint.Recipient(value);
+                string previous = null;
+                try { previous = DailyNewsEndpoint.Recipient(DailyNewsSettings.ApiBase); } catch (ArgumentException) { }
+                if (!string.Equals(previous, recipient, StringComparison.OrdinalIgnoreCase) &&
+                    MessageBox.Show(this, "资讯请求将把 API 密钥发送给：\n" + recipient + "\n确认使用此服务地址？", "确认资讯 API 接收方", MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes)
+                {
+                    dailyNewsApiBase.Text = DailyNewsSettings.ApiBase;
+                    return;
+                }
+                DailyNewsSettings.ApiBase = value;
+            }
+            catch (ArgumentException error)
+            {
+                MessageBox.Show(this, error.Message, "资讯 API 地址", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                dailyNewsApiBase.Text = DailyNewsSettings.ApiBase;
+            }
         }
 
         private static TextBox AddNewsTextBox(TableLayoutPanel table, string label, bool password)

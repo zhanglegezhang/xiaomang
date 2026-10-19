@@ -19,6 +19,10 @@ namespace ShareX
         private readonly PersonalDataKind[] availableKinds;
         private bool working;
         private PersonalDataTransferControl operation;
+        private readonly Dictionary<PersonalDataKind, Label> previews = new();
+        private System.Threading.CancellationTokenSource previewCancellation;
+        private readonly PersonalDataManifest previewManifest;
+        private int previewRevision;
         private void CancelOperation()
         {
             if (working) {
@@ -37,23 +41,27 @@ namespace ShareX
         {
             SuspendLayout();
             this.importing = importing; this.source = source;
+            previewManifest = manifest;
             availableKinds = importing ? manifest.Categories.ToArray() : Enum.GetValues<PersonalDataKind>();
             Text = importing ? "导入个人数据" : "导出个人数据";
             Icon = ShareXResources.Icon; StartPosition = FormStartPosition.CenterParent;
             AutoScaleDimensions = new SizeF(96F, 96F); AutoScaleMode = AutoScaleMode.Dpi; Font = new Font("Microsoft YaHei UI", 9F);
             FormBorderStyle = FormBorderStyle.FixedDialog; MaximizeBox = false; MinimizeBox = false;
-            ClientSize = new Size(470, 410);
+            ClientSize = new Size(680, 600);
             var stack = new TableLayoutPanel { Dock = DockStyle.Fill, Padding = new Padding(20), ColumnCount = 1, RowCount = 0, AutoScroll = true };
             stack.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100)); Controls.Add(stack);
             void Add(Control control) { stack.RowStyles.Add(new RowStyle(SizeType.AutoSize)); control.Margin = new Padding(0, 0, 0, 8); control.Anchor = AnchorStyles.Left | AnchorStyles.Right; stack.Controls.Add(control, 0, stack.RowCount++); }
             Add(new Label { AutoSize = true, MaximumSize = new Size(425, 0), Text = importing ? "备份时间：" + manifest.CreatedUtc.ToLocalTime().ToString("yyyy-MM-dd HH:mm") + "   版本：" + manifest.ProductVersion : "选择要备份的数据。备份文件可用于安装新包后恢复。" });
             var grid = new TableLayoutPanel { AutoSize = true, ColumnCount = 2, Dock = DockStyle.Top };
-            grid.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50)); grid.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50));
+            grid.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 32)); grid.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 68));
             int index = 0;
             foreach (var kind in Enum.GetValues<PersonalDataKind>()) {
                 bool available = !importing || manifest.Categories.Contains(kind);
                 var check = new CheckBox { Text = PersonalDataArchive.Label(kind), AutoSize = true, Enabled = available, Checked = available && kind != PersonalDataKind.Media, Margin = new Padding(0, 5, 6, 5), Tag = kind };
-                checks.Add(kind, check); grid.Controls.Add(check, index % 2, index / 2); index++;
+                checks.Add(kind, check); grid.Controls.Add(check, 0, index);
+                var preview = new Label { AutoSize = true, MaximumSize = new Size(410,0), Text = available ? "等待统计…" : "备份未包含", Margin = new Padding(0,5,0,5) };
+                previews.Add(kind,preview); grid.Controls.Add(preview,1,index++);
+                check.CheckedChanged += async (_, _) => await RefreshPreview();
             }
             Add(grid);
             if (importing && manifest.MissingVoiceAttachments.Count > 0)
@@ -66,14 +74,35 @@ namespace ShareX
             var buttons = new FlowLayoutPanel { AutoSize = true, FlowDirection = FlowDirection.RightToLeft, Dock = DockStyle.Bottom, Padding = new Padding(12, 8, 12, 12) };
             action = new Button { Text = importing ? "导入并重启" : "导出…", AutoSize = true, MinimumSize = new Size(112, 32) };
             cancel = new Button { Text = "取消", AutoSize = true, MinimumSize = new Size(80, 32), DialogResult = DialogResult.Cancel };
-            buttons.Controls.Add(action); buttons.Controls.Add(cancel); Controls.Add(buttons); buttons.BringToFront();
+            buttons.Controls.Add(action); buttons.Controls.Add(cancel); Controls.Add(buttons); buttons.SendToBack();
             CancelButton = cancel; AcceptButton = action;
             action.Click += async (_, _) => await Execute();
             cancel.Click += (_, _) => CancelOperation();
             FormClosing += (_, e) => { if (working) { e.Cancel = true; CancelOperation(); } };
+            Shown += async (_, _) => await RefreshPreview();
+            FormClosed += (_, _) => { previewRevision++; previewCancellation?.Cancel(); };
             ShareXResources.ApplyTheme(this, true);
             AutoScaleDimensions = new SizeF(96F, 96F);
             ResumeLayout(true);
+        }
+        private async Task RefreshPreview()
+        {
+            if (working || IsDisposed) return;
+            int own = ++previewRevision;
+            previewCancellation?.Cancel();
+            var cancellation = new System.Threading.CancellationTokenSource(); previewCancellation = cancellation;
+            var selected = checks.Where(x=>x.Value.Checked&&x.Value.Enabled).Select(x=>x.Key).ToArray();
+            foreach(var kind in selected) previews[kind].Text="正在后台统计…";
+            try {
+                var paths = PersonalDataManager.Paths();
+                // Snapshot serialization and directory accounting never block dialog opening.
+                var settings = Program.Settings;
+                var summary = await Task.Run(()=>PersonalDataPreview.Build(paths,PersonalDataPreferences.Json(settings),previewManifest,source,selected,
+                    PersonalDataInputPreflight.ConverterPresent(XiaomangInputMethodManager.BundleDirectory),cancellation.Token),cancellation.Token);
+                if(!IsDisposed && own==previewRevision) foreach(var item in summary) previews[item.Key].Text=item.Value;
+            } catch(OperationCanceledException) { }
+            catch(Exception error) { if(!IsDisposed&&own==previewRevision) foreach(var kind in selected) previews[kind].Text="统计未完成："+error.Message; }
+            finally { if(ReferenceEquals(previewCancellation,cancellation))previewCancellation=null; cancellation.Dispose(); }
         }
         private async Task Execute()
         {
@@ -88,6 +117,7 @@ namespace ShareX
                 if (File.Exists(destination)) { status.Text = "请使用一个新的文件名，避免覆盖已有备份。"; return; }
             }
             operation = new PersonalDataTransferControl();
+            previewRevision++; previewCancellation?.Cancel();
             working = true; action.Enabled = false; cancel.Enabled = true; cancel.DialogResult = DialogResult.None;
             foreach (var check in checks.Values) check.Enabled = false;
             var progress = new LimitedProgress(new Progress<string>(text => {

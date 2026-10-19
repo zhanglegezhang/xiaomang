@@ -42,12 +42,18 @@ namespace ShareX.HelpersLib
         public string PipeName { get; private set; }
         public bool IsSingleInstance { get; private set; }
         public bool IsFirstInstance { get; private set; }
+        public bool ArgumentsForwarded { get; private set; }
 
         private const int MaxArgumentsLength = 100;
         private const int ConnectTimeout = 5000;
+        internal const int MaxArgumentBytes = 64 * 1024;
+        internal const int MaxMessageBytes = 256 * 1024;
+        private const int MessageTimeout = 3000;
 
         private readonly MutexManager mutex;
         private CancellationTokenSource cts;
+        private Task listener;
+        private int disposed;
 
         public SingleInstanceManager(string mutexName, string pipeName, string[] args) : this(mutexName, pipeName, true, args)
         {
@@ -68,11 +74,11 @@ namespace ShareX.HelpersLib
                 {
                     cts = new CancellationTokenSource();
 
-                    Task.Run(ListenForConnectionsAsync, cts.Token);
+                    listener = Task.Run(ListenForConnectionsAsync);
                 }
                 else
                 {
-                    RedirectArgumentsToFirstInstance(args);
+                    ArgumentsForwarded = RedirectArgumentsToFirstInstance(args);
                 }
             }
         }
@@ -106,22 +112,10 @@ namespace ShareX.HelpersLib
 
                         await namedPipeServer.WaitForConnectionAsync(cts.Token).ConfigureAwait(false);
 
-                        using (BinaryReader reader = new BinaryReader(namedPipeServer, Encoding.UTF8))
+                        using (var deadline = CancellationTokenSource.CreateLinkedTokenSource(cts.Token))
                         {
-                            int length = reader.ReadInt32();
-
-                            if (length < 0 || length > MaxArgumentsLength)
-                            {
-                                throw new Exception("Invalid length: " + length);
-                            }
-
-                            string[] args = new string[length];
-
-                            for (int i = 0; i < length; i++)
-                            {
-                                args[i] = reader.ReadString();
-                            }
-
+                            deadline.CancelAfter(MessageTimeout);
+                            string[] args = await ReadArgumentsAsync(namedPipeServer, deadline.Token).ConfigureAwait(false);
                             OnArgumentsReceived(args);
                         }
                     }
@@ -141,36 +135,77 @@ namespace ShareX.HelpersLib
             }
         }
 
-        private void RedirectArgumentsToFirstInstance(string[] args)
+        // Keep the BinaryWriter wire format for already-running older instances,
+        // but validate lengths before allocating strings and bound the whole frame.
+        internal static async Task<string[]> ReadArgumentsAsync(Stream stream, CancellationToken token)
+        {
+            byte[] number = new byte[4];
+            await stream.ReadExactlyAsync(number, token).ConfigureAwait(false);
+            int count = System.Buffers.Binary.BinaryPrimitives.ReadInt32LittleEndian(number);
+            if (count < 0 || count > MaxArgumentsLength) throw new InvalidDataException("Invalid argument count.");
+            int budget = MaxMessageBytes - 4;
+            var args = new string[count];
+            byte[] prefix = new byte[1];
+            var utf8 = new UTF8Encoding(false, true);
+            for (int i = 0; i < count; i++)
+            {
+                uint length = 0;
+                for (int shift = 0; ; shift += 7)
+                {
+                    if (--budget < 0 || shift > 28) throw new InvalidDataException("Invalid string length.");
+                    await stream.ReadExactlyAsync(prefix, token).ConfigureAwait(false);
+                    byte part = prefix[0];
+                    if (shift == 28 && part > 7) throw new InvalidDataException("Invalid string length.");
+                    length |= (uint)(part & 127) << shift;
+                    if ((part & 128) == 0) break;
+                }
+                if (length > MaxArgumentBytes || length > budget) throw new InvalidDataException("Argument message exceeds limit.");
+                budget -= (int)length;
+                byte[] bytes = new byte[(int)length];
+                await stream.ReadExactlyAsync(bytes, token).ConfigureAwait(false);
+                args[i] = utf8.GetString(bytes);
+            }
+            return args;
+        }
+
+        private bool RedirectArgumentsToFirstInstance(string[] args)
         {
             try
             {
-                using (NamedPipeClientStream namedPipeClient = new NamedPipeClientStream(".", PipeName, PipeDirection.Out))
+                using var payload = new MemoryStream();
+                if (args == null || args.Length > MaxArgumentsLength) throw new InvalidDataException("Invalid argument count.");
+                using (var writer = new BinaryWriter(payload, Encoding.UTF8, true))
                 {
-                    namedPipeClient.Connect(ConnectTimeout);
-
-                    using (BinaryWriter writer = new BinaryWriter(namedPipeClient, Encoding.UTF8))
+                    writer.Write(args.Length);
+                    foreach (string argument in args)
                     {
-                        writer.Write(args.Length);
-
-                        foreach (string argument in args)
-                        {
-                            writer.Write(argument);
-                        }
+                        if (argument == null || Encoding.UTF8.GetByteCount(argument) > MaxArgumentBytes) throw new InvalidDataException("Argument exceeds limit.");
+                        writer.Write(argument);
+                        if (payload.Length > MaxMessageBytes) throw new InvalidDataException("Argument message exceeds limit.");
                     }
                 }
+                using var namedPipeClient = new NamedPipeClientStream(".", PipeName, PipeDirection.Out, PipeOptions.Asynchronous);
+                using var deadline = new CancellationTokenSource(ConnectTimeout);
+                namedPipeClient.ConnectAsync(deadline.Token).GetAwaiter().GetResult();
+                namedPipeClient.WriteAsync(payload.ToArray(), deadline.Token).AsTask().GetAwaiter().GetResult();
+                return true;
             }
             catch (Exception e)
             {
                 DebugHelper.WriteException(e);
+                return false;
             }
         }
 
         public void Dispose()
         {
+            if (Interlocked.Exchange(ref disposed, 1) != 0) return;
             if (cts != null)
             {
                 cts.Cancel();
+                // The async pipe reads are cancellable, so shutdown cannot retain
+                // an occupied listener or race a disposed cancellation source.
+                listener?.GetAwaiter().GetResult();
                 cts.Dispose();
             }
 

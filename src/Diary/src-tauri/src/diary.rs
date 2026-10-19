@@ -10,6 +10,8 @@ mod batch;
 mod copies;
 #[path = "diary_activity.rs"]
 mod activity;
+#[path = "diary_import.rs"]
+mod backup_import;
 
 const MAX_NOTE: u64 = 10 * 1024 * 1024;
 const MAX_ASSET: u64 = 20 * 1024 * 1024;
@@ -269,7 +271,7 @@ impl Diary {
     fn tree_mode(&self, recover: bool) -> Result<Vec<Value>> {
         let mut count = 0;
         let mut tree = walk_inner(&self.root.join("notes"), "", 0, &mut count, recover)?;
-        let colors = self.colors()?;
+        let colors = self.colors().unwrap_or_default();
         fn paint(nodes: &mut [Value], colors: &Colors) {
             for node in nodes {
                 if let Some(appearance) = colors.get(node["path"].as_str().unwrap()) {
@@ -289,8 +291,18 @@ impl Diary {
         Ok(())
     }
     fn colors(&self) -> Result<Colors> { read_colors(&self.root.join("item-colors.json")) }
+    fn storage_warning(&self) -> String {
+        let mut warnings=vec![];
+        if let Err(error)=self.colors() {warnings.push(format!("{error}；图标暂用默认外观，正文可继续编辑；修复或重置前不会覆盖损坏记录。"));}
+        let path=self.root.join("last-import-warning.txt");
+        if !linked(&path) && fs::metadata(&path).is_ok_and(|m|m.len()<16384) {
+            if let Ok(text)=fs::read_to_string(path) {if !text.is_empty(){warnings.push(text)}}
+        }
+        warnings.join("\n")
+    }
     fn write_colors(&self, colors: &Colors) -> Result<()> {
         let path = self.root.join("item-colors.json");
+        if path.exists() { read_colors(&path)?; }
         if linked(&path) { return Err("图标颜色文件不能是链接".into()) }
         atomic_write(&path, &serde_json::to_vec(colors).map_err(err)?)
     }
@@ -685,7 +697,7 @@ pub fn dispatch(root: &Path, op: &str, args: Value) -> Result<Value> {
     let _guard = IO_LOCK.get_or_init(|| Mutex::new(())).lock().map_err(|_| "日记存储锁不可用")?;
     let diary = Diary::open(root.to_path_buf())?;
     match op {
-        "init" => { let tree=diary.tree_mode(true)?; activity::optional(activity::sync(&diary,&tree)); Ok(json!({"root": diary.root, "tree": tree})) },
+        "init" => { let tree=diary.tree_mode(true)?; activity::optional(activity::sync(&diary,&tree)); Ok(json!({"root": diary.root, "tree": tree, "storageWarning": diary.storage_warning()})) },
         "tree" => { let tree=diary.tree_mode(true)?; activity::optional(activity::sync(&diary,&tree)); Ok(json!(tree)) },
         "visit" => { activity::visit(&diary,string(&args,"path")?)?; Ok(json!(true)) },
         "reorder" => {
@@ -909,52 +921,9 @@ pub fn dispatch(root: &Path, op: &str, args: Value) -> Result<Value> {
             let result=(|| { for dir in ["notes","attachments","history","trash"] { copy_tree_bounded(&diary.root.join(dir),&target.join(dir),&mut 0,&mut bytes,if dir=="notes" {60000} else {100000})?; } let colors=diary.colors()?; atomic_write(&target.join("item-colors.json"),&serde_json::to_vec(&colors).map_err(err)?)?; atomic_write(&target.join("xiaomang-diary.json"),b"{\"format\":1}")?; Ok(json!(target)) })();
             if result.is_err() {let _=fs::remove_dir_all(&target);} result
         }
-        "import_backup" => {
-            let source=PathBuf::from(string(&args,"source")?).canonicalize().map_err(err)?;
-            let manifest:Value=serde_json::from_str(&fs::read_to_string(source.join("xiaomang-diary.json")).map_err(err)?).map_err(err)?;
-            if manifest["format"]!=1 || source.starts_with(&diary.root) {return Err("不是受支持的外部日记备份".into())}
-            let imported_colors=read_colors(&source.join("item-colors.json"))?;
-            let existing_colors=diary.colors()?;
-            let mut checked_bytes=0;
-            inspect_tree(&source.join("notes"),&mut 0,&mut checked_bytes,60000,0)?;
-            inspect_tree(&source.join("attachments"),&mut 0,&mut checked_bytes,100000,0)?;
-            let stage=diary.root.join(format!("import-{}",Uuid::new_v4()));let mut bytes=0;
-            let result=(|| {
-                copy_tree_bounded(&source.join("notes"),&stage.join("notes"),&mut 0,&mut bytes,60000)?;
-                copy_tree_bounded(&source.join("attachments"),&stage.join("attachments"),&mut 0,&mut bytes,100000)?;
-                let mut imported_count=0; let _=walk(&stage.join("notes"),"",0,&mut imported_count)?;
-                // An empty target can restore an otherwise legal boundary-size
-                // or boundary-depth backup without inventing an extra item/layer.
-                let parent=diary.root.join("notes");
-                let direct=fs::read_dir(&parent).map_err(err)?.next().is_none()
-                    && (imported_count==20000 || walk(&stage.join("notes"),"",1,&mut 0).is_err());
-                if !direct { let _=walk(&stage.join("notes"),"",1,&mut 0)?; diary.validate_addition("",true,imported_count+1)?; }
-                for entry in fs::read_dir(stage.join("attachments")).map_err(err)? {
-                    let entry=entry.map_err(err)?; if !entry.path().is_file(){return Err("无效附件目录".into())}
-                    let target=diary.root.join("attachments").join(entry.file_name());
-                    if target.exists() && fs::read(&target).map_err(err)?!=fs::read(entry.path()).map_err(err)? {return Err("附件名称冲突，未导入日记".into())}
-                }
-                for entry in fs::read_dir(stage.join("attachments")).map_err(err)? {let entry=entry.map_err(err)?;let target=diary.root.join("attachments").join(entry.file_name());if !target.exists(){fs::copy(entry.path(),target).map_err(err)?;}}
-                if direct {
-                    fs::remove_dir(&parent).map_err(err)?;
-                    if let Err(error)=fs::rename(stage.join("notes"),&parent) { let _=fs::create_dir(&parent); return Err(err(error)) }
-                    if let Err(error)=diary.write_colors(&imported_colors) {
-                        fs::rename(&parent,stage.join("notes")).map_err(err)?; fs::create_dir(&parent).map_err(err)?; return Err(error)
-                    }
-                    return Ok(json!(""));
-                }
-                let name=format!("导入-{}",stamp());let parent=diary.root.join("notes");let target=parent.join(&name);if target.exists(){return Err("导入目录已存在，请重试".into())}
-                let old_order=read_order(&parent)?;let next_order=order_with_new(&parent,&name)?;
-                fs::rename(stage.join("notes"),&target).map_err(err)?;
-                if let Some(order)=next_order {if let Err(error)=commit_orders(&[(parent.clone(),Some(order))]) {fs::rename(&target,stage.join("notes")).map_err(err)?;return Err(error)}}
-                if !imported_colors.is_empty() {
-                    let mut colors=existing_colors.clone();colors.extend(imported_colors.iter().map(|(p,c)|(format!("{name}/{p}"),c.clone())));
-                    if let Err(error)=diary.write_colors(&colors) {commit_orders(&[(parent,old_order)])?;fs::rename(&target,stage.join("notes")).map_err(err)?;return Err(error)}
-                }
-                Ok(json!(name))
-            })();
-            let _=fs::remove_dir_all(&stage);result
-        }
+        "import_backup" => backup_import::execute(&diary, &PathBuf::from(string(&args,"source")?)),
+        "storage_warning" => Ok(json!(diary.storage_warning())),
+
         _ => Err("未知的本地日记操作".into()),
     }
 }
@@ -1261,7 +1230,8 @@ mod tests {
         assert_eq!(fs::read(&path).unwrap(),before);
         let mut permissions=fs::metadata(&path).unwrap().permissions();permissions.set_readonly(false);fs::set_permissions(&path,permissions).unwrap();
         fs::write(&path,serde_json::to_vec(&json!({"保留.md":{"color":"#2563eb","solid":true,"extra":"invalid"}})).unwrap()).unwrap();
-        assert!(Diary::open(root.clone()).unwrap().tree().is_err());fs::remove_dir_all(root).unwrap();
+        assert!(Diary::open(root.clone()).unwrap().tree().is_ok());
+        assert!(!Diary::open(root.clone()).unwrap().storage_warning().is_empty());fs::remove_dir_all(root).unwrap();
     }
     #[test] fn solid_toggle_can_keep_default_color_and_reset_both_attributes() {
         let root=fixture();let outside=fixture();let target=fixture();

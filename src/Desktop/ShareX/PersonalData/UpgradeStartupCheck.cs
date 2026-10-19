@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
+using System.Collections.Generic;
 
 namespace ShareX;
 
@@ -13,6 +14,53 @@ internal static class UpgradeStartupCheck
     private static JObject expected;
     private static JObject originalSettings;
     private static string originalPinned;
+    private static Exception settingsError;
+    private static bool settingsChecked;
+    // Run synchronously after configuration loading, before clipboard monitoring can
+    // append a record or evict the oldest record at the history limit.
+    internal static void SettingsLoaded()
+    {
+        if (expected == null) return;
+        try
+        {
+            if (originalSettings != null)
+                ValidateSettings(originalSettings, PersonalDataPreferences.Json(Program.Settings));
+            settingsChecked = true;
+        }
+        catch (Exception error) { settingsError = error; }
+    }
+
+    internal static void ValidateSettings(JObject original, JObject loaded)
+    {
+        foreach (string name in new[] { "Language", "ShowTray", "SilentRun", "DisableHotkeys" })
+            if (original[name] != null && !JToken.DeepEquals(original[name], loaded[name]))
+                throw new IOException("升级后个人设置未正确加载：" + name);
+        foreach (string field in new[] { "Items", "FavoriteItems", "ClipboardItems" })
+        {
+            JToken previous = original["TodoSettings"]?[field];
+            if (previous == null || previous.Type == JTokenType.Null) continue;
+            var oldItems = previous as JArray;
+            var newItems = loaded["TodoSettings"]?[field] as JArray;
+            var available = new Dictionary<(Guid, string), int>();
+            if (newItems != null)
+                foreach (var item in newItems)
+                    if (Guid.TryParse((string)item["Id"], out Guid id))
+                    {
+                        var key = (id, (string)item["Text"]);
+                        available[key] = available.GetValueOrDefault(key) + 1;
+                    }
+            bool valid = oldItems != null && newItems != null;
+            if (valid)
+                foreach (var item in oldItems)
+                {
+                    var key = (Guid.TryParse((string)item["Id"], out Guid id) ? id : Guid.Empty, (string)item["Text"]);
+                    if (key.Item1 == Guid.Empty || available.GetValueOrDefault(key) == 0) { valid = false; break; }
+                    available[key]--;
+                }
+            if (!valid)
+                throw new IOException($"升级后数据加载校验失败：{field}，原条数 {oldItems?.Count ?? -1}，加载条数 {newItems?.Count ?? -1}。");
+        }
+    }
     internal static void Schedule()
     {
         if (expected == null) return;
@@ -41,26 +89,11 @@ internal static class UpgradeStartupCheck
         if (expected == null) return;
         try
         {
+            if (settingsError != null) throw settingsError;
+            if (!settingsChecked) throw new IOException("升级后的设置尚未完成加载校验。");
             await Task.Run(SettingManager.WaitHotkeysConfig);
             await FileFavoritesService.Store.Ready;
             if (!string.IsNullOrEmpty(FileFavoritesService.Store.Warning)) throw new IOException("收藏数据加载失败。");
-            string config = Path.Combine(Program.PersonalFolder, "ApplicationConfig.json");
-            if (originalSettings != null)
-            {
-                var original = originalSettings;
-                var loaded = PersonalDataPreferences.Json(Program.Settings);
-                foreach (string name in new[] { "Language", "ShowTray", "SilentRun", "DisableHotkeys" })
-                    if (original[name] != null && !JToken.DeepEquals(original[name], loaded[name]))
-                        throw new IOException("升级后个人设置未正确加载：" + name);
-                foreach (string field in new[] { "Items", "FavoriteItems", "ClipboardItems" })
-                {
-                    var oldItems = original["TodoSettings"]?[field] as JArray;
-                    var newItems = loaded["TodoSettings"]?[field] as JArray;
-                    if (oldItems != null && (newItems == null || oldItems.Count != newItems.Count ||
-                        oldItems.Any(x => !newItems.Any(y => (string)y["Id"] == (string)x["Id"] && (string)y["Text"] == (string)x["Text"]))))
-                        throw new IOException("升级后待办或收藏内容未完整加载。");
-                }
-            }
             string pinned = Path.Combine(Program.PersonalFolder, "data", "pinned_files.json");
             if (originalPinned != null)
             {

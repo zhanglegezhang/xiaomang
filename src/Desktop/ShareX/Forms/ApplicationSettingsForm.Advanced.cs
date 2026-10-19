@@ -18,9 +18,12 @@ namespace ShareX
         }
 
         private void AdvancedSettings_PropertyValueChanged(object sender, PropertyValueChangedEventArgs e)
+            => ApplyAdvancedSettingsChange(e.ChangedItem.PropertyDescriptor?.Name);
+
+        private void ApplyAdvancedSettingsChange(string propertyName)
         {
             ApplicationConfig settings = Program.Settings;
-            switch (e.ChangedItem.PropertyDescriptor?.Name)
+            switch (propertyName)
             {
                 case nameof(ApplicationConfig.DisableHotkeys):
                     Program.HotkeyManager?.ToggleHotkeys(settings.DisableHotkeys);

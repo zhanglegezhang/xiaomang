@@ -1,0 +1,17 @@
+{
+  "usagePackage": {
+    "sha256": "144D2817BB439C6D30D656D62789BCAA96F4C1A3A914F502D80A80537F418AB4",
+    "url": "https://github.com/zhanglegezhang/xiaomang/releases/download/v2.13-20261019/xiaomang2.13_2026-10-19_usage.zip",
+    "asset": "xiaomang2.13_2026-10-19_usage.zip",
+    "files": 527,
+    "bytes": 110736460
+  },
+  "source": "https://github.com/zhanglegezhang/xiaomang/tree/v2.13-20261019",
+  "releaseTag": "v2.13-20261019",
+  "packaging": {
+    "tool": "7-Zip 26.03",
+    "parameters": "-tzip -mm=Deflate -mx=9 -mfb=258 -mpass=15 -mmt=off -mcu=on -scsUTF-8"
+  },
+  "releaseDate": "2026-10-19",
+  "productVersion": "2.13"
+}

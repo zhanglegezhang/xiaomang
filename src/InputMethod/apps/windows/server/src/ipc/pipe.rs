@@ -8,8 +8,12 @@ use std::fs::File;
 use std::io;
 use std::os::windows::io::{AsRawHandle, FromRawHandle};
 use std::sync::mpsc::{self, Receiver, RecvTimeoutError, Sender};
+use std::sync::{
+    Arc,
+    atomic::{AtomicUsize, Ordering},
+};
 use std::thread;
-use std::time::Instant;
+use std::time::{Duration, Instant};
 
 use windows::Win32::Foundation::{
     ERROR_ACCESS_DENIED, ERROR_BROKEN_PIPE, ERROR_NO_DATA, ERROR_PIPE_CONNECTED,
@@ -22,17 +26,29 @@ use windows::Win32::Security::{PSECURITY_DESCRIPTOR, SECURITY_ATTRIBUTES};
 use windows::Win32::Storage::FileSystem::{FILE_FLAG_FIRST_PIPE_INSTANCE, PIPE_ACCESS_DUPLEX};
 use windows::Win32::System::Pipes::{
     ConnectNamedPipe, CreateNamedPipeW, DisconnectNamedPipe, PIPE_READMODE_BYTE,
-    PIPE_REJECT_REMOTE_CLIENTS, PIPE_TYPE_BYTE, PIPE_UNLIMITED_INSTANCES, PIPE_WAIT,
+    PIPE_REJECT_REMOTE_CLIENTS, PIPE_TYPE_BYTE, PIPE_WAIT,
 };
 use windows::core::{HRESULT, HSTRING};
 
-use qingjian_platform::protocol::{ClientMessage, ServerMessage, read_message, write_message};
+use qingjian_platform::protocol::{ClientMessage, ServerMessage, write_message};
 
 use super::Work;
 use crate::dispatch::Router;
 
+use super::{
+    limits::{self, Ownership},
+    stream::BoundedStream,
+};
 pub use qingjian_platform::protocol::DEFAULT_PIPE_NAME;
 pub use qingjian_platform::protocol::default_pipe_name;
+use qingjian_platform::protocol::read_message_limited;
+use windows::Win32::Foundation::{CloseHandle, ERROR_IO_PENDING};
+use windows::Win32::Storage::FileSystem::FILE_FLAG_OVERLAPPED;
+use windows::Win32::System::IO::{GetOverlappedResult, OVERLAPPED};
+use windows::Win32::System::Pipes::GetNamedPipeClientProcessId;
+use windows::Win32::System::Threading::{
+    CreateEventW, GetProcessIdOfThread, OpenThread, THREAD_QUERY_LIMITED_INFORMATION,
+};
 
 const BUFFER_SIZE: u32 = 64 * 1024;
 
@@ -66,6 +82,7 @@ pub fn serve_pipe(
     // 到点时间是绝对的，不随消息重新计时——前台进程里的 DLL 隔几百毫秒就问一次切模式（SyncMode），
     // 若每收一条消息就重等一秒，tick 永远到不了，热加载与模型接入都会停摆。
     let mut due = Instant::now() + router.next_tick();
+    let mut ownership = Ownership::default();
     loop {
         let now = Instant::now();
         if now >= due {
@@ -74,8 +91,15 @@ pub fn serve_pipe(
             continue;
         }
         match receiver.recv_timeout(due - now) {
-            Ok(Work::Client(message, reply)) => {
-                let _ = reply.send(router.handle(message));
+            Ok(Work::Client(connection, pid, message, reply)) => {
+                if ownership.authorize(connection, pid, &message) {
+                    let _ = reply.send(router.handle(message));
+                }
+            }
+            Ok(Work::Disconnected(connection)) => {
+                for session in ownership.disconnected(connection) {
+                    router.handle(ClientMessage::CloseSession { session });
+                }
             }
             Ok(Work::Status(event)) => router.handle_status_event(event),
             Ok(Work::Shutdown) => {
@@ -95,6 +119,8 @@ pub fn serve_pipe(
 fn accept_loop(name: &HSTRING, first: File, sender: Sender<Work>) {
     let descriptor = pipe_security_descriptor();
     let mut instance = Ok(first);
+    let active = Arc::new(AtomicUsize::new(0));
+    let mut next = 0u64;
     loop {
         let stream = match instance.and_then(wait_client) {
             Ok(stream) => stream,
@@ -107,8 +133,24 @@ fn accept_loop(name: &HSTRING, first: File, sender: Sender<Work>) {
                 break;
             }
         };
-        let sender = sender.clone();
-        thread::spawn(move || serve_connection(stream, sender));
+        if active.load(Ordering::Acquire) >= limits::MAX_CONNECTIONS {
+            let _ = unsafe { DisconnectNamedPipe(HANDLE(stream.as_raw_handle())) };
+        } else {
+            active.fetch_add(1, Ordering::AcqRel);
+            next = next.wrapping_add(1);
+            let sender = sender.clone();
+            let active = active.clone();
+            thread::spawn(move || {
+                struct Slot(Arc<AtomicUsize>);
+                impl Drop for Slot {
+                    fn drop(&mut self) {
+                        self.0.fetch_sub(1, Ordering::AcqRel);
+                    }
+                }
+                let _slot = Slot(active);
+                serve_connection(stream, sender, next);
+            });
+        }
         instance = create_instance(name, descriptor, false);
     }
 }
@@ -154,7 +196,7 @@ fn create_instance(
         bInheritHandle: false.into(),
     };
     let attributes = (!descriptor.0.is_null()).then_some(&raw const attributes);
-    let mut open_mode = PIPE_ACCESS_DUPLEX;
+    let mut open_mode = PIPE_ACCESS_DUPLEX | FILE_FLAG_OVERLAPPED;
     if first {
         open_mode |= FILE_FLAG_FIRST_PIPE_INSTANCE;
     }
@@ -163,7 +205,7 @@ fn create_instance(
             name,
             open_mode,
             PIPE_TYPE_BYTE | PIPE_READMODE_BYTE | PIPE_WAIT | PIPE_REJECT_REMOTE_CLIENTS,
-            PIPE_UNLIMITED_INSTANCES,
+            limits::MAX_CONNECTIONS as u32 + 1,
             BUFFER_SIZE,
             BUFFER_SIZE,
             0,
@@ -179,23 +221,46 @@ fn create_instance(
 /// 阻塞等一个客户端连上这个实例。
 fn wait_client(stream: File) -> io::Result<File> {
     let handle = HANDLE(stream.as_raw_handle());
-    // 客户端在建实例与 ConnectNamedPipe 之间就连上了也算成功。
-    if let Err(error) = unsafe { ConnectNamedPipe(handle, None) }
-        && error.code() != HRESULT::from_win32(ERROR_PIPE_CONNECTED.0)
-    {
-        for code in [ERROR_BROKEN_PIPE, ERROR_NO_DATA, ERROR_PIPE_NOT_CONNECTED] {
-            if error.code() == HRESULT::from_win32(code.0) {
-                return Err(io::Error::from_raw_os_error(code.0 as i32));
-            }
+    let event = unsafe { CreateEventW(None, true, false, None) }.map_err(io::Error::other)?;
+    let mut operation = OVERLAPPED {
+        hEvent: event,
+        ..Default::default()
+    };
+    let connected = unsafe { ConnectNamedPipe(handle, Some(&mut operation)) };
+    let result = match connected {
+        Ok(()) => Ok(()),
+        Err(error) if error.code() == HRESULT::from_win32(ERROR_PIPE_CONNECTED.0) => Ok(()),
+        Err(error) if error.code() == HRESULT::from_win32(ERROR_IO_PENDING.0) => {
+            let mut bytes = 0;
+            unsafe { GetOverlappedResult(handle, &operation, &mut bytes, true) }
+                .map_err(io::Error::other)
         }
-        return Err(io::Error::other(error));
-    }
+        Err(error) => Err(io::Error::from_raw_os_error(error.code().0 & 0xffff)),
+    };
+    let _ = unsafe { CloseHandle(event) };
+    result?;
     Ok(stream)
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[test]
+    fn thread_identity_is_checked_against_the_kernel_process() {
+        let thread = unsafe { windows::Win32::System::Threading::GetCurrentThreadId() };
+        assert!(thread_belongs_to(
+            std::process::id(),
+            qingjian_platform::protocol::SessionId(u64::from(thread))
+        ));
+        assert!(!thread_belongs_to(
+            std::process::id().wrapping_add(1),
+            qingjian_platform::protocol::SessionId(u64::from(thread))
+        ));
+        assert!(!thread_belongs_to(
+            std::process::id(),
+            qingjian_platform::protocol::SessionId(u64::MAX)
+        ));
+    }
 
     #[test]
     fn a_short_lived_client_must_not_stop_the_listener() {
@@ -214,25 +279,88 @@ mod tests {
 }
 
 /// 服务一条连接：读消息 → 转给工人线程 → 写回，直到对端在帧边界关闭或出错。
-fn serve_connection(mut stream: File, sender: Sender<Work>) {
+fn thread_belongs_to(pid: u32, id: qingjian_platform::protocol::SessionId) -> bool {
+    let Ok(thread) = u32::try_from(id.0) else {
+        return false;
+    };
+    let Ok(handle) = (unsafe { OpenThread(THREAD_QUERY_LIMITED_INFORMATION, false, thread) })
+    else {
+        return false;
+    };
+    let owner = unsafe { GetProcessIdOfThread(handle) };
+    let _ = unsafe { CloseHandle(handle) };
+    owner == pid && pid != 0
+}
+fn serve_connection(stream: File, sender: Sender<Work>, connection: u64) {
+    let mut pid = 0;
+    if unsafe { GetNamedPipeClientProcessId(HANDLE(stream.as_raw_handle()), &mut pid) }.is_err()
+        || pid == 0
+    {
+        return;
+    }
+    let mut stream = BoundedStream::new(stream);
+    let mut initial = true;
+    let mut authorized = std::collections::HashSet::new();
     let (reply_sender, reply_receiver) = mpsc::channel::<Option<ServerMessage>>();
+    let mut window = Instant::now();
+    let mut requests = 0;
     loop {
-        let message = match read_message::<_, ClientMessage>(&mut stream) {
+        stream.read_frame(initial);
+        let message = match read_message_limited::<_, ClientMessage>(&mut stream, limits::MAX_FRAME)
+        {
             Ok(Some(message)) => message,
             Ok(None) => break,
+            // Authenticated idle legacy DLLs stay connected to preserve the next
+            // key. Slot/session limits still bound these retained resources.
+            Err(qingjian_platform::protocol::CodecError::Io(ref error))
+                if !initial && stream.idle() && error.kind() == io::ErrorKind::TimedOut =>
+            {
+                continue;
+            }
             Err(error) => {
-                tracing::warn!(%error, "客户端会话读出错");
+                tracing::warn!(%error,"客户端帧无效或超时");
                 break;
             }
         };
+        initial = false;
+        if window.elapsed() >= Duration::from_secs(1) {
+            window = Instant::now();
+            requests = 0;
+        }
+        requests += 1;
+        if requests > 1024 {
+            break;
+        }
+        let id = limits::session(&message);
+        if !authorized.contains(&id) {
+            if !thread_belongs_to(pid, id) {
+                break;
+            }
+            if authorized.len() >= limits::MAX_SESSIONS_PER_CONNECTION {
+                break;
+            }
+            authorized.insert(id);
+        }
+        let valid = match &message {
+            ClientMessage::OpenSession { app, .. } => {
+                app.as_ref().is_none_or(|name| name.len() <= 512)
+            }
+            ClientMessage::Surrounding { text, .. } => text.len() <= 4096,
+            ClientMessage::Selection { text, .. } => text.len() <= 128 * 1024,
+            _ => true,
+        };
+        if !valid {
+            break;
+        }
         if sender
-            .send(Work::Client(message, reply_sender.clone()))
+            .send(Work::Client(connection, pid, message, reply_sender.clone()))
             .is_err()
         {
             break;
         }
-        match reply_receiver.recv() {
+        match reply_receiver.recv_timeout(Duration::from_secs(5)) {
             Ok(Some(response)) => {
+                stream.write_frame();
                 if write_message(&mut stream, &response).is_err() {
                     break;
                 }
@@ -241,6 +369,7 @@ fn serve_connection(mut stream: File, sender: Sender<Work>) {
             Err(_) => break,
         }
     }
-    let _ = unsafe { DisconnectNamedPipe(HANDLE(stream.as_raw_handle())) };
+    let _ = sender.send(Work::Disconnected(connection));
+    let _ = unsafe { DisconnectNamedPipe(HANDLE(stream.file.as_raw_handle())) };
     tracing::debug!("客户端断开");
 }

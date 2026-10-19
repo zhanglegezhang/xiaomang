@@ -165,7 +165,7 @@ namespace ShareX
             };
             content.ResumeLayout(false);layout.Install(registrationTab,content);registrationTab.Padding=new Padding(layout.Scale(16),0,layout.Scale(16),layout.Scale(8));
             registrationRefresh=new VisibleSettingsStatusRefresh<RegistrationSnapshot>(this,()=>registrationTab.Visible && !registrationBusy,
-                ()=>new RegistrationSnapshot(RecordingComponent.IsInstalled,VoiceInputComponent.RegistrationState,
+                ()=>new RegistrationSnapshot(RecordingComponent.IsValidAsync(System.Threading.CancellationToken.None).GetAwaiter().GetResult(),VoiceInputComponent.RegistrationState,
                     SenseVoiceModelManager.IsInstalled(Program.PersonalFolder),XiaomangInputMethodManager.IsRegistered,
                     ComponentBundles.IsPresent(ComponentBundles.Text,XiaomangInputMethodManager.BundleDirectory),ModernFileFavoritesMenu.Status(),MixedOcrComponent.IsPresent),
                 state=>
@@ -175,7 +175,7 @@ namespace ShareX
                     modernStatus.Text=state.Modern.StartsWith("外层菜单已注册")?"已注册":"未注册或需修复";
                     bool voiceReady=state.Voice==VoiceInputRegistrationState.Registered && state.VoiceFiles,
                         textReady=state.Text && state.TextFiles,modernReady=state.Modern.StartsWith("外层菜单已注册");
-                    ((RegistrationStatus)recordingStatus).UpdateState(state.Recording?"已就绪":"未下载",state.Recording);
+                    ((RegistrationStatus)recordingStatus).UpdateState(state.Recording?"已就绪":RecordingComponent.IsInstalled?"需修复":"未下载",state.Recording);
                     ((RegistrationStatus)voiceStatus).UpdateState(!state.VoiceFiles?"待下载模型":VoiceStatus(state.Voice),voiceReady);
                     ((RegistrationStatus)textStatus).UpdateState(!state.TextFiles?"待下载组件":state.Text?"已注册":"待注册",textReady);
                     ((RegistrationStatus)modernStatus).UpdateState(modernReady?"已注册":"待准备",modernReady);

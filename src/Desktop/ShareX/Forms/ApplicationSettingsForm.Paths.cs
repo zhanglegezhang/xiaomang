@@ -103,7 +103,7 @@ namespace ShareX
 
         private void LayoutPathLocations()
         {
-            if (arrangingPathLocations || pathLocationsPanel == null || pathLocationsPanel.IsDisposed) return;
+            if (arrangingPathLocations || pathLocationsPanel == null || pathLocationsPanel.IsDisposed || designedSettingsPages.Contains(tpPaths)) return;
             arrangingPathLocations = true;
             try
             {

@@ -12,11 +12,14 @@ using System.Threading.Tasks;
 namespace ShareX
 {
     internal sealed record ComponentFile(string Path, long Length, string Sha256, bool Required);
-    internal sealed record ComponentBundle(string Id, string FileName, long Length, string Sha256, ComponentFile[] Files);
+    internal sealed record ComponentBundle(string Id, string FileName, long Length, string Sha256, ComponentFile[] Files, string ReleaseTag = "v1.0");
 
     internal static class ComponentBundles
     {
         internal const string ReleaseUrl = "https://github.com/zhanglegezhang/xiaomang_component/releases/download/v1.0/";
+        internal static string DownloadUrl(ComponentBundle bundle) =>
+            "https://github.com/zhanglegezhang/xiaomang_component/releases/download/" +
+            Uri.EscapeDataString(bundle.ReleaseTag) + "/" + Uri.EscapeDataString(bundle.FileName);
         private static readonly SemaphoreSlim gate = new(1, 1);
         private static readonly ComponentBundle[] bundles = Load();
         private static ComponentBundle[] Load()
@@ -75,8 +78,8 @@ namespace ShareX
                 archive = Path.Combine(cache, Guid.NewGuid().ToString("N") + ".zip");
                 using var ownedClient = client == null ? new HttpClient { Timeout = TimeSpan.FromMinutes(20) } : null;
                 var http = client ?? ownedClient;
-                using var request = new HttpRequestMessage(HttpMethod.Get, ReleaseUrl + bundle.FileName);
-                request.Headers.UserAgent.ParseAdd("Xiaomang/2.3");
+                using var request = new HttpRequestMessage(HttpMethod.Get, DownloadUrl(bundle));
+                request.Headers.UserAgent.ParseAdd("Xiaomang/" + Program.ProductVersion);
                 using var response = await http.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, token).ConfigureAwait(false);
                 response.EnsureSuccessStatusCode();
                 if (response.Content.Headers.ContentLength is long length && length != bundle.Length) throw new IOException("组件下载大小不符，请重试。");

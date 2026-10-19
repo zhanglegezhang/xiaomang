@@ -1443,30 +1443,27 @@ namespace ShareX
         {
             try
             {
-                string exePath = Application.ExecutablePath;
-
-                string cmdArgs = $"/c timeout /t 1 & powershell -Command \"Start-Process '{exePath}' -Verb runAs";
-
-                if (!string.IsNullOrEmpty(arguments))
-                {
-                    cmdArgs += $" -ArgumentList '{arguments}'";
-                }
-
-                cmdArgs += "\"";
-
-                Process.Start(new ProcessStartInfo
-                {
-                    FileName = "cmd.exe",
-                    Arguments = cmdArgs,
-                    UseShellExecute = true,
-                    CreateNoWindow = true,
-                    WindowStyle = ProcessWindowStyle.Hidden
-                });
+                Process.Start(CreateAdminStartInfo(Application.ExecutablePath, arguments));
             }
-            catch
+            catch (System.ComponentModel.Win32Exception error) when (error.NativeErrorCode == 1223)
             {
+                MessageBox.Show("管理员重启已取消，小蟒未以管理员身份启动。", "小蟒", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            catch (Exception error)
+            {
+                DebugHelper.WriteException(error, "Administrator restart failed.");
+                MessageBox.Show("管理员重启失败：" + error.Message, "小蟒", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
+
+        internal static ProcessStartInfo CreateAdminStartInfo(string path, string arguments) => new ProcessStartInfo
+        {
+            FileName = path,
+            Arguments = arguments ?? "",
+            Verb = "runas",
+            WorkingDirectory = AppContext.BaseDirectory,
+            UseShellExecute = true
+        };
 
         public static void OpenQRCode()
         {

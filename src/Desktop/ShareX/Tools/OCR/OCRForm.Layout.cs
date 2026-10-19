@@ -41,7 +41,13 @@ namespace ShareX
             int index = -1;
             for(int i=0;i<cbLanguages.Items.Count;i++)
                 if(((OCRLanguage)cbLanguages.Items[i]).LanguageTag.StartsWith(target,System.StringComparison.OrdinalIgnoreCase)){index=i;break;}
-            if(index < 0){MessageBox.Show(this,"未安装对应的 Windows OCR 语言组件。","识别语言");return;}
+            if(index < 0){
+                // Missing single-language modes are skipped, never trapping the cycle.
+                if (!mixedSelected) { mixedSelected = true; UpdateLanguageButtons(); await OCR(bmpSource); return; }
+                for(int i=0;i<cbLanguages.Items.Count;i++)
+                    if(((OCRLanguage)cbLanguages.Items[i]).LanguageTag.StartsWith("en",System.StringComparison.OrdinalIgnoreCase)){index=i;break;}
+                if(index < 0){ mixedSelected = true; UpdateLanguageButtons(); return; }
+            }
             mixedSelected = false;
             if(cbLanguages.SelectedIndex == index) await OCR(bmpSource); else cbLanguages.SelectedIndex = index;
         }

@@ -31,8 +31,9 @@ namespace ShareX
             if (!File.Exists(executable)) throw new IOException("当前不是标准使用包目录，不能自动更新。");
             string probe = Path.Combine(app, ".update-write-" + Guid.NewGuid().ToString("N"));
             File.WriteAllText(probe, ""); File.Delete(probe);
+            string recoveryScript = ProductUpdateRecovery.EnsureScripts(app);
             string config = Path.Combine(stage, "install.json"), script = Path.Combine(stage, "install.ps1");
-            File.WriteAllText(config, JsonSerializer.Serialize(new { App = app, Stage = stage, Payload = payload,
+            File.WriteAllText(config, JsonSerializer.Serialize(new { App = app, Stage = stage, Payload = payload, RecoveryScript = recoveryScript,
                 Snapshot = Path.Combine(Path.GetDirectoryName(stage), "data-snapshot.json"),
                 ProcessId = Environment.ProcessId, Started = Process.GetCurrentProcess().StartTime.ToUniversalTime().Ticks }));
             File.WriteAllText(script, Script, new UTF8Encoding(true));
@@ -101,6 +102,9 @@ $result=Join-Path $c.Stage 'result.txt'
 $entry=Join-Path $c.App 'xiaomang.exe'
 $changed=$false
 $new=$null
+$transaction=$null
+if(!$c.RecoveryScript){throw 'Missing independent update recovery script'}
+. $c.RecoveryScript -Library -NoUI:$NoUI
 function CheckCancelled {
  if(Test-Path -LiteralPath (Join-Path $c.Stage 'cancel')){throw 'Update cancelled'}
 }
@@ -127,7 +131,9 @@ try {
   $target=[IO.Path]::GetFullPath((Join-Path $c.App $rel))
   if(!$target.StartsWith($appRoot,[StringComparison]::OrdinalIgnoreCase)){throw 'Outside application directory'}
   Safe $target
-  $journal.Add([pscustomobject]@{Relative=$rel;Existed=(Test-Path -LiteralPath $target -PathType Leaf);Hash=(Hash $file.FullName)})
+  $null=Get-XMTarget $c.App $rel
+  $existed=Test-Path -LiteralPath $target -PathType Leaf
+  $journal.Add([pscustomobject]@{Relative=$rel;Existed=$existed;Hash=(Hash $file.FullName);OriginalHash=$(if($existed){Hash $target}else{$null})})
   $completed++
   if($completed -eq 1 -or $completed % 10 -eq 0 -or $completed -eq $items.Count){
    Set-Content -LiteralPath (Join-Path $c.Stage 'progress.txt') -Value "$completed / $($items.Count)" -Encoding UTF8
@@ -178,10 +184,11 @@ try {
  }finally{$zip.Dispose()}
  $zip=[IO.Compression.ZipFile]::OpenRead($finalBackup)
  try {foreach($file in $dataFiles){$stream=$zip.GetEntry($file.Archive).Open();$sha=[Security.Cryptography.SHA256]::Create();try{$hash=[BitConverter]::ToString($sha.ComputeHash($stream)).Replace('-','')}finally{$stream.Dispose();$sha.Dispose()};if($hash -ne $file.Hash){throw 'Final data backup verification failed'}}}finally{$zip.Dispose()}
+ Sync-XMFile $finalBackup
  $snapshot.Files=$dataFiles.ToArray();$snapshot.Backup=$finalBackup
- $snapshot|ConvertTo-Json -Depth 6|Set-Content -LiteralPath $c.Snapshot -Encoding UTF8
+ Write-XMJson $c.Snapshot $snapshot
  $localManifest=Join-Path $c.Stage 'data-snapshot.json'
- if([IO.Path]::GetFullPath($localManifest) -ne [IO.Path]::GetFullPath($c.Snapshot)){Copy-Item -LiteralPath $c.Snapshot -Destination $localManifest}
+ if([IO.Path]::GetFullPath($localManifest) -ne [IO.Path]::GetFullPath($c.Snapshot)){Write-XMJson $localManifest $snapshot}
  foreach($root in $roots){
   if(!(Test-Path -LiteralPath $root)){continue}
   foreach($file in Get-ChildItem -LiteralPath $root -Recurse -File -Force){
@@ -194,16 +201,21 @@ try {
  New-Item -ItemType Directory -Path $backup -Force|Out-Null
  foreach($item in $journal) {
   $target=Join-Path $c.App $item.Relative; Safe $target
-  if($item.Existed){$saved=Join-Path $backup $item.Relative;[IO.Directory]::CreateDirectory([IO.Path]::GetDirectoryName($saved))|Out-Null;Copy-Item -LiteralPath $target -Destination $saved}
+  if($item.Existed){$saved=Join-Path $backup $item.Relative;[IO.Directory]::CreateDirectory([IO.Path]::GetDirectoryName($saved))|Out-Null;Copy-Item -LiteralPath $target -Destination $saved;if((Hash $saved) -ne $item.OriginalHash){throw 'Original program changed before replacement'};Sync-XMFile $saved}
  }
+ $transaction=Initialize-XMTransaction $c $journal.ToArray()
  $changed=$true
+ $startedCount=0
  foreach($item in $journal) {
+  # Write ahead: a killed helper can replay even if it dies immediately after Replace.
+  $startedCount++;Set-XMPhase $transaction 'committing' $startedCount
   $source=Join-Path $c.Payload $item.Relative; $target=Join-Path $c.App $item.Relative; Safe $target
   if((Hash $source) -ne $item.Hash){throw 'Payload changed'}
   [IO.Directory]::CreateDirectory([IO.Path]::GetDirectoryName($target))|Out-Null
   $temporary=$target+'.update-'+[Guid]::NewGuid().ToString('N')
   try {
    [IO.File]::Copy($source,$temporary)
+   Sync-XMFile $temporary
    if($item.Existed){[IO.File]::Replace($temporary,$target,$temporary+'.old')}else{[IO.File]::Move($temporary,$target)}
    $applied.Add($item)
    $applied|ConvertTo-Json -Depth 4|Set-Content -LiteralPath (Join-Path $c.Stage 'applied.json') -Encoding UTF8
@@ -215,6 +227,7 @@ try {
  foreach($file in $snapshot.Files){if(!(Test-Path -LiteralPath $file.Source) -or (Hash $file.Source) -ne $file.Hash){throw 'Personal data changed during upgrade'}}
  $receipt=$c.Snapshot+'.result'
  if(Test-Path -LiteralPath $receipt){Remove-Item -LiteralPath $receipt}
+ Set-XMPhase $transaction 'validating' $startedCount
  $env:XIAOMANG_UPGRADE_CHECK=$c.Snapshot
  try {$new=Start-Process -FilePath $entry -WorkingDirectory $c.App -PassThru}finally{Remove-Item Env:XIAOMANG_UPGRADE_CHECK -ErrorAction SilentlyContinue}
  $timer=[Diagnostics.Stopwatch]::StartNew()
@@ -224,28 +237,16 @@ try {
  }
  $loaded=Get-Content -LiteralPath $receipt -Raw -Encoding UTF8|ConvertFrom-Json
  if(!$loaded.Success -or $loaded.ProcessId -ne $new.Id -or $loaded.Personal -ne $snapshot.Personal){throw ('Updated application failed data loading validation: '+$loaded.Error)}
+ Set-XMPhase $transaction 'complete' $startedCount
+ Clear-XMMarker $transaction
  Set-Content -LiteralPath $result -Value '更新成功。个人数据备份和旧程序保留在此目录。' -Encoding UTF8
  if(!$NoUI){Add-Type -AssemblyName System.Windows.Forms;[Windows.Forms.MessageBox]::Show(('升级完成，原数据已加载。备份与日志：'+$c.Stage),'小蟒升级完成')|Out-Null}
 } catch {
  $reason=$_.Exception.Message
  try {
   if($new -and !$new.HasExited){$new.Kill();$new.WaitForExit()}
-  if($new -and $finalBackup -and (Test-Path -LiteralPath $finalBackup)){
-   $zip=[IO.Compression.ZipFile]::OpenRead($finalBackup)
-   try {foreach($file in $dataFiles){Safe $file.Source;[IO.Compression.ZipFileExtensions]::ExtractToFile($zip.GetEntry($file.Archive),$file.Source,$true);if((Hash $file.Source) -ne $file.Hash){throw 'Data rollback verification failed'}}}finally{$zip.Dispose()}
-  }
-  if($changed){
-   $restoreErrors=[Collections.Generic.List[string]]::new()
-   for($i=$applied.Count-1;$i -ge 0;$i--){
-    $item=$applied[$i]
-    try {
-    $target=Join-Path $c.App $item.Relative;Safe $target
-    if($item.Existed){Copy-Item -LiteralPath (Join-Path $backup $item.Relative) -Destination $target -Force}
-    elseif(Test-Path -LiteralPath $target -PathType Leaf){Remove-Item -LiteralPath $target}
-    } catch {$restoreErrors.Add($_.Exception.Message)}
-   }
-   if($restoreErrors.Count){throw ($restoreErrors -join '; ')}
-  }
+  $pendingMarker=Join-Path $c.App '.xiaomang-update.json'
+  if(Test-Path -LiteralPath $pendingMarker){Invoke-XMRecovery $pendingMarker -NoRestart -FromInstaller|Out-Null}
   $stillRunning=@(Get-Process xiaomang -ErrorAction SilentlyContinue|Where-Object Path -eq $entry)
   if(!$stillRunning.Count){Start-Process -FilePath $entry -ArgumentList '-silent' -WorkingDirectory $c.App -WindowStyle Hidden}
   Set-Content -LiteralPath $result -Value ('更新未完成，已保留或恢复旧程序：'+$reason) -Encoding UTF8

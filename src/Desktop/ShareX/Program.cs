@@ -50,7 +50,7 @@ namespace ShareX
         public const string DisplayName = "小蟒";
         public const string ProductName = "小蟒";
         public const int ProductVersionMajor = 2;
-        public const int ProductVersionMinor = 12;
+        public const int ProductVersionMinor = 13;
         public static string ProductVersion => $"{ProductVersionMajor}.{ProductVersionMinor}";
         public const string MutexName = "82E6AC09-0FEF-4390-AD9F-0DD3F5561EFC";
         public static readonly string PipeName = $"{Environment.MachineName}-{Environment.UserName}-{AppName}";
@@ -274,6 +274,7 @@ namespace ShareX
         [STAThread]
         private static void Main(string[] args)
         {
+            if (ProductUpdateRecovery.TryRecoverPendingUpdate()) return;
             if (MixedOcrWorker.TryRun(args)) return;
             if (ModernFileFavoritesMenu.TryRun(args)) return;
             if (FileFavoritesMenu.TryRun(args)) return;
@@ -308,6 +309,10 @@ namespace ShareX
                         Run();
                     }
 
+                }
+                else if (!singleInstanceManager.ArgumentsForwarded)
+                {
+                    MessageBox.Show("无法将命令发送给正在运行的小蟒。连接超时或消息超出限制，请稍后重试。", "小蟒", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 }
             }
 
@@ -364,6 +369,7 @@ namespace ShareX
             UpgradeStartupCheck.BeforeLoad();
             bool newPersonalProfile = !File.Exists(Path.Combine(PersonalFolder,"ApplicationConfig.json"));
             SettingManager.LoadInitialSettings();
+            UpgradeStartupCheck.SettingsLoaded();
             StartupManager.ApplyFirstProfileDefault(newPersonalProfile);
             FileFavoritesService.Start();
 

@@ -43,6 +43,8 @@ namespace ShareX
         private bool loaded;
         private int deferredPageDpi;
         private readonly HashSet<string> initializedPages = new();
+        private readonly Dictionary<TextBox,CodeMenu> pickerFormatMenus = new();
+        internal CodeMenu GetPickerFormatMenu(TextBox field) => pickerFormatMenus.TryGetValue(field,out var menu)?menu:null;
 
         public TaskSettingsForm(TaskSettings hotkeySetting, bool isDefault = false, bool loadOnDemand = false)
         {
@@ -188,13 +190,13 @@ namespace ShareX
 
         private void InitializePickerPage()
         {
-            CodeMenu.Create<CodeMenuEntryPixelInfo>(txtToolsScreenColorPickerFormat);
+            pickerFormatMenus[txtToolsScreenColorPickerFormat] = CodeMenu.Create<CodeMenuEntryPixelInfo>(txtToolsScreenColorPickerFormat);
             txtToolsScreenColorPickerFormat.Text = TaskSettings.ToolsSettings.ScreenColorPickerFormat;
 
-            CodeMenu.Create<CodeMenuEntryPixelInfo>(txtToolsScreenColorPickerFormatCtrl);
+            pickerFormatMenus[txtToolsScreenColorPickerFormatCtrl] = CodeMenu.Create<CodeMenuEntryPixelInfo>(txtToolsScreenColorPickerFormatCtrl);
             txtToolsScreenColorPickerFormatCtrl.Text = TaskSettings.ToolsSettings.ScreenColorPickerFormatCtrl;
 
-            CodeMenu.Create<CodeMenuEntryPixelInfo>(txtToolsScreenColorPickerInfoText);
+            pickerFormatMenus[txtToolsScreenColorPickerInfoText] = CodeMenu.Create<CodeMenuEntryPixelInfo>(txtToolsScreenColorPickerInfoText);
             txtToolsScreenColorPickerInfoText.Text = TaskSettings.ToolsSettings.ScreenColorPickerInfoText;
         }
 

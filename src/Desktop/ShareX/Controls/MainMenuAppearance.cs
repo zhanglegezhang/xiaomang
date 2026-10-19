@@ -48,6 +48,8 @@ namespace ShareX
         internal static void Apply(Control root)
         {
             if (root == null || root.IsDisposed) return;
+            if (root is SettingsDesignHost host) { host.BackColor = SettingsDesignSurface.Canvas;host.Surface.Finish();return; }
+            if (root is SettingsDesignSurface design) { design.Finish(); return; }
             bool first = !styled.TryGetValue(root, out State state);
             if (first)
             {
@@ -216,6 +218,7 @@ namespace ShareX
             using Pen edge = new(b.Focused || state.Selected ? Orange : Edge);
             g.FillPath(brush, path); g.DrawPath(edge, path);
             Color fg = !b.Enabled ? Muted : state.Primary ? Color.FromArgb(25, 33, 39) : state.Selected ? Orange : Text;
+            if(b.Enabled && b.Tag as string == "settings-danger")fg=Color.FromArgb(238,113,104);
             Rectangle textBounds = new(Scale(b, 7), 0, Math.Max(1, b.Width - Scale(b, 14)), b.Height);
             bool hotkey = b.Parent is HotkeySelectionControl;
             if (b.Image != null)

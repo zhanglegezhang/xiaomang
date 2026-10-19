@@ -21,7 +21,8 @@ import {
   syntaxHighlighting,
 } from '@codemirror/language'
 import { highlightSelectionMatches, openSearchPanel, search, searchKeymap } from '@codemirror/search'
-import { compactSearchPanel } from './compact-search-panel'
+import { compactSearchPanel, sourceRegexKeymap } from './compact-search-panel'
+import { sourceSearchHighlight } from './source-search-marks'
 import {
   Compartment,
   EditorState,
@@ -364,6 +365,8 @@ export function SourceMarkdownEditor({
           highlightActiveLine(),
           highlightSelectionMatches(),
           search({ top: true, createPanel: compactSearchPanel }),
+          sourceSearchHighlight,
+          sourceRegexKeymap,
           keymap.of([indentWithTab, ...defaultKeymap, ...historyKeymap, ...searchKeymap]),
           editableCompartmentRef.current.of([
             EditorState.readOnly.of(!editable),

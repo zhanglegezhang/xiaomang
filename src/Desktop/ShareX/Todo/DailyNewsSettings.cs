@@ -8,7 +8,7 @@ namespace ShareX
     {
         private const string ApiKeyEntropy = "xiaomangtongxue.daily-news";
 
-        public bool Enabled = true;
+        public bool Enabled = false;
         public string EncryptedApiKey = "";
         public string ApiBase = "https://api.deepseek.com";
         public string Model = "deepseek-chat";

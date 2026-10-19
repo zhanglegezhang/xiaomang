@@ -224,6 +224,16 @@ namespace ShareX
                 else FileDragDrop(s, e);
             };
             files.MouseDown += (_, e) => { dragIndex = files.IndexFromPoint(e.Location); dragOrigin = e.Location; };
+            files.PreviewKeyDown += (_, e) => {
+                if (e.KeyData == Keys.Delete || e.KeyData == (Keys.Alt | Keys.Up) || e.KeyData == (Keys.Alt | Keys.Down)) e.IsInputKey = true;
+            };
+            files.KeyDown += (_, e) => {
+                if (exporting || working) return;
+                if (e.KeyData == Keys.Delete) { e.SuppressKeyPress = true; RemoveSelected(); }
+                else if (e.KeyData == (Keys.Alt | Keys.Up) || e.KeyData == (Keys.Alt | Keys.Down)) {
+                    e.SuppressKeyPress = true; MoveSelected(e.KeyCode == Keys.Up ? -1 : 1);
+                }
+            };
             files.MouseMove += (_, e) => { if (e.Button == MouseButtons.Left && dragIndex >= 0 && dragIndex < files.Items.Count && !new Rectangle(dragOrigin.X - SystemInformation.DragSize.Width / 2, dragOrigin.Y - SystemInformation.DragSize.Height / 2, SystemInformation.DragSize.Width, SystemInformation.DragSize.Height).Contains(e.Location)) { Item item = (Item)files.Items[dragIndex]; dragIndex = -1; files.DoDragDrop(item, DragDropEffects.Move); } };
             FormClosing += (_, e) => { if (exporting) { e.Cancel = true; status.Text = "正在输出图片，请等待完成。"; } };
             FormClosed += (_, _) => { closing = true; cancellation.Cancel(); debounce.Stop(); };

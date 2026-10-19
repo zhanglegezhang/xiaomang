@@ -33,8 +33,8 @@
   },
   {
     "Id": "text",
-    "FileName": "xiaomang-inputmethod-2.3-20261014-win-x64.zip",
-    "Length": 135650274,
+    "FileName": "xiaomang-inputmethod-2.4-20261019-win-x64.zip",
+    "Length": 127889822,
     "Files": [
       {
         "Required": true,
@@ -260,8 +260,8 @@
       },
       {
         "Required": false,
-        "Length": 34035,
-        "Sha256": "75EC4B03DCA901011597D6868CE8C3245064787E18D4F555F35C5754E2193669",
+        "Length": 34140,
+        "Sha256": "C122C89A61F3778C74EB7DF78EF1E3623510FAB9B84FC4203D723109E81952B4",
         "Path": "runtime-files.sha256"
       },
       {
@@ -308,8 +308,8 @@
       },
       {
         "Required": true,
-        "Length": 16457728,
-        "Sha256": "1782D6F1CD2AAA492B6BB70297BE07D24618F683088C1C8E68E738F08A7BB1E3",
+        "Length": 16323072,
+        "Sha256": "2BC16D9CE7FA6B18F02A1375556027D37DEDBE590803615327810E1C8B96E630",
         "Path": "XiaomangInputWorker.exe"
       },
       {
@@ -2071,6 +2071,7 @@
         "Path": "assets/lexicon/05_english/sources/typos_LICENSE-MIT.txt"
       }
     ],
-    "Sha256": "79585689BD126FFD9E28FD3F0BA83FB1A2BD79D388AA6F1D347776D6174A73DC"
+    "Sha256": "C5ADCEF2BFCB167AF383D38E1CEF28D838F51E4514E32F53578FBB9BB79ADC92",
+    "ReleaseTag": "v1.1"
   }
 ]

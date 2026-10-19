@@ -4,6 +4,9 @@
 #[cfg(windows)]
 pub mod pipe;
 mod work;
+mod limits;
+#[cfg(windows)]
+mod stream;
 
 pub use qingjian_platform::protocol::{CodecError, read_message, write_message};
 pub use work::Work;
