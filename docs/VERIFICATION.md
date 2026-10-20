@@ -1,3 +1,25 @@
+# 3.0 / v3.0-20261020
+
+桌面程序从本次筛选后的源码副本构建；通过 PDB 身份与文档哈希验证主程序和 ShareX 类库对应。本地日记复用本日已编译并验证的程序，44 个相关源码文件与部署前快照一致，程序 SHA256 为 C13C0514B217312B1A2D6DF815ECD516E7B6929894567755228D0DDDAE71B6A4。源文件在本发布快照中再次校验；没有声称重新构建日记。
+
+本轮验证：原生回归 41 项 × 2（192 DPI 与模拟 96 DPI）；更多菜单和 API 配置 93 项；搜索回归 40 项；静态笔记前端 12 项（隔离内存 Tauri 桥）；组件下载停滞、取消及输入法忙碌响应 11 项；实际桌面程序集持续 65 秒更新准备且无需重试 1 项。此前本日日记 Rust 75 项测试及独立资料库真实窗口验证保留，相关源码未变。不是另一台物理电脑或干净系统的测试。
+
+旧版 2.13 更新解析器识别 3.0，实际更新解压器逐文件还原 527 个文件且隔离个人数据哨兵保持不变；完整跨版本数据迁移、所有录屏硬件、系统注册和在线翻译服务本轮未重新测试。本机程序正常退出后更新并重启；按需组件和个人数据不改写。
+
+ZIP 使用固定 7-Zip 26.03 参数，执行完整性、逐文件哈希、.NET 解压、程序集与内嵌 OCR 桥对应检查。发布后核验源码下载逐文件哈希和启动入口实际下载、SHA256、解压、二次复用；各步骤结果另存本地发布记录。独立升级工具不混入主程序仓库或本 Release。
+
+新增回归入口（先按开发指南构建）：
+
+~~~powershell
+dotnet run --project verification/review-20261020/Check.csproj -- artifacts/Desktop test-results/review
+dotnet run --project verification/search-regression/Check.csproj -- artifacts/Desktop test-results/search
+dotnet run --project verification/component-response/Check.csproj -- artifacts/Desktop
+dotnet run --project verification/update-preparation/Check.csproj -- artifacts/Desktop
+~~~
+
+原生 OCR 组件校验用例需设置 XIAOMANG_OCR_FIXTURE 指向完整已下载组件目录；它会复制到隔离输出目录测试损坏恢复。笔记前端用例运行 verification/review-20261020/diary-frontend.cjs，DIARY_PLAYWRIGHT 指向 Playwright 包，DIARY_FRONTEND 指向已构建的 src/Diary/out。
+
+以下为历史记录：
 # 2.13 / v2.13-20261019
 
 从筛选后的本标签源码构建桌面程序，校验 PDB 文档哈希与程序集对应。验证实际 2.9 升级到 2.13，无组件但有输入配置残留、已安装 OCR 两种独立目录；核验待办、收藏、设置、原始输入数据与新进程加载确认。本轮 34 项设置加载校验、68 项恢复检查通过（含 2 次真实终止助手测试）。此前修复矩阵 42 项独立目录升级通过，覆盖组件文件、配置残留与数据有无的成对组合；不是系统注册状态的完整排列测试。没有改动系统组件注册，未在独立 Windows 或另一台电脑复测。

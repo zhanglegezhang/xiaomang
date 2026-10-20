@@ -3,7 +3,7 @@ import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } fr
 import { open, save } from '@tauri-apps/plugin-dialog'
 import { getCurrentWindow } from '@tauri-apps/api/window'
 import { listen } from '@tauri-apps/api/event'
-import { Check, Home, Minus, Plus, FolderRoot, FolderPlus, FilePlus2, Search, X, Pencil, Trash2, Upload, Archive, RotateCcw, PanelLeftClose, PanelLeftOpen } from 'lucide-react'
+import { Check, Home, Minus, Plus, FolderRoot, FolderPlus, FilePlus2, Search, X, Pencil, Trash2, Upload, Archive, RotateCcw, RefreshCw, PanelLeftClose, PanelLeftOpen } from 'lucide-react'
 import { SourceMarkdownEditor, type SourceMarkdownEditorController } from '@/app/core/main/editor/markdown/source-markdown-editor'
 import RichEditor from './rich-editor'
 import PlainToolbar from './plain-toolbar'
@@ -34,6 +34,9 @@ export default function Diary() {
   const [expanded, setExpanded] = useState<Set<string>>(new Set());
   const [text, setText] = useState(''), [mode, setMode] = useState<'rich' | 'source'>('rich');
   const [status, setStatus] = useState('正在打开本地日记…'), [error, setError] = useState(''), [busy, setBusy] = useState(false);
+  const [conflictPath, setConflictPath] = useState('');
+  const [reloadEpoch, setReloadEpoch] = useState(0);
+  const exportedDrafts = useRef(new Map<string, string>());
   const [navigating, setNavigating] = useState(false);
   const [searching, setSearching] = useState(false), [query, setQuery] = useState(''), [hits, setHits] = useState<(SearchResults & { requestQuery: string }) | null>(null);
   const [showTrash, setShowTrash] = useState(false), [trash, setTrash] = useState<TrashItem[]>([]);
@@ -107,7 +110,9 @@ export default function Diary() {
         while (draft.content !== draft.saved) {
           const content = draft.content;
           setStatus('保存中…');
-          const result = await call<{ revision: string }>('save', { path: key, content, revision: draft.revision });
+          let result: { revision: string };
+          try { result = await call<{ revision: string }>('save', { path: key, content, revision: draft.revision }); }
+          catch (cause) { if (String(cause).includes('文件已被其他程序修改')) setConflictPath(key); throw cause; }
           draft.revision = result.revision; draft.saved = content;
         }
       }
@@ -122,7 +127,7 @@ export default function Diary() {
     setTabs(nextTabs); setActive(nextActive);
     if (root) localStorage.setItem('diary-session:' + root, JSON.stringify({ tabs: nextTabs, active: nextActive }));
   }, [root]);
-  const openNote = useCallback(async (path: string) => {
+  const openNote = useCallback(async (path: string, throwOnError = false) => {
     const recordVisit = () => call('visit', {path}).catch(cause => setError('日记已打开，但使用次数未更新：' + String(cause)));
     const sequence = ++opening.current;
     const hasCapacity = () => tabsRef.current.includes(path) || tabsRef.current.length < 20;
@@ -147,7 +152,7 @@ export default function Diary() {
       remember(nextTabs, path); setSelected(path); setText(drafts.current.get(path)!.content); setError('');
       setExpanded(old => new Set([...old, ...path.split('/').slice(0, -1).map((_, i, parts) => parts.slice(0, i + 1).join('/'))]));
       await recordVisit();
-    } catch (e) { if (sequence === opening.current && !closing.current) fail(e); } finally { if (sequence === opening.current) setNavigating(false) }
+    } catch (e) { if (sequence === opening.current && !closing.current) fail(e); if (throwOnError) throw e; } finally { if (sequence === opening.current) setNavigating(false) }
   }, [flush, remember]);
   const update = useCallback((content: string) => {
     const draft = drafts.current.get(activeRef.current); if (!draft) return;
@@ -222,7 +227,7 @@ export default function Diary() {
       if (waitingToClose.current) return;
       waitingToClose.current = true;
       try { await Promise.all([...pendingPastes.current]); setBusy(true); await flush(); closing.current = true; await getCurrentWindow().destroy(); }
-      catch (e) { closing.current = false; fail(e); setModal({ title: '尚有内容未保存', value: '', message: '保存或关闭失败，窗口已保留。请取消关闭，导出当前内容后处理错误。', onAccept: async () => {}, input: false }); }
+      catch (e) { closing.current = false; fail(e); if (!String(e).includes('文件已被其他程序修改')) setModal({ title: '尚有内容未保存', value: '', message: '保存或关闭失败，窗口已保留。请取消关闭，导出当前内容后处理错误。', onAccept: async () => {}, input: false }); }
       finally { waitingToClose.current = false; setBusy(false) }
     }).then(fn => { if (disposed) fn(); else stop = fn }).catch(fail);
     return () => { disposed = true; stop?.() };
@@ -414,10 +419,15 @@ export default function Diary() {
     });
   }
   async function importNote() {
+    if (tabsRef.current.length >= 20) throw new Error('最多打开20个页签，请先关闭一个页签再导入。');
     const source = await open({ multiple: false, filters: [{ name: 'Markdown / 纯文本', extensions: ['md','txt'] }] });
     if (typeof source !== 'string') return;
     const targetParent = parent;
-    const importWith = async (encoding:string) => { await flush(); const path = await call<string>('import', { source, parent:targetParent, encoding }); await refresh(); await openNote(path); };
+    const importWith = async (encoding:string) => {
+      if (tabsRef.current.length >= 20) throw new Error('最多打开20个页签，请先关闭一个页签再导入。');
+      await flush(); const path = await call<string>('import', { source, parent:targetParent, encoding }); await refresh();
+      try { await openNote(path, true); } catch (cause) { throw new Error(`文件已导入到 ${path}，但尚未打开：${String(cause)}`); }
+    };
     const detected = await call<{encoding:string|null}>('import_encoding',{source});
     if (detected.encoding) await importWith(detected.encoding);
     else setModal({title:'选择文本编码',value:'gbk',message:'无法自动确定编码。请选择原文件编码；导入副本保存为 UTF-8，原文件保持不变。',optionLabel:'文本编码',options:[{label:'GBK（简体中文旧文本）',value:'gbk'},{label:'UTF-8',value:'utf8'},{label:'UTF-16 LE',value:'utf16le'},{label:'UTF-16 BE',value:'utf16be'}],onAccept:importWith});
@@ -434,8 +444,22 @@ export default function Diary() {
       const format = /\.txt$/i.test(path) && !index.get(path)?.folder ? 'txt' : 'md';
       const destination = await save({ defaultPath: index.get(path)?.folder ? path.split('/').pop() + '-目录说明.md' : path.split('/').pop(), filters: [{ name: format==='txt'?'纯文本':'Markdown', extensions: [format] }] });
       if (!destination) return;
-      await call('export', { destination, content, format }); setError(''); setStatus('已导出日记');
+      await call('export', { destination, content, format }); if (path === conflictPath) exportedDrafts.current.set(path, content); setError(''); setStatus('已导出日记');
     } catch (error) { fail(error) } finally { setBusy(false); exporting.current = false }
+  }
+  function reloadConflictedDraft() {
+    const path = conflictPath, draft = drafts.current.get(path);
+    if (!draft || exportedDrafts.current.get(path) !== draft.content) { fail('请先导出当前冲突草稿副本；草稿有新修改时需要重新导出。'); return; }
+    setModal({ title: '重新读取磁盘版本', value: '', input: false,
+      message: `“${basename(path)}”的当前草稿已导出副本。确认舍弃编辑器中的这份草稿，重新读取磁盘版本？磁盘文件和导出的副本均保留。`,
+      onAccept: async () => {
+        const current = drafts.current.get(path);
+        if (!current || exportedDrafts.current.get(path) !== current.content) throw new Error('草稿已变化，请取消并重新导出副本。');
+        const latest = await call<{ content: string; revision: string }>('read', { path });
+        drafts.current.set(path, { ...latest, saved: latest.content }); editorSessions.current.delete(path);
+        if (activeRef.current === path) { activeGeneration.current++; setText(latest.content); setReloadEpoch(epoch => epoch + 1); }
+        exportedDrafts.current.delete(path); setConflictPath(''); setStatus('已重新读取磁盘版本；草稿副本已保留');
+      } });
   }
   async function backup() {
     const destination = await open({ directory: true, multiple: false, title: '选择备份保存目录' });
@@ -556,15 +580,16 @@ export default function Diary() {
     }:null:richActions.current}/>
     <aside className="rail"><button type="button" className="rail-current" title="主页" aria-label="主页" aria-pressed={!searching&&!showTrash} disabled={busy} onClick={()=>{setSearching(false);setShowTrash(false);setSidebar(true)}}><Home size={18} aria-hidden="true"/></button><IconButton title="全文搜索 Ctrl+Shift+F" icon={Search} action={() => actions.current.search()}/><IconButton title="回收站" icon={Trash2} action={() => void run(async()=>{setTrash(await call<TrashItem[]>('trash'));setShowTrash(true);setSearching(false);setSidebar(true)})}/><div className="rail-bottom"><IconButton title="导入日记" icon={Upload} action={()=>void run(importNote)}/><IconButton title="备份" icon={Archive} action={()=>void run(backup)}/><IconButton title="导入备份" icon={RotateCcw} action={()=>void run(importBackup)}/></div></aside>
     {sidebar&&<aside className="sidebar">{(showTrash||searching)&&<div className="sidebar-title"><span>{showTrash?'回收站':'全文搜索'}</span><IconButton title="返回目录" icon={X} action={()=>{setSearching(false);setShowTrash(false)}}/></div>}
-      {!searching&&!showTrash&&<><div className="tree-tools"><IconButton title="新建日记 Ctrl+N" icon={FilePlus2} action={()=>create(false)}/><IconButton title="新建文件夹" icon={FolderPlus} action={()=>create(true)}/><IconButton title="重命名所选项 F2" icon={Pencil} disabled={!selected||multiple} action={()=>void rename()}/><IconButton title="删除所选项 Delete" icon={Trash2} disabled={!selectedPaths.length} action={remove}/><IconButton title="根目录（取消选择）" icon={FolderRoot} pressed={!selectedPaths.length} action={()=>setSelected('')}/>{multiple&&<span className="tree-selection-count" aria-live="polite">已选 {selectedPaths.length} 项</span>}</div><div className="tree-scroll" role="tree" aria-label="日记目录" aria-multiselectable="true" onContextMenu={event=>event.preventDefault()} onKeyDown={treeKeyDown}>{tree.length?renderTree(tree):<div className="sidebar-empty">还没有日记<br/>点击上方新建按钮开始记录</div>}</div></>}
+      {!searching&&!showTrash&&<><div className="tree-tools"><IconButton title="新建日记 Ctrl+N" icon={FilePlus2} action={()=>create(false)}/><IconButton title="新建文件夹" icon={FolderPlus} action={()=>create(true)}/><IconButton title="重命名所选项 F2" icon={Pencil} disabled={!selected||multiple} action={()=>void rename()}/><IconButton title="删除所选项 Delete" icon={Trash2} disabled={!selectedPaths.length} action={remove}/><IconButton title="刷新目录（保留未保存内容）" icon={RefreshCw} action={()=>void run(async()=>{await refresh();setStatus('目录已刷新，未保存内容保留')})}/><IconButton title="根目录（取消选择）" icon={FolderRoot} pressed={!selectedPaths.length} action={()=>setSelected('')}/>{multiple&&<span className="tree-selection-count" aria-live="polite">已选 {selectedPaths.length} 项</span>}</div><div className="tree-scroll" role="tree" aria-label="日记目录" aria-multiselectable="true" onContextMenu={event=>event.preventDefault()} onKeyDown={treeKeyDown}>{tree.length?renderTree(tree):<div className="sidebar-empty">还没有日记<br/>点击上方新建按钮开始记录</div>}</div></>}
       {searching&&<><div className="search-box"><Search size={16}/><input autoFocus aria-label="搜索全部日记" placeholder="搜索标题或正文…" value={query} onChange={e=>setQuery(e.target.value)}/></div><div className="search-hint" role="status">{hits?.requestQuery===query&&hits.literalOnly?'关键词超过16字，已按连续文字查找':'普通全文检索 · 支持中文'}<br/>Ctrl+F 搜索当前篇</div><div className="tree-scroll">{hits?.results.map(hit=><button key={hit.path} className="search-result" onClick={()=>void openNote(hit.path)}><strong>{hit.folder?hit.path.split('/').pop():basename(hit.path)}{hit.folder?' · 目录说明':''}</strong><small>{hit.path}</small>{hit.matches.map(match=><span key={match.line}>{match.line}：{match.snippet}</span>)}</button>)}{hits&&<div className="search-hint">{hits.results.length} 篇匹配{hits.limited?' · 仅显示前 200 篇，请缩小范围':''}{hits.skipped?` · ${hits.skipped} 个文件未能读取`:''}</div>}{query&&hits&&!hits.results.length&&<div className="sidebar-empty">没有找到匹配日记</div>}</div></>}
       {showTrash&&<div className="tree-scroll">{trash.length?trash.map(item=><div className="trash-item" key={item.id}><strong>{item.path}</strong><small>{new Date(item.time).toLocaleString()}</small><button onClick={()=>void run(async()=>{await call('restore',{id:item.id});setTrash(await call<TrashItem[]>('trash'));await refresh()})}>恢复</button></div>):<div className="sidebar-empty">回收站为空</div>}</div>}
     </aside>}
     <main className="workspace"><header className="tabs" onContextMenu={event=>event.preventDefault()}><IconButton title={sidebar?'收起目录':'展开目录'} icon={sidebar?PanelLeftClose:PanelLeftOpen} action={()=>setSidebar(!sidebar)}/><div className="tab-scroll" ref={tabScroll}>{tabs.map(path=><div className={'tab '+(active===path?'active':'')} key={path} onContextMenu={event=>openContext(event,path,index.get(path)?.folder===true)}><button className="tab-open" disabled={busy||navigating} title={path} aria-label={index.get(path)?.folder?index.get(path)!.name:basename(path)} onClick={()=>void openNote(path)}><ItemIcon folder={index.get(path)?.folder === true} path={path} size={14} color={index.get(path)?.color} solid={index.get(path)?.solid}/><span>{displayName(index.get(path)?.folder?index.get(path)!.name:basename(path))}</span>{drafts.current.get(path)?.content!==drafts.current.get(path)?.saved&&<i/>}</button>{active!==path&&<button className="tab-close" disabled={busy||navigating} title="关闭日记" aria-label={'关闭 '+basename(path)} onClick={()=>void closeTab(path)}><X size={13}/></button>}</div>)}</div></header>
       {storageWarning && <div className="error-banner" role="status">{storageWarning}</div>}
       {error&&<div role="alert" className="error-banner"><span>{error}</span><button aria-label="关闭错误提示" onClick={()=>setError('')}><X size={16}/></button></div>}
+      {conflictPath&&<div role="status" className="draft-conflict"><span>“{basename(conflictPath)}”存在外部修改，当前草稿仍保留。</span><div><button disabled={busy||navigating} onClick={()=>void exportNote(conflictPath)}>导出草稿副本</button><button disabled={busy||navigating||exportedDrafts.current.get(conflictPath)!==drafts.current.get(conflictPath)?.content} onClick={reloadConflictedDraft}>重新读取磁盘版本</button></div></div>}
       {treeWarning&&<div role="alert" className="error-banner">{treeWarning}</div>}
-      {active?<div className="editor-container" key={active+'-'+sourceMode}>{plainText?<><PlainToolbar controller={controller} undoRedo={plainUndoRedo} fontSize={plainFontSize} wrapping={plainWrapping} disabled={busy||navigating} onFontSize={setPlainFontSize} onWrapping={setPlainWrapping}/><div className="source-editor-body"><SourceMarkdownEditor session={activeSession} language="plain" value={text} onChange={update} editable={!busy&&!navigating} onUndoRedoChange={setPlainUndoRedo} showLineNumbers lineWrapping={plainWrapping} fontSize={plainFontSize} lineHeight={1.7} ariaLabel="日记 TXT 纯文本" onControllerChange={c=>controller.current=c}/></div></>:sourceMode?<><div className="format-bar source-format-bar" role="toolbar" aria-label="源码工具栏"><div className="toolbar-mode-switch">{modeSwitch}</div></div><div className="source-editor-body"><SourceMarkdownEditor session={activeSession} value={text} onChange={update} onPasteImages={pasteImages} editable={!busy&&!navigating} showLineNumbers lineWrapping fontSize={14} lineHeight={1.7} ariaLabel="日记 Markdown 源码" onControllerChange={c=>controller.current=c}/></div></>:<RichEditor session={activeSession} value={text} onChange={update} onPasteImages={pasteImages} readonly={busy||navigating} toolbarActions={modeSwitch} onContextActionsChange={setRichActions}/>}</div>:<div className="welcome"><img src="/xiaomang-logo.png" width={46} height={46} alt="小蟒标志" style={{marginBottom:10}}/><h1>留一点时间，给自己</h1><p>用目录整理日记，用搜索找回记忆。<br/>所有内容保存在这台电脑，随时可以导出和备份。</p><button className="primary" onClick={()=>create(false)} disabled={!root||busy}><FilePlus2 size={17}/>新建日记</button><small>Ctrl+N 新建 · Ctrl+S 保存 · Ctrl+Shift+F 全文搜索</small></div>}
+      {active?<div className="editor-container" key={active+'-'+sourceMode+'-'+reloadEpoch}>{plainText?<><PlainToolbar controller={controller} undoRedo={plainUndoRedo} fontSize={plainFontSize} wrapping={plainWrapping} disabled={busy||navigating} onFontSize={setPlainFontSize} onWrapping={setPlainWrapping}/><div className="source-editor-body"><SourceMarkdownEditor session={activeSession} language="plain" value={text} onChange={update} editable={!busy&&!navigating} onUndoRedoChange={setPlainUndoRedo} showLineNumbers lineWrapping={plainWrapping} fontSize={plainFontSize} lineHeight={1.7} ariaLabel="日记 TXT 纯文本" onControllerChange={c=>controller.current=c}/></div></>:sourceMode?<><div className="format-bar source-format-bar" role="toolbar" aria-label="源码工具栏"><div className="toolbar-mode-switch">{modeSwitch}</div></div><div className="source-editor-body"><SourceMarkdownEditor session={activeSession} value={text} onChange={update} onPasteImages={pasteImages} editable={!busy&&!navigating} showLineNumbers lineWrapping fontSize={14} lineHeight={1.7} ariaLabel="日记 Markdown 源码" onControllerChange={c=>controller.current=c}/></div></>:<RichEditor session={activeSession} value={text} onChange={update} onPasteImages={pasteImages} readonly={busy||navigating} toolbarActions={modeSwitch} onContextActionsChange={setRichActions}/>}</div>:<div className="welcome"><img src="/xiaomang-logo.png" width={46} height={46} alt="小蟒标志" style={{marginBottom:10}}/><h1>留一点时间，给自己</h1><p>用目录整理日记，用搜索找回记忆。<br/>所有内容保存在这台电脑，随时可以导出和备份。</p><button className="primary" onClick={()=>create(false)} disabled={!root||busy}><FilePlus2 size={17}/>新建日记</button><small>Ctrl+N 新建 · Ctrl+S 保存 · Ctrl+Shift+F 全文搜索</small></div>}
       <footer><span>{status}</span><span>{active?`${text.length.toLocaleString()} 字符`:''} {active&&sourceRequired?' · 源码模式保护原文':''}</span><span>本地存储</span></footer>
     </main>
     {context&&<ContextMenu context={context} onClose={closeContext} onReorder={multiple||context.tab?undefined:direction=>reorder(context.path,direction)} items={context.tab ? [

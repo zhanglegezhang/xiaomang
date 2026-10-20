@@ -104,6 +104,7 @@ namespace ShareX
         private string term = "", emptyMessage = "输入关键词，搜索待办、收藏和本地笔记";
         private int selectedIndex = -1, hoveredRow = -1, scrollOffset, contentHeight;
         private int pressedIndex = -1;
+        private Point pressedPoint;
         private bool draggingScrollbar;
         private int dragY, dragOffset;
         private const TextFormatFlags TextFlags = TextFormatFlags.NoPadding | TextFormatFlags.NoPrefix | TextFormatFlags.SingleLine | TextFormatFlags.VerticalCenter | TextFormatFlags.EndEllipsis;
@@ -146,10 +147,15 @@ namespace ShareX
         {
             hits = items ?? Array.Empty<SearchHit>(); term = query ?? ""; rows.Clear();
             int index = 0;
-            foreach (var group in hits.GroupBy(x => x.Source))
+            bool Exact(SearchHit hit) => term.Length > 0 && string.Equals(hit.Title, term, StringComparison.OrdinalIgnoreCase);
+            var exact = hits.Where(Exact).ToArray();
+            var groups = new List<(string Name, SearchHit[] Items)>();
+            if (exact.Length > 0) groups.Add(("精确匹配", exact));
+            groups.AddRange(hits.Where(x => !Exact(x)).GroupBy(x => x.Source).Select(g => (g.Key, g.ToArray())));
+            foreach (var group in groups)
             {
-                rows.Add(new Row(null, -1, group.Key, group.Count(), "", "", ""));
-                foreach (var hit in group)
+                rows.Add(new Row(null, -1, group.Name, group.Items.Length, "", "", ""));
+                foreach (var hit in group.Items)
                 {
                     string title = hit.Title ?? "", detail = "";
                     if (hit.Source == "本地笔记")
@@ -159,10 +165,13 @@ namespace ShareX
                         detail = detail.Replace(Path.DirectorySeparatorChar.ToString(), " / ");
                     }
                     else if (hit.Source == "固定文件") detail = hit.Path ?? "";
-                    rows.Add(new Row(hit, index++, group.Key, 0, PlainSummary(UnifiedSearchEngine.Snippet(title, term)), detail, PlainSummary(UnifiedSearchEngine.Snippet(hit.Text, term))));
+                    bool file = hit.Source is "本地笔记" or "固定文件";
+                    string displayedTitle = UnifiedSearchEngine.Snippet(title, term);
+                    rows.Add(new Row(hit, index++, hit.Source, 0, file ? displayedTitle : PlainSummary(displayedTitle), detail,
+                        hit.Source == "固定文件" ? UnifiedSearchEngine.Snippet(hit.Text, term) : PlainSummary(UnifiedSearchEngine.Snippet(hit.Text, term))));
                 }
             }
-            // Engine output is grouped; keep the rendered hit order identical to the opening targets.
+            // Keep opening targets aligned after placing exact matches before source groups.
             hits = rows.Where(r => r.Hit != null).Select(r => r.Hit).ToArray();
             selectedIndex = hits.Length > 0 ? 0 : -1; hoveredRow = -1; scrollOffset = 0; tip.SetToolTip(this, null);
             MeasureRows(); UpdateAccessibility(); Invalidate();
@@ -227,7 +236,7 @@ namespace ShareX
         }
         protected override void OnMouseDown(MouseEventArgs e)
         {
-            base.OnMouseDown(e); if (e.Button != MouseButtons.Left) return; pressedIndex = -1; Focus();
+            base.OnMouseDown(e); if (e.Button != MouseButtons.Left) return; pressedIndex = -1; pressedPoint = e.Location; Focus();
             if (MaximumScroll > 0 && e.X >= ContentWidth && e.Y >= HeaderHeight)
             {
                 if (ScrollThumb.Contains(e.Location)) { draggingScrollbar = true; dragY = e.Y; dragOffset = scrollOffset; Capture = true; }
@@ -240,6 +249,8 @@ namespace ShareX
         protected override void OnMouseMove(MouseEventArgs e)
         {
             base.OnMouseMove(e);
+            if (pressedIndex >= 0 && (Math.Abs(e.X - pressedPoint.X) > SystemInformation.DragSize.Width / 2 ||
+                Math.Abs(e.Y - pressedPoint.Y) > SystemInformation.DragSize.Height / 2)) pressedIndex = -1;
             if (draggingScrollbar) { int travel = ScrollTrack.Height - ScrollThumb.Height; if (travel > 0) SetScroll(dragOffset + (int)((long)(e.Y - dragY) * MaximumScroll / travel)); return; }
             int row = RowAt(e.Location);
             if (row != hoveredRow)
@@ -254,11 +265,12 @@ namespace ShareX
             base.OnMouseUp(e);
             if (e.Button != MouseButtons.Left) return;
             int row = RowAt(e.Location);
-            bool open = !draggingScrollbar && pressedIndex >= 0 && row >= 0 && rows[row].Index == pressedIndex;
+            bool open = !draggingScrollbar && pressedIndex >= 0 && row >= 0 && rows[row].Index == pressedIndex &&
+                Math.Abs(e.X - pressedPoint.X) <= SystemInformation.DragSize.Width / 2 && Math.Abs(e.Y - pressedPoint.Y) <= SystemInformation.DragSize.Height / 2;
             draggingScrollbar = false; pressedIndex = -1; Capture = false;
             if (open) ResultInvoked?.Invoke(this, EventArgs.Empty);
         }
-        protected override void OnMouseCaptureChanged(EventArgs e) { base.OnMouseCaptureChanged(e); if (!Capture) draggingScrollbar = false; }
+        protected override void OnMouseCaptureChanged(EventArgs e) { base.OnMouseCaptureChanged(e); if (!Capture) { draggingScrollbar = false; pressedIndex = -1; } }
         protected override void OnMouseLeave(EventArgs e) { base.OnMouseLeave(e); hoveredRow = -1; Invalidate(); }
         protected override void OnPaint(PaintEventArgs e)
         {

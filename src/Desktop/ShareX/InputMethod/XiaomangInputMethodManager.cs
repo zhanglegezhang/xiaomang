@@ -56,24 +56,29 @@ namespace ShareX
         {
             get
             {
-                lock (gate)
+                if (!System.Threading.Monitor.TryEnter(gate)) return "状态：后台检查中";
+                try
                 {
                     if (!IsRegistered) return "状态：未注册";
                     if (!string.IsNullOrEmpty(lastError)) return lastError;
                     return worker != null && !worker.HasExited ? workerReady ? "状态：已就绪" :
                         "状态：加载中" : "状态：未启动";
                 }
+                finally { System.Threading.Monitor.Exit(gate); }
             }
         }
 
         internal static void Start()
         {
-            lock (gate)
+            // Never block the UI behind a lifecycle operation; a later request can retry.
+            if (!System.Threading.Monitor.TryEnter(gate)) return;
+            try
             {
                 if (monitor != null) return;
                 stopping = false;
                 monitor = new System.Threading.Timer(_ => Tick(), null, 0, 1500);
             }
+            finally { System.Threading.Monitor.Exit(gate); }
         }
 
         private static void Tick()
@@ -284,7 +289,9 @@ namespace ShareX
 
         internal static bool IsWorkerReady()
         {
-            lock (gate) return !stopping && workerReady && worker != null && !worker.HasExited;
+            if (!System.Threading.Monitor.TryEnter(gate)) return false;
+            try { return !stopping && workerReady && worker != null && !worker.HasExited; }
+            finally { System.Threading.Monitor.Exit(gate); }
         }
 
         private static bool ProbeWorkerReady()

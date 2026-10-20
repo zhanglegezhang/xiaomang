@@ -54,3 +54,6 @@
 .rich-search-status{font-size:11px;line-height:16px;color:#71818d;padding:2px 3px 0}
 
 
+
+/* Conflict recovery keeps explicit actions reachable at narrow widths. */
+.draft-conflict{padding:8px 12px;background:#fff3df;border-bottom:1px solid #ead5ad;color:#77531e;font-size:12px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}.draft-conflict>div{display:flex;gap:8px;flex-wrap:wrap}.draft-conflict button{padding:5px 8px;border:1px solid #d4b784;border-radius:5px;background:#fffaf1}.tree-tools{flex-wrap:wrap}

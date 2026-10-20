@@ -595,7 +595,7 @@ fn flatten_search(tree: &[Value], paths: &mut Vec<(String, bool)>) {
         if folder { flatten_search(node["children"].as_array().unwrap(), paths); }
     }
 }
-fn import_images(diary: &Diary, source: &Path, text: &str) -> Result<String> {
+fn import_images(diary: &Diary, source: &Path, text: &str, created: &mut Vec<PathBuf>) -> Result<String> {
     let parent = source.parent().ok_or("无效导入位置")?.canonicalize().map_err(err)?;
     // Parent paths are accepted only inside our marked batch-export layout.
     // A marker never permits arbitrary filesystem reads outside attachments.
@@ -610,16 +610,75 @@ fn import_images(diary: &Diary, source: &Path, text: &str) -> Result<String> {
     });
     let pattern = regex::Regex::new(r"!\[([^\]]*)\]\(([^)\r\n]+)\)").map_err(err)?;
     let titled = regex::Regex::new(r#"^(.*?)\s+("(?:\\.|[^"])*")$"#).map_err(err)?;
-    let mut replacements = vec![];
+    // Resolve full, collapsed and shortcut references into individual local
+    // image candidates. Definitions stay intact for ordinary Markdown links.
+    let label = |value: &str| value.split_whitespace().collect::<Vec<_>>().join(" ").to_lowercase();
+    let definition = regex::Regex::new(r#"(?m)^ {0,3}\[([^\]\r\n]+)\]:[ \t]*(<[^>\r\n]+>|[^\s\r\n]+)(?:[ \t]+("[^"\r\n]*"|'[^'\r\n]*'|\([^\r\n]*\)))?[ \t]*\r?$"#).map_err(err)?;
+    let mut definitions = HashMap::new();
+    let mut fenced = Vec::new();
+    let mut fence: Option<(char,usize,usize)> = None;let mut offset=0;
+    for line in text.split_inclusive('\n') {
+        let trimmed=line.trim_start_matches(' ');let spaces=line.len()-trimmed.len();
+        let first=trimmed.chars().next().unwrap_or(' ');
+        let count=trimmed.chars().take_while(|c|*c==first).count();
+        if spaces<=3 && (first=='`'||first=='~') && count>=3 {
+            if let Some((mark,length,start))=fence {if mark==first && count>=length && trimmed[count..].trim().is_empty(){fenced.push(start..offset+line.len());fence=None;}}
+            else {fence=Some((first,count,offset));}
+        }
+        offset+=line.len();
+    }
+    if let Some((_,_,start))=fence {fenced.push(start..text.len());}
+    let ticks=regex::Regex::new(r"`+").map_err(err)?;
+    let mut endings:HashMap<usize,VecDeque<std::ops::Range<usize>>>=HashMap::new();
+    for run in ticks.find_iter(text) {
+        if !fenced.iter().any(|r|r.contains(&run.start())) {endings.entry(run.len()).or_default().push_back(run.range());}
+    }
+    let mut inline=Vec::new();let mut until=0;
+    for run in ticks.find_iter(text) {
+        if run.start()<until || fenced.iter().any(|r|r.contains(&run.start())){continue}
+        let escaped=text[..run.start()].bytes().rev().take_while(|b|*b==b'\\').count()%2==1;
+        if escaped{continue}
+        if let Some(runs)=endings.get_mut(&run.len()) {
+            while runs.front().is_some_and(|r|r.start<=run.start()){runs.pop_front();}
+            if let Some(end)=runs.front() {until=end.end;inline.push(run.start()..end.end);}
+        }
+    }
+    let mut excluded=fenced;excluded.extend(inline);let mut offset=0;
+    for line in text.split_inclusive('\n') {if line.starts_with("    ")||line.starts_with('\t'){excluded.push(offset..offset+line.len());}offset+=line.len();}
+    excluded.sort_by_key(|range|range.start);
+    let mut merged:Vec<std::ops::Range<usize>>=Vec::new();
+    for range in excluded {if let Some(last)=merged.last_mut().filter(|last|last.end>=range.start){last.end=last.end.max(range.end);}else{merged.push(range);}}
+    let in_code=|at:usize| {let index=merged.partition_point(|range|range.start<=at);index>0 && merged[index-1].contains(&at)};
+    let escaped=|at:usize|text[..at].bytes().rev().take_while(|b|*b==b'\\').count()%2==1;
+    for capture in definition.captures_iter(text) {
+        if in_code(capture.get(0).unwrap().start()){continue}
+        let title=capture.get(3).map(|m|m.as_str()).unwrap_or("");
+        let title=if title.starts_with('"'){title.to_owned()}else if title.len()>=2 {format!("\"{}\"",title[1..title.len()-1].replace('"',"\\\""))}else{String::new()};
+        definitions.entry(label(&capture[1])).or_insert((capture[2].to_owned(),title));
+    }
+    let mut candidates=Vec::new();
     for capture in pattern.captures_iter(text) {
-        let reference = capture[2].trim();
-        let title_match = titled.captures(reference);
-        let (url, title) = match &title_match {
-            Some(parts) => (parts.get(1).unwrap().as_str(), parts.get(2).unwrap().as_str()),
-            None => (reference, ""),
-        };
+        let range=capture.get(0).unwrap().range();if in_code(range.start)||escaped(range.start){continue}
+        let reference=capture[2].trim();let title_match=titled.captures(reference);
+        let (url,title)=match &title_match {Some(parts)=>(parts[1].to_owned(),parts[2].to_owned()),None=>(reference.to_owned(),String::new())};
+        candidates.push((range,capture[1].to_owned(),url,title));
+    }
+    let references=regex::Regex::new(r"!\[([^\]\r\n]*)\](?:\[([^\]\r\n]*)\])?").map_err(err)?;
+    for capture in references.captures_iter(text) {
+        let range=capture.get(0).unwrap().range();
+        if in_code(range.start) || escaped(range.start) || text[range.end..].starts_with('('){continue}
+        let key=capture.get(2).filter(|m|!m.as_str().is_empty()).map(|m|m.as_str()).unwrap_or(&capture[1]);
+        if let Some((url,title))=definitions.get(&label(key)){candidates.push((range,capture[1].to_owned(),url.clone(),title.clone()));}
+    }
+    candidates.sort_by_key(|(range,_,_,_)|range.start);
+    let mut replacements = vec![];
+    let mut imported:HashMap<PathBuf,String>=HashMap::new();
+    let mut resolved:HashMap<String,String>=HashMap::new();
+    for (range,alt,url,title) in candidates {
         let raw = url.trim_start_matches('<').trim_end_matches('>');
         if raw.starts_with("diary-asset:") || raw.contains("://") { continue }
+        let suffix = if title.is_empty() { String::new() } else { format!(" {title}") };
+        if let Some(id)=resolved.get(raw){replacements.push((range,format!("![{alt}](diary-asset:{id}{suffix})")));continue}
         let mut decoded=vec![];let bytes=raw.as_bytes();let mut index=0;
         while index<bytes.len() {
             if bytes[index]==b'%' && index+2<bytes.len() {
@@ -639,11 +698,22 @@ fn import_images(diary: &Diary, source: &Path, text: &str) -> Result<String> {
         else if !canonical.starts_with(&parent) { continue }
         let extension=file.extension().and_then(|s|s.to_str()).unwrap_or("").to_lowercase();
         if !["png","jpg","jpeg","gif","webp"].contains(&extension.as_str()) || fs::metadata(&file).map_err(err)?.len()>MAX_ASSET {continue}
-        let id=format!("{}.{}",Uuid::new_v4(),extension);fs::copy(file,diary.root.join("attachments").join(&id)).map_err(err)?;
-        let suffix = if title.is_empty() { String::new() } else { format!(" {title}") };
-        replacements.push((capture.get(0).unwrap().range(),format!("![{}](diary-asset:{id}{suffix})",&capture[1])));
+        if let Some(id)=imported.get(&canonical) {replacements.push((range,format!("![{alt}](diary-asset:{id}{suffix})")));resolved.insert(raw.to_owned(),id.clone());continue}
+        let id=format!("{}.{}",Uuid::new_v4(),extension);let target=diary.root.join("attachments").join(&id);
+        let mut output=OpenOptions::new().write(true).create_new(true).open(&target).map_err(err)?;
+        created.push(target);
+        let mut input=fs::File::open(file).map_err(err)?;
+        let bytes=std::io::copy(&mut std::io::Read::take(&mut input,MAX_ASSET+1),&mut output).map_err(err)?;
+        if bytes>MAX_ASSET {return Err("图片在读取时超过 20 MB，导入未完成，原文件未修改".into())}
+        replacements.push((range,format!("![{alt}](diary-asset:{id}{suffix})")));
+        resolved.insert(raw.to_owned(),id.clone());
+        imported.insert(canonical,id);
     }
-    let mut content=text.to_owned();for (range,replacement) in replacements.into_iter().rev(){content.replace_range(range,&replacement)}Ok(content)
+    let final_size=replacements.iter().fold(text.len(),|size,(range,replacement)|size-(range.end-range.start)+replacement.len());
+    if final_size as u64 > MAX_NOTE {return Err("转换图片链接后超过 10 MB，请拆分后再导入；原文件未修改".into())}
+    let mut content=String::with_capacity(final_size);let mut cursor=0;
+    for (range,replacement) in replacements {content.push_str(&text[cursor..range.start]);content.push_str(&replacement);cursor=range.end;}
+    content.push_str(&text[cursor..]);Ok(content)
 }
 fn inspect_tree(source: &Path, count: &mut usize, bytes: &mut u64, limit: usize, depth: usize) -> Result<()> {
     if depth > 128 { return Err("导入/备份目录层级过深".into()) }
@@ -870,14 +940,21 @@ pub fn dispatch(root: &Path, op: &str, args: Value) -> Result<Value> {
             let bytes=fs::read(&source).map_err(err)?;
             let encoding=args["encoding"].as_str().or_else(||detected_encoding(&bytes)).ok_or("无法确定编码，请选择编码后导入，原文件未修改")?;
             let text=decode_text(&bytes,encoding)?;
+            if text.len() as u64 > MAX_NOTE { return Err("转为 UTF-8 后超过 10 MB，请拆分后再导入；原文件未修改".into()) }
             let parent=diary.note_path(string(&args,"parent")?,true)?;
             diary.validate_addition(string(&args,"parent")?, false, 1)?;
             let name=source.file_stem().unwrap().to_string_lossy(); safe_name(&name)?;
             let mut target=parent.join(format!("{name}.{extension}")); if target.exists(){target=parent.join(format!("{name}-{}.{extension}",stamp()))}
             let next_order=order_with_new(&parent,&target.file_name().unwrap().to_string_lossy())?;
-            let content=if extension=="md" {import_images(&diary,&source,&text)?} else {text};
-            atomic_write(&target,content.as_bytes())?;
-            if let Some(order)=next_order {if let Err(error)=commit_orders(&[(parent,Some(order))]) {fs::remove_file(&target).map_err(err)?;return Err(error)}}
+            let mut created=vec![];
+            let result=(|| {
+                let content=if extension=="md" {import_images(&diary,&source,&text,&mut created)?} else {text};
+                if content.len() as u64 > MAX_NOTE {return Err("转换图片链接后超过 10 MB，请拆分后再导入；原文件未修改".into())}
+                atomic_write(&target,content.as_bytes())?;
+                if let Some(order)=next_order {if let Err(error)=commit_orders(&[(parent,Some(order))]) {fs::remove_file(&target).map_err(err)?;return Err(error)}}
+                Ok(())
+            })();
+            if let Err(error)=result {for file in created {let _=fs::remove_file(file);}return Err(error)}
             Ok(json!(target.strip_prefix(diary.root.join("notes")).map_err(err)?.to_string_lossy().replace('\\',"/")))
         }
         "export" => {
@@ -935,6 +1012,39 @@ mod search_tests;
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[test] fn import_checks_decoded_utf8_size_before_writing() {
+        let root=fixture();let outside=fixture();let source=outside.join("中文.txt");
+        let mut bytes=Vec::with_capacity(8*1024*1024);
+        for _ in 0..4*1024*1024 {bytes.extend_from_slice(&[0x2d,0x4e]);}
+        fs::write(&source,&bytes).unwrap();
+        let error=dispatch(&root,"import",json!({"source":source,"parent":"","encoding":"utf16le"})).unwrap_err();
+        assert!(error.contains("UTF-8"));assert_eq!(fs::read_dir(root.join("notes")).unwrap().count(),0);
+        assert_eq!(fs::metadata(&source).unwrap().len(),8*1024*1024);
+        fs::remove_dir_all(root).unwrap();fs::remove_dir_all(outside).unwrap();
+    }
+    #[test] fn import_reference_images_preserves_definitions_and_sandbox() {
+        let root=fixture();let outside=fixture();fs::create_dir(outside.join("images")).unwrap();
+        fs::write(outside.join("images/logo.png"),b"fixture-image").unwrap();
+        let source=outside.join("references.md");
+        let text="![One][LOGO]\n![logo][]\n![logo]\n![remote][web]\n![bad][escape]\n`![literal][logo]`\n\\![escaped][logo]\n```md\n![code][logo]\n```\n\n[logo]: images/logo.png \"title\"\n[web]: https://example.invalid/image.png\n[escape]: ../private.png\n";
+        fs::write(&source,text).unwrap();
+        let path=call(&root,"import",json!({"source":source,"parent":""}));
+        let read=call(&root,"read",json!({"path":path}));let imported=read["content"].as_str().unwrap();
+        assert_eq!(imported.matches("diary-asset:").count(),3);
+        assert!(imported.contains("[logo]: images/logo.png"));assert!(imported.contains("![remote][web]"));assert!(imported.contains("![bad][escape]"));assert!(imported.contains("![code][logo]"));assert!(imported.contains("`![literal][logo]`"));assert!(imported.contains("\\![escaped][logo]"));
+        assert_eq!(fs::read_dir(root.join("attachments")).unwrap().count(),1);
+        assert_eq!(fs::read_to_string(&source).unwrap(),text);
+        fs::remove_dir_all(root).unwrap();fs::remove_dir_all(outside).unwrap();
+    }
+    #[test] fn oversized_image_rewrite_rolls_back_only_new_attachments() {
+        let root=fixture();let outside=fixture();fs::write(root.join("attachments/existing.png"),b"keep").unwrap();
+        fs::write(outside.join("a.png"),b"fixture-image").unwrap();let source=outside.join("many.md");
+        fs::write(&source,"![a](a.png) ".repeat(240000)).unwrap();
+        let error=dispatch(&root,"import",json!({"source":source,"parent":""})).unwrap_err();assert!(error.contains("10 MB"));
+        assert_eq!(fs::read_dir(root.join("notes")).unwrap().count(),0);assert_eq!(fs::read_dir(root.join("attachments")).unwrap().count(),1);
+        assert_eq!(fs::read(root.join("attachments/existing.png")).unwrap(),b"keep");
+        fs::remove_dir_all(root).unwrap();fs::remove_dir_all(outside).unwrap();
+    }
     #[test] fn new_folder_depth_is_checked_before_write_and_old_overflow_is_readable() {
         let root=fixture(); let mut parent=String::new();
         for _ in 0..64 {parent=if parent.is_empty(){"d".into()}else{format!("{parent}/d")};fs::create_dir(root.join("notes").join(&parent)).unwrap();}

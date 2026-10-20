@@ -49,8 +49,8 @@ namespace ShareX
         public const string AppName = "xiaomangtongxue";
         public const string DisplayName = "小蟒";
         public const string ProductName = "小蟒";
-        public const int ProductVersionMajor = 2;
-        public const int ProductVersionMinor = 13;
+        public const int ProductVersionMajor = 3;
+        public const int ProductVersionMinor = 0;
         public static string ProductVersion => $"{ProductVersionMajor}.{ProductVersionMinor}";
         public const string MutexName = "82E6AC09-0FEF-4390-AD9F-0DD3F5561EFC";
         public static readonly string PipeName = $"{Environment.MachineName}-{Environment.UserName}-{AppName}";

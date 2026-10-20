@@ -15,18 +15,50 @@ internal static class MixedOcrComponent
     internal sealed record DownloadSpec(string Url,long Length,string Sha256,FileSpec[] Files);
     internal static readonly string DirectoryPath=Path.Combine(AppContext.BaseDirectory,"ThirdParty","MixedOCR","v1");
     private static readonly SemaphoreSlim gate=new(1,1);
-    internal static DownloadSpec[] Manifest { get {using var s=typeof(MixedOcrComponent).Assembly.GetManifestResourceStream("ShareX.MixedOcrManifest.json");return JsonSerializer.Deserialize<DownloadSpec[]>(s);} }
-    internal static bool IsPresent {get {try{return File.Exists(Path.Combine(DirectoryPath,"ready")) && Manifest.SelectMany(x=>x.Files).All(f=>new FileInfo(Path.Combine(DirectoryPath,f.Name)).Length==f.Length);}catch{return false;}}}
+    private static readonly Lazy<DownloadSpec[]> manifest = new(() => { using var s=typeof(MixedOcrComponent).Assembly.GetManifestResourceStream("ShareX.MixedOcrManifest.json");return JsonSerializer.Deserialize<DownloadSpec[]>(s); });
+    private static readonly Lazy<(long Length,string Hash)> keysSpec = new(() => { using var s=typeof(MixedOcrComponent).Assembly.GetManifestResourceStream("ShareX.MixedOcrKeys.txt");return (s.Length,Convert.ToHexString(SHA256.HashData(s))); });
+    internal static DownloadSpec[] Manifest => manifest.Value;
+    internal static bool IsPresent => IsPresentAt(DirectoryPath);
+    internal static bool HasFiles { get { try { return Directory.Exists(DirectoryPath) && Directory.EnumerateFileSystemEntries(DirectoryPath).Any(); } catch(IOException) { return true; } catch(UnauthorizedAccessException) { return true; } } }
+    internal static bool IsPresentAt(string directory)
+    {try{return File.Exists(Path.Combine(directory,"ready")) && new FileInfo(Path.Combine(directory,"keys.txt")).Length==keysSpec.Value.Length && Manifest.SelectMany(x=>x.Files).All(f=>new FileInfo(Path.Combine(directory,f.Name)).Length==f.Length);}catch(IOException){return false;}catch(UnauthorizedAccessException){return false;}}
     internal static async Task ValidateAsync(CancellationToken token)
     {
-        foreach(var file in Manifest.SelectMany(x=>x.Files))await Verify(Path.Combine(DirectoryPath,file.Name),file.Length,file.Sha256,token);
-        using var keys=typeof(MixedOcrComponent).Assembly.GetManifestResourceStream("ShareX.MixedOcrKeys.txt");
-        await Verify(Path.Combine(DirectoryPath,"keys.txt"),keys.Length,Convert.ToHexString(await SHA256.HashDataAsync(keys,token)),token);
+        await ValidateDirectoryAsync(DirectoryPath,token).ConfigureAwait(false);
     }
+    private static async Task ValidateDirectoryAsync(string directory,CancellationToken token)
+    {
+        foreach(var file in Manifest.SelectMany(x=>x.Files))await Verify(Path.Combine(directory,file.Name),file.Length,file.Sha256,token).ConfigureAwait(false);
+        await Verify(Path.Combine(directory,"keys.txt"),keysSpec.Value.Length,keysSpec.Value.Hash,token).ConfigureAwait(false);
+    }
+    private static readonly SemaphoreSlim validationGate = new(1,1);
+    private static string validatedStamp;
+    private static bool validatedResult;
+    private static string ValidationStamp(string directory) => Path.GetFullPath(directory)+"|"+string.Join("|",Manifest.SelectMany(x=>x.Files).Select(x=>x.Name).Concat(new[]{"keys.txt","ready"}).Select(name=>
+    {var file=new FileInfo(Path.Combine(directory,name));return name+":"+file.Length+":"+file.LastWriteTimeUtc.Ticks+":"+file.CreationTimeUtc.Ticks;}));
     internal static async Task<bool> IsValidAsync(CancellationToken token)
-    {if(!IsPresent)return false;try{await ValidateAsync(token);return true;}catch(InvalidDataException){return false;}catch(IOException){return false;}catch(UnauthorizedAccessException){return false;}}
+        => await IsValidDirectoryAsync(DirectoryPath,token).ConfigureAwait(false);
+    internal static async Task<bool> IsValidDirectoryAsync(string directory,CancellationToken token)
+    {
+        await validationGate.WaitAsync(token).ConfigureAwait(false);
+        try
+        {
+            token.ThrowIfCancellationRequested();
+            if(!IsPresentAt(directory)){validatedStamp=null;return false;}
+            string stamp=ValidationStamp(directory);
+            if(stamp==validatedStamp)return validatedResult;
+            bool valid;
+            try{await ValidateDirectoryAsync(directory,token).ConfigureAwait(false);valid=true;}
+            catch(InvalidDataException){valid=false;}
+            if(ValidationStamp(directory)!=stamp)return false;
+            validatedStamp=stamp;validatedResult=valid;return valid;
+        }
+        catch(IOException){validatedStamp=null;return false;}
+        catch(UnauthorizedAccessException){validatedStamp=null;return false;}
+        finally{validationGate.Release();}
+    }
     private static async Task Verify(string path,long length,string hash,CancellationToken token)
-    {await using var input=File.OpenRead(path);if(input.Length!=length || !Convert.ToHexString(await SHA256.HashDataAsync(input,token)).Equals(hash,StringComparison.OrdinalIgnoreCase))throw new InvalidDataException("中英识别组件校验失败，请重新下载。");}
+    {await using var input=File.OpenRead(path);if(input.Length!=length || !Convert.ToHexString(await SHA256.HashDataAsync(input,token).ConfigureAwait(false)).Equals(hash,StringComparison.OrdinalIgnoreCase))throw new InvalidDataException("中英识别组件校验失败，请重新下载。");}
     internal static Task DownloadAsync(IProgress<int> progress,CancellationToken token) => Task.Run(()=>DownloadCoreAsync(progress,token),token);
     internal static Task RemoveAsync(CancellationToken token) => Task.Run(async () =>
     {
@@ -70,7 +102,7 @@ internal static class MixedOcrComponent
                     response.EnsureSuccessStatusCode();
                     await using var input=await response.Content.ReadAsStreamAsync(token);
                     await using var output=File.Create(archive);byte[] buffer=new byte[81920];long count=0;int n;
-                    while((n=await input.ReadAsync(buffer,token))>0){count+=n;if(count>item.Length)throw new InvalidDataException("下载大小异常。");await output.WriteAsync(buffer.AsMemory(0,n),token);progress?.Report((int)((done+count)*90/total));}
+                    while((n=await ComponentBundles.ReadDownloadAsync(input,buffer,token))>0){count+=n;if(count>item.Length)throw new InvalidDataException("下载大小异常。");await output.WriteAsync(buffer.AsMemory(0,n),token);progress?.Report((int)((done+count)*90/total));}
                 }
                 await Verify(archive,item.Length,item.Sha256,token);
                 if(item.Files.Length==1 && item.Files[0].Entry=="")File.Copy(archive,Path.Combine(stage,item.Files[0].Name));

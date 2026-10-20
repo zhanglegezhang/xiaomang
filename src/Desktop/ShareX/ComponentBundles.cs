@@ -54,6 +54,17 @@ namespace ShareX
             catch (IOException) { return false; }
             catch (UnauthorizedAccessException) { return false; }
         }
+        internal static async ValueTask<int> ReadDownloadAsync(Stream input, Memory<byte> buffer,
+            CancellationToken token, TimeSpan? idleTimeout = null)
+        {
+            // Reset the idle deadline after each successful read, allowing slow progress.
+            using var idle = CancellationTokenSource.CreateLinkedTokenSource(token);
+            idle.CancelAfter(idleTimeout ?? TimeSpan.FromSeconds(45));
+            try { return await input.ReadAsync(buffer, idle.Token).ConfigureAwait(false); }
+            catch (OperationCanceledException) when (!token.IsCancellationRequested)
+            { throw new IOException("组件下载长时间没有收到数据，请检查网络后重试。"); }
+        }
+
         internal static string SafePath(string root, string relative)
         {
             root = Path.GetFullPath(root).TrimEnd(Path.DirectorySeparatorChar) + Path.DirectorySeparatorChar;
@@ -87,7 +98,7 @@ namespace ShareX
                 await using (var output = new FileStream(archive, FileMode.CreateNew, FileAccess.Write, FileShare.None, 81920, true))
                 {
                     byte[] buffer = new byte[81920]; long total = 0; int last = -1, read;
-                    while ((read = await input.ReadAsync(buffer, token).ConfigureAwait(false)) > 0)
+                    while ((read = await ReadDownloadAsync(input, buffer, token).ConfigureAwait(false)) > 0)
                     {
                         total += read;
                         if (total > bundle.Length) throw new IOException("组件下载大小异常。");

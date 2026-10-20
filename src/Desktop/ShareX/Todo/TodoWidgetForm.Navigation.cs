@@ -21,6 +21,7 @@ namespace ShareX
         private void SelectModule(string module, bool expand = true)
         {
             if (module != "Clipboard" && module != "Favorites" && module != "News" && module != "Diary") module = "Todo";
+            if (module != "Todo") RestoreSearchCompletedVisibility();
             string previousModule = Settings.ActiveModule;
             if (Settings.ActiveModule == "Favorites" && module != "Favorites") favoritesPage.CommitPendingFavorites();
             Settings.ActiveModule = module;

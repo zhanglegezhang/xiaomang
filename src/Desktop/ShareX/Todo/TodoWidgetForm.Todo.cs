@@ -551,6 +551,7 @@ namespace ShareX
                 toggleCompletedButton.FlatAppearance.BorderSize = 0;
                 toggleCompletedButton.Click += (sender, e) =>
                 {
+                    Owner.searchCompletedVisibility = null;
                     showCompleted = !showCompleted;
                     RenderItems();
                 };

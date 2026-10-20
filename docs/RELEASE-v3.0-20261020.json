@@ -1,0 +1,17 @@
+{
+  "source": "https://github.com/zhanglegezhang/xiaomang/tree/v3.0-20261020",
+  "productVersion": "3.0",
+  "releaseTag": "v3.0-20261020",
+  "packaging": {
+    "tool": "7-Zip 26.03",
+    "parameters": "-tzip -mm=Deflate -mx=9 -mfb=258 -mpass=15 -mmt=off -mcu=on -scsUTF-8"
+  },
+  "releaseDate": "2026-10-20",
+  "usagePackage": {
+    "url": "https://github.com/zhanglegezhang/xiaomang/releases/download/v3.0-20261020/xiaomang3.0_2026-10-20_usage.zip",
+    "bytes": 110755437,
+    "sha256": "7A11813040BD6886C511C364357724FD2249C6EABFFE669165B5DD5A6E741E50",
+    "files": 527,
+    "asset": "xiaomang3.0_2026-10-20_usage.zip"
+  }
+}

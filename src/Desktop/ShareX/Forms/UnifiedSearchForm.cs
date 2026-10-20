@@ -209,6 +209,14 @@ namespace ShareX
         {
             int version = generation; string term = query.Text.Trim();
             string selectedSource = sourceFilter.SelectedIndex > 0 ? sourceFilter.SelectedItem.ToString() : null;
+            if (selectedSource == "剪切板" && !clipboard.Checked)
+            {
+                results.SetHits(Array.Empty<SearchHit>(), term);
+                completedGeneration = version; pendingOpen = null;
+                results.EmptyMessage = "请先勾选“包含剪切板历史”，再搜索剪切板记录";
+                status.Text = "剪切板历史尚未开启，本次未读取";
+                return;
+            }
             var cancellation = new CancellationTokenSource(); search = cancellation;
             var snapshot = new List<SearchHit>(); var settings = Program.Settings.TodoSettings;
             snapshot.AddRange(settings.Items.Select(x => new SearchHit("待办", x.Text, x.Text, x.Id)));

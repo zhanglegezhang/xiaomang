@@ -78,7 +78,7 @@ namespace ShareX
                 {
                     byte[] buffer=new byte[81920];long total=0;int previous=-1;
                     int read;
-                    while((read=await input.ReadAsync(buffer,cancellation))>0)
+                    while((read=await ComponentBundles.ReadDownloadAsync(input,buffer,cancellation))>0)
                     {
                         total+=read;if(total>100*1024*1024) throw new IOException("下载文件过大。");
                         await output.WriteAsync(buffer.AsMemory(0,read),cancellation);

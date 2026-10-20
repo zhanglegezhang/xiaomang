@@ -23,7 +23,7 @@ namespace ShareX
         private Label registrationSummary;
         private Control recordingRow,voiceRegistrationRow,textRegistrationRow,fileRegistrationRow,mixedOcrRow;
         private VisibleSettingsStatusRefresh<RegistrationSnapshot> registrationRefresh;
-        private sealed record RegistrationSnapshot(bool Recording,VoiceInputRegistrationState Voice,bool VoiceFiles,bool Text,bool TextFiles,string Modern,bool Mixed);
+        private sealed record RegistrationSnapshot(bool Recording,VoiceInputRegistrationState Voice,bool VoiceFiles,bool Text,bool TextFiles,string Modern,bool Mixed,bool MixedFiles);
 
         private void InitializeRegistrationTab()
         {
@@ -105,7 +105,7 @@ namespace ShareX
             registrationMessage=new Label{Name="registrationOperationMessage",AutoSize=true,Tag="registration-surface",Text="缺失组件自动下载；录屏约65MB、语音约149MB、文本输入约129MB、OCR识别约29MiB。已有组件复用，OCR识别组件无需注册。"};layout.Add(summary,registrationMessage);
 
             group=content;
-            var mixedStatus=Status("mixedOcrStatus");mixedStatus.Text=MixedOcrComponent.IsPresent?"已就绪":"未下载";
+            var mixedStatus=Status("mixedOcrStatus");
             mixedOcrRow=Row("OCR 识别组件",mixedStatus,Action("下载 / 修复","downloadMixedOCR",async token=>
             {
                 await MixedOcrComponent.DownloadAsync(new Progress<int>(value=>{if(!IsDisposed){registrationProgress.Value=value;registrationMessage.Text=$"OCR识别组件下载、校验：{value}%";}}),token);
@@ -167,7 +167,8 @@ namespace ShareX
             registrationRefresh=new VisibleSettingsStatusRefresh<RegistrationSnapshot>(this,()=>registrationTab.Visible && !registrationBusy,
                 ()=>new RegistrationSnapshot(RecordingComponent.IsValidAsync(System.Threading.CancellationToken.None).GetAwaiter().GetResult(),VoiceInputComponent.RegistrationState,
                     SenseVoiceModelManager.IsInstalled(Program.PersonalFolder),XiaomangInputMethodManager.IsRegistered,
-                    ComponentBundles.IsPresent(ComponentBundles.Text,XiaomangInputMethodManager.BundleDirectory),ModernFileFavoritesMenu.Status(),MixedOcrComponent.IsPresent),
+                    ComponentBundles.IsPresent(ComponentBundles.Text,XiaomangInputMethodManager.BundleDirectory),ModernFileFavoritesMenu.Status(),
+                    MixedOcrComponent.IsValidAsync(CancellationToken.None).GetAwaiter().GetResult(),MixedOcrComponent.HasFiles),
                 state=>
                 {
                     recordingStatus.Text=state.Recording?"已就绪":"未下载（约65MB）";recordingDownloadButton.Enabled=state.Recording?false:!registrationBusy;
@@ -181,7 +182,7 @@ namespace ShareX
                     ((RegistrationStatus)modernStatus).UpdateState(modernReady?"已注册":"待准备",modernReady);
                     int count=(state.Recording?1:0)+(voiceReady?1:0)+(textReady?1:0)+(modernReady?1:0);
                     bool mixedReady=state.Mixed;
-                    ((RegistrationStatus)mixedStatus).UpdateState(mixedReady?"已就绪":"未下载",mixedReady);
+                    ((RegistrationStatus)mixedStatus).UpdateState(mixedReady?"已就绪":state.MixedFiles?"需修复":"未下载",mixedReady);
                     if(mixedReady)count++;
                     registrationSummary.Text=count==5?"✓ 全部已就绪   5 / 5 项":$"组件准备   {count} / 5 项";
                 },error=>{if(!registrationBusy)registrationMessage.Text="状态检查失败："+error.Message;});

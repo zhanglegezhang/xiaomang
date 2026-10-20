@@ -1,12 +1,13 @@
 using System.Diagnostics;
 using System.Reflection;
-using ShareX;
+using System.IO;
+var product = Assembly.LoadFrom(Path.Combine(Path.GetFullPath(args.Length > 0 ? args[0] : "artifacts/Desktop"), "ShareX.dll"));
 var root=Path.Combine(AppContext.BaseDirectory,Guid.NewGuid().ToString("N"));Directory.CreateDirectory(root);
 using var helper=Process.Start(new ProcessStartInfo("powershell.exe","-NoProfile -NonInteractive -Command Start-Sleep -Seconds 100"){UseShellExecute=false,CreateNoWindow=true})!;
 try {
 var messages=new List<string>();
 var progress=new Progress<string>(x=>{lock(messages)messages.Add(x);});
-var wait=(Task)typeof(ProductUpdateInstaller).GetMethod("WaitForPreparation",BindingFlags.NonPublic|BindingFlags.Static)!.Invoke(null,new object[]{root,helper,progress})!;
+var wait=(Task)product.GetType("ShareX.ProductUpdateInstaller", true)!.GetMethod("WaitForPreparation",BindingFlags.NonPublic|BindingFlags.Static)!.Invoke(null,new object[]{root,helper,progress})!;
 await Task.Delay(35000);File.WriteAllText(Path.Combine(root,"progress.txt"),"10 / 20");
 await Task.Delay(30000);if(wait.IsCompleted)throw new Exception("Progress did not extend preparation beyond 60 seconds");
 File.WriteAllText(Path.Combine(root,"ready"),"ready");await wait.WaitAsync(TimeSpan.FromSeconds(3));

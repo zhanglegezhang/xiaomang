@@ -850,6 +850,7 @@ namespace ShareX
 
         private void SetExpanded(bool value)
         {
+            if (!value) RestoreSearchCompletedVisibility();
             if (!value) ReleaseOcrPanelHold();
             HideCompactHint();
             if (!value && animatingGenie) FinishGenieAnimation();

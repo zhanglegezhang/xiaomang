@@ -16,6 +16,12 @@ namespace ShareX
         private IntPtr searchMenuMouseHookHandle;
         private volatile Rectangle[] searchMenuScreenBounds = Array.Empty<Rectangle>();
         private volatile bool searchMenuOutsideClickPending;
+        private bool? searchCompletedVisibility;
+        private void RestoreSearchCompletedVisibility()
+        {
+            if (searchCompletedVisibility is bool previous) todoPage.showCompleted = previous;
+            searchCompletedVisibility = null;
+        }
 
         private void ShowSearchMenu()
         {
@@ -103,8 +109,11 @@ namespace ShareX
             collapseTimer.Stop();
             if (hit.Source == "待办")
             {
-                if (!Settings.Items.Any(x => x.Id == hit.Id)) throw new InvalidOperationException("该待办已删除。");
-                todoPage.showCompleted = true; SelectModule("Todo"); OpenPanel(); LayoutContent(); todoPage.RenderItems();
+                var target = Settings.Items.FirstOrDefault(x => x.Id == hit.Id);
+                if (target == null) throw new InvalidOperationException("该待办已删除。");
+                RestoreSearchCompletedVisibility();
+                if (target.IsCompleted && !todoPage.showCompleted) { searchCompletedVisibility = false; todoPage.showCompleted = true; }
+                SelectModule("Todo"); OpenPanel(); LayoutContent(); todoPage.RenderItems();
                 int i = Array.FindIndex(todoPage.todoViewItems, x => x.Id == hit.Id);
                 if (i >= 0 && i < todoPage.todoRowOffsets.Length) { todoPage.todoList.AutoScrollPosition = new Point(0, todoPage.todoRowOffsets[i]); todoPage.UpdateTodoViewport(); }
             }
