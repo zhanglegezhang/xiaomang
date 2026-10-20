@@ -1778,6 +1778,12 @@ namespace ShareX
             cachedApplicationSettingsForm?.SelectRegistrationPage(section);
         }
 
+        internal void OpenDailyNewsSettings()
+        {
+            OpenInlineSettings(InlineSettingsKind.Application);
+            cachedApplicationSettingsForm?.SelectDailyNewsPage();
+        }
+
         private void OpenInlineSettings(InlineSettingsKind kind)
         {
             firstMainMenuPagePending = false;

@@ -2009,7 +2009,7 @@ namespace ShareX.ScreenCaptureLib
             textInnerBorderPen?.Dispose();
             markerPen?.Dispose();
             canvasBorderPen?.Dispose();
-            defaultCursor?.Dispose();
+            SelectionCursor.Dispose(defaultCursor);
             DisposeSelectionAffordances();
             openHandCursor?.Dispose();
             closedHandCursor?.Dispose();

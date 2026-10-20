@@ -2,6 +2,7 @@ using ShareX.HelpersLib;
 using System;
 using System.Drawing;
 using System.IO;
+using System.Text;
 using System.Windows.Forms;
 
 namespace ShareX
@@ -296,6 +297,8 @@ namespace ShareX
                     ".xiaomang-version-log-" + Guid.NewGuid().ToString("N") + ".tmp");
                 using (FileStream destination = new FileStream(temporaryPath, FileMode.CreateNew, FileAccess.Write, FileShare.None))
                 {
+                    byte[] heading = Encoding.UTF8.GetBytes("当前运行版本：小蟒" + Program.ProductVersion + Environment.NewLine + Environment.NewLine);
+                    destination.Write(heading);
                     resource.CopyTo(destination);
                     destination.Flush(true);
                 }
@@ -332,7 +335,9 @@ namespace ShareX
             {
                 using Stream resource=typeof(AboutPageForm).Assembly.GetManifestResourceStream(MindMapResourceName)
                     ?? throw new IOException("找不到内置产品思维导图。");
-                using(var file=new FileStream(temp,FileMode.CreateNew,FileAccess.Write,FileShare.None)){resource.CopyTo(file);file.Flush(true);}
+                using var reader = new StreamReader(resource, Encoding.UTF8);
+                string html = reader.ReadToEnd().Replace("__XIAOMANG_PRODUCT_VERSION__", Program.ProductVersion);
+                using(var file=new FileStream(temp,FileMode.CreateNew,FileAccess.Write,FileShare.None)){file.Write(Encoding.UTF8.GetBytes(html));file.Flush(true);}
                 File.Move(temp,destination,true);
             }
             finally{if(File.Exists(temp))File.Delete(temp);}

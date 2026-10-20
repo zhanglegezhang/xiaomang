@@ -1,4 +1,4 @@
-#region License Information (GPL v3)
+﻿#region License Information (GPL v3)
 
 /*
     ShareX - A program that allows you to take screenshots and share any file type
@@ -50,7 +50,7 @@ namespace ShareX
         public const string DisplayName = "小蟒";
         public const string ProductName = "小蟒";
         public const int ProductVersionMajor = 3;
-        public const int ProductVersionMinor = 0;
+        public const int ProductVersionMinor = 1;
         public static string ProductVersion => $"{ProductVersionMajor}.{ProductVersionMinor}";
         public const string MutexName = "82E6AC09-0FEF-4390-AD9F-0DD3F5561EFC";
         public static readonly string PipeName = $"{Environment.MachineName}-{Environment.UserName}-{AppName}";

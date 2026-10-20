@@ -9,6 +9,12 @@ namespace ShareX
 {
     public partial class ApplicationSettingsForm
     {
+        internal void SelectDailyNewsPage()
+        {
+            tttvMain.NavigateToTabPage(dailyNewsTab);
+            EnsureSettingsPage(dailyNewsTab);
+        }
+
         private TabPage dailyNewsTab;
         private CheckBox dailyNewsEnabled;
         private TextBox dailyNewsApiKey;

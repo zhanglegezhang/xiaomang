@@ -181,9 +181,10 @@ namespace ShareX
             internal Bitmap Thumbnail { get; set; }
             internal Size ImageSize { get; set; }
             internal Item(string path) { Path = path; }
+            internal void ReleaseThumbnail() { Bitmap image = Thumbnail; Thumbnail = null; image?.Dispose(); }
             public override string ToString() => System.IO.Path.GetFileName(Path);
         }
-        private readonly ListBox files = new ListBox { Dock = DockStyle.Fill, AllowDrop = true, SelectionMode = SelectionMode.One, IntegralHeight = false, DrawMode = DrawMode.OwnerDrawFixed };
+        private readonly ImageCollageFileList files = new ImageCollageFileList { Dock = DockStyle.Fill, AllowDrop = true };
         private readonly PictureBox preview = new PictureBox { Dock = DockStyle.Fill, SizeMode = PictureBoxSizeMode.Zoom, BackColor = Color.FromArgb(32, 32, 32) };
         private readonly ComboBox direction = new ComboBox { DropDownStyle = ComboBoxStyle.DropDownList, Width = 88, BackColor = Color.FromArgb(58, 58, 58), ForeColor = Color.WhiteSmoke };
         private readonly CheckBox normalize = new CheckBox { Text = "统一宽度", Checked = true, AutoSize = true, Margin = new Padding(8, 7, 6, 0) };
@@ -194,7 +195,7 @@ namespace ShareX
         private CancellationTokenSource cancellation = new CancellationTokenSource();
         private Color background = Color.White;
         private int revision, dragIndex = -1;
-        private bool working, exporting, pending, closing, resourcesDisposed;
+        private bool working, exporting, pending, closing, resourcesDisposed, changingFiles;
         private string[] previewVersions;
         private string inputNotice = "";
 
@@ -219,7 +220,7 @@ namespace ShareX
                 {
                     int target = files.IndexFromPoint(files.PointToClient(new Point(e.X, e.Y)));
                     if (target < 0) target = files.Items.Count - 1;
-                    files.Items.Remove(item); files.Items.Insert(Math.Min(target, files.Items.Count), item); files.SelectedItem = item; Changed();
+                    MoveItem(files.Items.IndexOf(item), target);
                 }
                 else FileDragDrop(s, e);
             };
@@ -276,7 +277,15 @@ namespace ShareX
         private void PickFiles() { using OpenFileDialog d = new OpenFileDialog { Multiselect = true, Filter = "图片|*.png;*.jpg;*.jpeg;*.bmp;*.gif;*.tif;*.tiff", InitialDirectory = Program.ScreenshotsParentFolder }; if (d.ShowDialog(this) == DialogResult.OK) AddFiles(d.FileNames); }
         private void FileDragEnter(object sender, DragEventArgs e) { if (e.Data.GetDataPresent(DataFormats.FileDrop)) e.Effect = DragDropEffects.Copy; }
         private void FileDragDrop(object sender, DragEventArgs e) { if (e.Data.GetData(DataFormats.FileDrop) is string[] paths) AddFiles(paths); }
-        private void MoveSelected(int delta) { int old = files.SelectedIndex, next = old + delta; if (old < 0 || next < 0 || next >= files.Items.Count) return; object item = files.Items[old]; files.Items.RemoveAt(old); files.Items.Insert(next, item); files.SelectedIndex = next; Changed(); }
+        private void MoveSelected(int delta) => MoveItem(files.SelectedIndex, files.SelectedIndex + delta);
+        private void MoveItem(int old, int next)
+        {
+            if (changingFiles || closing || exporting || old < 0 || next < 0 || next >= files.Items.Count || old == next) return;
+            changingFiles = true; files.BeginUpdate();
+            try { object item = files.Items[old]; files.Items.RemoveAt(old); files.Items.Insert(next, item); files.SelectedIndex = next; }
+            finally { try { files.EndUpdate(); } finally { changingFiles = false; } }
+            Changed();
+        }
         private CollageSettings Settings() => new CollageSettings(direction.SelectedIndex == 1, normalize.Checked, (int)gap.Value, background);
         private string[] Paths() => files.Items.Cast<Item>().Select(i => i.Path).ToArray();
         private void Changed()
@@ -302,7 +311,7 @@ namespace ShareX
                 if (invalid.Length > 0)
                 {
                     foreach (Item item in files.Items.Cast<Item>().ToArray())
-                        if (invalid.Any(bad => string.Equals(bad.Path, item.Path, StringComparison.OrdinalIgnoreCase))) { item.Thumbnail?.Dispose(); files.Items.Remove(item); }
+                        if (invalid.Any(bad => string.Equals(bad.Path, item.Path, StringComparison.OrdinalIgnoreCase))) RemoveItem(item);
                     inputNotice += "已跳过：" + string.Join("；", invalid.Select(bad => System.IO.Path.GetFileName(bad.Path) + "（" + bad.Error + "）")) + "。 ";
                     Changed(); return;
                 }
@@ -360,7 +369,15 @@ namespace ShareX
         }
         protected override void Dispose(bool disposing)
         {
-            if (disposing && !resourcesDisposed) { resourcesDisposed = true; closing = true; cancellation.Cancel(); cancellation.Dispose(); debounce.Dispose(); Image old = preview.Image; preview.Image = null; old?.Dispose(); foreach (Item item in files.Items) item.Thumbnail?.Dispose(); preview.BackgroundImage?.Dispose(); uiTips.Dispose(); }
+            if (disposing && !resourcesDisposed)
+            {
+                resourcesDisposed = true; closing = true;
+                cancellation.Cancel(); cancellation.Dispose(); debounce.Dispose();
+                Image old = preview.Image; preview.Image = null; old?.Dispose();
+                foreach (Item item in files.Items) item.ReleaseThumbnail();
+                Image pattern = preview.BackgroundImage; preview.BackgroundImage = null; pattern?.Dispose();
+                uiTips.Dispose();
+            }
             base.Dispose(disposing);
         }
     }

@@ -5,6 +5,7 @@ using ShareX.Properties;
 using System;
 using System.Drawing;
 using System.IO;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -23,6 +24,7 @@ namespace ShareX
         private WebView2 browser;
         private CancellationTokenSource updateCancellation;
         private bool browserReady;
+        private string trustedHtmlDataUri;
 
         private DailyNewsSettings Settings
         {
@@ -116,33 +118,44 @@ namespace ShareX
         {
             try
             {
+                if (browserReady || IsDisposed) return;
+                string latest = manager.RefreshLatestHtmlFromJson(region);
+                if (string.IsNullOrWhiteSpace(latest) || !File.Exists(latest))
+                {
+                    ShowEmptyState();
+                    return;
+                }
+                ClearContent();
                 browser = new WebView2 { Dock = DockStyle.Fill, DefaultBackgroundColor = Color.FromArgb(32, 32, 32) };
                 contentPanel.Controls.Add(browser);
                 string userDataFolder = Path.Combine(Program.PersonalFolder, "DailyNewsWebView");
                 CoreWebView2Environment environment = await CoreWebView2Environment.CreateAsync(null, userDataFolder);
+                if (IsDisposed || Disposing) return;
                 await browser.EnsureCoreWebView2Async(environment);
+                if (IsDisposed || Disposing) return;
                 browser.CoreWebView2.NewWindowRequested += Browser_NewWindowRequested;
                 browser.CoreWebView2.NavigationStarting += Browser_NavigationStarting;
                 browser.CoreWebView2.Settings.AreDevToolsEnabled = false;
                 browser.CoreWebView2.Settings.IsStatusBarEnabled = false;
                 browserReady = true;
-                ShowLatestOrMessage();
+                ShowLatestOrMessage(latest);
             }
             catch (Exception error) when (IsWebViewRuntimeError(error))
             {
+                if (IsDisposed || Disposing) return;
                 browser?.Dispose();
                 browser = null;
                 ShowWebView2MissingPanel();
             }
             catch (Exception error)
             {
+                if (IsDisposed || Disposing) return;
                 ShowFallbackMessage("资讯页面加载失败", GetSafeMessage(error));
             }
         }
 
-        private void ShowLatestOrMessage()
+        private void ShowLatestOrMessage(string latest)
         {
-            string latest = manager.RefreshLatestHtmlFromJson(region);
             if (!string.IsNullOrWhiteSpace(latest) && File.Exists(latest))
             {
                 NavigateToFile(latest);
@@ -151,16 +164,7 @@ namespace ShareX
                 return;
             }
 
-            if (!manager.HasApiKey)
-            {
-                ShowHtmlMessage("未配置 API Key", "请到“全局设置 → 资讯”配置 DeepSeek API Key，然后点击“立即更新”。");
-                statusLabel.Text = "";
-            }
-            else
-            {
-                ShowHtmlMessage("还没有资讯", "点击上方“立即更新”生成今天的" + RegionName + "资讯。");
-                statusLabel.Text = "等待首次更新";
-            }
+            ShowEmptyState();
         }
 
         private async Task UpdateNewsAsync()
@@ -168,8 +172,8 @@ namespace ShareX
             if (updateCancellation != null) return;
             if (!manager.HasApiKey)
             {
-                ShowHtmlMessage("未配置 API Key", "请到“全局设置 → 资讯”配置 DeepSeek API Key。");
-                statusLabel.Text = "";
+                if (string.IsNullOrWhiteSpace(manager.GetLatestHtmlPath(region))) ShowEmptyState();
+                else statusLabel.Text = "未配置 API Key，已保留历史资讯；请到“全局设置 → 每日资讯”配置后更新。";
                 return;
             }
 
@@ -189,6 +193,7 @@ namespace ShareX
             try
             {
                 await manager.UpdateAsync(region, progress, updateCancellation.Token);
+                if (!browserReady) await InitializeAsync();
                 NavigateToFile(manager.GetTodayHtmlPath(region));
                 statusLabel.Text = "更新完成：" + DateTime.Now.ToString("HH:mm:ss");
             }
@@ -200,8 +205,9 @@ namespace ShareX
             {
                 // Keep the last successfully generated page visible.
                 statusLabel.ForeColor = Color.FromArgb(255, 170, 120);
-                statusLabel.Text = "更新失败，已保留上次内容：" + GetSafeMessage(error);
-                if (browserReady && string.IsNullOrWhiteSpace(manager.GetLatestHtmlPath(region)))
+                bool hasHistory = !string.IsNullOrWhiteSpace(manager.GetLatestHtmlPath(region));
+                statusLabel.Text = (hasHistory ? "更新失败，已保留上次内容：" : "更新失败，暂无历史内容：") + GetSafeMessage(error);
+                if (!hasHistory)
                 {
                     ShowHtmlMessage("更新失败", GetSafeMessage(error));
                 }
@@ -219,18 +225,28 @@ namespace ShareX
 
         private void NavigateToFile(string path)
         {
-            if (browserReady && File.Exists(path)) browser.NavigateToString(File.ReadAllText(path));
+            if (browserReady && File.Exists(path)) NavigateHtml(File.ReadAllText(path));
         }
 
         private void ShowHtmlMessage(string title, string message)
         {
-            if (browserReady) browser.NavigateToString(DailyNewsHtmlRenderer.RenderMessage(title, message));
+            if (browserReady) NavigateHtml(DailyNewsHtmlRenderer.RenderMessage(title, message));
             else ShowFallbackMessage(title, message);
+        }
+
+        private void NavigateHtml(string html)
+        {
+            // Some WebView runtimes expose NavigateToString as a data navigation.
+            // Permit only the exact HTML requested by this window, never arbitrary data links.
+            trustedHtmlDataUri = "data:text/html;charset=utf-8;base64," + Convert.ToBase64String(Encoding.UTF8.GetBytes(html));
+            browser.CoreWebView2.NavigateToString(html);
         }
 
         private void ShowFallbackMessage(string title, string message)
         {
-            contentPanel.Controls.Clear();
+            browserReady = false;
+            trustedHtmlDataUri = null;
+            ClearContent();
             contentPanel.Controls.Add(new Label
             {
                 Dock = DockStyle.Fill,
@@ -242,9 +258,39 @@ namespace ShareX
             });
         }
 
+        private void ClearContent()
+        {
+            while (contentPanel.Controls.Count > 0)
+            {
+                Control control = contentPanel.Controls[0];
+                contentPanel.Controls.RemoveAt(0);
+                control.Dispose();
+            }
+            browser = null;
+            browserReady = false;
+        }
+
+        private void ShowEmptyState()
+        {
+            bool missingKey = !manager.HasApiKey;
+            ShowFallbackMessage(missingKey ? "尚未配置资讯服务" : "还没有资讯",
+                missingKey ? "请在“全局设置 → 每日资讯”配置 API Key，再点击“立即更新”。" :
+                "点击上方“立即更新”生成今天的" + RegionName + "资讯；更新可能使用 API 额度。");
+            var settings = new Button
+            {
+                Name = "openDailyNewsSettings", Text = "前往资讯设置", Dock = DockStyle.Bottom,
+                Height = 40, FlatStyle = FlatStyle.Flat, ForeColor = Color.WhiteSmoke,
+                BackColor = Color.FromArgb(48, 48, 48)
+            };
+            settings.Click += (_, _) => Program.MainForm?.OpenDailyNewsSettings();
+            contentPanel.Controls.Add(settings);
+            settings.BringToFront();
+            statusLabel.Text = missingKey ? "请先配置资讯 API Key" : "等待首次更新";
+        }
+
         private void ShowWebView2MissingPanel()
         {
-            contentPanel.Controls.Clear();
+            ClearContent();
             Button installButton = new Button
             {
                 Text = "下载 WebView2 运行环境",
@@ -288,6 +334,11 @@ namespace ShareX
         private void Browser_NavigationStarting(object sender, CoreWebView2NavigationStartingEventArgs e)
         {
             if (e.Uri == "about:blank") return;
+            if (trustedHtmlDataUri != null && string.Equals(e.Uri, trustedHtmlDataUri, StringComparison.Ordinal))
+            {
+                trustedHtmlDataUri = null;
+                return;
+            }
             e.Cancel = true;
             if (!Uri.TryCreate(e.Uri, UriKind.Absolute, out Uri uri)) return;
             if (DailyNewsFetcher.IsWebUrl(e.Uri)) { URLHelpers.OpenURL(uri.AbsoluteUri); return; }

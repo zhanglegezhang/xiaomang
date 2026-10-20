@@ -5,10 +5,14 @@ using System.Reflection;
 using System.Security.Cryptography;
 using System.Text.Json;
 using System.IO;
+using ShareX.HelpersLib;
+using System.Runtime.InteropServices;
+using System.Runtime.Loader;
 using ShareX.ScreenCaptureLib;
 
 internal static class Program
 {
+    [DllImport("user32.dll")] static extern int GetGuiResources(IntPtr process, int flag);
     const BindingFlags All = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance;
     static int checks; static string report;
     static Type managerType = typeof(RegionCaptureForm).Assembly.GetType("ShareX.ScreenCaptureLib.ShapeManager", true)!;
@@ -40,9 +44,26 @@ internal static class Program
         Application.SetHighDpiMode(args.Contains("96") ? HighDpiMode.DpiUnaware : HighDpiMode.PerMonitorV2);
         Application.EnableVisualStyles();
         if(args.Contains("damage")) return DamageChecks.Run(args.Contains("96"));
-        report = Path.GetFullPath(Path.Combine(args[0], "build/capture-handles-20261018/results")); Directory.CreateDirectory(report);
+        report = Environment.GetEnvironmentVariable("CAPTURE_CHECK_OUTPUT") ?? Path.GetFullPath(Path.Combine(args[0], "build/capture-handles-20261018/results")); Directory.CreateDirectory(report);
         try
         {
+            if (args.Contains("show"))
+            {
+                using var shown = New(); shown.Text = "截图光标独立验证";
+                shown.ShowInTaskbar = true;
+                shown.Show(); NativeMethods.ShowWindow(shown.Handle, 5);
+                Set(shown, "ClientArea", new Rectangle(0, 0, shown.ClientSize.Width, shown.ClientSize.Height));
+                Set(shown, "CanvasRectangle", new RectangleF(0, 0, shown.ClientSize.Width, shown.ClientSize.Height));
+                string lastRectangle = "";
+                using var observe = new System.Windows.Forms.Timer { Interval = 100 };
+                observe.Tick += (_, _) => {
+                    var rectangle = Get(Get(shown, "ShapeManager"), "CurrentRectangle").ToString()!;
+                    if (rectangle != lastRectangle) { lastRectangle = rectangle; Console.WriteLine("INTERACTIVE_RECT " + rectangle); Console.Out.Flush(); }
+                };
+                observe.Start();
+                shown.FormClosed += (_, _) => Console.WriteLine("INTERACTIVE_CLOSED result=" + shown.Result);
+                Application.Run(shown); return 0;
+            }
             using var form = New(); object manager = Get(form, "ShapeManager"); int dpi = form.DeviceDpi; float scale = dpi / 96f;
             CheckGeometry(scale);
             RectangleF rect = new RectangleF(160, 150, 501, 301); object shape = Select(form, rect);
@@ -77,6 +98,7 @@ internal static class Program
             }
             using(var editor = New(true)) { Select(editor, rect); Check(!(bool)Get(Get(editor, "ShapeManager"), "UsesSelectionResize"), "Existing image editor stays unchanged"); }
             CheckCursorsAndRendering(form, manager, shape, dpi, rect);
+            CheckCursorResources(dpi);
             CheckFrameInput(form, manager, shape, rect, scale);
             var watch = Stopwatch.StartNew(); for(int i=0;i<100000;i++) Hit(rect, new PointF(300, 150), scale); watch.Stop();
             Check(watch.Elapsed.TotalMilliseconds < 3000, "Hit testing has no visible per-move delay");
@@ -127,10 +149,22 @@ internal static class Program
             foreach(float? angle in new float?[]{null,0,90,45,-45})
             {
                 using var bitmap=(Bitmap)factory.GetMethod("Draw",All)!.Invoke(null,new object[]{dpi,angle})!;
+                int expected = (int)Math.Ceiling(25 * Math.Clamp(dpi / 96f, 1f, 4f)) | 1;
+                Check(bitmap.Size == new Size(expected, expected), "Cursor bitmap follows approved B 25px size at current DPI");
                 if(!angle.HasValue) Check(bitmap.GetPixel(bitmap.Width/2,bitmap.Height/2).A==0,"Crosshair centre stays transparent");
                 g.DrawImageUnscaled(bitmap,30+index++*145,70);
                 using var cursor=(Cursor)factory.GetMethod("Create",All)!.Invoke(null,new object[]{dpi,angle})!;
+                Console.WriteLine($"CURSOR dpi={dpi} angle={angle} bitmap={bitmap.Size} native={cursor.Size} hotspot={cursor.HotSpot}");
                 Check(cursor.Handle!=IntPtr.Zero && cursor.HotSpot.X==cursor.HotSpot.Y,"Native cursor loads with centred hotspot");
+                Check(cursor.HotSpot == new Point(expected / 2, expected / 2), "Cursor hotspot stays at exact bitmap centre");
+                Check(NativeMethods.GetIconInfo(cursor.Handle, out IconInfo info), "Native cursor exposes bitmap data");
+                try
+                {
+                    using var native = Image.FromHbitmap(info.hbmColor);
+                    Check(native.Size == bitmap.Size, "Actual native cursor bitmap retains smaller pixel dimensions");
+                }
+                finally { NativeMethods.DeleteObject(info.hbmColor); NativeMethods.DeleteObject(info.hbmMask); }
+                factory.GetMethod("Dispose", All)!.Invoke(null, new object[] { cursor });
             }
         }
         cursorImage.Save(Path.Combine(report,"cursors-"+dpi+".png")); cursorImage.Dispose();
@@ -146,5 +180,48 @@ internal static class Program
         for(int i=0;i<8;i++){Call(form,"SetSelectionResizeCursor",Enum.ToObject(positionType,i));Check(form.Cursor.Handle!=IntPtr.Zero,"Directional cursor for all eight directions");}
         Set(nodes.GetValue(1)!,"IsCursorHover",false);Call(form,"SetDefaultCursor");
         Check(form.Cursor==(Cursor)Field(form,"defaultCursor"),"Crosshair restored after resize hover");
+        if (File.Exists("artifacts/Desktop/ShareX.ScreenCaptureLib.dll")) CompareCursors(factory, dpi);
+    }
+
+    static void CheckCursorResources(int dpi)
+    {
+        Type factory = typeof(RegionCaptureForm).Assembly.GetType("ShareX.ScreenCaptureLib.SelectionCursor", true)!;
+        var create = factory.GetMethod("Create", All)!; var release = factory.GetMethod("Dispose", All)!;
+        int beforeGdi = GetGuiResources(Process.GetCurrentProcess().Handle, 0), beforeUser = GetGuiResources(Process.GetCurrentProcess().Handle, 1);
+        var watch = Stopwatch.StartNew();
+        for (int i = 0; i < 500; i++) { var cursor = (Cursor)create.Invoke(null, new object[] { dpi, (float)(i % 90) })!; release.Invoke(null, new object[] { cursor }); }
+        int gdiDelta = GetGuiResources(Process.GetCurrentProcess().Handle, 0) - beforeGdi, userDelta = GetGuiResources(Process.GetCurrentProcess().Handle, 1) - beforeUser;
+        Check(gdiDelta <= 2 && userDelta <= 2, "Repeated native cursor creation/disposal does not accumulate GDI or USER handles");
+        Console.WriteLine($"RESOURCE_TEST 500 cursors GDI_delta={gdiDelta} USER_delta={userDelta} total_ms={watch.Elapsed.TotalMilliseconds:F2}");
+    }
+
+    static void CompareCursors(Type current, int dpi)
+    {
+        var context = new AssemblyLoadContext("baseline-cursor-" + dpi, true);
+        try
+        {
+            var baseline = context.LoadFromAssemblyPath(Path.GetFullPath("artifacts/Desktop/ShareX.ScreenCaptureLib.dll")).GetType("ShareX.ScreenCaptureLib.SelectionCursor", true)!;
+            using var result = new Bitmap(870, 340);
+            using var g = Graphics.FromImage(result);
+            g.Clear(Color.FromArgb(38, 48, 57));
+            using var font = new Font("Microsoft YaHei UI", 10);
+            g.DrawString("DPI " + dpi + "   当前小光标 / B方案（25px，清晰黑白描边）", font, Brushes.White, 12, 8);
+            int col = 0;
+            foreach (float? angle in new float?[] { null, 0, 90, 45, -45 })
+            {
+                int x = 12 + col++ * 170;
+                g.DrawString(angle?.ToString() ?? "十字", font, Brushes.White, x, 38);
+                foreach (int row in new[] { 0, 1, 2 })
+                {
+                    g.FillRectangle(row == 0 ? Brushes.White : row == 1 ? Brushes.Black : Brushes.Goldenrod, x, 68 + row * 85, 154, 78);
+                    using var old = (Bitmap)baseline.GetMethod("Draw", All)!.Invoke(null, new object[] { dpi, angle })!;
+                    using var next = (Bitmap)current.GetMethod("Draw", All)!.Invoke(null, new object[] { dpi, angle })!;
+                    g.DrawImageUnscaled(old, x + (76 - old.Width) / 2, 68 + row * 85 + (78 - old.Height) / 2);
+                    g.DrawImageUnscaled(next, x + 78 + (76 - next.Width) / 2, 68 + row * 85 + (78 - next.Height) / 2);
+                }
+            }
+            result.Save(Path.Combine(report, "cursor-compare-" + dpi + ".png"));
+        }
+        finally { context.Unload(); }
     }
 }

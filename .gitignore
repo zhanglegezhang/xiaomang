@@ -1,6 +1,7 @@
 # Build output, downloaded runtime and local data are not source.
 /artifacts/
 /test-results/
+/output/
 /src/Desktop/**/bin/
 **/obj/
 **/target/

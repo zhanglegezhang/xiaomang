@@ -126,10 +126,12 @@ namespace ShareX.ScreenCaptureLib
             btnOptions.Enabled = false;
             lblResultSize.Text = "";
             ResetPictureBox();
+            ScrollingCaptureStatus resultStatus = ScrollingCaptureStatus.Failed;
 
             try
             {
                 ScrollingCaptureStatus status = await manager.StartCapture();
+                resultStatus = status;
 
                 switch (status)
                 {
@@ -157,6 +159,8 @@ namespace ShareX.ScreenCaptureLib
             btnOptions.Enabled = true;
 
             LoadImage(manager.Result);
+            if (resultStatus == ScrollingCaptureStatus.PartiallySuccessful)
+                lblResultSize.Text += " · 匹配不确定，已保留画面；可能重复，请核对末尾";
 
             this.ForceActivate();
 

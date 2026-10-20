@@ -69,6 +69,7 @@ function Build-Desktop {
  Invoke-Checked 'dotnet' @('restore',$project,'-p:Platform=x64','-m:1')
  Invoke-Checked 'dotnet' @('build',$project,'-c','Release','-p:Platform=x64','-m:1','-p:UseSharedCompilation=false','--no-restore',"-p:OutputPath=$out/")
  Move-Item -LiteralPath (Join-Path $out 'ShareX.exe') -Destination (Join-Path $out 'xiaomang.exe') -Force
+ Copy-Item -LiteralPath (Join-Path $root 'resources/Tools/数据整理小工具_V1.0.html') -Destination $out -Force
 }
 switch($Component){
  'Native' {Build-Native}

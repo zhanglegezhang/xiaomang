@@ -1,0 +1,400 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>数据整理小工具</title><style>
+:root{color-scheme:light;--bg:#edf3fb;--card:#fff;--text:#22324a;--muted:#72829a;--border:#dce5f1;--primary:#2469ef;--chip:#f2f6fd}*{box-sizing:border-box}body{margin:0;padding:24px;font:14px/1.5 "Segoe UI","Microsoft YaHei",sans-serif;color:var(--text);background:var(--bg)}.wrap{max-width:1520px;margin:auto}header{display:flex;align-items:center;gap:12px;margin:0 8px 16px}h1{font-size:20px;line-height:1.3;margin:0}.heading{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}.heading .sub{font-size:12px}.sub{color:var(--muted)}.brand{color:var(--primary);background:#e0ecff;border-radius:9px;padding:8px}.brand svg{width:24px;height:24px}.privacy{margin-left:auto;padding:8px 12px;border:1px solid var(--border);border-radius:9px;background:#f7faff;display:flex;align-items:center;gap:7px;font-size:12px}.privacy svg{color:var(--primary)}svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}.settings,.commands,.panel,details{background:var(--card);border:1px solid var(--border);border-radius:10px}.settings{display:flex;align-items:center;flex-wrap:wrap;gap:12px;padding:10px 20px;border-radius:10px 10px 0 0}.settings label{display:flex;align-items:center;gap:10px}.settings .column{margin-left:12px}.minor{font-size:12px;color:var(--muted)}input,select,button{font:inherit}select,input[type=text]{border:1px solid var(--border);background:#f8faff;color:var(--text);padding:7px 10px;border-radius:6px;height:36px}#colIdx{width:60px}#suffix{width:55px}input[type=checkbox]{accent-color:var(--primary);width:17px;height:17px}button{display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:6px 12px;border:1px solid var(--border);border-radius:7px;background:var(--chip);color:var(--text);cursor:pointer;transition:background .14s,border-color .14s,transform .08s;white-space:nowrap}button:hover{background:#e5efff;border-color:#9ebcf1}button:active{transform:translateY(1px);background:#d8e7ff}button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,summary:focus-visible{outline:2px solid #6197ff;outline-offset:2px}button.primary{background:var(--primary);border-color:var(--primary);color:white}button.primary:hover{background:#1855cc}.commands{display:flex;flex-wrap:wrap;gap:18px;padding:11px 20px;border-top:0;border-radius:0 0 10px 10px;margin-bottom:13px}.group{border-right:1px solid var(--border);padding-right:18px}.group:last-child{border:0;padding-right:0;flex:1}.group-title{font-weight:600;margin-bottom:6px}.actions{display:flex;gap:7px;align-items:center}.group:not(.sql) .actions button{flex-direction:column;padding:6px 10px;min-width:66px;font-size:12px}.group:not(.sql) .actions svg{width:22px;height:22px}.suffix{display:flex;align-items:center;gap:6px;color:var(--muted);font-size:12px}.quotes{display:flex;align-items:center;gap:8px;margin-top:6px;font-size:12px}.segments{display:flex}.segments label{position:relative;cursor:pointer}.segments input{position:absolute;opacity:0;width:1px}.segments span{display:block;border:1px solid var(--border);padding:4px 14px;margin-left:-1px;background:#f8faff}.segments label:first-child span{border-radius:5px 0 0 5px}.segments label:last-child span{border-radius:0 5px 5px 0}.segments input:checked+span{background:var(--primary);color:white;border-color:var(--primary)}.segments input:focus-visible+span{outline:2px solid #6197ff}.workspace{display:grid;grid-template-columns:1fr 1.05fr;gap:16px}.panel{padding:16px;min-width:0}.panel-head{display:flex;align-items:center;gap:12px;margin-bottom:8px;min-height:32px;flex-wrap:wrap}h2{font-size:18px;margin:0}.stat{font-size:12px;color:var(--muted)}.panel-head button{margin-left:auto}.text-button{background:transparent;border-color:transparent;color:var(--primary);padding:5px}.editor{display:flex;height:clamp(260px,46vh,650px);border:1px solid var(--border);border-radius:6px;overflow:hidden;background:#fcfdff}.gutter{width:38px;flex-shrink:0;text-align:right;padding:12px 9px 12px 0;background:#f3f7fc;color:#9aa9bf;font:13px/19px Consolas,monospace;overflow:hidden;user-select:none;white-space:pre}textarea{border:0;outline:0!important;width:100%;min-width:0;padding:12px;font:14px/19px Consolas,"Microsoft YaHei",monospace;resize:none;background:transparent;color:var(--text);tab-size:4;white-space:pre;overflow:auto}textarea::placeholder{color:#95a2b5}.footer{display:flex;align-items:center;gap:8px;flex-wrap:wrap;min-height:40px;padding-top:8px;font-size:12px;color:var(--muted)}.footer button{font-size:12px;padding:7px 10px}.downloads{display:flex;gap:6px;align-items:center;margin-left:auto}.success{font-size:12px;color:#258354;background:#e9f8ee;border-radius:6px;padding:5px 9px}.success:empty{display:none}details{margin-top:10px;padding:8px 18px;font-size:12px;color:var(--muted)}summary{cursor:pointer;color:var(--text);font-weight:600}details p{margin:10px 0 0}.hint{color:var(--muted)}@media(max-width:1150px){body{padding:18px}.commands{gap:12px}.group{padding-right:12px}.group:last-child{flex:0 1 auto}.privacy{font-size:11px}.downloads{margin-left:0}}@media(max-width:760px){body{padding:12px}header{flex-wrap:wrap;margin-bottom:10px;gap:10px}h1{font-size:20px}.privacy{margin-left:0}.workspace{grid-template-columns:1fr}.settings .column{margin-left:0}.editor{height:300px}.commands{gap:16px}.group{border:0;padding:0}.sub{font-size:12px}}@media(prefers-color-scheme:dark){:root{color-scheme:dark;--bg:#19222d;--card:#222e3d;--text:#e0e8f5;--muted:#a5b3c7;--border:#3a495f;--chip:#2b3a4e}.privacy,select,input[type=text],.segments span{background:#29374a}.brand{background:#293f60}.editor{background:#1d2938}.gutter{background:#243143}.success{background:#203d32;color:#92d8b4}button:hover{background:#354d70}button:active{background:#405a80}}
+</style></head><body><svg style="position:absolute;width:0;height:0" aria-hidden="true"><defs>
+<symbol id="copy" viewBox="0 0 24 24"><rect x="8" y="8" width="12" height="13" rx="2"/><path d="M15 8V3H3v13h5"/></symbol><symbol id="up" viewBox="0 0 24 24"><path d="M12 21V3m-6 6 6-6 6 6"/></symbol><symbol id="down" viewBox="0 0 24 24"><path d="M12 3v18m-6-6 6 6 6-6"/></symbol><symbol id="trim" viewBox="0 0 24 24"><path d="M4 5v14M20 5v14M7 12h10m-7-3-3 3 3 3m4-6 3 3-3 3"/></symbol><symbol id="grid" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18m6-18v18M3 9h18m-18 6h18"/></symbol><symbol id="plus" viewBox="0 0 24 24"><path d="M12 4v16M4 12h16"/></symbol><symbol id="minus" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8 12h8"/></symbol><symbol id="sql" viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v14c0 4 16 4 16 0V5M4 12c0 4 16 4 16 0"/></symbol><symbol id="return" viewBox="0 0 24 24"><path d="m9 5-6 6 6 6M3 11h12a6 6 0 0 1 6 6"/></symbol><symbol id="file" viewBox="0 0 24 24"><path d="M5 2h9l5 5v15H5zM14 2v6h5"/></symbol><symbol id="trash" viewBox="0 0 24 24"><path d="M3 6h18M9 6V3h6v3M5 6l1 15h12l1-15M10 10v7m4-7v7"/></symbol><symbol id="shield" viewBox="0 0 24 24"><path d="M12 2 3 6v6c0 5 9 10 9 10s9-5 9-10V6zM8 12l3 3 5-6"/></symbol></defs></svg>
+<div class="wrap"><header><div class="brand"><svg aria-hidden="true" viewBox="0 0 24 24"><use href="#sql"/></svg></div><div class="heading"><h1>数据整理小工具</h1><div class="sub">从 Excel 粘贴数据，整理后复制回去</div></div><div class="privacy"><svg aria-hidden="true" viewBox="0 0 24 24"><use href="#shield"/></svg>全程本地 · 数据不上传</div></header>
+<section aria-label="处理设置" class="settings"><label for="delim">分隔符</label><select id="delim"><option value="auto">自动（优先 Tab）</option><option value="tab">Tab 制表符</option><option value=",">逗号 ,</option><option value=";">分号 ;</option><option value=" ">空格</option></select><label class="column" for="colIdx">操作列 <span class="minor">（排序 / 按列去重，从 1 起）</span></label><input id="colIdx" type="text" value="1" inputmode="numeric"><label><input type="checkbox" id="skipEmpty">忽略空行</label></section>
+<section class="commands" aria-label="数据操作"><div class="group"><div class="group-title">去重</div><div class="actions"><button onclick="doDedup(false)"><svg aria-hidden="true" viewBox="0 0 24 24"><use href="#copy"/></svg><span>整行去重</span></button><button onclick="doDedup(true)"><svg aria-hidden="true" viewBox="0 0 24 24"><use href="#grid"/></svg><span>按列去重</span></button></div></div><div class="group"><div class="group-title">排序</div><div class="actions"><button onclick="doSort(1)"><svg aria-hidden="true" viewBox="0 0 24 24"><use href="#up"/></svg><span>升序</span></button><button onclick="doSort(-1)"><svg aria-hidden="true" viewBox="0 0 24 24"><use href="#down"/></svg><span>降序</span></button></div></div><div class="group"><div class="group-title">空格处理</div><div class="actions"><button onclick="doTrim(false)"><svg aria-hidden="true" viewBox="0 0 24 24"><use href="#trim"/></svg><span>去首尾空格</span></button><button onclick="doTrim(true)"><svg aria-hidden="true" viewBox="0 0 24 24"><use href="#grid"/></svg><span>每格去空格</span></button></div></div><div class="group"><div class="group-title">行尾处理</div><div class="actions"><button onclick="doSuffix()"><svg aria-hidden="true" viewBox="0 0 24 24"><use href="#plus"/></svg><span>添加符号</span></button><button onclick="doStripSuffix()"><svg aria-hidden="true" viewBox="0 0 24 24"><use href="#minus"/></svg><span>删除符号</span></button><label class="suffix" for="suffix">后缀<input id="suffix" type="text" value=","></label></div></div><div class="group sql"><div class="group-title">SQL 处理</div><div class="actions"><button onclick="doSqlFormat()"><svg aria-hidden="true" viewBox="0 0 24 24"><use href="#sql"/></svg><span>SQL 美化</span></button><button onclick="doSqlIn()"><svg aria-hidden="true" viewBox="0 0 24 24"><use href="#sql"/></svg><span>SQL IN</span></button><button onclick="doSqlColToRow(document.querySelector('[name=quote]:checked').value)"><svg aria-hidden="true" viewBox="0 0 24 24"><use href="#return"/></svg><span>列转行</span></button></div><div class="quotes">引号格式 <div class="segments" role="group" aria-label="列名引号格式"><label><input type="radio" name="quote" value="none" ><span>无</span></label><label><input type="radio" name="quote" value="bracket" checked><span>[ ]</span></label><label><input type="radio" name="quote" value="backtick" ><span>&#96; &#96;</span></label><label><input type="radio" name="quote" value="dquote" ><span>&quot; &quot;</span></label></div></div></div></section>
+<main class="workspace"><section class="panel"><div class="panel-head"><h2 id="inputLabel">原始数据</h2><span class="stat">输入 <span id="inCount">0</span> 行</span><button class="text-button" onclick="clearAll()"><svg aria-hidden="true" viewBox="0 0 24 24"><use href="#trash"/></svg>清空</button></div><div class="editor"><div class="gutter" id="inputLines" aria-hidden="true">1</div><textarea id="input" aria-labelledby="inputLabel" wrap="off" spellcheck="false" placeholder="在此粘贴从 Excel 复制的数据…"></textarea></div><div class="footer"><svg aria-hidden="true" viewBox="0 0 24 24"><use href="#plus"/></svg>Ctrl + V 粘贴数据（支持从 Excel 复制）</div></section><section class="panel"><div class="panel-head"><h2 id="outputLabel">处理结果</h2><span class="stat">输出 <span id="outCount">0</span> 行</span><span class="success" id="feedback" role="status"></span><button class="primary" onclick="copyOut()"><svg aria-hidden="true" viewBox="0 0 24 24"><use href="#copy"/></svg>复制结果</button></div><div class="editor"><div class="gutter" id="outputLines" aria-hidden="true">1</div><textarea id="output" aria-labelledby="outputLabel" readonly wrap="off" spellcheck="false" placeholder="处理结果将显示在这里…"></textarea></div><div class="footer"><button onclick="copyOutToInput()"><svg aria-hidden="true" viewBox="0 0 24 24"><use href="#return"/></svg><span>结果回填</span></button><div class="downloads"><span>下载结果：</span><button onclick="downloadOut('txt')"><svg aria-hidden="true" viewBox="0 0 24 24"><use href="#file"/></svg><span>.txt</span></button><button onclick="downloadOut('csv')"><svg aria-hidden="true" viewBox="0 0 24 24"><use href="#file"/></svg><span>.csv</span></button><button onclick="downloadOut('xlsx')"><svg aria-hidden="true" viewBox="0 0 24 24"><use href="#file"/></svg><span>.xlsx</span></button></div></div></section></main><details><summary>使用说明 · SQL 引号格式</summary><p>列转行可选择：无引号、中括号 [ ]（SQL Server）、反引号（MySQL）、双引号（标准 SQL）。列名含空格或特殊符号时请使用对应引号。SQL IN 将单列多行转换为值列表，并自动转义内部单引号。可选中结果，按 Ctrl+C 手动复制。</p></details></div>
+<script>
+const $ = id => document.getElementById(id);
+function getDelim(text = $('input').value){
+  const v = $('delim').value;
+  if(v==='auto') return detectDelim(text);
+  if(v==='tab') return '\t';
+  if(v===' ') return ' ';
+  return v; // 逗号/分号
+}
+// Keep each original record for sorting/deduplication; decode fields only for keys/export.
+function readRecords(text, delim){
+  if(text==='') return [];
+  const rows=[]; let cells=[],value='',quoted=false,closed=false,start=0;
+  function field(){cells.push(value);value='';closed=false;}
+  function row(end){field();rows.push({raw:text.slice(start,end),cells});cells=[];}
+  for(let i=0;i<text.length;i++){
+    const ch=text[i];
+    if(quoted){
+      if(ch==='"'){
+        if(text[i+1]==='"'){value+='"';i++;}else{quoted=false;closed=true;}
+      }else value+=ch;
+    }else if(ch===delim){field();}
+    else if(ch==='\r'||ch==='\n'){
+      row(i);if(ch==='\r'&&text[i+1]==='\n')i++;start=i+1;
+    }else if(ch==='"' && value.length===0 && !closed){quoted=true;}
+    else{
+      if(closed)throw new Error('引号字段结束后存在多余字符，请检查分隔符或 CSV 格式。');
+      value+=ch;
+    }
+  }
+  if(quoted)throw new Error('CSV 引号未闭合，请检查输入；原结果未修改。');
+  if(start<text.length)row(text.length);
+  return rows;
+}
+function detectDelim(text){
+  // Count separators outside quoted fields, sampling complete records only.
+  const counts=[];let current=[0,0,0],quoted=false,atStart=true;
+  for(let i=0;i<text.length && counts.length<32;i++){
+    const ch=text[i];
+    if(ch==='"'&&(quoted||atStart)){
+      if(quoted&&text[i+1]==='"')i++;else quoted=!quoted;
+      atStart=false;continue;
+    }
+    if(quoted)continue;
+    const index=['\t',',',';'].indexOf(ch);
+    if(index>=0){current[index]++;atStart=true;}
+    else if(ch==='\n'||ch==='\r'){
+      if(current.some(Boolean))counts.push(current);current=[0,0,0];atStart=true;
+      if(ch==='\r'&&text[i+1]==='\n')i++;
+    }else atStart=false;
+  }
+  if(current.some(Boolean)&&counts.length<32)counts.push(current);
+  let winner=0,best=-1;
+  for(let column=0;column<3;column++){
+    const frequencies=new Map();
+    for(const row of counts)if(row[column])frequencies.set(row[column],(frequencies.get(row[column])||0)+1);
+    let score=0;for(const [width,frequency] of frequencies)score=Math.max(score,frequency*1000+Math.min(width,999));
+    if(score>best){best=score;winner=column;}
+  }
+  return ['\t',',',';'][winner];
+}
+function inputRecords(){
+  const rows=readRecords($('input').value,getDelim());
+  return $('skipEmpty').checked?rows.filter(r=>r.raw.trim()!==''):rows;
+}
+function parseRows(){
+  const text=$('input').value;if(text==='')return [];
+  const rows=text.split(/\r?\n/);
+  return $('skipEmpty').checked?rows.filter(row=>row.trim()!==''):rows;
+}
+function checkedColumn(rows){
+  const value=$('colIdx').value.trim();
+  if(!/^[1-9]\d*$/.test(value)||!Number.isSafeInteger(Number(value)))throw new Error('列号必须是从 1 开始的正整数。');
+  const index=Number(value)-1;
+  const missing=rows.findIndex(row=>index>=row.cells.length);
+  if(missing>=0)throw new Error('第 '+(missing+1)+' 条记录没有第 '+value+' 列，请检查列号和分隔符。');
+  return index;
+}
+function tableAction(run){try{run();}catch(error){alert(error.message);}}
+function showOut(rows){
+  $('output').value = rows.join('\n');
+  try{$('inCount').textContent = parseRows().length;}catch{$('inCount').textContent='格式待检查';}
+  $('outCount').textContent = rows.length;
+  $('feedback').textContent = '处理完成';
+  refreshGutters();
+}
+function doDedup(byCol){
+  tableAction(()=>{
+  const rows=byCol?inputRecords():parseRows().map(raw=>({raw}));
+  const ci=byCol?checkedColumn(rows):0;
+  const seen = new Set(); const out=[];
+  for(const r of rows){
+    const key = byCol ? r.cells[ci] : r.raw;
+    if(!seen.has(key)){ seen.add(key); out.push(r.raw); }
+  }
+  showOut(out);
+  $('feedback').textContent = '已去除 ' + (rows.length-out.length) + ' 行重复数据';
+  });
+}
+function doSort(dir){
+  tableAction(()=>{
+  const rows=inputRecords();
+  const ci=checkedColumn(rows);
+  rows.sort((a,b)=>{
+    const av = a.cells[ci].trim();
+    const bv = b.cells[ci].trim();
+    const an = parseFloat(av), bn = parseFloat(bv);
+    let r;
+    if(!isNaN(an) && !isNaN(bn)) r = an - bn;
+    else r = av.localeCompare(bv,'zh');
+    return r * dir;
+  });
+  showOut(rows.map(row=>row.raw));
+  });
+}
+function doTrim(perCell){
+  tableAction(()=>{
+  const rows=perCell?inputRecords():parseRows().map(raw=>({raw}));
+  const delim = getDelim();
+  const out = rows.map(r => perCell ? r.cells.map(c=>quoteField(c.trim(),delim)).join(delim) : r.raw.trim());
+  showOut(out);
+  });
+}
+function doSuffix(){
+  tableAction(()=>{
+  const s = $('suffix').value;
+  let rows = parseRows();
+  const out = rows.map(r => r + s);
+  showOut(out);
+  });
+}
+function doStripSuffix(){
+  tableAction(()=>{
+  const s = $('suffix').value;
+  let rows = parseRows();
+  const out = rows.map(r => (s && r.endsWith(s)) ? r.slice(0, -s.length) : r);
+  showOut(out);
+  });
+}
+function clearAll(){
+  $('input').value=''; $('output').value='';
+  $('inCount').textContent=0; $('outCount').textContent=0;
+  $('feedback').textContent='';refreshGutters();
+}
+function copyOut(){
+  const t=$('output');
+  if(!t.value){ alert('没有可复制的结果'); return; }
+  t.select(); t.setSelectionRange(0, t.value.length);
+  const ok = (()=>{ try{ return document.execCommand('copy'); }catch(e){ return false; } })();
+  if(ok) alert('已复制，可直接粘贴回 Excel（按 Tab 自动还原成列）');
+  else alert('请手动 Ctrl+C 复制结果区');
+}
+function copyOutToInput(){
+  const t=$('output');
+  if(!t.value){ alert('没有可加载的结果'); return; }
+  $('input').value = t.value;
+  $('inCount').textContent = parseRows().length;
+  refreshGutters();
+  $('input').scrollIntoView({behavior:'smooth', block:'center'});
+}
+// SQL formatting uses whole tokens and preserves quoted text and comments.
+const CLAUSE_KWS=['DELETE FROM','INSERT INTO','LEFT JOIN','RIGHT JOIN','INNER JOIN','OUTER JOIN','FULL JOIN','CROSS JOIN','GROUP BY','ORDER BY','UNION ALL','CREATE TABLE','ALTER TABLE','DROP TABLE','FROM','WHERE','JOIN','HAVING','LIMIT','OFFSET','VALUES','UPDATE','SET','UNION'];
+const OTHER_KWS=['AS','DISTINCT','ALL','NULL','IS','NOT','IN','LIKE','BETWEEN','CASE','WHEN','THEN','ELSE','END','ASC','DESC','ON','USING','EXISTS'];
+function doSqlFormat(){
+  tableAction(()=>{
+    const sql=$('input').value;
+    if(!sql.trim())throw new Error('输入栏没有内容');
+    const out=formatSqlSafely(sql);
+    showOut(out.split(/\r?\n/));
+  });
+}
+// Scan whole words and protected quoted/comment tokens. Never rewrite literal content.
+function sqlTokens(sql){
+  const tokens=[];let i=0;
+  const word=ch=>ch!==undefined&&/[A-Za-z0-9_$\u0080-\uffff]/.test(ch);
+  while(i<sql.length){
+    if(/\s/.test(sql[i])){i++;continue;}
+    const start=i;let kind='punct';
+    if(sql.startsWith('--',i)||sql[i]==='#'){
+      kind='comment';while(i<sql.length&&!/[\r\n]/.test(sql[i]))i++;
+    }else if(sql.startsWith('/*',i)){
+      kind='comment';i+=2;let depth=1;
+      while(i<sql.length&&depth){if(sql.startsWith('/*',i)){depth++;i+=2;}else if(sql.startsWith('*/',i)){depth--;i+=2;}else i++;}
+      if(depth)throw new Error('SQL 注释未闭合，未修改原结果。');
+    }else if("'\"`[".includes(sql[i])){
+      kind='quoted';const open=sql[i++],close=open==='['?']':open;let ended=false;
+      while(i<sql.length){
+        if(sql[i]==='\\'&&open!=='['){i+=Math.min(2,sql.length-i);continue;}
+        if(sql[i++]===close){if(sql[i]===close)i++;else{ended=true;break;}}
+      }
+      if(!ended)throw new Error('SQL 引号未闭合，未修改原结果。');
+    }else if(sql[i]==='$'&&/^\$(?:[A-Za-z_][A-Za-z0-9_]*)?\$/.test(sql.slice(i))){
+      kind='quoted';const marker=sql.slice(i).match(/^\$(?:[A-Za-z_][A-Za-z0-9_]*)?\$/)[0];
+      const end=sql.indexOf(marker,i+marker.length);if(end<0)throw new Error('SQL 字符串未闭合，未修改原结果。');i=end+marker.length;
+    }else if(word(sql[i])){kind='word';while(word(sql[i]))i++;}
+    else i++;
+    tokens.push({kind,text:sql.slice(start,i),start,end:i});
+  }
+  return tokens;
+}
+function formatSqlSafely(sql){
+  const tokens=sqlTokens(sql),keywords=new Set([...CLAUSE_KWS.flatMap(s=>s.split(' ')),...OTHER_KWS,'SELECT','AND','OR','BY']);
+  const clauses=new Set(['SELECT','FROM','WHERE','HAVING','LIMIT','OFFSET','VALUES','UPDATE','SET','UNION','JOIN','LEFT','RIGHT','INNER','OUTER','FULL','CROSS','INSERT','DELETE','CREATE','ALTER','DROP']);
+  const pieces=[];let depth=0,selectList=false;
+  for(let i=0;i<tokens.length;i++){
+    const t=tokens[i],previous=tokens[i-1],key=t.kind==='word'?t.text.toUpperCase():'';
+    let gap=previous?sql.slice(previous.end,t.start):'';
+    const priorKey=previous?.kind==='word'?previous.text.toUpperCase():'';
+    if(depth===0){
+      const clause=clauses.has(key)||(['GROUP','ORDER'].includes(key)&&tokens[i+1]?.text.toUpperCase()==='BY');
+      // Multi-word clauses remain together. Keep comments and their original line endings.
+      const sameClause=(key==='FROM'&&priorKey==='DELETE')||(key==='INTO'&&priorKey==='INSERT')||
+        (key==='JOIN'&&['LEFT','RIGHT','INNER','OUTER','FULL','CROSS'].includes(priorKey))||
+        (key==='OUTER'&&['LEFT','RIGHT','FULL'].includes(priorKey));
+      if(clause&&!sameClause){if(i)gap='\n';selectList=key==='SELECT';}
+      else if(['AND','OR'].includes(key)&&i)gap='\n  ';
+      else if(selectList&&t.kind!=='comment'&&((priorKey==='SELECT'&&!['DISTINCT','ALL'].includes(key))||['DISTINCT','ALL'].includes(priorKey)||previous?.text===','))gap='\n  ';
+    }
+    if(previous?.kind==='comment'&&!previous.text.startsWith('/*'))gap=sql.slice(previous.end,t.start)||'\n';
+    pieces.push(gap,keywords.has(key)?key:t.text);
+    if(t.kind==='punct'&&t.text==='(')depth++;
+    else if(t.kind==='punct'&&t.text===')'){if(--depth<0)throw new Error('SQL 括号不匹配，未修改原结果。');}
+  }
+  if(depth!==0)throw new Error('SQL 括号不匹配，未修改原结果。');
+  const result=pieces.join(''),after=sqlTokens(result);
+  if(after.length!==tokens.length||after.some((t,i)=>t.kind!==tokens[i].kind||
+    (t.kind==='word'&&keywords.has(tokens[i].text.toUpperCase())?t.text.toUpperCase()!==tokens[i].text.toUpperCase():t.text!==tokens[i].text)))
+    throw new Error('无法安全美化该 SQL，未修改原结果。');
+  return result;
+}
+// ---- ⑤ SQL 列转行（Excel 复制的列名 → 每列一行，行尾加逗号，末行不加；列名用引号括起）----
+function doSqlColToRow(wrap){
+  let raw = $('input').value;
+  if(!raw.trim()){ alert('输入栏没有内容'); return; }
+  // 列名分隔符为 Tab，兼容竖选复制产生的新行分隔
+  const tokens = raw.split(/[\t\r\n]+/).map(s=>s.trim()).filter(s=>s!=='');
+  if(tokens.length===0){ alert('没有解析到列名'); return; }
+  // 不同方言的引用包裹，含最基础的转义，避免列名内自带引号时破坏 SQL
+  const wrapFn = {
+    bracket:  t => '[' + t.replace(/\]/g, ']]') + ']',          // SQL Server
+    backtick: t => '`' + t.replace(/`/g, '``') + '`',             // MySQL
+    dquote:   t => '"' + t.replace(/"/g, '""') + '"'             // 标准 SQL
+  }[wrap] || (t => t);
+  const out = tokens.map((t,i)=> i===tokens.length-1 ? wrapFn(t) : wrapFn(t)+',');
+  showOut(out);
+}
+// ---- ⑤ SQL in（Excel 复制单列多行 → in('a',\n'b',\n'c'\n)）----
+function doSqlIn(){
+  let raw = $('input').value;
+  if(!raw.trim()){ alert('输入栏没有内容'); return; }
+  // 单列多行：按 Tab/换行拆，逐行作为值
+  const vals = raw.split(/[\t\r\n]+/).map(s=>s.trim()).filter(s=>s!=='');
+  if(vals.length===0){ alert('没有解析到数据'); return; }
+  const q = v => "'" + v.replace(/'/g, "''") + "'";   // 单引号值内部转义为 ''
+  const lines = vals.map((v,i)=> i===vals.length-1 ? q(v) : q(v)+',');
+  // 首行加 in( 前缀；末行后另起一行加 )
+  const out = ['in(' + lines[0], ...lines.slice(1), ')'];
+  showOut(out);
+}
+// ---- 纯前端生成 .xlsx（OOXML，store 模式 ZIP，无外部依赖）----
+function colRef(i){
+  let s=''; i++;
+  while(i>0){ const r=(i-1)%26; s=String.fromCharCode(65+r)+s; i=Math.floor((i-1)/26); }
+  return s;
+}
+function xmlEscape(s){
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function crc32(buf){
+  if(!crc32.t){
+    crc32.t=(()=>{ const t=[]; for(let n=0;n<256;n++){ let c=n; for(let k=0;k<8;k++) c=(c&1)?(0xEDB88320^(c>>>1)):(c>>>1); t[n]=c>>>0; } return t; })();
+  }
+  let crc=0xFFFFFFFF;
+  for(let i=0;i<buf.length;i++) crc=(crc>>>8)^crc32.t[(crc^buf[i])&0xFF];
+  return (crc^0xFFFFFFFF)>>>0;
+}
+function buildZip(files){
+  const enc=new TextEncoder();
+  const parts=[], central=[]; let offset=0;
+  for(const f of files){
+    const nameBytes=enc.encode(f.name); const data=f.data; const crc=crc32(data);
+    const lh=new DataView(new ArrayBuffer(30));
+    lh.setUint32(0,0x04034b50,true); lh.setUint16(4,20,true); lh.setUint16(6,0x0800,true);
+    lh.setUint16(8,0,true); lh.setUint16(10,0,true); lh.setUint16(12,0,true);
+    lh.setUint32(14,crc,true); lh.setUint32(18,data.length,true); lh.setUint32(22,data.length,true);
+    lh.setUint16(26,nameBytes.length,true); lh.setUint16(28,0,true);
+    parts.push(new Uint8Array(lh.buffer),nameBytes,data);
+    const ch=new DataView(new ArrayBuffer(46));
+    ch.setUint32(0,0x02014b50,true); ch.setUint16(4,20,true); ch.setUint16(6,20,true);
+    ch.setUint16(8,0x0800,true); ch.setUint16(10,0,true); ch.setUint16(12,0,true); ch.setUint16(14,0,true);
+    ch.setUint32(16,crc,true); ch.setUint32(20,data.length,true); ch.setUint32(24,data.length,true);
+    ch.setUint16(28,nameBytes.length,true); ch.setUint16(30,0,true); ch.setUint16(32,0,true);
+    ch.setUint16(34,0,true); ch.setUint16(36,0,true); ch.setUint32(38,0,true); ch.setUint32(42,offset,true);
+    central.push(new Uint8Array(ch.buffer),nameBytes);
+    offset+=30+nameBytes.length+data.length;
+  }
+  const centralStart=offset; let centralSize=0;
+  for(const c of central) centralSize+=c.length;
+  const end=new DataView(new ArrayBuffer(22));
+  end.setUint32(0,0x06054b50,true); end.setUint16(4,0,true); end.setUint16(6,0,true);
+  end.setUint16(8,files.length,true); end.setUint16(10,files.length,true);
+  end.setUint32(12,centralSize,true); end.setUint32(16,centralStart,true); end.setUint16(20,0,true);
+  const all=[...parts,...central,new Uint8Array(end.buffer)];
+  let total=0; for(const p of all) total+=p.length;
+  const out=new Uint8Array(total); let pos=0;
+  for(const p of all){ out.set(p,pos); pos+=p.length; }
+  return out;
+}
+// 判断是否为「标准数字」：整数/小数、无前导零（单独 0 除外）、长度≤15（防精度丢失）。
+// 带前导零的编码（如 00123、1000000000000001）保持文本，防止丢零或被截断。
+function isNumericCell(v){
+  return v.length>0 && v.length<=15 && v===v.trim() && /^(?:0|-?(?:[1-9]\d*|0)(?:\.\d+)?)$/.test(v);
+}
+function buildXlsx(rows, delim){
+  const enc=new TextEncoder();
+  const sheetRows=[];
+  const records=typeof rows==='string'?readRecords(rows,delim):readRecords(rows.join('\n'),delim);
+  records.forEach((record,ri)=>{
+    const cells=record.cells;
+    const cellXml=cells.map((c,ci)=>{
+      const ref=colRef(ci)+(ri+1); const val=c;
+      // 修复：纯数字写成数值单元格（Excel 中可直接计算），带前导零的编码仍保留为文本
+      if(isNumericCell(val))
+        return '<c r="'+ref+'"><v>'+val+'</v></c>';
+      return '<c r="'+ref+'" t="inlineStr"><is><t xml:space="preserve">'+xmlEscape(val)+'</t></is></c>';
+    }).join('');
+    sheetRows.push('<row r="'+(ri+1)+'">'+cellXml+'</row>');
+  });
+  const sheet='<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><sheetData>'+sheetRows.join('')+'</sheetData></worksheet>';
+  const contentTypes='<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/><Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/></Types>';
+  const rels='<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/></Relationships>';
+  const workbook='<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheets><sheet name="Sheet1" sheetId="1" r:id="rId1"/></sheets></workbook>';
+  const wbRels='<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/></Relationships>';
+  return buildZip([
+    {name:'[Content_Types].xml', data:enc.encode(contentTypes)},
+    {name:'_rels/.rels', data:enc.encode(rels)},
+    {name:'xl/workbook.xml', data:enc.encode(workbook)},
+    {name:'xl/_rels/workbook.xml.rels', data:enc.encode(wbRels)},
+    {name:'xl/worksheets/sheet1.xml', data:enc.encode(sheet)},
+  ]);
+}
+function downloadOut(type){
+  tableAction(()=>{
+  let txt = $('output').value;
+  if(!txt){ alert('没有可下载的结果'); return; }
+  if(type==='csv'){
+    const delim = getDelim(txt);
+    // 修复：含逗号/引号/换行的字段必须用双引号包裹，内部引号转义为 ""
+    txt = readRecords(txt,delim).map(r=>r.cells.map(csvQuote).join(',')).join('\r\n');
+    triggerDownload(new Blob(['﻿'+txt], {type:'text/csv;charset=utf-8'}), '整理结果.csv'); return;
+  }
+  if(type==='xlsx'){
+    const delim = getDelim(txt);
+    triggerDownload(new Blob([buildXlsx(txt, delim)], {type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}), '整理结果.xlsx'); return;
+  }
+  triggerDownload(new Blob(['﻿'+txt], {type:'text/plain;charset=utf-8'}), '整理结果.txt');
+  });
+}
+function triggerDownload(blob, filename){
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename;
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+// 标准 CSV 字段引用：含逗号/引号/换行时须用双引号包裹，内部引号转义为 ""
+function csvQuote(v){
+  return quoteField(v,',');
+}
+function quoteField(v,delim){
+  v = String(v);
+  if(/["\r\n]/.test(v)||v.includes(delim)) return '"' + v.replace(/"/g,'""') + '"';
+  return v;
+}
+$('input').addEventListener('input', ()=>{try{$('inCount').textContent=parseRows().length;}catch{$('inCount').textContent='格式待检查';}});
+
+// Only render the visible line numbers, including for large pasted documents.
+function refreshGutters(){
+ for(const id of ['input','output']){
+  const editor=$(id),gutter=$(id+'Lines'),first=Math.floor(editor.scrollTop/19);
+  const count=Math.ceil(editor.clientHeight/19)+2;
+  gutter.textContent=Array.from({length:count},(_,i)=>first+i+1).join('\n');
+  gutter.style.paddingTop=(12-editor.scrollTop%19)+'px';
+ }
+}
+for(const id of ['input','output'])$(id).addEventListener('scroll',refreshGutters);
+$('input').addEventListener('input',()=>{$('feedback').textContent='';refreshGutters();});
+window.addEventListener('resize',refreshGutters);
+refreshGutters();
+</script>
+</body>
+</html>

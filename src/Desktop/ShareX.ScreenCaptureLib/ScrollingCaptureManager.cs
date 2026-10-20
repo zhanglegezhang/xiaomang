@@ -1,4 +1,4 @@
-﻿#region License Information (GPL v3)
+#region License Information (GPL v3)
 
 /*
     ShareX - A program that allows you to take screenshots and share any file type
@@ -44,7 +44,7 @@ namespace ShareX.ScreenCaptureLib
         private Bitmap previousScreenshot;
         private bool stopRequested;
         private ScrollingCaptureStatus status;
-        private int bestMatchCount, bestMatchIndex, bestIgnoreBottomOffset;
+        private int unchangedFrames;
         private WindowInfo selectedWindow;
         private Rectangle selectedRectangle;
 
@@ -86,9 +86,7 @@ namespace ShareX.ScreenCaptureLib
                 IsCapturing = true;
                 stopRequested = false;
                 status = ScrollingCaptureStatus.Failed;
-                bestMatchCount = 0;
-                bestMatchIndex = 0;
-                bestIgnoreBottomOffset = 0;
+                unchangedFrames = 0;
                 Reset();
 
                 ScrollingCaptureRegionForm regionForm = null;
@@ -122,12 +120,26 @@ namespace ShareX.ScreenCaptureLib
                     {
                         lastScreenshot = screenshot.CaptureRectangle(selectedRectangle);
 
-                        if (CompareLastTwoImages())
+                        bool unchanged = CompareLastTwoImages();
+                        bool pageThroughBlank = unchanged && IsUniformImage(lastScreenshot);
+                        if (ShouldStopForUnchangedImage(unchanged))
                         {
                             break;
                         }
+                        if (unchanged)
+                        {
+                            lastScreenshot.Dispose();
+                            lastScreenshot = null;
+                        }
 
-                        switch (Options.ScrollMethod)
+                        if (pageThroughBlank)
+                        {
+                            // A blank viewport provides no pixel anchor. PageDown keeps
+                            // viewport overlap while probing farther than a small wheel step.
+                            InputHelpers.SendKeyPress(VirtualKeyCode.NEXT);
+                            status = ScrollingCaptureStatus.PartiallySuccessful;
+                        }
+                        else switch (Options.ScrollMethod)
                         {
                             case ScrollMethod.MouseWheel:
                                 InputHelpers.SendMouseWheel(-120 * Options.ScrollAmount);
@@ -239,6 +251,23 @@ namespace ShareX.ScreenCaptureLib
             return false;
         }
 
+        private bool ShouldStopForUnchangedImage(bool unchanged)
+        {
+            unchangedFrames = unchanged ? unchangedFrames + 1 : 0;
+            // One unchanged frame can be a slow repaint or a blank part of a page.
+            return unchangedFrames >= 3;
+        }
+
+        private static bool IsUniformImage(Bitmap image)
+        {
+            if (image == null) return false;
+            Color reference = image.GetPixel(image.Width / 2, image.Height / 2);
+            for (int y = 0; y < image.Height; y += Math.Max(1, image.Height / 16))
+                for (int x = 0; x < image.Width; x += Math.Max(1, image.Width / 16))
+                    if (image.GetPixel(x, y).ToArgb() != reference.ToArgb()) return false;
+            return true;
+        }
+
         private async Task<Bitmap> CombineImagesAsync(Bitmap result, Bitmap currentImage)
         {
             return await Task.Run(() => CombineImages(result, currentImage));
@@ -249,129 +278,89 @@ namespace ShareX.ScreenCaptureLib
             if (result == null)
             {
                 status = ScrollingCaptureStatus.Successful;
-
                 return (Bitmap)currentImage.Clone();
             }
-
-            int matchCount = 0;
-            int matchIndex = 0;
-            int matchLimit = currentImage.Height / 2;
-
-            int ignoreSideOffset = Math.Max(50, currentImage.Width / 20);
-            ignoreSideOffset = Math.Min(ignoreSideOffset, currentImage.Width / 3);
-
-            Rectangle rect = new Rectangle(ignoreSideOffset, result.Height - currentImage.Height, currentImage.Width - ignoreSideOffset * 2, currentImage.Height);
-
-            BitmapData bdResult = result.LockBits(new Rectangle(0, 0, result.Width, result.Height), ImageLockMode.ReadOnly, PixelFormat.Format32bppArgb);
-            BitmapData bdCurrentImage = currentImage.LockBits(new Rectangle(0, 0, currentImage.Width, currentImage.Height), ImageLockMode.ReadOnly, PixelFormat.Format32bppArgb);
-            int stride = bdResult.Stride;
-            int pixelSize = stride / result.Width;
-            IntPtr resultScan0 = bdResult.Scan0 + pixelSize * ignoreSideOffset;
-            IntPtr currentImageScan0 = bdCurrentImage.Scan0 + pixelSize * ignoreSideOffset;
-            int compareLength = pixelSize * rect.Width;
-
-            int ignoreBottomOffsetMax = currentImage.Height / 3;
-            int ignoreBottomOffset = Math.Max(50, currentImage.Height / 10);
-
-            if (Options.AutoIgnoreBottomEdge)
+            Bitmap previous = previousScreenshot;
+            bool ownPrevious = previous == null;
+            if (ownPrevious)
+                previous = result.Clone(new Rectangle(0, result.Height - currentImage.Height, result.Width, currentImage.Height), PixelFormat.Format32bppArgb);
+            try
             {
-                IntPtr resultScan0Last = resultScan0 + (result.Height - 1) * stride;
-                IntPtr currentImageScan0Last = currentImageScan0 + (currentImage.Height - 1) * stride;
-
-                for (int i = 0; i <= ignoreBottomOffsetMax; i++)
+                if (ImageHelpers.CompareImages(previous, currentImage)) return (Bitmap)result.Clone();
+                int height = currentImage.Height;
+                int side = Math.Min(Math.Max(50, currentImage.Width / 20), currentImage.Width / 3);
+                int compareLength = (currentImage.Width - side * 2) * 4;
+                int top = Math.Min(50, height / 10), bottom = 0, shift = -1, bestInformation = 0;
+                BitmapData oldData = previous.LockBits(new Rectangle(0, 0, previous.Width, height), ImageLockMode.ReadOnly, PixelFormat.Format32bppArgb);
+                BitmapData newData = null;
+                try
                 {
-                    if (NativeMethods.memcmp(resultScan0Last - i * stride, currentImageScan0Last - i * stride, compareLength) != 0)
+                    newData = currentImage.LockBits(new Rectangle(0, 0, currentImage.Width, height), ImageLockMode.ReadOnly, PixelFormat.Format32bppArgb);
+                    IntPtr OldRow(int y) => oldData.Scan0 + y * oldData.Stride + side * 4;
+                    IntPtr NewRow(int y) => newData.Scan0 + y * newData.Stride + side * 4;
+                    if (Options.AutoIgnoreBottomEdge)
+                        while (bottom < height / 3 && NativeMethods.memcmp(OldRow(height - bottom - 1), NewRow(height - bottom - 1), compareLength) == 0) bottom++;
+                    uint Signature(IntPtr row)
                     {
-                        ignoreBottomOffset += i;
-                        break;
+                        uint hash = 2166136261;
+                        for (int x = 0; x < compareLength; x += Math.Max(4, (compareLength / 128) & ~3))
+                            hash = unchecked((hash ^ (uint)Marshal.ReadInt32(row, x)) * 16777619);
+                        return hash;
+                    }
+                    uint[] oldRows = new uint[height], newRows = new uint[height];
+                    for (int y = 0; y < height; y++) { oldRows[y] = Signature(OldRow(y)); newRows[y] = Signature(NewRow(y)); }
+                    for (int candidate = 1; candidate < height - top - bottom - 8; candidate++)
+                    {
+                        int end = height - candidate - bottom;
+                        bool matches = true;
+                        var information = new System.Collections.Generic.HashSet<uint>();
+                        for (int y = top; y < end; y++)
+                        {
+                            if (oldRows[y + candidate] != newRows[y]) { matches = false; break; }
+                            information.Add(newRows[y]);
+                        }
+                        if (!matches || information.Count < 4) continue;
+                        // Verify the entire available overlap, not just a blank/repeated anchor.
+                        for (int y = top; y < end; y++)
+                            if (NativeMethods.memcmp(OldRow(y + candidate), NewRow(y), compareLength) != 0) { matches = false; break; }
+                        if (!matches) continue;
+                        if (information.Count > bestInformation)
+                        {
+                            bestInformation = information.Count;
+                            shift = candidate;
+                        }
                     }
                 }
-
-                ignoreBottomOffset = Math.Max(ignoreBottomOffset, bestIgnoreBottomOffset);
-            }
-
-            ignoreBottomOffset = Math.Min(ignoreBottomOffset, ignoreBottomOffsetMax);
-
-            int rectBottom = rect.Bottom - ignoreBottomOffset - 1;
-
-            for (int currentImageY = currentImage.Height - 1; currentImageY >= 0 && matchCount < matchLimit; currentImageY--)
-            {
-                int currentMatchCount = 0;
-
-                for (int y = 0; currentImageY - y >= 0 && currentMatchCount < matchLimit; y++)
+                finally
                 {
-                    if (NativeMethods.memcmp(resultScan0 + ((rectBottom - y) * stride), currentImageScan0 + ((currentImageY - y) * stride), compareLength) == 0)
+                    if (newData != null) currentImage.UnlockBits(newData);
+                    previous.UnlockBits(oldData);
+                }
+                bool certain = shift > 0;
+                int newHeight = certain ? checked(result.Height + shift) : checked(result.Height + height);
+                if ((long)newHeight * currentImage.Width > 128L * 1024 * 1024)
+                    throw new InvalidOperationException("长图已达到安全内存上限，现有结果已保留；请分段截图。");
+                Bitmap combined = new Bitmap(result.Width, newHeight);
+                using (Graphics graphics = Graphics.FromImage(combined))
+                {
+                    graphics.CompositingMode = CompositingMode.SourceCopy;
+                    if (certain)
                     {
-                        currentMatchCount++;
+                        int retained = result.Height - bottom;
+                        graphics.DrawImage(result, new Rectangle(0, 0, result.Width, retained), new Rectangle(0, 0, result.Width, retained), GraphicsUnit.Pixel);
+                        int appended = shift + bottom;
+                        graphics.DrawImage(currentImage, new Rectangle(0, retained, currentImage.Width, appended), new Rectangle(0, height - appended, currentImage.Width, appended), GraphicsUnit.Pixel);
                     }
                     else
                     {
-                        break;
+                        graphics.DrawImageUnscaled(result, 0, 0);
+                        graphics.DrawImageUnscaled(currentImage, 0, result.Height);
                     }
                 }
-
-                if (currentMatchCount > matchCount)
-                {
-                    matchCount = currentMatchCount;
-                    matchIndex = currentImageY;
-                }
+                if (!certain) status = ScrollingCaptureStatus.PartiallySuccessful;
+                return combined;
             }
-
-            result.UnlockBits(bdResult);
-            currentImage.UnlockBits(bdCurrentImage);
-
-            bool bestGuess = false;
-
-            if (matchCount == 0 && bestMatchCount > 0)
-            {
-                matchCount = bestMatchCount;
-                matchIndex = bestMatchIndex;
-                ignoreBottomOffset = bestIgnoreBottomOffset;
-                bestGuess = true;
-            }
-
-            if (matchCount > 0)
-            {
-                int matchHeight = currentImage.Height - matchIndex - 1;
-
-                if (matchHeight > 0)
-                {
-                    if (matchCount > bestMatchCount)
-                    {
-                        bestMatchCount = matchCount;
-                        bestMatchIndex = matchIndex;
-                        bestIgnoreBottomOffset = ignoreBottomOffset;
-                    }
-
-                    Bitmap newResult = new Bitmap(result.Width, result.Height - ignoreBottomOffset + matchHeight);
-
-                    using (Graphics g = Graphics.FromImage(newResult))
-                    {
-                        g.CompositingMode = CompositingMode.SourceCopy;
-                        g.InterpolationMode = InterpolationMode.NearestNeighbor;
-
-                        g.DrawImage(result, new Rectangle(0, 0, result.Width, result.Height - ignoreBottomOffset),
-                            new Rectangle(0, 0, result.Width, result.Height - ignoreBottomOffset), GraphicsUnit.Pixel);
-                        g.DrawImage(currentImage, new Rectangle(0, result.Height - ignoreBottomOffset, currentImage.Width, matchHeight),
-                            new Rectangle(0, matchIndex + 1, currentImage.Width, matchHeight), GraphicsUnit.Pixel);
-                    }
-
-                    if (bestGuess)
-                    {
-                        status = ScrollingCaptureStatus.PartiallySuccessful;
-                    }
-                    else if (status != ScrollingCaptureStatus.PartiallySuccessful)
-                    {
-                        status = ScrollingCaptureStatus.Successful;
-                    }
-
-                    return newResult;
-                }
-            }
-
-            status = ScrollingCaptureStatus.Failed;
-
-            return null;
+            finally { if (ownPrevious) previous.Dispose(); }
         }
     }
 }

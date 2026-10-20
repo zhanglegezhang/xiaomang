@@ -67,7 +67,7 @@ namespace ShareX
             files.BackColor = CanvasColor; files.ForeColor = ForeColor; files.BorderStyle = BorderStyle.None;
             files.ItemHeight = 86;
             files.DrawItem += DrawFile;
-            files.SelectedIndexChanged += (_, _) => UpdateListState();
+            files.SelectedIndexChanged += (_, _) => { if (!changingFiles) UpdateListState(); };
             var listFooter = new FlowLayoutPanel { Dock = DockStyle.Bottom, AutoSize = true, Padding = new Padding(7), WrapContents = true };
             remove = ToolButton("移除", (_, _) => RemoveSelected());
             moveUp = ToolButton("↑ 上移", (_, _) => MoveSelected(-1));
@@ -138,10 +138,22 @@ namespace ShareX
         private void RemoveSelected()
         {
             int index = files.SelectedIndex;
-            if (index < 0) return;
-            ((Item)files.Items[index]).Thumbnail?.Dispose(); files.Items.RemoveAt(index);
-            if (files.Items.Count > 0) files.SelectedIndex = Math.Min(index, files.Items.Count - 1);
+            if (changingFiles || closing || exporting || index < 0 || index >= files.Items.Count) return;
+            RemoveItem((Item)files.Items[index]);
             Changed();
+        }
+        private void RemoveItem(Item item)
+        {
+            int index = files.Items.IndexOf(item);
+            if (index < 0 || changingFiles) return;
+            changingFiles = true; files.BeginUpdate();
+            try
+            {
+                files.Items.RemoveAt(index);
+                if (files.Items.Count > 0) files.SelectedIndex = Math.Min(index, files.Items.Count - 1);
+                item.ReleaseThumbnail();
+            }
+            finally { try { files.EndUpdate(); } finally { changingFiles = false; } }
         }
         private void DrawFile(object sender, DrawItemEventArgs e)
         {
@@ -200,7 +212,8 @@ namespace ShareX
                     {
                         var found = thumbnails.FirstOrDefault(t => string.Equals(t.Path, item.Path, StringComparison.OrdinalIgnoreCase));
                         if (found.Image == null) continue;
-                        item.Thumbnail?.Dispose(); item.Thumbnail = (Bitmap)found.Image.Clone(); item.ImageSize = found.Size;
+                        Bitmap replacement = (Bitmap)found.Image.Clone();
+                        item.ReleaseThumbnail(); item.Thumbnail = replacement; item.ImageSize = found.Size;
                     }
                     files.Invalidate();
                 }

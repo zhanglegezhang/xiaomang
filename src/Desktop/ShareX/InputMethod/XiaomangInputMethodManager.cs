@@ -331,7 +331,7 @@ namespace ShareX
         internal static void OpenSettings()
         {
             string exe = Path.Combine(BundleDirectory, "qingjian-settings.exe");
-            if (!File.Exists(exe)) throw new FileNotFoundException("缺少输入法设置程序", exe);
+            if (!File.Exists(exe)) throw new FileNotFoundException("尚未下载小蟒文本输入组件，或组件不完整。请到“全局设置 → 注册 → 文本输入”点击“注册 / 修复”，完成后再打开输入法设置。此操作会保留已有设置和学习词库。", exe);
             Process.Start(new ProcessStartInfo(exe) { UseShellExecute = false, WorkingDirectory = BundleDirectory });
         }
     }

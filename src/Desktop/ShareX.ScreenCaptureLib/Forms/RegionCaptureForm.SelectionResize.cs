@@ -34,8 +34,8 @@ namespace ShareX.ScreenCaptureLib
 
         private void DisposeSelectionAffordances()
         {
-            resizeHorizontal?.Dispose(); resizeVertical?.Dispose();
-            resizeDownDiagonal?.Dispose(); resizeUpDiagonal?.Dispose();
+            SelectionCursor.Dispose(resizeHorizontal); SelectionCursor.Dispose(resizeVertical);
+            SelectionCursor.Dispose(resizeDownDiagonal); SelectionCursor.Dispose(resizeUpDiagonal);
             selectionBorder?.Dispose(); selectionDashes?.Dispose(); selectionHover?.Dispose();
         }
     }
