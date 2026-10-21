@@ -24,6 +24,20 @@ namespace ShareX
         internal static readonly Color Orange = Color.FromArgb(255, 139, 67);
         internal static readonly Font BodyFont = new Font("Microsoft YaHei UI", 9f);
         internal static readonly Font MenuFont = new Font("Microsoft YaHei UI", 9.5f);
+        // WinForms scales point fonts relative to the process initial DPI. Reapplying
+        // an unscaled shared font after a monitor change would undo that scaling.
+        private static readonly int FontBaselineDpi = GetFontBaselineDpi();
+        private static readonly System.Collections.Generic.Dictionary<(Font, int), Font> dpiFonts = new();
+        private static int GetFontBaselineDpi() { using var control = new Control(); return control.DeviceDpi; }
+        internal static Font FontFor(Control control, Font basis)
+        {
+            int dpi = control.DeviceDpi;
+            if (dpi == FontBaselineDpi) return basis;
+            var key = (basis, dpi);
+            if (!dpiFonts.TryGetValue(key, out Font font))
+                dpiFonts[key] = font = new Font(basis.FontFamily, basis.SizeInPoints * dpi / FontBaselineDpi, basis.Style, GraphicsUnit.Point);
+            return font;
+        }
         private sealed class State { internal bool Hovered, Down, Primary, Selected; }
         private static readonly ConditionalWeakTable<Control, State> styled = new();
         internal static int Scale(Control c, int value) => (int)Math.Round(value * c.DeviceDpi / 96f);
@@ -83,7 +97,7 @@ namespace ShareX
                 b.FlatStyle = FlatStyle.Flat;
                 b.FlatAppearance.BorderSize = 0;
                 b.BackColor = Surface;
-                b.Font = BodyFont;
+                b.Font = FontFor(b, BodyFont);
                 if (b is MenuButton menuButton) ApplyMenu(menuButton.Menu);
             }
             else if (root is DataGridView grid) ApplyGrid(grid);
@@ -103,7 +117,7 @@ namespace ShareX
             else if (root is TreeView tree)
             {
                 tree.BackColor = Sidebar;
-                tree.Font = MenuFont;
+                tree.Font = FontFor(tree, MenuFont);
                 tree.BorderStyle = BorderStyle.None;
                 tree.DrawMode = TreeViewDrawMode.OwnerDrawAll;
                 tree.FullRowSelect = true;
@@ -133,7 +147,7 @@ namespace ShareX
             {
                 navigation.LeftPanelBackColor = Sidebar;
                 navigation.SeparatorColor = Background;
-                navigation.TreeViewFont = MenuFont;
+                navigation.TreeViewFont = FontFor(navigation, MenuFont);
             }
             root.Invalidate();
         }
@@ -168,7 +182,7 @@ namespace ShareX
             menu.Renderer = new MainMenuRenderer();
             menu.BackColor = Sidebar;
             menu.ForeColor = Text;
-            menu.Font = MenuFont;
+            menu.Font = FontFor(menu, MenuFont);
             menu.ImageScalingSize = new Size(Scale(menu, 16), Scale(menu, 16));
             foreach (ToolStripItem item in menu.Items)
             {
@@ -190,7 +204,7 @@ namespace ShareX
             grid.ColumnHeadersDefaultCellStyle.ForeColor = Muted;
             grid.ColumnHeadersDefaultCellStyle.SelectionBackColor = Sidebar;
             grid.ColumnHeadersDefaultCellStyle.SelectionForeColor = Text;
-            grid.ColumnHeadersDefaultCellStyle.Font = BodyFont;
+            grid.ColumnHeadersDefaultCellStyle.Font = FontFor(grid, BodyFont);
             var cells = grid.DefaultCellStyle.Clone();
             cells.BackColor = Surface;
             cells.ForeColor = Text;
@@ -383,3 +397,4 @@ namespace ShareX
         }
     }
 }
+

@@ -1,0 +1,17 @@
+{
+  "releaseDate": "2026-10-21",
+  "releaseTag": "v3.2-20261021",
+  "packaging": {
+    "parameters": "-tzip -mm=Deflate -mx=9 -mfb=258 -mpass=15 -mmt=off -mcu=on -scsUTF-8",
+    "tool": "7-Zip 26.03"
+  },
+  "productVersion": "3.2",
+  "source": "https://github.com/zhanglegezhang/xiaomang/tree/v3.2-20261021",
+  "usagePackage": {
+    "sha256": "4D6FA7790BE3592487624DD36D2FB9B89916D2C24FAC4238013F89545015E7FE",
+    "files": 527,
+    "url": "https://github.com/zhanglegezhang/xiaomang/releases/download/v3.2-20261021/xiaomang3.2_2026-10-21_usage.zip",
+    "asset": "xiaomang3.2_2026-10-21_usage.zip",
+    "bytes": 110765365
+  }
+}

@@ -143,7 +143,13 @@ namespace ShareX
         }
         protected override void OnLayout(LayoutEventArgs e){Fit();base.OnLayout(e);}
         internal void ScrollFromNumber(MouseEventArgs e) => OnMouseWheel(new MouseEventArgs(e.Button,e.Clicks,e.X,e.Y,e.Delta));
-        protected override void OnDpiChangedAfterParent(EventArgs e){base.OnDpiChangedAfterParent(e);Fit();}
+        protected override void OnDpiChangedAfterParent(EventArgs e)
+        {
+            base.OnDpiChangedAfterParent(e);
+            foreach (var combo in styledCombos)
+                if (!combo.IsDisposed) combo.ItemHeight = Math.Max(combo.Font.Height + S(6), S(24));
+            Fit();
+        }
         private void Fit()
         {
             if(!initialized||fitting||content==null||ClientSize.Width<80)return;fitting=true;
@@ -251,4 +257,5 @@ namespace ShareX
         protected override void Dispose(bool disposing){if(disposing){source.CheckedChanged-=Pull;source.EnabledChanged-=Pull;}base.Dispose(disposing);}
     }
 }
+
 

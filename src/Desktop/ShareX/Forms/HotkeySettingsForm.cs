@@ -88,6 +88,7 @@ namespace ShareX
 
         internal void RefreshForActivation()
         {
+            RefreshFullscreenToggle();
             var controls = flpHotkeys.Controls.Cast<HotkeySelectionControl>().ToArray();
             if (!controls.Select(control => control.HotkeySettings).SequenceEqual(manager.Hotkeys))
             {

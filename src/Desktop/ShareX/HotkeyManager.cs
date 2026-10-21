@@ -31,7 +31,7 @@ using System.Windows.Forms;
 
 namespace ShareX
 {
-    public class HotkeyManager
+    public partial class HotkeyManager
     {
         public List<HotkeySettings> Hotkeys { get; private set; }
         public bool IgnoreHotkeys { get; set; }
@@ -49,15 +49,17 @@ namespace ShareX
             hotkeyForm = form;
             hotkeyForm.HotkeyPress += HotkeyForm_HotkeyPress;
             hotkeyForm.FormClosed += HotkeyForm_FormClosed;
+            InitializeFullscreenMonitoring();
         }
 
         private void HotkeyForm_HotkeyPress(ushort id, Keys key, Modifiers modifier)
         {
-            if (!IgnoreHotkeys && (!Program.Settings.DisableHotkeysOnFullscreen || !CaptureHelpers.IsActiveWindowFullscreen()))
+            RefreshFullscreenPolicy();
+            if (!IgnoreHotkeys)
             {
                 HotkeySettings hotkeySetting = Hotkeys.Find(x => x.HotkeyInfo.ID == id);
 
-                if (hotkeySetting != null)
+                if (hotkeySetting != null && (!FullscreenSuspended || IsRecordingControl(hotkeySetting.TaskSettings.Job)))
                 {
                     OnHotkeyTrigger(hotkeySetting);
                 }
@@ -66,6 +68,7 @@ namespace ShareX
 
         private void HotkeyForm_FormClosed(object sender, FormClosedEventArgs e)
         {
+            fullscreenMonitor?.Dispose();
             if (hotkeyForm != null && !hotkeyForm.IsDisposed)
             {
                 UnregisterAllHotkeys(false);
@@ -96,6 +99,13 @@ namespace ShareX
 
         public void RegisterHotkey(HotkeySettings hotkeySetting)
         {
+            if (FullscreenSuspended && !IsRecordingControl(hotkeySetting.TaskSettings.Job))
+            {
+                UnregisterHotkey(hotkeySetting, false);
+                fullscreenReleased.Add(hotkeySetting);
+                if (!Hotkeys.Contains(hotkeySetting)) Hotkeys.Add(hotkeySetting);
+                return;
+            }
             if (!Program.Settings.DisableHotkeys || hotkeySetting.TaskSettings.Job == HotkeyType.DisableHotkeys)
             {
                 UnregisterHotkey(hotkeySetting, false);
@@ -159,6 +169,7 @@ namespace ShareX
 
             if (removeFromList)
             {
+                fullscreenReleased.Remove(hotkeySetting);
                 Hotkeys.Remove(hotkeySetting);
             }
         }

@@ -7,6 +7,23 @@ namespace ShareX
     public partial class MainForm
     {
         private bool mainAppearanceReady;
+        private bool navigationDpiRefreshQueued;
+
+        protected override void OnDpiChanged(DpiChangedEventArgs e)
+        {
+            base.OnDpiChanged(e);
+            // Child ToolStrip scaling completes after the form notification.
+            // Rebuild explicit item sizes only after that pass has finished.
+            if (!mainAppearanceReady || navigationDpiRefreshQueued || !IsHandleCreated) return;
+            navigationDpiRefreshQueued = true;
+            BeginInvoke((Action)(() =>
+            {
+                navigationDpiRefreshQueued = false;
+                if (IsDisposed || Disposing) return;
+                ConfigureMainMenuAppearance();
+                LayoutInlineSettingsForm();
+            }));
+        }
 
         private bool IsActiveNavigation(ToolStripItem item)
         {
@@ -32,7 +49,7 @@ namespace ShareX
             tsMain.MinimumSize = Size.Empty;
             tsMain.Width = MainMenuAppearance.Scale(this, 168);
             tsMain.Padding = new Padding(MainMenuAppearance.Scale(this, 6), MainMenuAppearance.Scale(this, 8), MainMenuAppearance.Scale(this, 6), 0);
-            tsMain.Font = MainMenuAppearance.MenuFont;
+            tsMain.Font = MainMenuAppearance.FontFor(tsMain, MainMenuAppearance.MenuFont);
             tsMain.DrawCustomBorder = false;
             tsMain.BackColor = MainMenuAppearance.Sidebar;
             tsMain.ForeColor = MainMenuAppearance.Text;
@@ -71,3 +88,5 @@ namespace ShareX
         }
     }
 }
+
+

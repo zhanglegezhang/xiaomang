@@ -68,3 +68,5 @@ $env:WINDOWS_SDK_BIN = 'C:/Program Files (x86)/Windows Kits/10/bin/10.0.26100.0/
 
 
 当前发布 v3.1-20261020：数据整理维护源码在 resources/Tools；版本、使用包及校验对应关系见 RELEASE-v3.1-20261020.json。
+
+当前发布 v3.2-20261021：版本、使用包和校验对应关系见 RELEASE-v3.2-20261021.json；本次新增全屏快捷键和DPI回归源码。

@@ -32,6 +32,9 @@ namespace ShareX
                 case nameof(ApplicationConfig.HotkeyRepeatLimit):
                     if (Program.MainForm != null) Program.MainForm.HotkeyRepeatLimit = settings.HotkeyRepeatLimit;
                     break;
+                case nameof(ApplicationConfig.DisableHotkeysOnFullscreen):
+                    Program.HotkeyManager?.RefreshFullscreenPolicy();
+                    break;
             }
 
             HelpersOptions.BrowserPath = settings.BrowserPath;

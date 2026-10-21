@@ -179,6 +179,7 @@ namespace ShareX
             Program.Settings.ScreenRecordRegion = captureRectangle;
 
             IsRecording = true;
+            Program.HotkeyManager?.RefreshFullscreenPolicy();
 
             string path = "";
             string concatPath = "";
@@ -398,6 +399,7 @@ namespace ShareX
 
                 abortRequested = false;
                 IsRecording = false;
+                Program.HotkeyManager?.RefreshFullscreenPolicy();
             });
         }
 

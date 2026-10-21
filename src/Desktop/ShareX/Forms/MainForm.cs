@@ -334,8 +334,8 @@ namespace ShareX
             IsReady = true;
             try
             {
-                inputMethodSwitchController = new InputMethodSwitchController(() => IsReady && !PersonalDataManager.Busy && !Program.Settings.DisableHotkeys &&
-                    Program.HotkeyManager?.IgnoreHotkeys != true,
+                inputMethodSwitchController = new InputMethodSwitchController(() => IsReady && !PersonalDataManager.Busy &&
+                    Program.HotkeyManager?.CanRunGlobalActions == true,
                     text => TaskHelpers.ShowNotificationTip(text, "小蟒文本输入法", 5000));
             }
             catch (Exception error)
@@ -345,8 +345,8 @@ namespace ShareX
             }
             try
             {
-                voiceTyping = new VoiceTypingController(this, () => !PersonalDataManager.Busy && IsReady && !Program.Settings.DisableHotkeys &&
-                    Program.HotkeyManager?.IgnoreHotkeys != true, () => todoWidget);
+                voiceTyping = new VoiceTypingController(this, () => !PersonalDataManager.Busy && IsReady &&
+                    Program.HotkeyManager?.CanRunGlobalActions == true, () => todoWidget);
             }
             catch (Exception error)
             {
