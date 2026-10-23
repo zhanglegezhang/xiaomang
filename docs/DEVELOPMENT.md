@@ -72,3 +72,7 @@ $env:WINDOWS_SDK_BIN = 'C:/Program Files (x86)/Windows Kits/10/bin/10.0.26100.0/
 当前发布 v3.2-20261021：版本、使用包和校验对应关系见 RELEASE-v3.2-20261021.json；本次新增全屏快捷键和DPI回归源码。
 
 当前发布 v3.3-20261023：版本、使用包和校验对应关系见 RELEASE-v3.3-20261023.json。
+
+3.4 修复发布配置：需要自带 .NET 的发布产物时执行 `./scripts/Build.ps1 -Component Desktop -Publish`，输出到 `artifacts/Desktop-publish`。普通 `-Component Desktop` 保留开发构建语义。SDK 必须能提供已审核的 .NET 9.0.21 运行包；详见 PACKAGING.md。
+
+当前发布 v3.4-20261023：版本、运行环境、使用包和校验对应关系见 RELEASE-v3.4-20261023.json。

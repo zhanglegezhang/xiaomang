@@ -4,7 +4,8 @@ param(
  [string]$Toolchain=$env:LLVM_MINGW_HOME,
  [string]$WindowsSdkBin=$env:WINDOWS_SDK_BIN,
  [switch]$Test,
- [switch]$Offline
+ [switch]$Offline,
+ [switch]$Publish
 )
 $ErrorActionPreference='Stop'
 $root=Split-Path $PSScriptRoot -Parent
@@ -65,9 +66,13 @@ function Build-Desktop {
  Require-Command 'dotnet'
  if(!(Test-Path -LiteralPath (Join-Path $root 'src/Desktop/VoiceInput/bin/VoiceInputSetup.exe')) -or !(Test-Path -LiteralPath (Join-Path $root 'src/FileFavoritesMenu/bundle/resources.pri'))){Build-Native}
  $project=Join-Path $root 'src/Desktop/ShareX/ShareX.csproj'
- $out=Join-Path $root 'artifacts/Desktop'
- Invoke-Checked 'dotnet' @('restore',$project,'-p:Platform=x64','-m:1')
- Invoke-Checked 'dotnet' @('build',$project,'-c','Release','-p:Platform=x64','-m:1','-p:UseSharedCompilation=false','--no-restore',"-p:OutputPath=$out/")
+ $out=Join-Path $root $(if($Publish){'artifacts/Desktop-publish'}else{'artifacts/Desktop'})
+ if($Publish){
+  & (Join-Path $PSScriptRoot 'Publish-Desktop.ps1') -Project $project -OutputDirectory $out
+ }else{
+  Invoke-Checked 'dotnet' @('restore',$project,'-p:Platform=x64','-m:1')
+  Invoke-Checked 'dotnet' @('build',$project,'-c','Release','-p:Platform=x64','-m:1','-p:UseSharedCompilation=false','--no-restore',"-p:OutputPath=$out/")
+ }
  Move-Item -LiteralPath (Join-Path $out 'ShareX.exe') -Destination (Join-Path $out 'xiaomang.exe') -Force
  Copy-Item -LiteralPath (Join-Path $root 'resources/Tools/数据整理小工具_V1.0.html') -Destination $out -Force
 }
