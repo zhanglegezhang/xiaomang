@@ -1,0 +1,22 @@
+{
+  "usagePackage": {
+    "asset": "xiaomang3.7_2026-10-24_usage.zip",
+    "files": 527,
+    "sha256": "A56DD1C0E9AE35E4CC07A622B236B7DC994B346A9522DD645CF2AC5698FB952E",
+    "bytes": 114128249,
+    "url": "https://github.com/zhanglegezhang/xiaomang/releases/download/v3.7-20261024/xiaomang3.7_2026-10-24_usage.zip"
+  },
+  "productVersion": "3.7",
+  "releaseDate": "2026-10-24",
+  "releaseTag": "v3.7-20261024",
+  "runtime": {
+    "architecture": "win-x64",
+    "deployment": "self-contained",
+    "version": "9.0.21"
+  },
+  "packaging": {
+    "parameters": "-tzip -mm=Deflate -mx=9 -mfb=258 -mpass=15 -mmt=off -mcu=on -scsUTF-8",
+    "tool": "7-Zip 26.03"
+  },
+  "source": "https://github.com/zhanglegezhang/xiaomang/tree/v3.7-20261024"
+}

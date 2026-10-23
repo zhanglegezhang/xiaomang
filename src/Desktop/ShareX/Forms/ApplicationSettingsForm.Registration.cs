@@ -45,7 +45,7 @@ namespace ShareX
             TableLayoutPanel group=content;
             Button Action(string text,string name,Func<CancellationToken,Task> run,bool managesComponent=true)
             {
-                var button=new Button{Text=text,Name=name,AutoSize=true,MinimumSize=new Size(layout.Scale(100),layout.Scale(30))};
+                var button=new Button{Text=text,Name=name,AutoSize=true,MinimumSize=new Size(layout.Scale(94),layout.Scale(30))};
                 button.Click+=async(_,_)=>
                 {
                     if(managesComponent)await RunRegistrationAction(run);
@@ -57,6 +57,7 @@ namespace ShareX
                 };
                 registrationActions.Add(button);return button;
             }
+            var helpTips=new ToolTip { AutoPopDelay=10000, InitialDelay=300, ReshowDelay=100, ShowAlways=true }; content.Disposed+=(_,_)=>helpTips.Dispose();
             Label Status(string name)=>new RegistrationStatus{Name=name,Text="检查中…"};
             Control Row(string title,Label status,params Control[] buttons)
             {
@@ -80,29 +81,29 @@ namespace ShareX
                 }
                 var actions=layout.Inline(visible.ToArray());actions.Tag="registration-surface";
                 var label=new Label{Text=title,TextAlign=ContentAlignment.MiddleLeft,Tag="registration-surface"};
-                var glyph=new RegistrationGlyph{Glyph=title switch{"FFmpeg"=>"video","语音输入"=>"microphone","文本输入"=>"keyboard",_=>"folder"}};
-                var row=new RegistrationComponentRow(glyph,label,status,actions);
+                var glyph=new RegistrationGlyph{Glyph=title switch{"OCR 识别组件"=>"ocr","鼠标右键菜单"=>"mouse","FFmpeg"=>"video","语音输入"=>"microphone","文本输入"=>"keyboard",_=>"folder"}};
+                var help=new RegistrationHelp{Name=status.Name+"Help"};
+
+                string description=title switch{"OCR 识别组件"=>"提取截图中的文字","FFmpeg"=>"支持屏幕录制","语音输入"=>"语音打字，长按添加待办","文本输入"=>"启用小蟒输入法",_=>"右键收藏文件和文件夹"};
+                help.AccessibleName=title+"用途";help.AccessibleDescription=description;helpTips.SetToolTip(help,description);
+                var row=new RegistrationComponentRow(glyph,label,status,actions,help);
                 layout.Add(group,row);return row;
             }
-            void Heading(string text)
-            {
-                group=layout.Stack();group.Name="registrationGroup";
-                layout.Add(content,group);group.Margin=new Padding(0,layout.Scale(4),0,0);
-                var label=new Label{AutoSize=true,Text=text,Tag="registration-surface",Font=new Font(Font,FontStyle.Bold)};
-                label.Disposed+=(_,_)=>label.Font.Dispose();layout.Add(group,label);
-
-            }
             registrationAll=Action("一键注册全部","registerAllComponents",RunRegistrationBatch);
-            registrationAll.MinimumSize=new Size(layout.Scale(200),layout.Scale(38));MainMenuAppearance.SetPrimary(registrationAll);
+            registrationAll.MinimumSize=new Size(layout.Scale(112),layout.Scale(32));MainMenuAppearance.SetPrimary(registrationAll);
             registrationCancel=new Button{Text="取消",Name="cancelRegistrationBatch",AutoSize=true,Visible=false,MinimumSize=new Size(layout.Scale(80),layout.Scale(30))};
             registrationCancel.Click+=(_,_)=>{registrationCancellation?.Cancel();registrationMessage.Text="正在取消下载；当前注册结束后停止后续步骤…";};
             var summary=layout.Stack();layout.Add(content,summary);summary.Margin=Padding.Empty;
             registrationSummary=new Label{Name="registrationSummary",Text="正在检查组件…",AutoSize=true,Tag="registration-surface"};
-            var summaryActions=layout.Inline(registrationAll,registrationCancel);summaryActions.Tag="registration-surface";
-            var summaryRow=layout.Row(registrationSummary,summaryActions,stackNarrow:false);summaryRow.Tag="registration-surface";
+            var summaryActions=layout.Inline(registrationAll,registrationCancel,registrationSummary);summaryActions.Tag="registration-surface";
+            var downloadPage=new LinkLabel{Text="组件下载 ↗",Name="componentReleasePage",AutoSize=true,Anchor=AnchorStyles.Right,LinkColor=MainMenuAppearance.Text,ActiveLinkColor=MainMenuAppearance.Text};
+            downloadPage.LinkClicked+=(_,_)=>{try{URLHelpers.OpenURL("https://github.com/zhanglegezhang/xiaomang_component/releases");}catch(Exception error){registrationMessage.Text="无法打开组件发布页面："+error.Message;}};
+            var summaryRow=new TableLayoutPanel{AutoSize=true,ColumnCount=2,Tag="registration-surface",Margin=Padding.Empty};
+            summaryRow.ColumnStyles.Add(new ColumnStyle(SizeType.Percent,100));summaryRow.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize));
+            summaryActions.Dock=DockStyle.Fill;summaryRow.Controls.Add(summaryActions,0,0);summaryRow.Controls.Add(downloadPage,1,0);
             layout.Add(summary,summaryRow);
             registrationProgress=new ProgressBar{Name="registrationOverallProgress",Visible=false,Height=layout.Scale(6),Minimum=0,Maximum=100};layout.Add(summary,registrationProgress);
-            registrationMessage=new Label{Name="registrationOperationMessage",AutoSize=true,Tag="registration-surface",Text="缺失组件自动下载；录屏约65MB、语音约149MB、文本输入约129MB、OCR识别约29MiB。已有组件复用，OCR识别组件无需注册。"};layout.Add(summary,registrationMessage);
+            registrationMessage=new Label{Name="registrationOperationMessage",AutoSize=true,Tag="registration-surface",Text="",Visible=false};layout.Add(summary,registrationMessage);registrationMessage.TextChanged+=(_,_)=>registrationMessage.Visible=!string.IsNullOrWhiteSpace(registrationMessage.Text);
 
             group=content;
             var mixedStatus=Status("mixedOcrStatus");
@@ -139,10 +140,10 @@ namespace ShareX
                 Action("撤销注册","uninstallXiaomangInputMethod",_=>XiaomangInputMethodManager.RegisterAsync(false)),
                 Action("打开日志","openXiaomangInputSetupLogFolder",_=>OpenRegistrationLog(false)));
 
-            Heading("鼠标右键·收藏（需管理员授权）");
+
             var modernStatus=Status("modernFileMenuStatus");
             var certificate=new Label{Name="modernFileMenuFingerprint",AutoSize=true,Visible=false};
-            var certificateDetails=new Button{Text="证书详情",Name="modernCertificateDetails",AutoSize=true,MinimumSize=new Size(layout.Scale(100),layout.Scale(30))};
+            var certificateDetails=new Button{Text="证书详情",Name="modernCertificateDetails",AutoSize=true,MinimumSize=new Size(layout.Scale(94),layout.Scale(30))};
             certificateDetails.Click+=(_,_)=>
             {
                 if(!certificate.Visible)
@@ -153,7 +154,7 @@ namespace ShareX
                 certificate.Visible=!certificate.Visible;
             };
             registrationActions.Add(certificateDetails);
-            fileRegistrationRow=Row("外层菜单",modernStatus,
+            fileRegistrationRow=Row("鼠标右键菜单",modernStatus,
                 Action("注册 / 修复","installModernFileMenu",_=>ModernFileFavoritesMenu.ChangeAsync(true,true)),
                 certificateDetails,Action("移除入口","removeModernFileMenu",_=>ModernFileFavoritesMenu.ChangeAsync(false,false)));
             certificate.Tag="registration-surface";layout.Add(group,certificate);
@@ -183,7 +184,7 @@ namespace ShareX
                     bool mixedReady=state.Mixed;
                     ((RegistrationStatus)mixedStatus).UpdateState(mixedReady?"已就绪":state.MixedFiles?"需修复":"未下载",mixedReady);
                     if(mixedReady)count++;
-                    registrationSummary.Text=count==5?"✓ 全部已就绪   5 / 5 项":$"组件准备   {count} / 5 项";
+                    registrationSummary.ForeColor=count==5?Color.FromArgb(127,218,153):MainMenuAppearance.Text;registrationSummary.Text=count==5?"✓ 全部已就绪   5 / 5 项":$"组件准备   {count} / 5 项";
                 },error=>{if(!registrationBusy)registrationMessage.Text="状态检查失败："+error.Message;});
             registrationTab.VisibleChanged+=(_,_)=>registrationRefresh.UpdateVisibility();
             Disposed+=(_,_)=>{registrationCancellation?.Cancel();registrationRefresh.Dispose();};
