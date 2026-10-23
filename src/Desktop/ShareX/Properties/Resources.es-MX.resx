@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -267,7 +267,7 @@ Elija "No" para cancelar y deshabilitar la subida automática.</value>
     <value>X: {0}, Y: {1}, Ancho: {2}, Alto: {3}</value>
   </data>
   <data name="ApplicationSettingsForm_btnResetSettings_Click_WouldYouLikeToResetShareXSettings" xml:space="preserve">
-    <value>¿Desea restablecer la configuración de ShareX?</value>
+    <value>¿Desea restablecer la configuración de 小蟒?</value>
   </data>
   <data name="BeforeUploadForm_BeforeUploadForm__0__is_about_to_be_uploaded_to__1___You_may_choose_a_different_destination_" xml:space="preserve">
     <value>{0} está a punto de ser subido a {1}. Se puede elegir un destino diferente.</value>
@@ -371,7 +371,7 @@ Puedes desactivarlo más adelante desde el menú "Tareas después de capturar".<
     <value>Error</value>
   </data>
   <data name="YourAntiVirusSoftwareOrTheControlledFolderAccessFeatureInWindowsCouldBeBlockingShareX" xml:space="preserve">
-    <value>Tu antivirus o la característica de control de carpetas en Windows podría estar bloqueando ShareX.</value>
+    <value>Tu antivirus o la característica de control de carpetas en Windows podría estar bloqueando 小蟒.</value>
   </data>
   <data name="QuickTaskMenuEditorForm_Reset_all_quick_tasks_to_defaults_Confirmation" xml:space="preserve">
     <value>¿Restablecer todas las tareas predefinidas?</value>
@@ -425,9 +425,9 @@ Puedes desactivarlo más adelante desde el menú "Tareas después de capturar".<
     <value>Cerrar</value>
   </data>
   <data name="ShareXNeedsToBeRestartedForThePersonalFolderChangesToApply" xml:space="preserve">
-    <value>ShareX debe reiniciarse para que los cambios a la carpeta personal surtan efecto.
+    <value>小蟒 debe reiniciarse para que los cambios a la carpeta personal surtan efecto.
 
-¿Desea reiniciar ShareX?</value>
+¿Desea reiniciar 小蟒?</value>
   </data>
   <data name="AboutForm_AboutForm_Website" xml:space="preserve">
     <value>Sitio web</value>
@@ -472,7 +472,7 @@ Puedes desactivarlo más adelante desde el menú "Tareas después de capturar".<
     <value>Los flujos de trabajo pueden agregarse en la configuración de los atajos de teclado...</value>
   </data>
   <data name="ShareXConfirmation" xml:space="preserve">
-    <value>ShareX - Confirmación</value>
+    <value>小蟒 - Confirmación</value>
   </data>
   <data name="UploadTask_DownloadAndUpload_Downloading" xml:space="preserve">
     <value>Descargando</value>
@@ -514,7 +514,7 @@ Puedes desactivarlo más adelante desde el menú "Tareas después de capturar".<
     <value>La fuente de audio y video FFmpeg no pueden ser ambos "Ninguno".</value>
   </data>
   <data name="ShareXCannotBeClosedWhileScreenRecordingIsActive" xml:space="preserve">
-    <value>ShareX no se puede cerrar mientras la grabación de pantalla está activa.
+    <value>小蟒 no se puede cerrar mientras la grabación de pantalla está activa.
 
 ¿Quieres detener la grabación de pantalla?</value>
   </data>
@@ -526,7 +526,7 @@ Puedes desactivarlo más adelante desde el menú "Tareas después de capturar".<
   </data>
   <data name="Program_WritePersonalPathConfig_Cant_access_to_file" xml:space="preserve">
     <value>No se puede acceder al archivo "{0}". 
-Ejecute ShareX como administrador y cambie la ubicación de la carpeta personal.</value>
+Ejecute 小蟒 como administrador y cambie la ubicación de la carpeta personal.</value>
   </data>
   <data name="ApplicationSettingsForm_cbStartWithWindows_DisabledByUser_Text" xml:space="preserve">
     <value>El inicio se ha deshabilitado desde el Administrador de tareas</value>
@@ -567,7 +567,7 @@ aquí</value>
 
 {1}
 
-Por favor seleccione un atajo de teclado diferente o salga de la aplicación que está interfiriendo y vuelva a abrir ShareX.</value>
+Por favor seleccione un atajo de teclado diferente o salga de la aplicación que está interfiriendo y vuelva a abrir 小蟒.</value>
   </data>
   <data name="InspectWindow_ClientRectangle" xml:space="preserve">
     <value>Rectángulo del cliente</value>

@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -136,7 +136,7 @@
     <value>취소</value>
   </data>
   <data name="AssetsFolderMustBeInsideShareXImageEffectsFolder" xml:space="preserve">
-    <value>Assets 폴더 must be inside ShareX 이미지 effects 폴더.</value>
+    <value>Assets 폴더 must be inside 小蟒 이미지 effects 폴더.</value>
   </data>
   <data name="InvalidAssetsFolderPath" xml:space="preserve">
     <value>Invalid assets 폴더 경로</value>

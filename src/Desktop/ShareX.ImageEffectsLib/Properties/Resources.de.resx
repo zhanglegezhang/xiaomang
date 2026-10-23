@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -136,7 +136,7 @@
     <value>Abbrechen</value>
   </data>
   <data name="AssetsFolderMustBeInsideShareXImageEffectsFolder" xml:space="preserve">
-    <value>Der Ordner Assets muss sich im ShareX-Ordner für Bildeffekte befinden.</value>
+    <value>Der Ordner Assets muss sich im 小蟒-Ordner für Bildeffekte befinden.</value>
   </data>
   <data name="InvalidAssetsFolderPath" xml:space="preserve">
     <value>Ungültiger Pfad zum Asset-Ordner</value>

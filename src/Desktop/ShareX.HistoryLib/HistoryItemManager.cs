@@ -1,4 +1,4 @@
-﻿#region License Information (GPL v3)
+#region License Information (GPL v3)
 
 /*
     ShareX - A program that allows you to take screenshots and share any file type
@@ -650,7 +650,7 @@ namespace ShareX.HistoryLib
                 string oldFileName = Path.GetFileNameWithoutExtension(HistoryItem.FilePath);
 
                 // TODO: Translate
-                string newFileName = InputBox.Show("Rename file", oldFileName);
+                string newFileName = InputBox.Show("重命名文件", oldFileName);
 
                 if (!string.IsNullOrEmpty(newFileName) && !oldFileName.Equals(newFileName, StringComparison.OrdinalIgnoreCase))
                 {
@@ -672,10 +672,10 @@ namespace ShareX.HistoryLib
             if (SelectedItemCount > 0)
             {
                 // TODO: Translate
-                string itemText = SelectedItemCount > 1 ? "these items" : "this item";
-                string message = $"Do you really want to delete {itemText}?";
+                string itemText = SelectedItemCount > 1 ? "这些记录" : "此记录";
+                string message = $"确定删除{itemText}吗？";
 
-                if (MessageBox.Show(message, "ShareX - Confirmation", MessageBoxButtons.YesNo) == DialogResult.Yes)
+                if (MessageBox.Show(message, "小蟒 - 确认", MessageBoxButtons.YesNo) == DialogResult.Yes)
                 {
                     HistoryItem[] historyItems = OnGetHistoryItems();
                     if (historyItems != null && historyItems.Length > 0)
@@ -691,10 +691,10 @@ namespace ShareX.HistoryLib
             if (SelectedItemCount > 0)
             {
                 // TODO: Translate
-                string fileText = SelectedItemCount > 1 ? "these files" : "this file";
-                string message = $"Do you really want to delete {fileText}?";
+                string fileText = SelectedItemCount > 1 ? "这些文件" : "此文件";
+                string message = $"确定删除{fileText}吗？";
 
-                if (MessageBox.Show(message, "ShareX - Confirmation", MessageBoxButtons.YesNo) == DialogResult.Yes)
+                if (MessageBox.Show(message, "小蟒 - 确认", MessageBoxButtons.YesNo) == DialogResult.Yes)
                 {
                     HistoryItem[] historyItems = OnGetHistoryItems();
                     if (historyItems != null && historyItems.Length > 0)

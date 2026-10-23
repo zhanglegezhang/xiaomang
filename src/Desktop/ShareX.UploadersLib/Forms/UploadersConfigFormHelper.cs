@@ -1,4 +1,4 @@
-﻿#region License Information (GPL v3)
+#region License Information (GPL v3)
 
 /*
     ShareX - A program that allows you to take screenshots and share any file type
@@ -116,12 +116,12 @@ namespace ShareX.UploadersLib
                     if (result)
                     {
                         oauthFlickr.Status = OAuthLoginStatus.LoginSuccessful;
-                        MessageBox.Show(Resources.UploadersConfigForm_Login_successful, "ShareX", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        MessageBox.Show(Resources.UploadersConfigForm_Login_successful, "小蟒", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     }
                     else
                     {
                         oauthFlickr.Status = OAuthLoginStatus.LoginFailed;
-                        MessageBox.Show(Resources.UploadersConfigForm_Login_failed, "ShareX", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        MessageBox.Show(Resources.UploadersConfigForm_Login_failed, "小蟒", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
                 }
             }
@@ -175,12 +175,12 @@ namespace ShareX.UploadersLib
                         Config.PhotobucketAccountInfo.AlbumList.Add(Config.PhotobucketAccountInfo.AlbumID);
                         cbPhotobucketAlbumPaths.Items.Add(Config.PhotobucketAccountInfo.AlbumID);
                         cbPhotobucketAlbumPaths.SelectedIndex = 0;
-                        MessageBox.Show(Resources.UploadersConfigForm_Login_successful, "ShareX", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        MessageBox.Show(Resources.UploadersConfigForm_Login_successful, "小蟒", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     }
                     else
                     {
                         lblPhotobucketAccountStatus.Text = Resources.UploadersConfigForm_Login_failed;
-                        MessageBox.Show(Resources.UploadersConfigForm_Login_failed, "ShareX", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        MessageBox.Show(Resources.UploadersConfigForm_Login_failed, "小蟒", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
                 }
             }
@@ -198,7 +198,7 @@ namespace ShareX.UploadersLib
                 string albumPath = txtPhotobucketParentAlbumPath.Text + "/" + txtPhotobucketNewAlbumName.Text;
                 Config.PhotobucketAccountInfo.AlbumList.Add(albumPath);
                 cbPhotobucketAlbumPaths.Items.Add(albumPath);
-                MessageBox.Show(string.Format(Resources.UploadersConfigForm_PhotobucketCreateAlbum__0__successfully_created_, albumPath), "ShareX",
+                MessageBox.Show(string.Format(Resources.UploadersConfigForm_PhotobucketCreateAlbum__0__successfully_created_, albumPath), "小蟒",
                     MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
@@ -651,7 +651,7 @@ namespace ShareX.UploadersLib
                 msg = e.Message;
             }
 
-            MessageBox.Show(msg, "ShareX", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            MessageBox.Show(msg, "小蟒", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
         #endregion FTP
@@ -691,12 +691,12 @@ namespace ShareX.UploadersLib
                     if (pastebin.Login())
                     {
                         UpdatePastebinStatus();
-                        MessageBox.Show(Resources.UploadersConfigForm_Login_successful, "ShareX", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        MessageBox.Show(Resources.UploadersConfigForm_Login_successful, "小蟒", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     }
                     else
                     {
                         UpdatePastebinStatus();
-                        MessageBox.Show(Resources.UploadersConfigForm_Login_failed, "ShareX", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        MessageBox.Show(Resources.UploadersConfigForm_Login_failed, "小蟒", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
                 }
                 catch (Exception ex)
@@ -891,12 +891,12 @@ namespace ShareX.UploadersLib
             if (result)
             {
                 oauth2.Status = OAuthLoginStatus.LoginSuccessful;
-                MessageBox.Show(Resources.UploadersConfigForm_Login_successful, "ShareX", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show(Resources.UploadersConfigForm_Login_successful, "小蟒", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             else
             {
                 oauth2.Status = OAuthLoginStatus.LoginFailed;
-                MessageBox.Show(Resources.UploadersConfigForm_Login_failed, "ShareX", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(Resources.UploadersConfigForm_Login_failed, "小蟒", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 

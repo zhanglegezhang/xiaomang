@@ -21,6 +21,16 @@ namespace ShareX
         private void SelectModule(string module, bool expand = true)
         {
             if (module != "Clipboard" && module != "Favorites" && module != "News" && module != "Diary") module = "Todo";
+            if (!Settings.IsModuleVisible(module)) module = Settings.FirstVisibleModule();
+            if (string.IsNullOrEmpty(module))
+            {
+                // Keep the robot and its menu available while every tab is hidden.
+                if (Settings.ActiveModule == "Favorites") favoritesPage.CommitPendingFavorites();
+                Settings.ActiveModule = string.Empty;
+                SetExpanded(false);
+                SettingManager.SaveApplicationConfigAsync();
+                return;
+            }
             if (module != "Todo") RestoreSearchCompletedVisibility();
             string previousModule = Settings.ActiveModule;
             if (Settings.ActiveModule == "Favorites" && module != "Favorites") favoritesPage.CommitPendingFavorites();
@@ -68,7 +78,7 @@ namespace ShareX
 
         private void UpdateModuleVisibility()
         {
-            bool isExpanded = expanded;
+            bool isExpanded = expanded && Settings.IsModuleVisible(Settings.ActiveModule);
             string module = Settings.ActiveModule;
             moduleSidebar.Visible = isExpanded;
             todoPage.Visible = isExpanded && module == "Todo";
@@ -76,14 +86,25 @@ namespace ShareX
             favoritesPage.Visible = isExpanded && module == "Favorites";
             toolsPage.Visible = isExpanded && module == "News";
             diaryPage.Visible = isExpanded && module == "Diary";
-            // Keep all five stickers available, including the current page.
-            todoModuleButton.Visible = isExpanded;
-            clipboardModuleButton.Visible = isExpanded;
-            favoritesModuleButton.Visible = isExpanded;
-            newsModuleButton.Visible = isExpanded;
-            diaryModuleButton.Visible = isExpanded;
+            int number = 0;
+            foreach (var entry in new[] {
+                ("Todo", "待办", todoModuleButton, (Panel)todoPage),
+                ("Clipboard", "剪切板", clipboardModuleButton, (Panel)clipboardPage),
+                ("Favorites", "收藏夹", favoritesModuleButton, (Panel)favoritesPage),
+                ("News", "工具", newsModuleButton, (Panel)toolsPage),
+                ("Diary", "日记", diaryModuleButton, (Panel)diaryPage) })
+            {
+                bool enabled = Settings.IsModuleVisible(entry.Item1);
+                entry.Item3.Visible = isExpanded && enabled;
+                if (!enabled) continue;
+                string caption = (++number).ToString() + entry.Item2;
+                entry.Item3.Text = string.Join("\n", caption.ToCharArray());
+                entry.Item4.AccessibleName = caption;
+            }
             UpdateCompactText();
         }
+
+        internal void ApplyVisibleModules() => SelectModule(Settings.ActiveModule, false);
 
         private void RefreshActiveModuleSurface()
         {

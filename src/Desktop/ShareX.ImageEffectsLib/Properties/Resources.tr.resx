@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -142,7 +142,7 @@
     <value>Geçersiz varlık klasör yolu</value>
   </data>
   <data name="AssetsFolderMustBeInsideShareXImageEffectsFolder" xml:space="preserve">
-    <value>Varlık klasörü ShareX resim efektleri klasörünün içinde olmalıdır.</value>
+    <value>Varlık klasörü 小蟒 resim efektleri klasörünün içinde olmalıdır.</value>
   </data>
   <data name="MissingPresetName" xml:space="preserve">
     <value>Ön ayar ismi eksik</value>

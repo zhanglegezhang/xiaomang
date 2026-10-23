@@ -1,4 +1,4 @@
-﻿#region License Information (GPL v3)
+#region License Information (GPL v3)
 
 /*
     ShareX - A program that allows you to take screenshots and share any file type
@@ -60,8 +60,8 @@ namespace ShareX.NativeMessagingHost
             }
             else
             {
-                MessageBox.Show("This executable is used to receive data from browser addon and send it to ShareX.",
-                    "ShareX NativeMessagingHost", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show("此程序用于接收浏览器扩展的数据，并将其传递给小蟒。",
+                    "小蟒 - 浏览器连接程序", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
     }

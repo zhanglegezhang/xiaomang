@@ -263,7 +263,7 @@ namespace ShareX
         {
             IsReady = false;
 
-            niTray.Visible = Program.Settings.ShowTray;
+            niTray.Visible = false;
 
             TaskManager.UpdateMainFormTip();
             TaskManager.RecentManager.InitItems();
@@ -1115,7 +1115,9 @@ namespace ShareX
 
         protected override void SetVisibleCore(bool value)
         {
-            if (value && !IsHandleCreated && (Program.SilentRun || Program.Settings.SilentRun) && Program.Settings.ShowTray)
+            // Startup shortcuts pass -silent. A manual launch always shows the menu,
+            // regardless of retired options in an existing configuration file.
+            if (value && !IsHandleCreated && Program.SilentRun)
             {
                 CreateHandle();
                 value = false;
@@ -1206,11 +1208,6 @@ namespace ShareX
                 Hide();
                 SettingManager.SaveAllSettingsAsync();
 
-                if (Program.Settings.ShowTray && Program.Settings.FirstTimeMinimizeToTray)
-                {
-                    TaskHelpers.ShowNotificationTip(Resources.ShareXIsMinimizedToTheSystemTray, Program.DisplayName, 5000);
-                    Program.Settings.FirstTimeMinimizeToTray = false;
-                }
             }
         }
 
@@ -2819,7 +2816,7 @@ namespace ShareX
         private void tsmiDeleteSelectedFile_Click(object sender, EventArgs e)
         {
             if (MessageBox.Show(Resources.MainForm_tsmiDeleteSelectedFile_Click_Do_you_really_want_to_delete_this_file_,
-                "ShareX - " + Resources.MainForm_tsmiDeleteSelectedFile_Click_File_delete_confirmation, MessageBoxButtons.YesNo) == DialogResult.Yes)
+                "小蟒 - " + Resources.MainForm_tsmiDeleteSelectedFile_Click_File_delete_confirmation, MessageBoxButtons.YesNo) == DialogResult.Yes)
             {
                 uim.DeleteFiles();
                 RemoveSelectedItems();

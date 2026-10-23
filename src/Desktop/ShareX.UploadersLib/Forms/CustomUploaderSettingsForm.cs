@@ -1,4 +1,4 @@
-﻿#region License Information (GPL v3)
+#region License Information (GPL v3)
 
 /*
     ShareX - A program that allows you to take screenshots and share any file type
@@ -286,7 +286,7 @@ namespace ShareX.UploadersLib
             catch (Exception e)
             {
                 DebugHelper.WriteException(e);
-                MessageBox.Show(Resources.ExportFailed + "\n\n" + e, "ShareX - " + "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                ErrorForm.ShowHandled("自定义上传器导出失败。请检查保存位置及写入权限。", e, folderPath);
             }
         }
 
@@ -338,7 +338,7 @@ namespace ShareX.UploadersLib
                     }
                 }
 
-                MessageBox.Show($"{updated} custom uploader files updated.", "ShareX", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show($"{updated} custom uploader files updated.", "小蟒", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
 
@@ -735,7 +735,7 @@ namespace ShareX.UploadersLib
                 }
                 catch (Exception e)
                 {
-                    MessageBox.Show(e.Message, "ShareX - Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    ErrorForm.ShowHandled("JSON 格式化失败。请检查 JSON 内容；原文未修改。", e);
                 }
             }
         }
@@ -752,7 +752,7 @@ namespace ShareX.UploadersLib
                 }
                 catch (Exception e)
                 {
-                    MessageBox.Show(e.Message, "ShareX - Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    ErrorForm.ShowHandled("XML 格式化失败。请检查 XML 标签；原文未修改。", e);
                 }
             }
         }
@@ -863,14 +863,14 @@ namespace ShareX.UploadersLib
             {
                 if (string.IsNullOrEmpty(uploader.RequestURL))
                 {
-                    MessageBox.Show(Resources.UploadersConfigForm_eiCustomUploaders_ExportRequested_RequestURLMustBeConfigured, "ShareX - " + Resources.UploadersConfigForm_Error,
+                    MessageBox.Show(Resources.UploadersConfigForm_eiCustomUploaders_ExportRequested_RequestURLMustBeConfigured, "小蟒 - " + Resources.UploadersConfigForm_Error,
                         MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return null;
                 }
 
                 if (uploader.DestinationType == CustomUploaderDestinationType.None)
                 {
-                    MessageBox.Show(Resources.UploadersConfigForm_eiCustomUploaders_ExportRequested_DestinationTypeMustBeConfigured, "ShareX - " + Resources.UploadersConfigForm_Error,
+                    MessageBox.Show(Resources.UploadersConfigForm_eiCustomUploaders_ExportRequested_DestinationTypeMustBeConfigured, "小蟒 - " + Resources.UploadersConfigForm_Error,
                         MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return null;
                 }
@@ -884,16 +884,10 @@ namespace ShareX.UploadersLib
         private void eiCustomUploaders_ImportRequested(object obj)
         {
             CustomUploaderItem cui = obj as CustomUploaderItem;
-
-            try
-            {
-                cui.CheckBackwardCompatibility();
-                CustomUploaderAdd(cui);
-            }
-            catch (Exception e)
-            {
-                e.ShowError(false);
-            }
+            // Let ExportImportControl report failure and suppress ImportCompleted.
+            if (cui == null) throw new InvalidOperationException("不是有效的自定义上传器配置。");
+            cui.CheckBackwardCompatibility();
+            CustomUploaderAdd(cui);
         }
 
         private void eiCustomUploaders_ImportCompleted()
@@ -910,7 +904,7 @@ namespace ShareX.UploadersLib
 
         private void tsmiClearUploaders_Click(object sender, EventArgs e)
         {
-            if (MessageBox.Show(Resources.UploadersConfigForm_Remove_all_custom_uploaders_Confirmation, "ShareX",
+            if (MessageBox.Show(Resources.UploadersConfigForm_Remove_all_custom_uploaders_Confirmation, "小蟒",
                 MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
             {
                 CustomUploaderClearUploaders();

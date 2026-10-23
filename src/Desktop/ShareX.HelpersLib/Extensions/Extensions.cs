@@ -1,4 +1,4 @@
-﻿#region License Information (GPL v3)
+#region License Information (GPL v3)
 
 /*
     ShareX - A program that allows you to take screenshots and share any file type
@@ -459,8 +459,8 @@ namespace ShareX.HelpersLib
 
         public static void ShowError(this Exception e, bool fullError = true)
         {
-            string error = fullError ? e.ToString() : e.Message;
-            MessageBox.Show(error, "ShareX - " + Resources.Error, MessageBoxButtons.OK, MessageBoxIcon.Error);
+            using var form = new ErrorForm("操作未完成，请查看错误详情。", fullError ? e.ToString() : e.Message, null, null, false);
+            form.ShowDialog();
         }
 
         public static Task ContinueInCurrentContext(this Task task, Action action)

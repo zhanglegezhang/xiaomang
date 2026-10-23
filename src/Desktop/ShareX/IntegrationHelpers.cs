@@ -1,4 +1,4 @@
-﻿#region License Information (GPL v3)
+#region License Information (GPL v3)
 
 /*
     ShareX - A program that allows you to take screenshots and share any file type
@@ -401,7 +401,7 @@ namespace ShareX
             }
 
             MessageBox.Show(Resources.ApplicationSettingsForm_cbSteamShowInApp_CheckedChanged_For_settings_to_take_effect_ShareX_needs_to_be_reopened_from_Steam_,
-                "ShareX", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                "小蟒", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
         public static void Uninstall()

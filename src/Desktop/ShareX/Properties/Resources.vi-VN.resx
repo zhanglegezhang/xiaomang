@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -264,7 +264,7 @@ Nhấn "Không" để hủy tiến trình tải lên hiện tại và tắt ch�
     <value>X: {0}, Y: {1}, Rộng: {2}, Cao: {3}</value>
   </data>
   <data name="ApplicationSettingsForm_btnResetSettings_Click_WouldYouLikeToResetShareXSettings" xml:space="preserve">
-    <value>Bạn có muốn đặt lại các cài đặt cho ShareX không?</value>
+    <value>Bạn có muốn đặt lại các cài đặt cho 小蟒 không?</value>
   </data>
   <data name="BeforeUploadForm_BeforeUploadForm__0__is_about_to_be_uploaded_to__1___You_may_choose_a_different_destination_" xml:space="preserve">
     <value>{0} chuẩn bị được tải lên {1}. Bạn có thể chọn nơi tải lên khác.</value>
@@ -366,7 +366,7 @@ Sau đó, bạn có thể tắt nó từ menu "Sau khi chụp tác vụ".</value
     <value>Lỗi</value>
   </data>
   <data name="YourAntiVirusSoftwareOrTheControlledFolderAccessFeatureInWindowsCouldBeBlockingShareX" xml:space="preserve">
-    <value>Phần mềm chống vi-rút của bạn hoặc tính năng truy cập thư mục được kiểm soát trong Windows có thể đang chặn ShareX.</value>
+    <value>Phần mềm chống vi-rút của bạn hoặc tính năng truy cập thư mục được kiểm soát trong Windows có thể đang chặn 小蟒.</value>
   </data>
   <data name="QuickTaskMenuEditorForm_Reset_all_quick_tasks_to_defaults_Confirmation" xml:space="preserve">
     <value>Đặt lại tất cả tác vụ nhanh về mặc định?</value>
@@ -420,9 +420,9 @@ Sau đó, bạn có thể tắt nó từ menu "Sau khi chụp tác vụ".</value
     <value>Đóng</value>
   </data>
   <data name="ShareXNeedsToBeRestartedForThePersonalFolderChangesToApply" xml:space="preserve">
-    <value>ShareX cần được khởi động lại để thay đổi thư mục cá nhân có hiệu lực.
+    <value>小蟒 cần được khởi động lại để thay đổi thư mục cá nhân có hiệu lực.
 
-Bạn có muốn khởi động lại ShareX?</value>
+Bạn có muốn khởi động lại 小蟒?</value>
   </data>
   <data name="AboutForm_AboutForm_Website" xml:space="preserve">
     <value>Website</value>
@@ -467,7 +467,7 @@ Bạn có muốn khởi động lại ShareX?</value>
     <value>Bạn có thể thêm các luồng công việc từ thiết lập phím tắt</value>
   </data>
   <data name="ShareXConfirmation" xml:space="preserve">
-    <value>ShareX - Xác nhận</value>
+    <value>小蟒 - Xác nhận</value>
   </data>
   <data name="UploadTask_DownloadAndUpload_Downloading" xml:space="preserve">
     <value>Đang tải về</value>
@@ -516,7 +516,7 @@ Bạn có muốn khởi động lại ShareX?</value>
   </data>
   <data name="Program_WritePersonalPathConfig_Cant_access_to_file" xml:space="preserve">
     <value>Không thể truy cập tới tệp "{0}"
-Vui lòng chạy ShareX dưới quyền administrator để thay đổi thư mục riêng.</value>
+Vui lòng chạy 小蟒 dưới quyền administrator để thay đổi thư mục riêng.</value>
   </data>
   <data name="ApplicationSettingsForm_cbStartWithWindows_DisabledByUser_Text" xml:space="preserve">
     <value>Tự khởi động đã bị vô hiệu trong Task Manager</value>
@@ -554,7 +554,7 @@ Vui lòng chạy ShareX dưới quyền administrator để thay đổi thư m�
 
 {1}
 
-Vui lòng chọn phím tắt khác hoặc thoát ứng dụng đang gây lỗi và mở lại ShareX.</value>
+Vui lòng chọn phím tắt khác hoặc thoát ứng dụng đang gây lỗi và mở lại 小蟒.</value>
   </data>
   <data name="InspectWindow_ClientRectangle" xml:space="preserve">
     <value>Hình chữ nhật khách hàng</value>
@@ -635,7 +635,7 @@ Nhấn chuột giữa để đóng</value>
     <value>Quyên góp</value>
   </data>
   <data name="ShareXCannotBeClosedWhileScreenRecordingIsActive" xml:space="preserve">
-    <value>Không thể đóng ShareX khi đang quay màn hình.
+    <value>Không thể đóng 小蟒 khi đang quay màn hình.
 
 Bạn có muốn hủy phiên quay màn hình đang hoạt động không?</value>
   </data>

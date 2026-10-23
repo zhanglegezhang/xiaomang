@@ -32,8 +32,8 @@ namespace ShareX
             switch(page.Name)
             {
                 case "tpGeneral":
-                    design.Section("启动与托盘");design.Toggle("开机自动启动",cbStartWithWindows);design.Toggle("显示托盘图标",cbShowTray);design.Hint("关闭窗口仍在后台运行，点击「退出小蟒」结束。");design.Toggle("启动时隐藏主窗口",cbSilentRun);
-                    design.Section("界面语言");design.Editor("显示语言",btnLanguages);
+                    design.Section("启动和页签");design.Toggle("开机自动启动",cbStartWithWindows);
+                    design.Editor("页签", CreateVisibleModuleOptions());
                     design.Section("个人数据");
                     design.Action("导出个人数据",(Button)Find("personalData_export"),"导出…");
                     design.Action("导入个人数据",(Button)Find("personalData_import"),"导入…");
@@ -42,7 +42,7 @@ namespace ShareX
                 case "tpCaptureGeneral":
                     design.Section("截图行为");Toggle("cbShowCursor","在截图中显示鼠标指针");Toggle("cbCaptureAutoHideDesktopIcons","自动隐藏桌面图标");
                     Toggle("cbCaptureTransparent","截图窗口保留透明度");Toggle("cbCaptureShadow","截图窗口添加阴影");
-                    Number("nudCaptureShadowOffset","阴影偏移","px");Number("nudScreenshotDelay","截图延迟","秒");
+                    Number("nudCaptureShadowOffset","阴影偏移","px");
                     design.Section("区域截图");Editor("cbRegionCaptureMouseRightClickAction","鼠标右键动作");
                     Number("nudRegionCaptureBackgroundDimStrength","背景调暗强度","%");Toggle("cbRegionCaptureShowInfo","显示位置与尺寸");
                     design.Hint("截图窗口阴影依赖透明度。");break;

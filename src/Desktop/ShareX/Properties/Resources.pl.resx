@@ -268,7 +268,7 @@ Naciśnij 'Nie', aby anulować bieżące przesyłanie i wyłączyć automatyczne
     <value>X: {0}, Y: {1}, Szerokość: {2}, Wysokość: {3}</value>
   </data>
   <data name="ApplicationSettingsForm_btnResetSettings_Click_WouldYouLikeToResetShareXSettings" xml:space="preserve">
-    <value>Czy chcesz zresetować ustawienia ShareX?</value>
+    <value>Czy chcesz zresetować ustawienia 小蟒?</value>
   </data>
   <data name="BeforeUploadForm_BeforeUploadForm__0__is_about_to_be_uploaded_to__1___You_may_choose_a_different_destination_" xml:space="preserve">
     <value>{0} ma zostać przesłany do {1}. Możesz wybrać inne miejsce docelowe.</value>
@@ -373,7 +373,7 @@ Możesz je później wyłączyć w menu "Zadania po przechwyceniu".</value>
     <value>Błąd</value>
   </data>
   <data name="YourAntiVirusSoftwareOrTheControlledFolderAccessFeatureInWindowsCouldBeBlockingShareX" xml:space="preserve">
-    <value>Twoje oprogramowanie antywirusowe lub funkcja kontrolowanego dostępu do folderów w systemie Windows może blokować ShareX.</value>
+    <value>Twoje oprogramowanie antywirusowe lub funkcja kontrolowanego dostępu do folderów w systemie Windows może blokować 小蟒.</value>
   </data>
   <data name="QuickTaskMenuEditorForm_Reset_all_quick_tasks_to_defaults_Confirmation" xml:space="preserve">
     <value>Przywrócić wszystkie szybkie zadania do wartości domyślnych?</value>
@@ -427,9 +427,9 @@ Możesz je później wyłączyć w menu "Zadania po przechwyceniu".</value>
     <value>Zamknij</value>
   </data>
   <data name="ShareXNeedsToBeRestartedForThePersonalFolderChangesToApply" xml:space="preserve">
-    <value>ShareX musi zostać ponownie uruchomiony, aby zmiany w folderach osobistych zostały zastosowane.
+    <value>小蟒 musi zostać ponownie uruchomiony, aby zmiany w folderach osobistych zostały zastosowane.
 
-Czy chcesz ponownie uruchomić ShareX?</value>
+Czy chcesz ponownie uruchomić 小蟒?</value>
   </data>
   <data name="AboutForm_AboutForm_Website" xml:space="preserve">
     <value>Strona</value>
@@ -474,7 +474,7 @@ Czy chcesz ponownie uruchomić ShareX?</value>
     <value>Możesz dodać operacje w ustawieniach skrótu...</value>
   </data>
   <data name="ShareXConfirmation" xml:space="preserve">
-    <value>ShareX - Potwierdzenie</value>
+    <value>小蟒 - Potwierdzenie</value>
   </data>
   <data name="UploadTask_DownloadAndUpload_Downloading" xml:space="preserve">
     <value>Pobieranie</value>
@@ -516,7 +516,7 @@ Czy chcesz ponownie uruchomić ShareX?</value>
     <value>Źródło wideo i audio FFmpeg nie może być jednocześnie "Brak".</value>
   </data>
   <data name="ShareXCannotBeClosedWhileScreenRecordingIsActive" xml:space="preserve">
-    <value>ShareX nie może zostać zamknięty, gdy aktywne jest nagrywanie ekranu.
+    <value>小蟒 nie może zostać zamknięty, gdy aktywne jest nagrywanie ekranu.
 
 Czy chcesz przerwać aktywne nagrywanie ekranu?</value>
   </data>
@@ -528,7 +528,7 @@ Czy chcesz przerwać aktywne nagrywanie ekranu?</value>
   </data>
   <data name="Program_WritePersonalPathConfig_Cant_access_to_file" xml:space="preserve">
     <value>Nie można uzyskać dostępu do pliku "{0}".
-Proszę uruchomić ShareX jako administrator, aby zmienić ścieżkę folderu osobistego.</value>
+Proszę uruchomić 小蟒 jako administrator, aby zmienić ścieżkę folderu osobistego.</value>
   </data>
   <data name="ApplicationSettingsForm_cbStartWithWindows_DisabledByUser_Text" xml:space="preserve">
     <value>Uruchamianie zostało wyłączone w menedżerze zadań</value>
@@ -569,7 +569,7 @@ tutaj</value>
 
 {1}
 
-Proszę wybrać inny skrót klawiszowy lub zamknąć konfliktową aplikację i ponownie otworzyć ShareX.</value>
+Proszę wybrać inny skrót klawiszowy lub zamknąć konfliktową aplikację i ponownie otworzyć 小蟒.</value>
   </data>
   <data name="InspectWindow_ClientRectangle" xml:space="preserve">
     <value>Prostokąt klienta</value>

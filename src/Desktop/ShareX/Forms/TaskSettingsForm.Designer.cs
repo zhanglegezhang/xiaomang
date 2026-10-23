@@ -341,18 +341,14 @@ namespace ShareX
             var resources = new System.ComponentModel.ComponentResourceManager(typeof(TaskSettingsForm));
             pCapture = new System.Windows.Forms.Panel();
             cbCaptureAutoHideDesktopIcons = new System.Windows.Forms.CheckBox();
-            lblScreenshotDelay = new System.Windows.Forms.Label();
             cbShowCursor = new System.Windows.Forms.CheckBox();
             lblCaptureShadowOffset = new System.Windows.Forms.Label();
             cbCaptureTransparent = new System.Windows.Forms.CheckBox();
             cbCaptureShadow = new System.Windows.Forms.CheckBox();
-            lblScreenshotDelayInfo = new System.Windows.Forms.Label();
-            nudScreenshotDelay = new System.Windows.Forms.NumericUpDown();
             nudCaptureShadowOffset = new System.Windows.Forms.NumericUpDown();
             cbOverrideCaptureSettings = new System.Windows.Forms.CheckBox();
             tpCaptureGeneral.SuspendLayout();
             pCapture.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)nudScreenshotDelay).BeginInit();
             ((System.ComponentModel.ISupportInitialize)nudCaptureShadowOffset).BeginInit();
             // 
             // tpCaptureGeneral
@@ -366,13 +362,10 @@ namespace ShareX
             // pCapture
             // 
             pCapture.Controls.Add(cbCaptureAutoHideDesktopIcons);
-            pCapture.Controls.Add(lblScreenshotDelay);
             pCapture.Controls.Add(cbShowCursor);
             pCapture.Controls.Add(lblCaptureShadowOffset);
             pCapture.Controls.Add(cbCaptureTransparent);
             pCapture.Controls.Add(cbCaptureShadow);
-            pCapture.Controls.Add(lblScreenshotDelayInfo);
-            pCapture.Controls.Add(nudScreenshotDelay);
             pCapture.Controls.Add(nudCaptureShadowOffset);
             resources.ApplyResources(pCapture, "pCapture");
             pCapture.Name = "pCapture";
@@ -383,11 +376,6 @@ namespace ShareX
             cbCaptureAutoHideDesktopIcons.Name = "cbCaptureAutoHideDesktopIcons";
             cbCaptureAutoHideDesktopIcons.UseVisualStyleBackColor = true;
             cbCaptureAutoHideDesktopIcons.CheckedChanged += cbCaptureAutoHideDesktopIcons_CheckedChanged;
-            // 
-            // lblScreenshotDelay
-            // 
-            resources.ApplyResources(lblScreenshotDelay, "lblScreenshotDelay");
-            lblScreenshotDelay.Name = "lblScreenshotDelay";
             // 
             // cbShowCursor
             // 
@@ -415,19 +403,6 @@ namespace ShareX
             cbCaptureShadow.UseVisualStyleBackColor = true;
             cbCaptureShadow.CheckedChanged += cbCaptureShadow_CheckedChanged;
             // 
-            // lblScreenshotDelayInfo
-            // 
-            resources.ApplyResources(lblScreenshotDelayInfo, "lblScreenshotDelayInfo");
-            lblScreenshotDelayInfo.Name = "lblScreenshotDelayInfo";
-            // 
-            // nudScreenshotDelay
-            // 
-            nudScreenshotDelay.DecimalPlaces = 1;
-            resources.ApplyResources(nudScreenshotDelay, "nudScreenshotDelay");
-            nudScreenshotDelay.Maximum = new decimal(new int[] { 300, 0, 0, 0 });
-            nudScreenshotDelay.Name = "nudScreenshotDelay";
-            nudScreenshotDelay.ValueChanged += nudScreenshotDelay_ValueChanged;
-            // 
             // nudCaptureShadowOffset
             // 
             resources.ApplyResources(nudCaptureShadowOffset, "nudCaptureShadowOffset");
@@ -448,7 +423,6 @@ namespace ShareX
             tpCaptureGeneral.PerformLayout();
             pCapture.ResumeLayout(false);
             pCapture.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)nudScreenshotDelay).EndInit();
             ((System.ComponentModel.ISupportInitialize)nudCaptureShadowOffset).EndInit();
         }
 
@@ -835,8 +809,6 @@ namespace ShareX
         private System.Windows.Forms.TabPage tpCapture;
         private System.Windows.Forms.TabControl tcCapture;
         private System.Windows.Forms.TabPage tpCaptureGeneral;
-        private System.Windows.Forms.Label lblScreenshotDelayInfo;
-        private System.Windows.Forms.NumericUpDown nudScreenshotDelay;
         private System.Windows.Forms.NumericUpDown nudCaptureShadowOffset;
         private System.Windows.Forms.CheckBox cbCaptureShadow;
         private System.Windows.Forms.CheckBox cbShowCursor;
@@ -878,7 +850,6 @@ namespace ShareX
         private System.Windows.Forms.CheckBox cbCaptureOCRSilent;
         private System.Windows.Forms.CheckBox cbCaptureOCRAutoCopy;
         private System.Windows.Forms.CheckBox cbCloseWindowAfterOpenServiceLink;
-        private System.Windows.Forms.Label lblScreenshotDelay;
         private System.Windows.Forms.CheckBox cbScreenRecordTransparentRegion;
         private System.Windows.Forms.CheckBox cbOverrideScreenshotsFolder;
         private System.Windows.Forms.Button btnScreenshotsFolderBrowse;

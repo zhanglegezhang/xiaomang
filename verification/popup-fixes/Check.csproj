@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup><OutputType>WinExe</OutputType><TargetFramework>net9.0-windows</TargetFramework><UseWindowsForms>true</UseWindowsForms><UseWPF>true</UseWPF><ImplicitUsings>enable</ImplicitUsings><IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion><Nullable>enable</Nullable></PropertyGroup>
+  <ItemGroup>
+    <Reference Include="ShareX"><HintPath>../../artifacts/Desktop/ShareX.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="ShareX.HelpersLib"><HintPath>../../artifacts/Desktop/ShareX.HelpersLib.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="ShareX.HistoryLib"><HintPath>../../artifacts/Desktop/ShareX.HistoryLib.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="ShareX.UploadersLib"><HintPath>../../artifacts/Desktop/ShareX.UploadersLib.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="ShareX.ImageEffectsLib"><HintPath>../../artifacts/Desktop/ShareX.ImageEffectsLib.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="Newtonsoft.Json"><HintPath>../../artifacts/Desktop/Newtonsoft.Json.dll</HintPath><Private>false</Private></Reference>
+  </ItemGroup>
+</Project>
+

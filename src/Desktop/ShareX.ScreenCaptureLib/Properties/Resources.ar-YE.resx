@@ -370,7 +370,7 @@
     <value>إرسال إلى الخلف</value>
   </data>
   <data name="RegionCaptureForm_ShowExitConfirmation_ShareXImageEditor" xml:space="preserve">
-    <value>ShareX - محرّر الصور</value>
+    <value>小蟒 - محرّر الصور</value>
   </data>
   <data name="ShapeManager_CreateContextMenu_Show_FPS" xml:space="preserve">
     <value>عرض معدل الإطارات FPS</value>

@@ -71,7 +71,6 @@ namespace ShareX
             }
 
             AddRow(cbShowCursor);
-            AddRow(NumberRow(lblScreenshotDelay, nudScreenshotDelay, lblScreenshotDelayInfo));
             AddRow(cbCaptureTransparent);
             AddRow(cbCaptureShadow, true);
             AddRow(NumberRow(lblCaptureShadowOffset, nudCaptureShadowOffset), true);

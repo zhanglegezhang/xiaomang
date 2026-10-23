@@ -94,24 +94,6 @@ namespace ShareX
                 InitializeAdvancedSettings();
             });
 
-            foreach (SupportedLanguage language in new[]
-            {
-                SupportedLanguage.Automatic,
-                SupportedLanguage.SimplifiedChinese,
-                SupportedLanguage.TraditionalChinese,
-                SupportedLanguage.English
-            })
-            {
-                var item = new ToolStripMenuItem(language.GetLocalizedDescription())
-                {
-                    Image = LanguageHelper.GetLanguageIcon(language),
-                    ImageScaling = ToolStripItemImageScaling.None
-                };
-                SupportedLanguage selected = language;
-                item.Click += (sender, e) => ChangeLanguage(selected);
-                cmsLanguages.Items.Add(item);
-            }
-
             InitializeRegistrationTab();
             UpdateControls();
             UpdateStartWithWindows();
@@ -123,14 +105,8 @@ namespace ShareX
             var layout = new SettingsPageLayout(this);
             var content = layout.Stack();
             content.SuspendLayout();
-            layout.Heading(content, "启动与托盘", "Startup and tray");
+            layout.Heading(content, "启动和页签", "Startup and tabs");
             layout.Add(content, cbStartWithWindows);
-            layout.Add(content, cbShowTray);
-            layout.Add(content, cbSilentRun);
-            layout.Heading(content, "界面语言", "Interface language");
-            btnLanguages.AutoSize = true;
-            btnLanguages.MinimumSize = new Size(0, layout.Scale(30));
-            layout.Add(content, layout.Row(lblLanguage, btnLanguages));
             layout.Heading(content, "个人数据", "Personal data");
             var export = CreatePersonalDataButton(layout, SettingsPageLayout.Caption("导出个人数据…", "Export personal data…"), "export");
             var import = CreatePersonalDataButton(layout, SettingsPageLayout.Caption("导入个人数据…", "Import personal data…"), "import");
@@ -176,33 +152,11 @@ namespace ShareX
         private void UpdateControls()
         {
             ready = false;
-            ChangeLanguage(Program.Settings.Language);
-            cbShowTray.Checked = Program.Settings.ShowTray;
-            cbSilentRun.Enabled = Program.Settings.ShowTray;
-            cbSilentRun.Checked = Program.Settings.SilentRun;
+
             InitializeTaskSettingsPages();
             tttvMain.BatchPageLayout = true;
             tttvMain.MainTabControl = tcSettings;
             ready = true;
-        }
-
-        private void ChangeLanguage(SupportedLanguage language)
-        {
-            if (Program.Settings.Language != language) MarkSettingsChanged();
-            btnLanguages.Text = language.GetLocalizedDescription();
-            btnLanguages.Image = LanguageHelper.GetLanguageIcon(language);
-
-            if (ready)
-            {
-                Program.Settings.Language = language;
-
-                if (LanguageHelper.ChangeLanguage(Program.Settings.Language) &&
-                    MessageBox.Show(Resources.ApplicationSettingsForm_cbLanguage_SelectedIndexChanged_Language_Restart,
-                    Resources.ShareXConfirmation, MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
-                {
-                    Program.Restart();
-                }
-            }
         }
 
         private void UpdateStartWithWindows()
@@ -240,23 +194,6 @@ namespace ShareX
             }
 
             ready = true;
-        }
-
-        private void cbShowTray_CheckedChanged(object sender, EventArgs e)
-        {
-            Program.Settings.ShowTray = cbShowTray.Checked;
-
-            if (ready)
-            {
-                Program.MainForm.niTray.Visible = Program.Settings.ShowTray;
-            }
-
-            cbSilentRun.Enabled = Program.Settings.ShowTray;
-        }
-
-        private void cbSilentRun_CheckedChanged(object sender, EventArgs e)
-        {
-            Program.Settings.SilentRun = cbSilentRun.Checked;
         }
 
         private void cbStartWithWindows_CheckedChanged(object sender, EventArgs e)

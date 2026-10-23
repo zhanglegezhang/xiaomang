@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -267,7 +267,7 @@ ShareX を再起動しますか？</value>
     <value>X: {0}, Y: {1}, 幅: {2}, 高さ: {3}</value>
   </data>
   <data name="ApplicationSettingsForm_btnResetSettings_Click_WouldYouLikeToResetShareXSettings" xml:space="preserve">
-    <value>ShareX の設定を初期化しますか？</value>
+    <value>小蟒 の設定を初期化しますか？</value>
   </data>
   <data name="BeforeUploadForm_BeforeUploadForm__0__is_about_to_be_uploaded_to__1___You_may_choose_a_different_destination_" xml:space="preserve">
     <value>{0} を {1} にアップロードしようとしています。別のアップロード先を選択することもできます。</value>
@@ -372,7 +372,7 @@ ShareX を再起動しますか？</value>
     <value>エラー</value>
   </data>
   <data name="YourAntiVirusSoftwareOrTheControlledFolderAccessFeatureInWindowsCouldBeBlockingShareX" xml:space="preserve">
-    <value>アンチウィルスソフトやWindowsのフォルダアクセス権限により、ShareX の使用が阻止されている可能性があります。</value>
+    <value>アンチウィルスソフトやWindowsのフォルダアクセス権限により、小蟒 の使用が阻止されている可能性があります。</value>
   </data>
   <data name="QuickTaskMenuEditorForm_Reset_all_quick_tasks_to_defaults_Confirmation" xml:space="preserve">
     <value>すべてのクイックタスクを既定に戻しますか？</value>
@@ -429,7 +429,7 @@ ShareX を再起動しますか？</value>
     <value>閉じる</value>
   </data>
   <data name="ShareXNeedsToBeRestartedForThePersonalFolderChangesToApply" xml:space="preserve">
-    <value>ShareX の再起動が必要です。
+    <value>小蟒 の再起動が必要です。
 
 再起動しますか？</value>
   </data>
@@ -476,7 +476,7 @@ ShareX を再起動しますか？</value>
     <value>ホットキーの設定からワークフローを追加できます...</value>
   </data>
   <data name="ShareXConfirmation" xml:space="preserve">
-    <value>ShareX - 確認</value>
+    <value>小蟒 - 確認</value>
   </data>
   <data name="UploadTask_DownloadAndUpload_Downloading" xml:space="preserve">
     <value>ダウンロード中</value>
@@ -518,7 +518,7 @@ ShareX を再起動しますか？</value>
     <value>FFmpeg の映像とオーディオ両方を同時に None にはできません。</value>
   </data>
   <data name="ShareXCannotBeClosedWhileScreenRecordingIsActive" xml:space="preserve">
-    <value>画面録画中はShareXを閉じることができません。
+    <value>画面録画中は小蟒を閉じることができません。
 
 現在の画面録画を中止しますか？</value>
   </data>
@@ -530,7 +530,7 @@ ShareX を再起動しますか？</value>
   </data>
   <data name="Program_WritePersonalPathConfig_Cant_access_to_file" xml:space="preserve">
     <value>ファイル「{0}」にアクセスできません。
-個人フォルダー パスを変更するには、ShareX を管理者で実行してください。</value>
+個人フォルダー パスを変更するには、小蟒 を管理者で実行してください。</value>
   </data>
   <data name="ApplicationSettingsForm_cbStartWithWindows_DisabledByUser_Text" xml:space="preserve">
     <value>スタートアップの設定はタスクマネージャーで無効にされています</value>
@@ -571,7 +571,7 @@ ShareX を再起動しますか？</value>
 
 {1}
 
-別のホットキーを選択するか、競合するアプリケーションを終了し、ShareXを再起動してください。</value>
+別のホットキーを選択するか、競合するアプリケーションを終了し、小蟒を再起動してください。</value>
   </data>
   <data name="InspectWindow_ClientRectangle" xml:space="preserve">
     <value>クライアント Rectangle</value>

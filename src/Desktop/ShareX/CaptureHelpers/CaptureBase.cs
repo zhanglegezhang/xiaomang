@@ -27,7 +27,6 @@ using ShareX.HelpersLib;
 using System;
 using System.Drawing;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace ShareX
 {
@@ -52,19 +51,8 @@ namespace ShareX
                 NotificationForm.CloseActiveForm();
             }
 
-            if (taskSettings.CaptureSettings.ScreenshotDelay > 0)
-            {
-                int delay = (int)(taskSettings.CaptureSettings.ScreenshotDelay * 1000);
-
-                Task.Delay(delay).ContinueInCurrentContext(() =>
-                {
-                    CaptureInternal(taskSettings, autoHideForm);
-                });
-            }
-            else
-            {
-                CaptureInternal(taskSettings, autoHideForm);
-            }
+            // Legacy ScreenshotDelay values are retained for configuration compatibility only.
+            CaptureInternal(taskSettings, autoHideForm);
         }
 
         protected abstract TaskMetadata Execute(TaskSettings taskSettings);

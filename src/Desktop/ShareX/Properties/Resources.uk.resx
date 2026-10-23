@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -268,7 +268,7 @@
     <value>X: {0}, Y: {1}, Ширина: {2}, Висота: {3}</value>
   </data>
   <data name="ApplicationSettingsForm_btnResetSettings_Click_WouldYouLikeToResetShareXSettings" xml:space="preserve">
-    <value>Чи бажаєте Ви скинути налаштування ShareX?</value>
+    <value>Чи бажаєте Ви скинути налаштування 小蟒?</value>
   </data>
   <data name="BeforeUploadForm_BeforeUploadForm__0__is_about_to_be_uploaded_to__1___You_may_choose_a_different_destination_" xml:space="preserve">
     <value>{0} буде вивантажено до {1}. Ви можете обрати інший пункт призначення.</value>
@@ -373,7 +373,7 @@
     <value>Помилка</value>
   </data>
   <data name="YourAntiVirusSoftwareOrTheControlledFolderAccessFeatureInWindowsCouldBeBlockingShareX" xml:space="preserve">
-    <value>Ваше антивірусне програмне забезпечення або функція контрольованого доступу до папок у Windows може блокувати ShareX.</value>
+    <value>Ваше антивірусне програмне забезпечення або функція контрольованого доступу до папок у Windows може блокувати 小蟒.</value>
   </data>
   <data name="QuickTaskMenuEditorForm_Reset_all_quick_tasks_to_defaults_Confirmation" xml:space="preserve">
     <value>Скинути всі швидкі завдання до типових значень?</value>
@@ -433,9 +433,9 @@
     <value>Закрити</value>
   </data>
   <data name="ShareXNeedsToBeRestartedForThePersonalFolderChangesToApply" xml:space="preserve">
-    <value>Треба перезапустити ShareX, щоб застосувати зміну особистої теки.
+    <value>Треба перезапустити 小蟒, щоб застосувати зміну особистої теки.
 
-Чи хочете Ви перезапустити ShareX?</value>
+Чи хочете Ви перезапустити 小蟒?</value>
   </data>
   <data name="AboutForm_AboutForm_Website" xml:space="preserve">
     <value>Сайт</value>
@@ -480,7 +480,7 @@
     <value>Ви можете додати робочі процеси у налаштуваннях гарячих клавіш...</value>
   </data>
   <data name="ShareXConfirmation" xml:space="preserve">
-    <value>ShareX — Підтвердження</value>
+    <value>小蟒 — Підтвердження</value>
   </data>
   <data name="UploadTask_DownloadAndUpload_Downloading" xml:space="preserve">
     <value>Завантаження</value>
@@ -522,7 +522,7 @@
     <value>Джерело відео та аудіо FFmpeg не може бути одночасно "None".</value>
   </data>
   <data name="ShareXCannotBeClosedWhileScreenRecordingIsActive" xml:space="preserve">
-    <value>ShareX не можна закрити під час активного запису екрана.
+    <value>小蟒 не можна закрити під час активного запису екрана.
 
 Ви хочете перервати активний запис екрану?</value>
   </data>
@@ -534,7 +534,7 @@
   </data>
   <data name="Program_WritePersonalPathConfig_Cant_access_to_file" xml:space="preserve">
     <value>Немає доступу до файла „{0}“.
-Будь ласка, запустіть ShareX з правами адміністратора, щоб змінити шлях до особистої теки.</value>
+Будь ласка, запустіть 小蟒 з правами адміністратора, щоб змінити шлях до особистої теки.</value>
   </data>
   <data name="ApplicationSettingsForm_cbStartWithWindows_DisabledByUser_Text" xml:space="preserve">
     <value>Запуск було вимкнено у Диспетчері завдань</value>
@@ -575,7 +575,7 @@
 
 {1}
 
-Будь ласка, виберіть іншу гарячу клавішу чи закрийте конфліктну програму та перевідкрийте ShareX.</value>
+Будь ласка, виберіть іншу гарячу клавішу чи закрийте конфліктну програму та перевідкрийте 小蟒.</value>
   </data>
   <data name="InspectWindow_ClientRectangle" xml:space="preserve">
     <value>Клієнтський прямокутник</value>

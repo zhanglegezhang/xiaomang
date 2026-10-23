@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
 		Microsoft ResX Schema
@@ -135,6 +135,6 @@
     <value>Невірний шлях до теки ресурсів</value>
   </data>
   <data name="AssetsFolderMustBeInsideShareXImageEffectsFolder" xml:space="preserve">
-    <value>Тека ресурсів має бути всередині теки ефектів зображень ShareX.</value>
+    <value>Тека ресурсів має бути всередині теки ефектів зображень 小蟒.</value>
   </data>
 </root>

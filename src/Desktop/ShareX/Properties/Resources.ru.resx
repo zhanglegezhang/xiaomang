@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -267,7 +267,7 @@
     <value>X: {0}, Y: {1}, Ширина: {2}, Высота: {3}</value>
   </data>
   <data name="ApplicationSettingsForm_btnResetSettings_Click_WouldYouLikeToResetShareXSettings" xml:space="preserve">
-    <value>Хотите сбросить настройки ShareX?</value>
+    <value>Хотите сбросить настройки 小蟒?</value>
   </data>
   <data name="BeforeUploadForm_BeforeUploadForm__0__is_about_to_be_uploaded_to__1___You_may_choose_a_different_destination_" xml:space="preserve">
     <value>{0} вот-вот загрузится на {1}, но вы можете выбрать другой сервис.</value>
@@ -372,7 +372,7 @@
     <value>Ошибка</value>
   </data>
   <data name="YourAntiVirusSoftwareOrTheControlledFolderAccessFeatureInWindowsCouldBeBlockingShareX" xml:space="preserve">
-    <value>Ваш антивирус или контролируемый доступ к файлам в Windows могут блокировать ShareX.</value>
+    <value>Ваш антивирус или контролируемый доступ к файлам в Windows могут блокировать 小蟒.</value>
   </data>
   <data name="QuickTaskMenuEditorForm_Reset_all_quick_tasks_to_defaults_Confirmation" xml:space="preserve">
     <value>Сбросить все быстрые задачи?</value>
@@ -432,9 +432,9 @@
     <value>Закрыть</value>
   </data>
   <data name="ShareXNeedsToBeRestartedForThePersonalFolderChangesToApply" xml:space="preserve">
-    <value>Для применения настроек персональной папки ShareX должен быть перезапущен. 
+    <value>Для применения настроек персональной папки 小蟒 должен быть перезапущен. 
 
-Хотите перезапустить ShareX?</value>
+Хотите перезапустить 小蟒?</value>
   </data>
   <data name="AboutForm_AboutForm_Website" xml:space="preserve">
     <value>Сайт</value>
@@ -479,7 +479,7 @@
     <value>Операции можно добавить в настройках горячих клавиш...</value>
   </data>
   <data name="ShareXConfirmation" xml:space="preserve">
-    <value>ShareX - Подтверждение</value>
+    <value>小蟒 - Подтверждение</value>
   </data>
   <data name="UploadTask_DownloadAndUpload_Downloading" xml:space="preserve">
     <value>Скачивается</value>
@@ -521,7 +521,7 @@
     <value>Источники видео и аудио в FFmpeg не могут оба быть "None".</value>
   </data>
   <data name="ShareXCannotBeClosedWhileScreenRecordingIsActive" xml:space="preserve">
-    <value>ShareX не закроется пока идет запись экрана.
+    <value>小蟒 не закроется пока идет запись экрана.
 
 Хотите отменить текущую запись?</value>
   </data>
@@ -533,7 +533,7 @@
   </data>
   <data name="Program_WritePersonalPathConfig_Cant_access_to_file" xml:space="preserve">
     <value>Нет доступа к файлу "{0}".
-Пожалуйста запустите ShareX от имени администратора для изменения пути к личной папке.</value>
+Пожалуйста запустите 小蟒 от имени администратора для изменения пути к личной папке.</value>
   </data>
   <data name="ApplicationSettingsForm_cbStartWithWindows_DisabledByUser_Text" xml:space="preserve">
     <value>Автозапуск отключен через Диспетчер задач</value>
@@ -575,7 +575,7 @@
 
 {1}
 
-Пожалуйста, выберите другую горячую клавишу или завершите конфликтующее приложение и перезапустите ShareX.</value>
+Пожалуйста, выберите другую горячую клавишу или завершите конфликтующее приложение и перезапустите 小蟒.</value>
   </data>
   <data name="InspectWindow_ClientRectangle" xml:space="preserve">
     <value>Клиентский прямоугольник</value>

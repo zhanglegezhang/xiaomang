@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -148,7 +148,7 @@
     <value>Chemin du dossier des ressources invalide</value>
   </data>
   <data name="AssetsFolderMustBeInsideShareXImageEffectsFolder" xml:space="preserve">
-    <value>Le dossier des ressources doit être dans le dossier des effets d'image de ShareX.</value>
+    <value>Le dossier des ressources doit être dans le dossier des effets d'image de 小蟒.</value>
   </data>
   <data name="PackageWithThisFileNameAlreadyExistsRNWouldYouLikeToOverwriteIt" xml:space="preserve">
     <value>Un paquet avec ce nom de fichier existe déjà.\r\nVoulez-vous l'écraser ?</value>

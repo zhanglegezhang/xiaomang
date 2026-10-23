@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -152,7 +152,7 @@
     <value>..\Resources\arrow-circle-double-135.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="AssetsFolderMustBeInsideShareXImageEffectsFolder" xml:space="preserve">
-    <value>Assets folder must be inside ShareX image effects folder.</value>
+    <value>Assets folder must be inside 小蟒 image effects folder.</value>
   </data>
   <data name="InvalidAssetsFolderPath" xml:space="preserve">
     <value>Invalid assets folder path</value>

@@ -1,4 +1,4 @@
-﻿#region License Information (GPL v3)
+#region License Information (GPL v3)
 
 /*
     ShareX - A program that allows you to take screenshots and share any file type
@@ -103,24 +103,20 @@ namespace ShareX.ImageEffectsLib
             btnClose.Text = Resources.ImageEffectsForm_EditorMode_Cancel;
         }
 
-        public void ImportImageEffect(string json)
+        public bool ImportImageEffect(string json)
         {
-            ImageEffectPreset preset = null;
-
             try
             {
-                preset = JsonHelpers.DeserializeFromString<ImageEffectPreset>(json, serializationBinder);
+                ImageEffectPreset preset = ImageEffectImport.Parse(json);
+                SanitizeImportedPreset(preset);
+                AddPreset(preset);
+                return true;
             }
             catch (Exception e)
             {
                 DebugHelper.WriteException(e);
-                e.ShowError();
-            }
-
-            if (preset != null && preset.Effects != null && preset.Effects.Count > 0)
-            {
-                SanitizeImportedPreset(preset);
-                AddPreset(preset);
+                ErrorForm.ShowHandled("图像特效导入失败。请检查配置格式和特效类型。", e);
+                return false;
             }
         }
 
@@ -137,7 +133,7 @@ namespace ShareX.ImageEffectsLib
             }
             catch (Exception ex)
             {
-                ex.ShowError(false);
+                ErrorForm.ShowHandled("图像特效包导入失败，请查看错误详情。", ex, filePath);
             }
         }
 
@@ -676,7 +672,7 @@ namespace ShareX.ImageEffectsLib
 
         private void btnEffectClear_Click(object sender, EventArgs e)
         {
-            if (MessageBox.Show(Resources.WouldYouLikeToClearEffects, "ShareX - " + Resources.Confirmation, MessageBoxButtons.YesNo, MessageBoxIcon.Information) == DialogResult.Yes)
+            if (MessageBox.Show(Resources.WouldYouLikeToClearEffects, "小蟒 - " + Resources.Confirmation, MessageBoxButtons.YesNo, MessageBoxIcon.Information) == DialogResult.Yes)
             {
                 ImageEffectPreset preset = GetSelectedPreset();
 
@@ -777,7 +773,7 @@ namespace ShareX.ImageEffectsLib
             {
                 if (string.IsNullOrEmpty(preset.Name))
                 {
-                    MessageBox.Show(Resources.PresetNameCannotBeEmpty, "ShareX - " + Resources.MissingPresetName, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    MessageBox.Show(Resources.PresetNameCannotBeEmpty, "小蟒 - " + Resources.MissingPresetName, MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 }
                 else
                 {

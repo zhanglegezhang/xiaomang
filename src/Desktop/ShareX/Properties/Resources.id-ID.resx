@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -398,7 +398,7 @@ Apakah anda yakin ingin melanjutkan?</value>
   </data>
   <data name="Program_WritePersonalPathConfig_Cant_access_to_file" xml:space="preserve">
     <value>Tidak bisa mengakses file "{0}".
-Jalankan ShareX sebagai administrator untuk mengubah jalur folder pribadi.</value>
+Jalankan 小蟒 sebagai administrator untuk mengubah jalur folder pribadi.</value>
   </data>
   <data name="ApplicationSettingsForm_cbStartWithWindows_DisabledByUser_Text" xml:space="preserve">
     <value>Pengaktifan telah dinonaktifkan di Pengelola Tugas</value>
@@ -424,7 +424,7 @@ di sini</value>
 
 {1}
 
-Silakan pilih tombol cepat yang berbeda atau keluar dari aplikasi yang bertentangan dan buka kembali ShareX.</value>
+Silakan pilih tombol cepat yang berbeda atau keluar dari aplikasi yang bertentangan dan buka kembali 小蟒.</value>
   </data>
   <data name="AboutForm_AboutForm_Language_vi_VN" xml:space="preserve">
     <value>Bahasa Vietnam</value>
@@ -508,7 +508,7 @@ Klik tengah untuk menutup</value>
     <value>Nama file proses</value>
   </data>
   <data name="ApplicationSettingsForm_btnResetSettings_Click_WouldYouLikeToResetShareXSettings" xml:space="preserve">
-    <value>Apakah Anda ingin mengatur ulang pengaturan ShareX?</value>
+    <value>Apakah Anda ingin mengatur ulang pengaturan 小蟒?</value>
   </data>
   <data name="FFmpegIsMissing" xml:space="preserve">
     <value>FFmpeg tidak ditemukan</value>
@@ -546,7 +546,7 @@ Anda dapat menonaktifkannya nanti dari menu "Tugas setelah tangkapan".</value>
     <value>Clipboard tidak berisi gambar.</value>
   </data>
   <data name="YourAntiVirusSoftwareOrTheControlledFolderAccessFeatureInWindowsCouldBeBlockingShareX" xml:space="preserve">
-    <value>Perangkat lunak antivirus Anda atau fitur akses folder terkontrol di Windows mungkin memblokir ShareX.</value>
+    <value>Perangkat lunak antivirus Anda atau fitur akses folder terkontrol di Windows mungkin memblokir 小蟒.</value>
   </data>
   <data name="AboutForm_AboutForm_Language_ar_YE" xml:space="preserve">
     <value>Arab</value>
@@ -555,9 +555,9 @@ Anda dapat menonaktifkannya nanti dari menu "Tugas setelah tangkapan".</value>
     <value>Donasi</value>
   </data>
   <data name="ShareXNeedsToBeRestartedForThePersonalFolderChangesToApply" xml:space="preserve">
-    <value>ShareX perlu dimulai ulang agar perubahan folder pribadi diterapkan.
+    <value>小蟒 perlu dimulai ulang agar perubahan folder pribadi diterapkan.
 
-Apakah Anda ingin memulai ulang ShareX?</value>
+Apakah Anda ingin memulai ulang 小蟒?</value>
   </data>
   <data name="FFmpeg_FFmpeg_error" xml:space="preserve">
     <value>Kesalahan FFmpeg</value>
@@ -575,7 +575,7 @@ Apakah Anda ingin memulai ulang ShareX?</value>
     <value>Gaya jendela</value>
   </data>
   <data name="ShareXConfirmation" xml:space="preserve">
-    <value>ShareX - Konfirmasi</value>
+    <value>小蟒 - Konfirmasi</value>
   </data>
   <data name="OpticalCharacterRecognitionFeatureIsOnlyAvailableWithWindowsVersion0OrNewer" xml:space="preserve">
     <value>Fitur pengenalan karakter optik hanya tersedia pada Windows versi {0} atau yang lebih baru.</value>
@@ -599,7 +599,7 @@ Apakah Anda ingin memulai ulang ShareX?</value>
     <value>Sumber video dan audio FFmpeg tidak boleh sama-sama "Tidak ada".</value>
   </data>
   <data name="ShareXCannotBeClosedWhileScreenRecordingIsActive" xml:space="preserve">
-    <value>ShareX tidak dapat ditutup saat perekaman layar aktif.
+    <value>小蟒 tidak dapat ditutup saat perekaman layar aktif.
 
 Apakah Anda ingin membatalkan perekaman layar aktif?</value>
   </data>

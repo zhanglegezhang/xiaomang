@@ -32,7 +32,9 @@ internal static class UpgradeStartupCheck
 
     internal static void ValidateSettings(JObject original, JObject loaded)
     {
-        foreach (string name in new[] { "Language", "ShowTray", "SilentRun", "DisableHotkeys" })
+        // Retired startup options normalize old true values to false. Keep the
+        // remaining preference and personal-data retention checks unchanged.
+        foreach (string name in new[] { "Language", "DisableHotkeys" })
             if (original[name] != null && !JToken.DeepEquals(original[name], loaded[name]))
                 throw new IOException("升级后个人设置未正确加载：" + name);
         foreach (string field in new[] { "Items", "FavoriteItems", "ClipboardItems" })

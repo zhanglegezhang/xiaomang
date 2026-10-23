@@ -81,8 +81,7 @@ namespace ShareX.HelpersLib
                 catch (Exception e)
                 {
                     DebugHelper.WriteException(e);
-                    MessageBox.Show(Resources.ExportImportControl_Serialize_Export_failed_ + "\n\n" + e, "ShareX - " + Resources.Error,
-                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    ErrorForm.ShowHandled("设置导出失败。请检查错误详情后重试。", e);
                 }
             }
 
@@ -125,7 +124,8 @@ namespace ShareX.HelpersLib
                     {
                         if (sfd.ShowDialog() == DialogResult.OK)
                         {
-                            File.WriteAllText(sfd.FileName, json, Encoding.UTF8);
+                            try { File.WriteAllText(sfd.FileName, json, Encoding.UTF8); }
+                            catch (Exception error) { ErrorForm.ShowHandled("设置文件写入失败。请选择其他保存位置后重试。", error, sfd.FileName); }
                         }
                     }
                 }
@@ -157,33 +157,35 @@ namespace ShareX.HelpersLib
                     serializer.Converters.Add(new StringEnumConverter());
                     serializer.ObjectCreationHandling = ObjectCreationHandling.Replace;
                     if (SerializationBinder != null) serializer.SerializationBinder = SerializationBinder;
-                    serializer.Error += (sender, e) => e.ErrorContext.Handled = true;
-                    return serializer.Deserialize(textReader, ObjectType);
+                    serializer.CheckAdditionalContent = true;
+                    object result = serializer.Deserialize(textReader, ObjectType);
+                    if (result == null) throw new JsonSerializationException("设置内容为空，或不是有效的配置对象。");
+                    return result;
                 }
             }
             catch (Exception e)
             {
                 DebugHelper.WriteException(e);
-                MessageBox.Show(Resources.ExportImportControl_Deserialize_Import_failed_ + "\n\n" + e, "ShareX - " + Resources.Error,
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                ErrorForm.ShowHandled("设置导入失败。请检查文件格式和字段类型；本次内容未应用。", e);
             }
 
             return null;
         }
 
-        private void OnImportRequested(string json)
+        private bool OnImportRequested(string json)
         {
-            if (ImportRequested != null)
+            if (ImportRequested == null) return false;
+            object obj = Deserialize(json);
+            if (obj == null) return false;
+            try
             {
-                if (!string.IsNullOrEmpty(json))
-                {
-                    object obj = Deserialize(json);
-
-                    if (obj != null)
-                    {
-                        ImportRequested(obj);
-                    }
-                }
+                ImportRequested(obj);
+                return true;
+            }
+            catch (Exception error)
+            {
+                ErrorForm.ShowHandled("应用导入设置失败。请检查当前设置后再重试。", error);
+                return false;
             }
         }
 
@@ -196,8 +198,7 @@ namespace ShareX.HelpersLib
         {
             if (!string.IsNullOrEmpty(json))
             {
-                OnImportRequested(json);
-                OnImportCompleted();
+                if (OnImportRequested(json)) OnImportCompleted();
             }
         }
 
@@ -207,10 +208,14 @@ namespace ShareX.HelpersLib
             ImportJson(json);
         }
 
-        private void ImportFile(string filePath)
+        private bool ImportFile(string filePath)
         {
-            string json = File.ReadAllText(filePath, Encoding.UTF8);
-            OnImportRequested(json);
+            try { return OnImportRequested(File.ReadAllText(filePath, Encoding.UTF8)); }
+            catch (Exception error)
+            {
+                ErrorForm.ShowHandled("设置文件读取失败。请确认文件存在且可访问。", error, filePath);
+                return false;
+            }
         }
 
         private void tsmiImportFile_Click(object sender, EventArgs e)
@@ -226,12 +231,13 @@ namespace ShareX.HelpersLib
             {
                 if (ofd.ShowDialog() == DialogResult.OK)
                 {
+                    bool imported = false;
                     foreach (string fileName in ofd.FileNames)
                     {
-                        ImportFile(fileName);
+                        imported |= ImportFile(fileName);
                     }
-
-                    OnImportCompleted();
+                    // Refresh successfully imported entries even when another file failed.
+                    if (imported) OnImportCompleted();
                 }
             }
         }
@@ -244,23 +250,17 @@ namespace ShareX.HelpersLib
             {
                 btnImport.Enabled = false;
 
-                string json = null;
-
                 try
                 {
-                    json = await WebHelpers.DownloadStringAsync(url);
+                    string json = await WebHelpers.DownloadStringAsync(url);
+                    if (OnImportRequested(json)) OnImportCompleted();
                 }
                 catch (Exception ex)
                 {
                     DebugHelper.WriteException(ex);
-                    MessageBox.Show(Resources.Helpers_DownloadString_Download_failed_ + "\r\n" + ex, "ShareX - " + Resources.Error,
-                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    ErrorForm.ShowHandled("设置下载失败。请检查网络和下载地址后重试。", ex);
                 }
-
-                OnImportRequested(json);
-                OnImportCompleted();
-
-                btnImport.Enabled = true;
+                finally { if (!IsDisposed) btnImport.Enabled = true; }
             }
         }
     }

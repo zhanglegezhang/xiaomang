@@ -1,4 +1,4 @@
-﻿#region License Information (GPL v3)
+#region License Information (GPL v3)
 
 /*
     ShareX - A program that allows you to take screenshots and share any file type
@@ -317,8 +317,8 @@ namespace ShareX.HistoryLib
                 ImageViewer.ShowImage(filteredImages.ToArray(), modifiedImageIndex);
             } // TODO: Translate
             else if (FileHelpers.IsTextFile(hi.FilePath) || FileHelpers.IsVideoFile(hi.FilePath) ||
-                MessageBox.Show("Would you like to open this file?" + "\r\n\r\n" + hi.FilePath,
-                "ShareX - Confirmation", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+                MessageBox.Show("是否打开此文件？" + "\r\n\r\n" + hi.FilePath,
+                "小蟒 - 确认", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
             {
                 FileHelpers.OpenFile(hi.FilePath);
             }

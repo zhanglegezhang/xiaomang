@@ -107,8 +107,8 @@ namespace ShareX.HelpersLib
             {
                 printDocument.PrinterSettings.PrinterName = defaultPrinterName;
 
-                MessageBox.Show("Printer \"" + Settings.DefaultPrinterOverride + "\" does not exist. Continuing with Windows default printer, you can set the default printer override in application settings.",
-                    "Invalid printer name", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show("找不到打印机“" + Settings.DefaultPrinterOverride + "”。将使用 Windows 默认打印机；可在应用设置中重新指定。",
+                    "小蟒 - 打印机不可用", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
 

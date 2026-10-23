@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -274,7 +274,7 @@ Pulse "No" para cancelar la subida y desactivar la función de captura de pantal
   </data>
   <data name="Program_WritePersonalPathConfig_Cant_access_to_file" xml:space="preserve">
     <value>No se puede acceder "{0}" archivo.
-Por favor ejecute ShareX como administrador para cambiar ruta de la carpeta personal.</value>
+Por favor ejecute 小蟒 como administrador para cambiar ruta de la carpeta personal.</value>
   </data>
   <data name="MainForm_tsmiDeleteSelectedFile_Click_Do_you_really_want_to_delete_this_file_" xml:space="preserve">
     <value>¿Está seguro de que desea eliminar este archivo?</value>
@@ -291,7 +291,7 @@ aquí</value>
 
 {1}
 
-Por favor seleccione una tecla de acceso directo diferente o salir de la aplicación en conflicto y vuelva a abrir ShareX.</value>
+Por favor seleccione una tecla de acceso directo diferente o salir de la aplicación en conflicto y vuelva a abrir 小蟒.</value>
   </data>
   <data name="UploadManager_UploadFile_File_upload" xml:space="preserve">
     <value>Carga de archivo</value>
@@ -402,7 +402,7 @@ Por favor seleccione una tecla de acceso directo diferente o salir de la aplicac
     <value>Nombre del archivo del proceso</value>
   </data>
   <data name="ApplicationSettingsForm_btnResetSettings_Click_WouldYouLikeToResetShareXSettings" xml:space="preserve">
-    <value>¿Desea restablecer la configuración de ShareX?</value>
+    <value>¿Desea restablecer la configuración de 小蟒?</value>
   </data>
   <data name="UploadTask_DoUploadJob_You_are_attempting_to_upload_a_large_file" xml:space="preserve">
     <value>Está intentando subir un archivo grande.
@@ -462,7 +462,7 @@ You can later disable it from "After captura tasks" menú.</value>
     <value>Portapapeles does not contain an imagen.</value>
   </data>
   <data name="YourAntiVirusSoftwareOrTheControlledFolderAccessFeatureInWindowsCouldBeBlockingShareX" xml:space="preserve">
-    <value>Your anti-virus software or the controlled carpeta access feature in Ventanas could be blocking ShareX.</value>
+    <value>Your anti-virus software or the controlled carpeta access feature in Ventanas could be blocking 小蟒.</value>
   </data>
   <data name="QuickTaskMenuEditorForm_Reset_all_quick_tasks_to_defaults_Confirmation" xml:space="preserve">
     <value>Restablecer all quick tasks to defaults?</value>
@@ -498,9 +498,9 @@ You can later disable it from "After captura tasks" menú.</value>
     <value>Cerrar</value>
   </data>
   <data name="ShareXNeedsToBeRestartedForThePersonalFolderChangesToApply" xml:space="preserve">
-    <value>ShareX needs to be reiniciared for the personal carpeta changes to apply.
+    <value>小蟒 needs to be reiniciared for the personal carpeta changes to apply.
 
-Would you like to reiniciar ShareX?</value>
+Would you like to reiniciar 小蟒?</value>
   </data>
   <data name="AboutForm_AboutForm_Language_uk" xml:space="preserve">
     <value>Ucraniano</value>
@@ -527,7 +527,7 @@ Would you like to reiniciar ShareX?</value>
     <value>Estilos de ventana</value>
   </data>
   <data name="ShareXConfirmation" xml:space="preserve">
-    <value>ShareX - Confirmación</value>
+    <value>小蟒 - Confirmación</value>
   </data>
   <data name="UploadTask_DownloadAndUpload_Downloading" xml:space="preserve">
     <value>Descargaring</value>
@@ -563,7 +563,7 @@ Would you like to reiniciar ShareX?</value>
     <value>Las fuentes de vídeo y audio de FFmpeg no pueden ser ambas "Ninguna".</value>
   </data>
   <data name="ShareXCannotBeClosedWhileScreenRecordingIsActive" xml:space="preserve">
-    <value>ShareX cannot be closed while grabación de pantalla is active.
+    <value>小蟒 cannot be closed while grabación de pantalla is active.
 
 Do you want to abort the active grabación de pantalla?</value>
   </data>

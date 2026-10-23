@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -335,7 +335,7 @@ Ben je zeker dat je door wilt gaan?</value>
   </data>
   <data name="Program_WritePersonalPathConfig_Cant_access_to_file" xml:space="preserve">
     <value>Kan het bestand "{0}" niet benaderen.
-Voer ShareX uit als beheerder om de persoonlijke map te wijzigen.</value>
+Voer 小蟒 uit als beheerder om de persoonlijke map te wijzigen.</value>
   </data>
   <data name="ApplicationSettingsForm_cbStartWithWindows_DisabledByUser_Text" xml:space="preserve">
     <value>Opstarten is uitgeschakeld in Taakbeheer</value>
@@ -357,7 +357,7 @@ Voer ShareX uit als beheerder om de persoonlijke map te wijzigen.</value>
 
 {1}
 
-Gelieve een andere sneltoets te selecteren of sluit het conflicterende programma af en start ShareX opnieuw op.</value>
+Gelieve een andere sneltoets te selecteren of sluit het conflicterende programma af en start 小蟒 opnieuw op.</value>
   </data>
   <data name="MainForm_UpdateToggleHotkeyButton_Enable_hotkeys" xml:space="preserve">
     <value>Schakel sneltoetsen in</value>
@@ -454,7 +454,7 @@ Gelieve een andere sneltoets te selecteren of sluit het conflicterende programma
     <value>Process bestandsnaam</value>
   </data>
   <data name="ApplicationSettingsForm_btnResetSettings_Click_WouldYouLikeToResetShareXSettings" xml:space="preserve">
-    <value>Would you like to resetten ShareX instellingen?</value>
+    <value>Would you like to resetten 小蟒 instellingen?</value>
   </data>
   <data name="FFmpegIsMissing" xml:space="preserve">
     <value>FFmpeg ontbreekt</value>
@@ -504,7 +504,7 @@ You can later disable it from "After opname taken" menu.</value>
     <value>Klembord does not contain an afbeelding.</value>
   </data>
   <data name="YourAntiVirusSoftwareOrTheControlledFolderAccessFeatureInWindowsCouldBeBlockingShareX" xml:space="preserve">
-    <value>Your anti-virus software or the besturingselementled map access feature in Vensters could be blocking ShareX.</value>
+    <value>Your anti-virus software or the besturingselementled map access feature in Vensters could be blocking 小蟒.</value>
   </data>
   <data name="QuickTaskMenuEditorForm_Reset_all_quick_tasks_to_defaults_Confirmation" xml:space="preserve">
     <value>Resetten all quick taken to standaards?</value>
@@ -525,9 +525,9 @@ You can later disable it from "After opname taken" menu.</value>
     <value>Mexicaans-Spaans</value>
   </data>
   <data name="ShareXNeedsToBeRestartedForThePersonalFolderChangesToApply" xml:space="preserve">
-    <value>ShareX needs to be restartened for the persoonlijke map changes to apply.
+    <value>小蟒 needs to be restartened for the persoonlijke map changes to apply.
 
-Would you like to restarten ShareX?</value>
+Would you like to restarten 小蟒?</value>
   </data>
   <data name="AboutForm_AboutForm_Language_uk" xml:space="preserve">
     <value>Oekraïens</value>
@@ -551,7 +551,7 @@ Would you like to restarten ShareX?</value>
     <value>Venster styles</value>
   </data>
   <data name="ShareXConfirmation" xml:space="preserve">
-    <value>ShareX - Bevestiging</value>
+    <value>小蟒 - Bevestiging</value>
   </data>
   <data name="OpticalCharacterRecognitionFeatureIsOnlyAvailableWithWindowsVersion0OrNewer" xml:space="preserve">
     <value>Optical character recognition feature is only available with Vensters version {0} or newer.</value>
@@ -578,7 +578,7 @@ Would you like to restarten ShareX?</value>
     <value>FFmpeg-video- en audiobron kunnen niet allebei "Geen" zijn.</value>
   </data>
   <data name="ShareXCannotBeClosedWhileScreenRecordingIsActive" xml:space="preserve">
-    <value>ShareX cannot be closed while scherm opname is active.
+    <value>小蟒 cannot be closed while scherm opname is active.
 
 Do you want to abort the active scherm opname?</value>
   </data>

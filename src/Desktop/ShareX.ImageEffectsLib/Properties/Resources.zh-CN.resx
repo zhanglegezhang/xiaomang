@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -136,7 +136,7 @@
     <value>取消</value>
   </data>
   <data name="AssetsFolderMustBeInsideShareXImageEffectsFolder" xml:space="preserve">
-    <value>资源文件夹必须位于 ShareX 图像特效文件夹内。</value>
+    <value>资源文件夹必须位于 小蟒 图像特效文件夹内。</value>
   </data>
   <data name="Confirmation" xml:space="preserve">
     <value>确认</value>

@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -136,7 +136,7 @@
     <value>Hủy bỏ</value>
   </data>
   <data name="AssetsFolderMustBeInsideShareXImageEffectsFolder" xml:space="preserve">
-    <value>Thư mục nội dung phải nằm trong thư mục hiệu ứng hình ảnh ShareX.</value>
+    <value>Thư mục nội dung phải nằm trong thư mục hiệu ứng hình ảnh 小蟒.</value>
   </data>
   <data name="Confirmation" xml:space="preserve">
     <value>Xác nhận</value>

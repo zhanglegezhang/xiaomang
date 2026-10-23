@@ -1,3 +1,7 @@
+pub fn image() -> tauri::image::Image<'static> {
+    tauri::image::Image::new(include_bytes!(concat!(env!("OUT_DIR"), "/diary-window-icon.rgba")), 256, 256)
+}
+
 // Tauri sets ICON_SMALL only. Share its owned high-resolution handle with
 // ICON_BIG so Windows does not fall back to a scaled executable/class icon.
 pub fn install(app: &tauri::App) -> tauri::Result<()> {
@@ -18,4 +22,15 @@ pub fn install(app: &tauri::App) -> tauri::Result<()> {
         }
     }
     Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    #[test]
+    fn embedded_window_icon_is_full_resolution() {
+        let image = super::image();
+        assert_eq!((image.width(), image.height()), (256, 256));
+        assert_eq!(image.rgba().len(), 256 * 256 * 4);
+        assert!(image.rgba().chunks_exact(4).any(|pixel| pixel[3] != 0));
+    }
 }

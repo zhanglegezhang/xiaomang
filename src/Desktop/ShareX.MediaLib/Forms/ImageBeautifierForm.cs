@@ -1,4 +1,4 @@
-﻿#region License Information (GPL v3)
+#region License Information (GPL v3)
 
 /*
     ShareX - A program that allows you to take screenshots and share any file type
@@ -392,7 +392,7 @@ namespace ShareX.MediaLib
 
         private async void btnResetOptions_Click(object sender, EventArgs e)
         {
-            if (MessageBox.Show(Resources.WouldYouLikeToResetOptions, "ShareX - " + Resources.Confirmation, MessageBoxButtons.YesNo,
+            if (MessageBox.Show(Resources.WouldYouLikeToResetOptions, "小蟒 - " + Resources.Confirmation, MessageBoxButtons.YesNo,
                 MessageBoxIcon.Information) == DialogResult.Yes)
             {
                 Options.ResetOptions();

@@ -90,7 +90,11 @@ fn main() {
             context_menu::install(app)?; window_icon::install(app)?; window_state::install(app)?; Ok(())
         })
         .invoke_handler(tauri::generate_handler![diary_command, context_menu::body_menu_command])
-        .run(tauri::generate_context!())
+        .run({
+            let mut context = tauri::generate_context!();
+            context.set_default_window_icon(Some(window_icon::image()));
+            context
+        })
         .expect("无法启动本地日记窗口");
 }
 

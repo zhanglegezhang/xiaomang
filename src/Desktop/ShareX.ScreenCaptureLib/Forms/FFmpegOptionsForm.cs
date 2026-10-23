@@ -352,7 +352,7 @@ namespace ShareX.ScreenCaptureLib
             }
             else
             {
-                MessageBox.Show("File not exists: \"" + filePath + "\"", "小蟒", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("文件不存在：\"" + filePath + "\"", "小蟒", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 

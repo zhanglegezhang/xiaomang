@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -207,7 +207,7 @@
     <value>پیش نمایش:</value>
   </data>
   <data name="ApplicationSettingsForm_btnResetSettings_Click_WouldYouLikeToResetShareXSettings" xml:space="preserve">
-    <value>آیا می خواهید تنظیمات ShareX را به حالت اولیه برگردانید؟</value>
+    <value>آیا می خواهید تنظیمات 小蟒 را به حالت اولیه برگردانید؟</value>
   </data>
   <data name="TaskSettingsForm_UpdateWindowTitle_Task_settings" xml:space="preserve">
     <value>تنظیمات وظیفه</value>
@@ -313,9 +313,9 @@
     <value>بستن</value>
   </data>
   <data name="ShareXNeedsToBeRestartedForThePersonalFolderChangesToApply" xml:space="preserve">
-    <value>برای تغییر پوشه شخصی ShareX نیاز به راه اندازی مجدد دارد.
+    <value>برای تغییر پوشه شخصی 小蟒 نیاز به راه اندازی مجدد دارد.
 
-آیا می خواهید ShareX مجدد راه اندازی شود؟</value>
+آیا می خواهید 小蟒 مجدد راه اندازی شود؟</value>
   </data>
   <data name="AboutForm_AboutForm_Website" xml:space="preserve">
     <value>سایت</value>
@@ -342,7 +342,7 @@
     <value>تاییدیه حذف فایل</value>
   </data>
   <data name="ShareXConfirmation" xml:space="preserve">
-    <value>ShareX - تاییدیه</value>
+    <value>小蟒 - تاییدیه</value>
   </data>
   <data name="UploadTask_DownloadAndUpload_Downloading" xml:space="preserve">
     <value>در حال دانلود</value>
@@ -540,7 +540,7 @@ You can later disable it from "After ضبط tasks" منو.</value>
     <value>کلیپ‌بورد does not contain an تصویر.</value>
   </data>
   <data name="YourAntiVirusSoftwareOrTheControlledFolderAccessFeatureInWindowsCouldBeBlockingShareX" xml:space="preserve">
-    <value>Your anti-virus software or the controlled پوشه access feature in پنجرهs could be blocking ShareX.</value>
+    <value>Your anti-virus software or the controlled پوشه access feature in پنجرهs could be blocking 小蟒.</value>
   </data>
   <data name="AboutForm_AboutForm_Language_ar_YE" xml:space="preserve">
     <value>عربی</value>
@@ -591,7 +591,7 @@ You can later disable it from "After ضبط tasks" منو.</value>
     <value>منبع ویدئو و صدای FFmpeg نمی‌توانند هر دو «هیچ‌کدام» باشند.</value>
   </data>
   <data name="ShareXCannotBeClosedWhileScreenRecordingIsActive" xml:space="preserve">
-    <value>ShareX cannot be closed while ضبط صفحه is active.
+    <value>小蟒 cannot be closed while ضبط صفحه is active.
 
 Do you want to abort the active ضبط صفحه?</value>
   </data>
@@ -615,7 +615,7 @@ Do you want to abort the active ضبط صفحه?</value>
 
 {1}
 
-Please select a different hotkey or quit the conflicting application and reباز کردن ShareX.</value>
+Please select a different hotkey or quit the conflicting application and reباز کردن 小蟒.</value>
   </data>
   <data name="InspectWindow_ClientRectangle" xml:space="preserve">
     <value>مستطیل کلاینت</value>

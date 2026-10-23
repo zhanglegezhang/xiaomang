@@ -259,7 +259,7 @@ Apăsați "Nu" pentru a anula încărcarea și pentru a dezactiva încărcarea a
     <value>X: {0}, Y: {1}, Lățime: {2}, Înălțime: {3}</value>
   </data>
   <data name="ApplicationSettingsForm_btnResetSettings_Click_WouldYouLikeToResetShareXSettings" xml:space="preserve">
-    <value>Doriți să resetați setările ShareX?</value>
+    <value>Doriți să resetați setările 小蟒?</value>
   </data>
   <data name="BeforeUploadForm_BeforeUploadForm__0__is_about_to_be_uploaded_to__1___You_may_choose_a_different_destination_" xml:space="preserve">
     <value>{0} este pe cale să fie încărcat pe {1}. Puteți alege o altă destinație.</value>
@@ -352,7 +352,7 @@ Puteți să le dezactivați ulterior din meniul "Sarcini după captură".</value
     <value>Eroare</value>
   </data>
   <data name="YourAntiVirusSoftwareOrTheControlledFolderAccessFeatureInWindowsCouldBeBlockingShareX" xml:space="preserve">
-    <value>Este posibil ca software-ul antivirus sau funcția de acces controlat la foldere din Windows să blocheze ShareX.</value>
+    <value>Este posibil ca software-ul antivirus sau funcția de acces controlat la foldere din Windows să blocheze 小蟒.</value>
   </data>
   <data name="QuickTaskMenuEditorForm_Reset_all_quick_tasks_to_defaults_Confirmation" xml:space="preserve">
     <value>Resetați toate sarcinile rapide la valorile implicite?</value>
@@ -406,9 +406,9 @@ Puteți să le dezactivați ulterior din meniul "Sarcini după captură".</value
     <value>Închideți</value>
   </data>
   <data name="ShareXNeedsToBeRestartedForThePersonalFolderChangesToApply" xml:space="preserve">
-    <value>ShareX trebuie să fie repornit pentru ca modificările aduse folderelor personale să se aplice.
+    <value>小蟒 trebuie să fie repornit pentru ca modificările aduse folderelor personale să se aplice.
 
-Doriți să reporniți ShareX?</value>
+Doriți să reporniți 小蟒?</value>
   </data>
   <data name="AboutForm_AboutForm_Website" xml:space="preserve">
     <value>Website</value>
@@ -453,7 +453,7 @@ Doriți să reporniți ShareX?</value>
     <value>Puteți adăuga desfășurări din setările tastelor rapide...</value>
   </data>
   <data name="ShareXConfirmation" xml:space="preserve">
-    <value>ShareX - Confirmare</value>
+    <value>小蟒 - Confirmare</value>
   </data>
   <data name="UploadTask_DownloadAndUpload_Downloading" xml:space="preserve">
     <value>Se descarcă</value>
@@ -499,7 +499,7 @@ Doriți să reporniți ShareX?</value>
   </data>
   <data name="Program_WritePersonalPathConfig_Cant_access_to_file" xml:space="preserve">
     <value>Nu se poate accesa fișierul "{0}".
-Vă rugăm să rulați ShareX ca administrator pentru a schimba calea folderului personal.</value>
+Vă rugăm să rulați 小蟒 ca administrator pentru a schimba calea folderului personal.</value>
   </data>
   <data name="ApplicationSettingsForm_cbStartWithWindows_DisabledByUser_Text" xml:space="preserve">
     <value>Pornirea a fost dezactivată din Managerul de activități</value>
@@ -537,7 +537,7 @@ aici</value>
 
 {1}
 
-Vă rugăm să selectați o altă tastatură rapidă sau să ieșiți din aplicația în conflict și să redeschideți ShareX.</value>
+Vă rugăm să selectați o altă tastatură rapidă sau să ieșiți din aplicația în conflict și să redeschideți 小蟒.</value>
   </data>
   <data name="InspectWindow_ClientRectangle" xml:space="preserve">
     <value>Dreptunghi client</value>
@@ -633,7 +633,7 @@ Clic în mijloc pentru a închide</value>
     <value>Funcția de recunoaștere optică a caracterelor este disponibilă doar în Windows versiunea {0} sau mai nouă.</value>
   </data>
   <data name="ShareXCannotBeClosedWhileScreenRecordingIsActive" xml:space="preserve">
-    <value>ShareX nu poate fi închis cât timp înregistrarea ecranului este activă.
+    <value>小蟒 nu poate fi închis cât timp înregistrarea ecranului este activă.
 
 Vrei să anulezi înregistrarea activă a ecranului?</value>
   </data>

@@ -1,4 +1,4 @@
-﻿#region License Information (GPL v3)
+#region License Information (GPL v3)
 
 /*
     ShareX - A program that allows you to take screenshots and share any file type
@@ -831,11 +831,11 @@ namespace ShareX.UploadersLib
             {
                 if (imageShackUploader.GetAccessToken())
                 {
-                    MessageBox.Show(Resources.UploadersConfigForm_Login_successful, "ShareX", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    MessageBox.Show(Resources.UploadersConfigForm_Login_successful, "小蟒", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
                 else
                 {
-                    MessageBox.Show(Resources.UploadersConfigForm_Login_failed, "ShareX", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(Resources.UploadersConfigForm_Login_failed, "小蟒", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
             catch (Exception ex)
@@ -1466,7 +1466,7 @@ namespace ShareX.UploadersLib
             }
             else
             {
-                MessageBox.Show(Resources.UploadersConfigForm_FTPOpenClient_Unable_to_find_valid_FTP_account_, "ShareX", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show(Resources.UploadersConfigForm_FTPOpenClient_Unable_to_find_valid_FTP_account_, "小蟒", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
 
@@ -1622,10 +1622,10 @@ namespace ShareX.UploadersLib
 
         private void btnGoogleDriveFolderIDHelp_Click(object sender, EventArgs e)
         {
-            MessageBox.Show(@"Unfortunately, Google has forced us to use a more restrictive API scope, which does not allow us to see files or folders anymore. Because of this, we cannot provide folder listing and selection anymore.
+            MessageBox.Show(@"受 Google Drive API 权限限制，无法在此列出或选择文件夹。
 
-However, there is a workaround. You can navigate to the Google Drive website in your browser, open the folder you want to upload to, and then copy the folder ID from the browser's address bar to here.",
-"ShareX - Google Drive", MessageBoxButtons.OK, MessageBoxIcon.Question);
+请在浏览器中打开 Google Drive，进入目标文件夹，将地址栏中的文件夹 ID 复制到此处。",
+"小蟒 - Google Drive", MessageBoxButtons.OK, MessageBoxIcon.Question);
         }
 
         private void btnGoogleDriveRefreshFolders_Click(object sender, EventArgs e)
@@ -1702,7 +1702,7 @@ However, there is a workaround. You can navigate to the Google Drive website in 
                 }
                 else
                 {
-                    MessageBox.Show("Login failed.", "Authentication failure", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show("登录失败，请检查账号信息后重试。", "小蟒 - 登录失败", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
         }
@@ -2216,11 +2216,11 @@ However, there is a workaround. You can navigate to the Google Drive website in 
 
             if (checkReturned)
             {
-                MessageBox.Show(Resources.UploadersConfigForm_TestFTPAccount_Connected_, "ShareX", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show(Resources.UploadersConfigForm_TestFTPAccount_Connected_, "小蟒", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             else
             {
-                MessageBox.Show(Resources.UploadersConfigForm_Error, "ShareX", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(Resources.UploadersConfigForm_Error, "小蟒", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -2241,11 +2241,11 @@ However, there is a workaround. You can navigate to the Google Drive website in 
 
             if (checkReturned)
             {
-                MessageBox.Show(Resources.UploadersConfigForm_Login_successful, "ShareX", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show(Resources.UploadersConfigForm_Login_successful, "小蟒", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             else
             {
-                MessageBox.Show(Resources.UploadersConfigForm_Error, "ShareX", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(Resources.UploadersConfigForm_Error, "小蟒", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -2278,11 +2278,11 @@ However, there is a workaround. You can navigate to the Google Drive website in 
                         btnRefreshSeafileAccInfo.PerformClick();
                         Config.SeafileRepoID = sf.GetOrMakeDefaultLibrary(authToken);
                         txtSeafileUploadLocationRefresh.PerformClick();
-                        MessageBox.Show(Resources.UploadersConfigForm_Login_successful, "ShareX", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        MessageBox.Show(Resources.UploadersConfigForm_Login_successful, "小蟒", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     }
                     else
                     {
-                        MessageBox.Show(Resources.UploadersConfigForm_Login_failed, "ShareX", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        MessageBox.Show(Resources.UploadersConfigForm_Login_failed, "小蟒", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
                 }
                 catch (Exception ex)
@@ -2316,7 +2316,7 @@ However, there is a workaround. You can navigate to the Google Drive website in 
 
             if (SeafileCheckAccInfoResponse == null)
             {
-                MessageBox.Show(Resources.UploadersConfigForm_Login_failed, "ShareX", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(Resources.UploadersConfigForm_Login_failed, "小蟒", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
             txtSeafileAccInfoEmail.Text = SeafileCheckAccInfoResponse.email;
@@ -2396,11 +2396,11 @@ However, there is a workaround. You can navigate to the Google Drive website in 
 
             if (checkReturned)
             {
-                MessageBox.Show(Resources.UploadersConfigForm_TestFTPAccount_Connected_, "ShareX", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show(Resources.UploadersConfigForm_TestFTPAccount_Connected_, "小蟒", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             else
             {
-                MessageBox.Show(Resources.UploadersConfigForm_Error, "ShareX", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(Resources.UploadersConfigForm_Error, "小蟒", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -2424,11 +2424,11 @@ However, there is a workaround. You can navigate to the Google Drive website in 
 
             if (checkReturned)
             {
-                MessageBox.Show(Resources.UploadersConfigForm_TestFTPAccount_Connected_, "ShareX", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show(Resources.UploadersConfigForm_TestFTPAccount_Connected_, "小蟒", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             else
             {
-                MessageBox.Show(Resources.UploadersConfigForm_Error, "ShareX", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(Resources.UploadersConfigForm_Error, "小蟒", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 

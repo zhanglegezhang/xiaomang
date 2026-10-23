@@ -13,8 +13,8 @@ namespace ShareX
     // Explicit projections avoid migrating credentials, device paths and executable actions.
     internal static class PersonalDataPreferences
     {
-        private static readonly string[] AppFields = { "Language", "ShowTray", "SilentRun", "TrayIconProgressEnabled", "TaskbarProgressEnabled", "RememberMainFormSize", "MainFormSize", "Themes", "SelectedTheme", "ScratchMarkdownWindowSize", "ScratchTextWindowSize", "ScratchMarkdownSplitRatio", "ImageCollageWindowSize", "TextCompareWindowSize", "DisableHotkeys", "DisableHotkeysOnFullscreen", "SaveImageSubFolderPattern", "SaveImageSubFolderPatternWindow" };
-        private static readonly string[] TodoFields = { "WidgetWidth", "WidgetHeight", "ClipboardPreviewLines", "NoteLogWindowSize", "NoteLogWindowSizeVersion" };
+        private static readonly string[] AppFields = { "Language", "TrayIconProgressEnabled", "TaskbarProgressEnabled", "RememberMainFormSize", "MainFormSize", "Themes", "SelectedTheme", "ScratchMarkdownWindowSize", "ScratchTextWindowSize", "ScratchMarkdownSplitRatio", "ImageCollageWindowSize", "TextCompareWindowSize", "DisableHotkeys", "DisableHotkeysOnFullscreen", "SaveImageSubFolderPattern", "SaveImageSubFolderPatternWindow" };
+        private static readonly string[] TodoFields = { "WidgetWidth", "WidgetHeight", "VisibleModules", "ClipboardPreviewLines", "NoteLogWindowSize", "NoteLogWindowSizeVersion" };
         private static readonly string[] NewsFields = { "Enabled", "MaxPerSource", "MaxTotal", "RecentHours", "MaxSummaryChars", "Concurrency", "TimeoutSeconds", "EnableDigest", "EnableTopicGroup", "AutoRun", "AutoRunHour", "DomesticWindowSize", "InternationalWindowSize", "WindowSizeVersion" };
         private static readonly string[] TaskFields = { "Description", "Job", "UseDefaultAfterCaptureJob", "AfterCaptureJob", "UseDefaultGeneralSettings", "GeneralSettings", "UseDefaultImageSettings", "ImageSettings", "UseDefaultCaptureSettings", "CaptureSettings", "UseDefaultToolsSettings", "ToolsSettings", "UseDefaultAdvancedSettings", "AdvancedSettings" };
         internal static JObject Json(object value) => JObject.Parse(JsonHelpers.SerializeToString(value));
@@ -57,6 +57,7 @@ namespace ShareX
         internal static JObject Export(JObject app)
         {
             var output = Pick(app, AppFields);
+            output["Language"] = nameof(SupportedLanguage.SimplifiedChinese);
             output["TodoSettings"] = Pick(app["TodoSettings"] as JObject, TodoFields);
             output["DailyNewsSettings"] = Pick(app["DailyNewsSettings"] as JObject, NewsFields);
             output["DefaultTaskSettings"] = Task(app["DefaultTaskSettings"] as JObject);

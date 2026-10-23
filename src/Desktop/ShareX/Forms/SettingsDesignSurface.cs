@@ -216,11 +216,13 @@ namespace ShareX
             {
                 int S(int v)=>surface.S(v);bool toggle=field is SettingsDesignSwitch;
                 bool stacked=!toggle&&width<S(Compact?300:460);bool empty=string.IsNullOrEmpty(Caption.Text);
+                if(field is SettingsModuleOptions) stacked = width-Math.Min(S(245),(int)(width*.37))-S(14)<S(400);
                 int labelWidth=empty?0:toggle&&surface.RightAlignedToggles?Math.Max(1,width-S(76)):stacked?width:Math.Min(S(245),(int)(width*.37));
                 int labelHeight=Math.Max(S(23),TextRenderer.MeasureText(Caption.Text,Font,new Size(labelWidth,int.MaxValue),TextFormatFlags.WordBreak|TextFormatFlags.NoPrefix).Height);
                 Caption.Visible=!empty;Caption.Bounds=new Rectangle(0,S(8),labelWidth,labelHeight);
                 int available=stacked||empty?width:Math.Max(1,width-labelWidth-S(14));
                 int target=field is SettingsDesignSwitch?S(54):field is SettingsDesignField frame?(frame.Flexible?available:Math.Min(available,S(desired))):field is TextBoxBase||field is Label||field is FlowLayoutPanel||field is ProgressBar||field is SettingsDesignStatus?available:Math.Min(available,S(desired));
+                if(field is SettingsModuleOptions) target = stacked ? available : S(400);
                 field.MaximumSize=Size.Empty;
                 if(field is FlowLayoutPanel inline){
                     inline.Width=target;
@@ -233,9 +235,10 @@ namespace ShareX
                     }
                     inline.PerformLayout();
                 }
-                int h=field is SettingsDesignSwitch?S(28):field is SettingsDesignNumber?S(32):field is SettingsDesignField framed?framed.MeasureHeight():field is TextBoxBase text&&text.Multiline?S(84):field is FlowLayoutPanel flow?Math.Max(S(32),flow.GetPreferredSize(new Size(target,0)).Height):field is SettingsDesignStatus?Math.Max(S(28),field.GetPreferredSize(new Size(target,0)).Height):field is Label l?Math.Max(S(26),TextRenderer.MeasureText(l.Text,l.Font,new Size(target,int.MaxValue),TextFormatFlags.WordBreak|TextFormatFlags.NoPrefix).Height):S(32);
+                int h=field is SettingsModuleOptions?S(30):field is SettingsDesignSwitch?S(28):field is SettingsDesignNumber?S(32):field is SettingsDesignField framed?framed.MeasureHeight():field is TextBoxBase text&&text.Multiline?S(84):field is FlowLayoutPanel flow?Math.Max(S(32),flow.GetPreferredSize(new Size(target,0)).Height):field is SettingsDesignStatus?Math.Max(S(28),field.GetPreferredSize(new Size(target,0)).Height):field is Label l?Math.Max(S(26),TextRenderer.MeasureText(l.Text,l.Font,new Size(target,int.MaxValue),TextFormatFlags.WordBreak|TextFormatFlags.NoPrefix).Height):S(32);
                 int x=toggle&&surface.RightAlignedToggles||field is Button&&surface.RightAlignedActions?width-target:stacked||empty?0:labelWidth+S(14),y=stacked&&!empty?Caption.Bottom+S(4):S(4);
                 field.Bounds=new Rectangle(x,y,target,h);
+
                 int bottom=Math.Max(empty?0:Caption.Bottom,field.Bottom);
                 if(below!=null){int bh=TextRenderer.MeasureText(below.Text,below.Font,new Size(target,int.MaxValue),TextFormatFlags.WordBreak).Height;below.Bounds=new Rectangle(x,field.Bottom+S(5),target,bh);bottom=below.Bottom;}
                 return Math.Max(S(38),bottom+S(5));

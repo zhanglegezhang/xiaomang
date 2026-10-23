@@ -268,7 +268,7 @@
     <value>X: {0}, Y: {1}, רוחב: {2}, גובה: {3}</value>
   </data>
   <data name="ApplicationSettingsForm_btnResetSettings_Click_WouldYouLikeToResetShareXSettings" xml:space="preserve">
-    <value>האם תרצה לאפס את הגדרות ShareX?</value>
+    <value>האם תרצה לאפס את הגדרות 小蟒?</value>
   </data>
   <data name="BeforeUploadForm_BeforeUploadForm__0__is_about_to_be_uploaded_to__1___You_may_choose_a_different_destination_" xml:space="preserve">
     <value>{0} יועלה אל {1}. ניתן לבחור יעד אחר.</value>
@@ -373,7 +373,7 @@
     <value>שגיאה</value>
   </data>
   <data name="YourAntiVirusSoftwareOrTheControlledFolderAccessFeatureInWindowsCouldBeBlockingShareX" xml:space="preserve">
-    <value>תוכנת האנטי-וירוס שלך או אפשרות גישה מבוקרת לתיקיות ב-Windows עלולים לחסום את ShareX.</value>
+    <value>תוכנת האנטי-וירוס שלך או אפשרות גישה מבוקרת לתיקיות ב-Windows עלולים לחסום את 小蟒.</value>
   </data>
   <data name="QuickTaskMenuEditorForm_Reset_all_quick_tasks_to_defaults_Confirmation" xml:space="preserve">
     <value>לאפס את כל המשימות המהירות לברירות המחדל?</value>
@@ -427,9 +427,9 @@
     <value>סגור</value>
   </data>
   <data name="ShareXNeedsToBeRestartedForThePersonalFolderChangesToApply" xml:space="preserve">
-    <value>יש להפעיל מחדש את ShareX כדי ששינויי התיקייה האישיים יחולו.
+    <value>יש להפעיל מחדש את 小蟒 כדי ששינויי התיקייה האישיים יחולו.
 
-האם תרצה להפעיל מחדש את ShareX?</value>
+האם תרצה להפעיל מחדש את 小蟒?</value>
   </data>
   <data name="AboutForm_AboutForm_Website" xml:space="preserve">
     <value>אתר</value>
@@ -474,7 +474,7 @@
     <value>ניתן להוסיף תהליכי עבודה מהגדרות מקשי קיצור...</value>
   </data>
   <data name="ShareXConfirmation" xml:space="preserve">
-    <value>ShareX - אישור</value>
+    <value>小蟒 - אישור</value>
   </data>
   <data name="UploadTask_DownloadAndUpload_Downloading" xml:space="preserve">
     <value>מוריד</value>
@@ -516,7 +516,7 @@
     <value>מקור הווידאו והשמע של FFmpeg לא יכולים להיות שניהם "ללא".</value>
   </data>
   <data name="ShareXCannotBeClosedWhileScreenRecordingIsActive" xml:space="preserve">
-    <value>לא ניתן לסגור את ShareX בזמן שהקלטת מסך פעילה.
+    <value>לא ניתן לסגור את 小蟒 בזמן שהקלטת מסך פעילה.
 
 האם ברצונך לבטל את הקלטת המסך הפעילה?</value>
   </data>
@@ -528,7 +528,7 @@
   </data>
   <data name="Program_WritePersonalPathConfig_Cant_access_to_file" xml:space="preserve">
     <value>לא יכול לגשת לקובץ "{0}".
-אנא הפעל את ShareX כמנהל כדי לשנות את נתיב התיקייה האישית.</value>
+אנא הפעל את 小蟒 כמנהל כדי לשנות את נתיב התיקייה האישית.</value>
   </data>
   <data name="ApplicationSettingsForm_cbStartWithWindows_DisabledByUser_Text" xml:space="preserve">
     <value>האתחול הושבת במנהל המשימות</value>
@@ -569,7 +569,7 @@
 
 {1}
 
-אנא בחר מקש קיצור אחר או צא מהיישום המתנגש ופתח מחדש את ShareX.</value>
+אנא בחר מקש קיצור אחר או צא מהיישום המתנגש ופתח מחדש את 小蟒.</value>
   </data>
   <data name="InspectWindow_ClientRectangle" xml:space="preserve">
     <value>מלבן לקוח</value>

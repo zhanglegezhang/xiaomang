@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -374,7 +374,7 @@ Sei sicuro di voler continuare?</value>
   </data>
   <data name="Program_WritePersonalPathConfig_Cant_access_to_file" xml:space="preserve">
     <value>Impossibile accedere al file "{0}".
-Esegui ShareX come amministratore per cambiare il percorso della cartella personale.</value>
+Esegui 小蟒 come amministratore per cambiare il percorso della cartella personale.</value>
   </data>
   <data name="ApplicationSettingsForm_cbStartWithWindows_DisabledByUser_Text" xml:space="preserve">
     <value>L'avvio automatico è stato disattivato in Gestione Attività</value>
@@ -400,7 +400,7 @@ Qui</value>
 
 {1}
 
-Selezione una scorciatoia diversa o chiudi l'applicazione che crea conflitto e riavvia ShareX.</value>
+Selezione una scorciatoia diversa o chiudi l'applicazione che crea conflitto e riavvia 小蟒.</value>
   </data>
   <data name="AboutForm_AboutForm_Language_vi_VN" xml:space="preserve">
     <value>Vietnamita</value>
@@ -490,7 +490,7 @@ Selezione una scorciatoia diversa o chiudi l'applicazione che crea conflitto e r
     <value>Nome file processo</value>
   </data>
   <data name="ApplicationSettingsForm_btnResetSettings_Click_WouldYouLikeToResetShareXSettings" xml:space="preserve">
-    <value>Vuoi reimpostare le impostazioni di ShareX?</value>
+    <value>Vuoi reimpostare le impostazioni di 小蟒?</value>
   </data>
   <data name="FFmpegIsMissing" xml:space="preserve">
     <value>FFmpeg mancante</value>
@@ -531,7 +531,7 @@ You can later disable it from "After acquisizione tasks" menu.</value>
     <value>Appunti does not contain an immagine.</value>
   </data>
   <data name="YourAntiVirusSoftwareOrTheControlledFolderAccessFeatureInWindowsCouldBeBlockingShareX" xml:space="preserve">
-    <value>Your anti-virus software or the controlled cartella access feature in Finestras could be blocking ShareX.</value>
+    <value>Your anti-virus software or the controlled cartella access feature in Finestras could be blocking 小蟒.</value>
   </data>
   <data name="AboutForm_AboutForm_Language_ar_YE" xml:space="preserve">
     <value>Arabo</value>
@@ -546,9 +546,9 @@ You can later disable it from "After acquisizione tasks" menu.</value>
     <value>Spagnolo messicano</value>
   </data>
   <data name="ShareXNeedsToBeRestartedForThePersonalFolderChangesToApply" xml:space="preserve">
-    <value>ShareX needs to be reavviaed for the personal cartella changes to apply.
+    <value>小蟒 needs to be reavviaed for the personal cartella changes to apply.
 
-Would you like to reavvia ShareX?</value>
+Would you like to reavvia 小蟒?</value>
   </data>
   <data name="AboutForm_AboutForm_Language_uk" xml:space="preserve">
     <value>Ucraino</value>
@@ -572,7 +572,7 @@ Would you like to reavvia ShareX?</value>
     <value>Finestra styles</value>
   </data>
   <data name="ShareXConfirmation" xml:space="preserve">
-    <value>ShareX - Conferma</value>
+    <value>小蟒 - Conferma</value>
   </data>
   <data name="OpticalCharacterRecognitionFeatureIsOnlyAvailableWithWindowsVersion0OrNewer" xml:space="preserve">
     <value>Optical character recognition feature is only available with Finestras version {0} or newer.</value>
@@ -599,7 +599,7 @@ Would you like to reavvia ShareX?</value>
     <value>La sorgente video e audio di FFmpeg non possono essere entrambe "Nessuna".</value>
   </data>
   <data name="ShareXCannotBeClosedWhileScreenRecordingIsActive" xml:space="preserve">
-    <value>ShareX cannot be closed while registrazione schermo is active.
+    <value>小蟒 cannot be closed while registrazione schermo is active.
 
 Do you want to abort the active registrazione schermo?</value>
   </data>

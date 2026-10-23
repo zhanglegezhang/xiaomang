@@ -1,4 +1,4 @@
-﻿#region License Information (GPL v3)
+#region License Information (GPL v3)
 
 /*
     ShareX - A program that allows you to take screenshots and share any file type
@@ -49,14 +49,7 @@ namespace ShareX
             {
                 DebugHelper.WriteException(e);
 
-                string message = $"{Resources.ImageData_Write_Error_Message}\r\n\"{filePath}\"";
-
-                if (e is UnauthorizedAccessException || e is FileNotFoundException)
-                {
-                    message += "\r\n\r\n" + Resources.YourAntiVirusSoftwareOrTheControlledFolderAccessFeatureInWindowsCouldBeBlockingShareX;
-                }
-
-                MessageBox.Show(message, "ShareX - " + Resources.Error, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                ErrorForm.ShowHandled(GetWriteErrorSummary(e, filePath), e, filePath);
             }
 
             return false;
@@ -65,6 +58,16 @@ namespace ShareX
         public void Dispose()
         {
             ImageStream?.Dispose();
+        }
+
+        internal static string GetWriteErrorSummary(Exception error, string filePath)
+        {
+            if (Directory.Exists(filePath)) return "保存失败：目标是文件夹，请选择包含文件名的保存路径。";
+            if (error is UnauthorizedAccessException) return "保存失败：没有写入权限。请选择其他文件夹或检查访问权限。";
+            if (error is DirectoryNotFoundException || error is FileNotFoundException) return "保存失败：目标路径不存在，请重新选择保存位置。";
+            if (error is IOException && ((error.HResult & 0xffff) == 32 || (error.HResult & 0xffff) == 33))
+                return "保存失败：文件正被占用，请关闭占用程序或更换文件名。";
+            return "图片保存失败。请检查保存路径和磁盘空间，或选择其他位置。";
         }
     }
 }

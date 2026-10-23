@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -421,7 +421,7 @@ Press 'No' to cancel the current upload and disable screenshot auto uploading.</
     <value>X: {0}, Y: {1}, Width: {2}, Height: {3}</value>
   </data>
   <data name="ApplicationSettingsForm_btnResetSettings_Click_WouldYouLikeToResetShareXSettings" xml:space="preserve">
-    <value>Would you like to reset ShareX settings?</value>
+    <value>Would you like to reset 小蟒 settings?</value>
   </data>
   <data name="BeforeUploadForm_BeforeUploadForm__0__is_about_to_be_uploaded_to__1___You_may_choose_a_different_destination_" xml:space="preserve">
     <value>{0} is about to be uploaded to {1}. You may choose a different destination.</value>
@@ -628,7 +628,7 @@ You can later disable it from "After capture tasks" menu.</value>
     <value>..\Resources\de.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="YourAntiVirusSoftwareOrTheControlledFolderAccessFeatureInWindowsCouldBeBlockingShareX" xml:space="preserve">
-    <value>Your anti-virus software or the controlled folder access feature in Windows could be blocking ShareX.</value>
+    <value>Your anti-virus software or the controlled folder access feature in Windows could be blocking 小蟒.</value>
   </data>
   <data name="keyboard__plus" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\keyboard--plus.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -760,9 +760,9 @@ You can later disable it from "After capture tasks" menu.</value>
     <value>Close</value>
   </data>
   <data name="ShareXNeedsToBeRestartedForThePersonalFolderChangesToApply" xml:space="preserve">
-    <value>ShareX needs to be restarted for the personal folder changes to apply.
+    <value>小蟒 needs to be restarted for the personal folder changes to apply.
 
-Would you like to restart ShareX?</value>
+Would you like to restart 小蟒?</value>
   </data>
   <data name="AboutForm_AboutForm_Website" xml:space="preserve">
     <value>Website</value>
@@ -843,7 +843,7 @@ Would you like to restart ShareX?</value>
     <value>You can add workflows from hotkey settings...</value>
   </data>
   <data name="ShareXConfirmation" xml:space="preserve">
-    <value>ShareX - Confirmation</value>
+    <value>小蟒 - Confirmation</value>
   </data>
   <data name="document_break" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\document-break.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -906,7 +906,7 @@ Would you like to restart ShareX?</value>
     <value>..\Resources\layer-shape.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="ShareXCannotBeClosedWhileScreenRecordingIsActive" xml:space="preserve">
-    <value>ShareX cannot be closed while screen recording is active.
+    <value>小蟒 cannot be closed while screen recording is active.
 
 Do you want to abort the active screen recording?</value>
   </data>
@@ -921,7 +921,7 @@ Do you want to abort the active screen recording?</value>
   </data>
   <data name="Program_WritePersonalPathConfig_Cant_access_to_file" xml:space="preserve">
     <value>Can't access to "{0}" file.
-Please run ShareX as administrator to change personal folder path.</value>
+Please run 小蟒 as administrator to change personal folder path.</value>
   </data>
   <data name="barcode_2d" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\barcode-2d.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -986,7 +986,7 @@ here</value>
 
 {1}
 
-Please select a different hotkey or quit the conflicting application and reopen ShareX.</value>
+Please select a different hotkey or quit the conflicting application and reopen 小蟒.</value>
   </data>
   <data name="color" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\color.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>

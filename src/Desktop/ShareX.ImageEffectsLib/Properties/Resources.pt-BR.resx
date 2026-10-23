@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -133,7 +133,7 @@
     <value>Efeitos de imagem - Largura: {0}, Altura: {1}, Tempo de renderização: {2} ms</value>
   </data>
   <data name="AssetsFolderMustBeInsideShareXImageEffectsFolder" xml:space="preserve">
-    <value>A pasta de ativos deve estar dentro da pasta de efeitos de imagem do ShareX.</value>
+    <value>A pasta de ativos deve estar dentro da pasta de efeitos de imagem do 小蟒.</value>
   </data>
   <data name="Confirmation" xml:space="preserve">
     <value>Confirmação</value>

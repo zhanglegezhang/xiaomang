@@ -22,6 +22,6 @@ Console.WriteLine("PASS "+action);
 foreach(float scale in new[]{1f,1.5f,2f}){
 using var f=(Form)Activator.CreateInstance(t,true)!;f.Scale(new SizeF(scale,scale));f.Show();Application.DoEvents();
 foreach(Control c in f.Controls)if(!f.ClientRectangle.Contains(c.Bounds))throw new Exception("Bounds "+c.Text);
-foreach(Control c in f.Controls.OfType<Control>().Where(c=>c is Label || c is Button)){var size=TextRenderer.MeasureText(c.Text,c.Font,Size.Empty,TextFormatFlags.SingleLine); if(size.Width>c.Width || size.Height>c.Height)throw new Exception("Text clipping "+c.Text+" "+size+" "+c.Size);} Console.WriteLine("PASS text fit dpi="+f.DeviceDpi); using var bmp=new Bitmap(f.Width,f.Height);f.DrawToBitmap(bmp,f.ClientRectangle);bmp.Save("./dialog-"+scale+".png");Console.WriteLine("PASS bounds "+scale);
+foreach(Control c in f.Controls.OfType<Control>().Where(c=>c is Label || c is Button)){var size=TextRenderer.MeasureText(c.Text,c.Font,Size.Empty,TextFormatFlags.SingleLine); if(size.Width>c.Width || size.Height>c.Height)throw new Exception("Text clipping "+c.Text+" "+size+" "+c.Size);} Console.WriteLine("PASS text fit dpi="+f.DeviceDpi); using var bmp=new Bitmap(f.Width,f.Height);f.DrawToBitmap(bmp,f.ClientRectangle);bmp.Save("D:/xiaomangtongxue/build/exit-confirm-20261023/dialog-"+scale+".png");Console.WriteLine("PASS bounds "+scale);
 }
 }}

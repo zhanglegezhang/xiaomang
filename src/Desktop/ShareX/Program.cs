@@ -50,7 +50,7 @@ namespace ShareX
         public const string DisplayName = "小蟒";
         public const string ProductName = "小蟒";
         public const int ProductVersionMajor = 3;
-        public const int ProductVersionMinor = 5;
+        public const int ProductVersionMinor = 6;
         public static string ProductVersion => $"{ProductVersionMajor}.{ProductVersionMinor}";
         public const string MutexName = "82E6AC09-0FEF-4390-AD9F-0DD3F5561EFC";
         public static readonly string PipeName = $"{Environment.MachineName}-{Environment.UserName}-{AppName}";
@@ -374,7 +374,8 @@ namespace ShareX
             FileFavoritesService.Start();
 
             UpdateManager = new ShareXUpdateManager();
-            LanguageHelper.ChangeLanguage(Settings.Language);
+            Settings.Language = SupportedLanguage.SimplifiedChinese;
+            LanguageHelper.ChangeLanguage(SupportedLanguage.SimplifiedChinese);
             CleanupManager.CleanupAsync();
 
             DebugHelper.WriteLine("MainForm init started.");

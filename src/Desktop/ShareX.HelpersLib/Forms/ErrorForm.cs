@@ -31,6 +31,13 @@ namespace ShareX.HelpersLib
 {
     public partial class ErrorForm : Form
     {
+        public static void ShowHandled(string summary, Exception error, string context = null)
+        {
+            string details = string.IsNullOrEmpty(context) ? error.ToString() : context + "\r\n\r\n" + error;
+            using var form = new ErrorForm(summary, details, null, null, false);
+            form.ShowDialog();
+        }
+
         public bool IsUnhandledException { get; private set; }
         public string LogFilePath { get; private set; }
         public string BugReportPath { get; private set; }
@@ -43,6 +50,7 @@ namespace ShareX.HelpersLib
         {
             InitializeComponent();
             ShareXResources.ApplyTheme(this, true);
+            Text = "小蟒 - 错误";
 
             IsUnhandledException = unhandledException;
             LogFilePath = logFilePath;
@@ -55,13 +63,15 @@ namespace ShareX.HelpersLib
 
             lblErrorMessage.Text = errorTitle;
             txtException.Text = errorMessage;
-            txtException.SelectionStart = txtException.TextLength;
+            txtException.SelectionStart = 0;
 
             btnSendBugReport.Visible = !string.IsNullOrEmpty(BugReportPath);
             btnOpenLogFile.Visible = !string.IsNullOrEmpty(LogFilePath) && File.Exists(LogFilePath);
             btnContinue.Visible = IsUnhandledException;
             btnClose.Visible = false;
             btnOK.Visible = !IsUnhandledException;
+            AcceptButton = IsUnhandledException ? btnContinue : btnOK;
+            CancelButton = IsUnhandledException ? btnContinue : btnOK;
         }
 
         private void ErrorForm_Shown(object sender, EventArgs e)

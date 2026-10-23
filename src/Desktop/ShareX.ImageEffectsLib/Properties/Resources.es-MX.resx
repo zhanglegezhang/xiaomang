@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -136,7 +136,7 @@
     <value>Efectos de imágenes - Ancho: {0}, Alto: {1}, Tiempo de procesamiento: {2} ms</value>
   </data>
   <data name="AssetsFolderMustBeInsideShareXImageEffectsFolder" xml:space="preserve">
-    <value>La carpeta de recursos debe estar dentro de la carpeta de efectos de imagen de ShareX.</value>
+    <value>La carpeta de recursos debe estar dentro de la carpeta de efectos de imagen de 小蟒.</value>
   </data>
   <data name="InvalidAssetsFolderPath" xml:space="preserve">
     <value>Ruta de carpeta de recursos inválida</value>

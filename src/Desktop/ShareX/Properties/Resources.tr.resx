@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -267,7 +267,7 @@ ShareX'i yeniden başlatmak ister misiniz?</value>
     <value>X: {0}, Y: {1}, Genişlik: {2}, Yükseklik: {3}</value>
   </data>
   <data name="ApplicationSettingsForm_btnResetSettings_Click_WouldYouLikeToResetShareXSettings" xml:space="preserve">
-    <value>ShareX ayarlarını sıfırlamak ister misiniz?</value>
+    <value>小蟒 ayarlarını sıfırlamak ister misiniz?</value>
   </data>
   <data name="BeforeUploadForm_BeforeUploadForm__0__is_about_to_be_uploaded_to__1___You_may_choose_a_different_destination_" xml:space="preserve">
     <value>{0} {1}'a yüklenmek üzere. Başka bir hedef seçebilirsiniz.</value>
@@ -372,7 +372,7 @@ Daha sonra "Yakalama sonrası" menüsünden devre dışı bırakabilirsiniz.</va
     <value>Hata</value>
   </data>
   <data name="YourAntiVirusSoftwareOrTheControlledFolderAccessFeatureInWindowsCouldBeBlockingShareX" xml:space="preserve">
-    <value>Antivirüs yazılımınız veya Windows'daki kontrollü klasör erişimi özelliği ShareX'i engelliyor olabilir.</value>
+    <value>Antivirüs yazılımınız veya Windows'daki kontrollü klasör erişimi özelliği 小蟒'i engelliyor olabilir.</value>
   </data>
   <data name="QuickTaskMenuEditorForm_Reset_all_quick_tasks_to_defaults_Confirmation" xml:space="preserve">
     <value>Bütün hızlı görevleri varsayılan haline döndür?</value>
@@ -432,9 +432,9 @@ Daha sonra "Yakalama sonrası" menüsünden devre dışı bırakabilirsiniz.</va
     <value>Kapat</value>
   </data>
   <data name="ShareXNeedsToBeRestartedForThePersonalFolderChangesToApply" xml:space="preserve">
-    <value>Kişisel klasör değişikliklerinin uygulanması için ShareX'in yeniden başlatılması gerekir.
+    <value>Kişisel klasör değişikliklerinin uygulanması için 小蟒'in yeniden başlatılması gerekir.
 
-ShareX'i yeniden başlatmak ister misiniz?</value>
+小蟒'i yeniden başlatmak ister misiniz?</value>
   </data>
   <data name="AboutForm_AboutForm_Website" xml:space="preserve">
     <value>Web sitesi</value>
@@ -479,7 +479,7 @@ ShareX'i yeniden başlatmak ister misiniz?</value>
     <value>Kısayol ayarlarından yeni iş akışı ekliyebilirsiniz...</value>
   </data>
   <data name="ShareXConfirmation" xml:space="preserve">
-    <value>ShareX - Onay</value>
+    <value>小蟒 - Onay</value>
   </data>
   <data name="UploadTask_DownloadAndUpload_Downloading" xml:space="preserve">
     <value>İndiriliyor</value>
@@ -521,7 +521,7 @@ ShareX'i yeniden başlatmak ister misiniz?</value>
     <value>FFmpeg video ve ses kaynağının ikisi birden "Hiçbiri" olamaz.</value>
   </data>
   <data name="ShareXCannotBeClosedWhileScreenRecordingIsActive" xml:space="preserve">
-    <value>Ekran kaydı aktifken ShareX kapatılamaz.
+    <value>Ekran kaydı aktifken 小蟒 kapatılamaz.
 
 Aktif ekran kaydını sonlandırmak istiyor musunuz?</value>
   </data>
@@ -533,7 +533,7 @@ Aktif ekran kaydını sonlandırmak istiyor musunuz?</value>
   </data>
   <data name="Program_WritePersonalPathConfig_Cant_access_to_file" xml:space="preserve">
     <value>"{0}" dosyasına erişilemiyor.
-Lütfen kişisel dizin yolunu değiştirmek için ShareX'i yönetici olarak çalıştırın.</value>
+Lütfen kişisel dizin yolunu değiştirmek için 小蟒'i yönetici olarak çalıştırın.</value>
   </data>
   <data name="ApplicationSettingsForm_cbStartWithWindows_DisabledByUser_Text" xml:space="preserve">
     <value>Başlangıç görev yöneticisinden devre dışı bırakılmış</value>
@@ -574,7 +574,7 @@ sürükle</value>
 
 {1}
 
-Lütfen başka bir kısayol seçin veya çakışan uygulamayı kapatın ve ShareX'i tekrar açın.</value>
+Lütfen başka bir kısayol seçin veya çakışan uygulamayı kapatın ve 小蟒'i tekrar açın.</value>
   </data>
   <data name="InspectWindow_ClientRectangle" xml:space="preserve">
     <value>İstemci dikdörtgeni</value>

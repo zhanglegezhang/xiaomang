@@ -432,7 +432,7 @@
     <value>关闭</value>
   </data>
   <data name="ShareXNeedsToBeRestartedForThePersonalFolderChangesToApply" xml:space="preserve">
-    <value>ShareX 需要重启以应用个人文件夹更改。
+    <value>小蟒 需要重启以应用个人文件夹更改。
 
 要重启吗？</value>
   </data>
@@ -521,7 +521,7 @@
     <value>FFmpeg 音频和视频源不能同时设为“无”。</value>
   </data>
   <data name="ShareXCannotBeClosedWhileScreenRecordingIsActive" xml:space="preserve">
-    <value>屏幕录制时无法关闭 ShareX。
+    <value>屏幕录制时无法关闭 小蟒。
 
 是否要取消当前的屏幕录制？</value>
   </data>
@@ -533,7 +533,7 @@
   </data>
   <data name="Program_WritePersonalPathConfig_Cant_access_to_file" xml:space="preserve">
     <value>无法访问 "{0}" 文件.
-请以管理员权限运行 ShareX 以更改个人文件夹路径。</value>
+请以管理员权限运行 小蟒 以更改个人文件夹路径。</value>
   </data>
   <data name="ApplicationSettingsForm_cbStartWithWindows_DisabledByUser_Text" xml:space="preserve">
     <value>开机启动项已被任务管理器禁用</value>
@@ -574,7 +574,7 @@
 
 {1}
 
-请选择一个不同的快捷键，或退出冲突的应用程序，并重新启动ShareX。</value>
+请选择一个不同的快捷键，或退出冲突的应用程序，并重新启动小蟒。</value>
   </data>
   <data name="InspectWindow_ClientRectangle" xml:space="preserve">
     <value>客户端矩形区域</value>

@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -136,7 +136,7 @@
     <value>Annuleren</value>
   </data>
   <data name="AssetsFolderMustBeInsideShareXImageEffectsFolder" xml:space="preserve">
-    <value>Assets map must be inside ShareX afbeelding effects map.</value>
+    <value>Assets map must be inside 小蟒 afbeelding effects map.</value>
   </data>
   <data name="InvalidAssetsFolderPath" xml:space="preserve">
     <value>Invalid assets mappad</value>

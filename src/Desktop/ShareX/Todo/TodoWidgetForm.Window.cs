@@ -20,6 +20,7 @@ namespace ShareX
     {
         public void OpenPanel()
         {
+            if (string.IsNullOrEmpty(Settings.FirstVisibleModule())) { SetExpanded(false); return; }
             if (animatingGenie) FinishGenieAnimation();
             Show();
             SetExpanded(true);
@@ -30,6 +31,7 @@ namespace ShareX
 
         private void OpenPanelGenie()
         {
+            if (string.IsNullOrEmpty(Settings.FirstVisibleModule())) { SetExpanded(false); return; }
             if (animatingGenie || expanded || !Visible || IsDisposed)
             {
                 OpenPanel();
@@ -418,6 +420,7 @@ namespace ShareX
             // Paint on the panel itself: no extra hit target, tab stop or layout row.
             panel.Paint += (sender, e) =>
             {
+                string caption = panel.AccessibleName ?? number;
                 float left = D(34); // Logo: 8 + 20; text gap: 6 logical pixels.
                 float right = panel.ClientSize.Width - D(8);
                 int scrollY = panel.AutoScrollPosition.Y;
@@ -433,9 +436,9 @@ namespace ShareX
                 using Brush brush = new SolidBrush(Color.FromArgb(38, Color.White));
                 using StringFormat format = new StringFormat(StringFormat.GenericTypographic) { Alignment = StringAlignment.Near, LineAlignment = StringAlignment.Center, FormatFlags = StringFormatFlags.NoWrap };
                 e.Graphics.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAliasGridFit;
-                float measuredWidth = e.Graphics.MeasureString(number, numberFont, PointF.Empty, format).Width;
+                float measuredWidth = e.Graphics.MeasureString(caption, numberFont, PointF.Empty, format).Width;
                 using Font fittedFont = new Font(numberFont.FontFamily, numberFont.Size * Math.Min(1f, bounds.Width / measuredWidth), FontStyle.Bold, GraphicsUnit.Pixel);
-                e.Graphics.DrawString(number, fittedFont, brush, bounds, format);
+                e.Graphics.DrawString(caption, fittedFont, brush, bounds, format);
             };
             panel.SizeChanged += (sender, e) => panel.Invalidate();
         }
@@ -850,6 +853,11 @@ namespace ShareX
 
         private void SetExpanded(bool value)
         {
+            if (value && !Settings.IsModuleVisible(Settings.ActiveModule))
+            {
+                Settings.ActiveModule = Settings.FirstVisibleModule();
+                if (string.IsNullOrEmpty(Settings.ActiveModule)) value = false;
+            }
             if (!value) RestoreSearchCompletedVisibility();
             if (!value) ReleaseOcrPanelHold();
             HideCompactHint();

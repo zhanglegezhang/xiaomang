@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -264,7 +264,7 @@ Cliquez sur « Non » pour annuler la mise en ligne et désactiver la mise en li
     <value>X: {0}, Y : {1}, Largeur : {2}, Hauteur : {3}</value>
   </data>
   <data name="ApplicationSettingsForm_btnResetSettings_Click_WouldYouLikeToResetShareXSettings" xml:space="preserve">
-    <value>Voulez-vous réinitialiser les paramètres de ShareX ?</value>
+    <value>Voulez-vous réinitialiser les paramètres de 小蟒 ?</value>
   </data>
   <data name="BeforeUploadForm_BeforeUploadForm__0__is_about_to_be_uploaded_to__1___You_may_choose_a_different_destination_" xml:space="preserve">
     <value>{0} va être mis en ligne sur {1}. Vous pouvez choisir une destination différente.</value>
@@ -363,7 +363,7 @@ Vous pourrez les désactiver plus tard depuis le manu "Tâches après la capture
     <value>Erreur</value>
   </data>
   <data name="YourAntiVirusSoftwareOrTheControlledFolderAccessFeatureInWindowsCouldBeBlockingShareX" xml:space="preserve">
-    <value>Votre logiciel anti-virus ou le control des répertoires Windows pourrait bloquer ShareX.</value>
+    <value>Votre logiciel anti-virus ou le control des répertoires Windows pourrait bloquer 小蟒.</value>
   </data>
   <data name="QuickTaskMenuEditorForm_Reset_all_quick_tasks_to_defaults_Confirmation" xml:space="preserve">
     <value>Réinitialiser les tâches rapides ?</value>
@@ -420,9 +420,9 @@ Vous pourrez les désactiver plus tard depuis le manu "Tâches après la capture
     <value>Fermer</value>
   </data>
   <data name="ShareXNeedsToBeRestartedForThePersonalFolderChangesToApply" xml:space="preserve">
-    <value>ShareX doit être redémarré pour que les changements du dossier personnel soient appliqués.
+    <value>小蟒 doit être redémarré pour que les changements du dossier personnel soient appliqués.
 
-Voulez-vous redémarrer ShareX ?</value>
+Voulez-vous redémarrer 小蟒 ?</value>
   </data>
   <data name="AboutForm_AboutForm_Website" xml:space="preserve">
     <value>Site web</value>
@@ -467,7 +467,7 @@ Voulez-vous redémarrer ShareX ?</value>
     <value>Vous pouvez ajouter des workflows à partir des paramètres des raccourcis clavier...</value>
   </data>
   <data name="ShareXConfirmation" xml:space="preserve">
-    <value>ShareX - Confirmation</value>
+    <value>小蟒 - Confirmation</value>
   </data>
   <data name="UploadTask_DownloadAndUpload_Downloading" xml:space="preserve">
     <value>Téléchargement</value>
@@ -503,7 +503,7 @@ Voulez-vous redémarrer ShareX ?</value>
     <value>Russe</value>
   </data>
   <data name="ShareXCannotBeClosedWhileScreenRecordingIsActive" xml:space="preserve">
-    <value>ShareX ne peut être fermé lorsqu'un enregistrement d'écran est en cours.
+    <value>小蟒 ne peut être fermé lorsqu'un enregistrement d'écran est en cours.
 
 Voulez-vous annuler l'enregistrement d'écran en cours ?</value>
   </data>
@@ -515,7 +515,7 @@ Voulez-vous annuler l'enregistrement d'écran en cours ?</value>
   </data>
   <data name="Program_WritePersonalPathConfig_Cant_access_to_file" xml:space="preserve">
     <value>Impossible d'accéder au fichier « {0} ».
-Veuillez exécuter ShareX en tant qu'administrateur pour changer le chemin du dossier personnel.</value>
+Veuillez exécuter 小蟒 en tant qu'administrateur pour changer le chemin du dossier personnel.</value>
   </data>
   <data name="ApplicationSettingsForm_cbStartWithWindows_DisabledByUser_Text" xml:space="preserve">
     <value>Le démarrage automatique a été désactivé dans le Gestionnaire des tâches</value>
@@ -556,7 +556,7 @@ ici</value>
 
 {1}
 
-Veuillez sélectionner un raccourci différent ou quitter l'application en conflit et rouvrez ShareX.</value>
+Veuillez sélectionner un raccourci différent ou quitter l'application en conflit et rouvrez 小蟒.</value>
   </data>
   <data name="AboutForm_AboutForm_Team" xml:space="preserve">
     <value>Equipe</value>

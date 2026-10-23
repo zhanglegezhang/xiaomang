@@ -16,6 +16,7 @@ strip = "symbols"
 
 [build-dependencies]
 tauri-build = { version = "2", features = [] }
+ico = "0.5"
 
 [dependencies]
 tauri = { version = "=2.11.6", features = [] }

@@ -1,4 +1,4 @@
-﻿#region License Information (GPL v3)
+#region License Information (GPL v3)
 
 /*
     ShareX - A program that allows you to take screenshots and share any file type
@@ -96,10 +96,10 @@ namespace ShareX.ImageEffectsLib
             {
                 if (!string.IsNullOrEmpty(AssetsFolderPath) && !AssetsFolderPath.StartsWith(ShareXImageEffectsFolderPath + "\\", StringComparison.OrdinalIgnoreCase))
                 {
-                    MessageBox.Show(Resources.AssetsFolderMustBeInsideShareXImageEffectsFolder, "ShareX - " + Resources.InvalidAssetsFolderPath,
+                    MessageBox.Show(Resources.AssetsFolderMustBeInsideShareXImageEffectsFolder, "小蟒 - " + Resources.InvalidAssetsFolderPath,
                         MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 }
-                else if (!File.Exists(PackageFilePath) || MessageBox.Show(Resources.PackageWithThisFileNameAlreadyExistsRNWouldYouLikeToOverwriteIt, "ShareX",
+                else if (!File.Exists(PackageFilePath) || MessageBox.Show(Resources.PackageWithThisFileNameAlreadyExistsRNWouldYouLikeToOverwriteIt, "小蟒",
                     MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
                 {
                     string outputFilePath = ImageEffectPackager.Package(PackageFilePath, ImageEffectJson, AssetsFolderPath);

@@ -1190,7 +1190,7 @@ namespace ShareX
             }
             else
             {
-                MessageBox.Show("File does not exist:" + Environment.NewLine + filePath, Program.DisplayName, MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show("文件不存在：" + Environment.NewLine + filePath, Program.DisplayName, MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
 
@@ -1784,8 +1784,8 @@ namespace ShareX
             if (!File.Exists(exifToolPath))
             {
                 // TODO: Translate
-                MessageBox.Show("ExifTool does not exist at the following path:" + "\r\n" + exifToolPath,
-                    Program.DisplayName + " - " + "ExifTool is missing", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("未找到 ExifTool，请检查以下路径：" + "\r\n" + exifToolPath,
+                    Program.DisplayName + " - " + "缺少 ExifTool", MessageBoxButtons.OK, MessageBoxIcon.Warning);
 
                 return false;
             }
@@ -2082,8 +2082,8 @@ namespace ShareX
 
                         if (cui.DestinationType == CustomUploaderDestinationType.None)
                         {
-                            DialogResult result = MessageBox.Show($"Would you like to add \"{cui}\" custom uploader?",
-                                "ShareX - Custom uploader confirmation", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1);
+                            DialogResult result = MessageBox.Show($"是否添加自定义上传器“{cui}”？",
+                                "小蟒 - 自定义上传器确认", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1);
 
                             if (result == DialogResult.No)
                             {
@@ -2093,16 +2093,16 @@ namespace ShareX
                         else
                         {
                             List<string> destinations = new List<string>();
-                            if (cui.DestinationType.HasFlag(CustomUploaderDestinationType.ImageUploader)) destinations.Add("images");
-                            if (cui.DestinationType.HasFlag(CustomUploaderDestinationType.TextUploader)) destinations.Add("texts");
-                            if (cui.DestinationType.HasFlag(CustomUploaderDestinationType.FileUploader)) destinations.Add("files");
+                            if (cui.DestinationType.HasFlag(CustomUploaderDestinationType.ImageUploader)) destinations.Add("图片");
+                            if (cui.DestinationType.HasFlag(CustomUploaderDestinationType.TextUploader)) destinations.Add("文本");
+                            if (cui.DestinationType.HasFlag(CustomUploaderDestinationType.FileUploader)) destinations.Add("文件");
                             if (cui.DestinationType.HasFlag(CustomUploaderDestinationType.URLShortener) ||
-                                cui.DestinationType.HasFlag(CustomUploaderDestinationType.URLSharingService)) destinations.Add("urls");
+                                cui.DestinationType.HasFlag(CustomUploaderDestinationType.URLSharingService)) destinations.Add("链接");
 
                             string destinationsText = string.Join("/", destinations);
 
-                            DialogResult result = MessageBox.Show($"Would you like to set \"{cui}\" as the active custom uploader for {destinationsText}?",
-                                "ShareX - Custom uploader confirmation", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1);
+                            DialogResult result = MessageBox.Show($"是否将“{cui}”设为{destinationsText}的当前自定义上传器？",
+                                "小蟒 - 自定义上传器确认", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1);
 
                             if (result == DialogResult.Yes)
                             {
@@ -2179,17 +2179,15 @@ namespace ShareX
             }
             catch (Exception ex)
             {
-                ex.ShowError(false);
+                ErrorForm.ShowHandled("图像特效包导入失败，请查看错误详情。", ex, filePath);
+                return;
             }
 
             if (!string.IsNullOrEmpty(configJson))
             {
                 ImageEffectsForm imageEffectsForm = OpenImageEffectsSingleton(Program.DefaultTaskSettings);
 
-                if (imageEffectsForm != null)
-                {
-                    imageEffectsForm.ImportImageEffect(configJson);
-                }
+                if (imageEffectsForm == null || !imageEffectsForm.ImportImageEffect(configJson)) return;
 
                 if (!Program.DefaultTaskSettings.AfterCaptureJob.HasFlag(AfterCaptureTasks.AddImageEffects) &&
                     MessageBox.Show(Resources.WouldYouLikeToEnableImageEffects,

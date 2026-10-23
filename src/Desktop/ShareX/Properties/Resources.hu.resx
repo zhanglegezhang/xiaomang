@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -274,7 +274,7 @@ Kattints a 'Nem'-re a jelenlegi feltöltés megszakításhoz és a képernyőmen
   </data>
   <data name="Program_WritePersonalPathConfig_Cant_access_to_file" xml:space="preserve">
     <value>Nem sikerült a(z) "{0}" fájl elérése.
-Kérlek futtasd a ShareX-et adminisztrátori jogosultságokkal a személyes mappa megváltoztatásához.</value>
+Kérlek futtasd a 小蟒-et adminisztrátori jogosultságokkal a személyes mappa megváltoztatásához.</value>
   </data>
   <data name="MainForm_tsmiDeleteSelectedFile_Click_Do_you_really_want_to_delete_this_file_" xml:space="preserve">
     <value>Biztosan törölni szeretnéd ezt a fájlt?</value>
@@ -291,7 +291,7 @@ ide</value>
 
 {1}
 
-Kérlek, válassz egy másik gyorsbillentyűt vagy zárd be a problémát okozó akalmazást, majd indítsd újra a ShareX-et.</value>
+Kérlek, válassz egy másik gyorsbillentyűt vagy zárd be a problémát okozó akalmazást, majd indítsd újra a 小蟒-et.</value>
   </data>
   <data name="UploadManager_UploadFile_File_upload" xml:space="preserve">
     <value>Fájl feltöltése</value>
@@ -400,7 +400,7 @@ Kérlek, válassz egy másik gyorsbillentyűt vagy zárd be a problémát okozó
     <value>Folyamat fájlnév</value>
   </data>
   <data name="ApplicationSettingsForm_btnResetSettings_Click_WouldYouLikeToResetShareXSettings" xml:space="preserve">
-    <value>Would you like to visszaállítás ShareX beállítások?</value>
+    <value>Would you like to visszaállítás 小蟒 beállítások?</value>
   </data>
   <data name="UploadTask_DoUploadJob_You_are_attempting_to_upload_a_large_file" xml:space="preserve">
     <value>You are attempting to feltöltés a large fájl.
@@ -460,7 +460,7 @@ You can later disable it from "Rögzítés után tasks" menü.</value>
     <value>Vágólap does not contain an kép.</value>
   </data>
   <data name="YourAntiVirusSoftwareOrTheControlledFolderAccessFeatureInWindowsCouldBeBlockingShareX" xml:space="preserve">
-    <value>Your anti-virus software or the controlled mappa access feature in Ablaks could be blocking ShareX.</value>
+    <value>Your anti-virus software or the controlled mappa access feature in Ablaks could be blocking 小蟒.</value>
   </data>
   <data name="QuickTaskMenuEditorForm_Reset_all_quick_tasks_to_defaults_Confirmation" xml:space="preserve">
     <value>Visszaállítás all quick tasks to alapértelmezetts?</value>
@@ -496,9 +496,9 @@ You can later disable it from "Rögzítés után tasks" menü.</value>
     <value>Bezárás</value>
   </data>
   <data name="ShareXNeedsToBeRestartedForThePersonalFolderChangesToApply" xml:space="preserve">
-    <value>ShareX needs to be reindításed for the személyes mappa changes to apply.
+    <value>小蟒 needs to be reindításed for the személyes mappa changes to apply.
 
-Would you like to reindítás ShareX?</value>
+Would you like to reindítás 小蟒?</value>
   </data>
   <data name="AboutForm_AboutForm_Language_uk" xml:space="preserve">
     <value>Ukrán</value>
@@ -525,7 +525,7 @@ Would you like to reindítás ShareX?</value>
     <value>Ablak styles</value>
   </data>
   <data name="ShareXConfirmation" xml:space="preserve">
-    <value>ShareX - Megerősítés</value>
+    <value>小蟒 - Megerősítés</value>
   </data>
   <data name="UploadTask_DownloadAndUpload_Downloading" xml:space="preserve">
     <value>Letöltésing</value>
@@ -561,7 +561,7 @@ Would you like to reindítás ShareX?</value>
     <value>FFmpeg videó and hang forrás can't both be "None".</value>
   </data>
   <data name="ShareXCannotBeClosedWhileScreenRecordingIsActive" xml:space="preserve">
-    <value>ShareX cannot be closed while képernyőfelvétel is active.
+    <value>小蟒 cannot be closed while képernyőfelvétel is active.
 
 Do you want to megszakítás the active képernyőfelvétel?</value>
   </data>

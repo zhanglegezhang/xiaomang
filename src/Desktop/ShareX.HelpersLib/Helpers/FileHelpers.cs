@@ -417,7 +417,7 @@ namespace ShareX.HelpersLib
 
         public static bool BrowseFile(TextBox tb, string initialDirectory = "", bool detectSpecialFolders = false, string filter = "")
         {
-            return BrowseFile("ShareX - " + Resources.Helpers_BrowseFile_Choose_file, tb, initialDirectory, detectSpecialFolders, filter);
+            return BrowseFile("小蟒 - " + Resources.Helpers_BrowseFile_Choose_file, tb, initialDirectory, detectSpecialFolders, filter);
         }
 
         public static bool BrowseFile(string title, TextBox tb, string initialDirectory = "", bool detectSpecialFolders = false, string filter = "")
@@ -498,7 +498,7 @@ namespace ShareX.HelpersLib
 
         public static bool BrowseFolder(TextBox tb, string initialDirectory = null, bool detectSpecialFolders = false)
         {
-            return BrowseFolder("ShareX - " + Resources.Helpers_BrowseFolder_Choose_folder, tb, initialDirectory, detectSpecialFolders);
+            return BrowseFolder("小蟒 - " + Resources.Helpers_BrowseFolder_Choose_folder, tb, initialDirectory, detectSpecialFolders);
         }
 
         public static bool BrowseFolder(string title, TextBox tb, string initialDirectory = null, bool detectSpecialFolders = false)
@@ -644,8 +644,7 @@ namespace ShareX.HelpersLib
                 catch (Exception e)
                 {
                     DebugHelper.WriteException(e);
-                    MessageBox.Show(Resources.Helpers_CreateDirectoryIfNotExist_Create_failed_ + "\r\n\r\n" + e, "ShareX - " + Resources.Error,
-                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    ErrorForm.ShowHandled("无法创建文件夹。请检查同名文件及写入权限。", e, directoryPath);
                 }
             }
         }
@@ -796,7 +795,7 @@ namespace ShareX.HelpersLib
             }
             catch (Exception e)
             {
-                MessageBox.Show("Rename file error:\r\n" + e.ToString(), "ShareX - " + Resources.Error, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                ErrorForm.ShowHandled("重命名失败。请检查同名文件、文件占用及写入权限。", e, filePath);
             }
 
             return filePath;

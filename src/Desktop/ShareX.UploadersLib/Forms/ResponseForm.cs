@@ -1,4 +1,4 @@
-﻿#region License Information (GPL v3)
+#region License Information (GPL v3)
 
 /*
     ShareX - A program that allows you to take screenshots and share any file type
@@ -177,7 +177,7 @@ namespace ShareX.UploadersLib
                 }
                 catch
                 {
-                    MessageBox.Show(Resources.FormattingFailed_JSON, "ShareX", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show("JSON 格式化失败。请检查内容是否为完整、有效的 JSON；原文未修改。", "小蟒 - 错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
         }
@@ -194,7 +194,7 @@ namespace ShareX.UploadersLib
                 }
                 catch
                 {
-                    MessageBox.Show(Resources.FormattingFailed_XML, "ShareX", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show("XML 格式化失败。请检查标签和内容是否完整；原文未修改。", "小蟒 - 错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
         }

@@ -248,6 +248,7 @@ namespace ShareX
             if (hit == null) return;
             try
             {
+                Program.Settings.TodoSettings?.EnsureSearchSourceVisible(hit.Source);
                 if (hit.Source == "本地笔记") await LocalDiaryManager.OpenAsync(hit.Path);
                 else if (hit.Source == "固定文件")
                 {

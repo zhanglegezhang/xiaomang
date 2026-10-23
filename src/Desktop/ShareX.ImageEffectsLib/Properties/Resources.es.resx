@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -136,7 +136,7 @@
     <value>Cancelar</value>
   </data>
   <data name="AssetsFolderMustBeInsideShareXImageEffectsFolder" xml:space="preserve">
-    <value>Assets carpeta must be inside ShareX imagen effects carpeta.</value>
+    <value>Assets carpeta must be inside 小蟒 imagen effects carpeta.</value>
   </data>
   <data name="InvalidAssetsFolderPath" xml:space="preserve">
     <value>Invalid assets ruta de carpeta</value>

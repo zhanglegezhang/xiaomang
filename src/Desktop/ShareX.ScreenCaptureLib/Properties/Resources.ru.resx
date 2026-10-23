@@ -355,7 +355,7 @@
     <value>Режим интерполяции:</value>
   </data>
   <data name="RegionCaptureForm_ShowExitConfirmation_ShareXImageEditor" xml:space="preserve">
-    <value>ShareX - Редактор изображений</value>
+    <value>小蟒 - Редактор изображений</value>
   </data>
   <data name="ShapeManager_CreateToolbar_StartingStepValue" xml:space="preserve">
     <value>Значение на первом шаге:</value>

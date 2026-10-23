@@ -355,7 +355,7 @@
     <value>ピクセルの大きさ:</value>
   </data>
   <data name="RegionCaptureForm_ShowExitConfirmation_ShareXImageEditor" xml:space="preserve">
-    <value>ShareX - 画像エディタ</value>
+    <value>小蟒 - 画像エディタ</value>
   </data>
   <data name="ShapeManager_CreateContextMenu_SwitchToDrawingToolAfterSelection" xml:space="preserve">
     <value>図形を選択した後は、図形描画モードにする</value>

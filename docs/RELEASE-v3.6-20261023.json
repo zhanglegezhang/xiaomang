@@ -1,0 +1,22 @@
+{
+  "productVersion": "3.6",
+  "runtime": {
+    "deployment": "self-contained",
+    "architecture": "win-x64",
+    "version": "9.0.21"
+  },
+  "usagePackage": {
+    "sha256": "9C30C39C8EEAB8A6E4F6F3D19B4B18598B3C6B4CB408FD73EA062AC9E927D8AC",
+    "files": 527,
+    "asset": "xiaomang3.6_2026-10-23_usage.zip",
+    "bytes": 114127271,
+    "url": "https://github.com/zhanglegezhang/xiaomang/releases/download/v3.6-20261023/xiaomang3.6_2026-10-23_usage.zip"
+  },
+  "releaseDate": "2026-10-23",
+  "source": "https://github.com/zhanglegezhang/xiaomang/tree/v3.6-20261023",
+  "releaseTag": "v3.6-20261023",
+  "packaging": {
+    "parameters": "-tzip -mm=Deflate -mx=9 -mfb=258 -mpass=15 -mmt=off -mcu=on -scsUTF-8",
+    "tool": "7-Zip 26.03"
+  }
+}

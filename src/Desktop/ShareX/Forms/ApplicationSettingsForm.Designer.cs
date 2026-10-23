@@ -33,11 +33,6 @@ namespace ShareX
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ApplicationSettingsForm));
             this.tcSettings = new System.Windows.Forms.TabControl();
             this.tpGeneral = new System.Windows.Forms.TabPage();
-            this.cbShowTray = new System.Windows.Forms.CheckBox();
-            this.btnLanguages = new ShareX.HelpersLib.MenuButton();
-            this.cmsLanguages = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.cbSilentRun = new System.Windows.Forms.CheckBox();
-            this.lblLanguage = new System.Windows.Forms.Label();
             this.cbStartWithWindows = new System.Windows.Forms.CheckBox();
             this.tpPaths = new System.Windows.Forms.TabPage();
             this.tpAdvanced = new System.Windows.Forms.TabPage();
@@ -60,43 +55,8 @@ namespace ShareX
             // tpGeneral
             // 
             this.tpGeneral.BackColor = System.Drawing.SystemColors.Window;
-            this.tpGeneral.Controls.Add(this.cbShowTray);
-            this.tpGeneral.Controls.Add(this.btnLanguages);
-            this.tpGeneral.Controls.Add(this.cbSilentRun);
-            this.tpGeneral.Controls.Add(this.lblLanguage);
             resources.ApplyResources(this.tpGeneral, "tpGeneral");
             this.tpGeneral.Name = "tpGeneral";
-            // 
-            // cbShowTray
-            // 
-            resources.ApplyResources(this.cbShowTray, "cbShowTray");
-            this.cbShowTray.Name = "cbShowTray";
-            this.cbShowTray.UseVisualStyleBackColor = true;
-            this.cbShowTray.CheckedChanged += new System.EventHandler(this.cbShowTray_CheckedChanged);
-            // 
-            // btnLanguages
-            // 
-            resources.ApplyResources(this.btnLanguages, "btnLanguages");
-            this.btnLanguages.Menu = this.cmsLanguages;
-            this.btnLanguages.Name = "btnLanguages";
-            this.btnLanguages.UseVisualStyleBackColor = true;
-            // 
-            // cmsLanguages
-            // 
-            this.cmsLanguages.Name = "cmsLanguages";
-            resources.ApplyResources(this.cmsLanguages, "cmsLanguages");
-            // 
-            // cbSilentRun
-            // 
-            resources.ApplyResources(this.cbSilentRun, "cbSilentRun");
-            this.cbSilentRun.Name = "cbSilentRun";
-            this.cbSilentRun.UseVisualStyleBackColor = true;
-            this.cbSilentRun.CheckedChanged += new System.EventHandler(this.cbSilentRun_CheckedChanged);
-            // 
-            // lblLanguage
-            // 
-            resources.ApplyResources(this.lblLanguage, "lblLanguage");
-            this.lblLanguage.Name = "lblLanguage";
             // 
             // cbStartWithWindows
             // 
@@ -181,15 +141,10 @@ namespace ShareX
 
         private System.Windows.Forms.TabControl tcSettings;
         private System.Windows.Forms.TabPage tpGeneral;
-        private System.Windows.Forms.CheckBox cbShowTray;
         private System.Windows.Forms.CheckBox cbStartWithWindows;
         private System.Windows.Forms.TabPage tpPaths;
         private System.Windows.Forms.TabPage tpAdvanced;
         private System.Windows.Forms.PropertyGrid pgSettings;
-        private System.Windows.Forms.CheckBox cbSilentRun;
-        private System.Windows.Forms.Label lblLanguage;
         private TabToTreeView tttvMain;
-        private MenuButton btnLanguages;
-        private System.Windows.Forms.ContextMenuStrip cmsLanguages;
     }
 }

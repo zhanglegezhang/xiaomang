@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -136,7 +136,7 @@
     <value>Отменить</value>
   </data>
   <data name="AssetsFolderMustBeInsideShareXImageEffectsFolder" xml:space="preserve">
-    <value>Папка материалов должна быть внутри папки эффектов изображений ShareX.</value>
+    <value>Папка материалов должна быть внутри папки эффектов изображений 小蟒.</value>
   </data>
   <data name="InvalidAssetsFolderPath" xml:space="preserve">
     <value>Неверный путь к папке материалов</value>

@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -220,7 +220,7 @@ Prima 'Não' para cancelar o envio actual e desativar o envio automático de ima
     <value>X: {0}, Y: {1}, Largura: {2}, Altura: {3}</value>
   </data>
   <data name="ApplicationSettingsForm_btnResetSettings_Click_WouldYouLikeToResetShareXSettings" xml:space="preserve">
-    <value>Deseja repor as definições do ShareX?</value>
+    <value>Deseja repor as definições do 小蟒?</value>
   </data>
   <data name="BeforeUploadForm_BeforeUploadForm__0__is_about_to_be_uploaded_to__1___You_may_choose_a_different_destination_" xml:space="preserve">
     <value>{0} está prestes a ser enviado para {1}. Você pode escolher um destino diferente.</value>
@@ -329,7 +329,7 @@ Têm a certeza que deseja continuar?</value>
     <value>Fechar</value>
   </data>
   <data name="ShareXNeedsToBeRestartedForThePersonalFolderChangesToApply" xml:space="preserve">
-    <value>ShareX precisa de ser reiniciado para as alterações de caminho serem alteradas.
+    <value>小蟒 precisa de ser reiniciado para as alterações de caminho serem alteradas.
 
 Deseja reiniciar agora?</value>
   </data>
@@ -355,7 +355,7 @@ Deseja reiniciar agora?</value>
     <value>Pode adicionar fluxos de trabalho através de teclas de atalho...</value>
   </data>
   <data name="ShareXConfirmation" xml:space="preserve">
-    <value>ShareX - Confirmação</value>
+    <value>小蟒 - Confirmação</value>
   </data>
   <data name="UploadTask_DownloadAndUpload_Downloading" xml:space="preserve">
     <value>Transferindo</value>
@@ -380,7 +380,7 @@ Deseja reiniciar agora?</value>
   </data>
   <data name="Program_WritePersonalPathConfig_Cant_access_to_file" xml:space="preserve">
     <value>Não foi possível aceder ao ficheiro "{0}" .
-Por favor execute o ShareX como administrador para mudar o caminho da pasta.</value>
+Por favor execute o 小蟒 como administrador para mudar o caminho da pasta.</value>
   </data>
   <data name="ApplicationSettingsForm_cbStartWithWindows_DisabledByUser_Text" xml:space="preserve">
     <value>Inicio com o Windows foi desativado no gestor de tarefas</value>
@@ -403,7 +403,7 @@ aqui</value>
 
 {1}
 
-Por favor, selecione uma tecla de atalho diferente ou feche o programa que está em conflito e reabra o ShareX.</value>
+Por favor, selecione uma tecla de atalho diferente ou feche o programa que está em conflito e reabra o 小蟒.</value>
   </data>
   <data name="MainForm_UpdateToggleHotkeyButton_Enable_hotkeys" xml:space="preserve">
     <value>Activar teclas de atalho</value>
@@ -534,7 +534,7 @@ Pode desativá-los mais tarde no menu "Tarefas após captura".</value>
     <value>A área de transferência não contém uma imagem.</value>
   </data>
   <data name="YourAntiVirusSoftwareOrTheControlledFolderAccessFeatureInWindowsCouldBeBlockingShareX" xml:space="preserve">
-    <value>O seu antivírus ou a funcionalidade de acesso controlado a pastas do Windows pode estar a bloquear o ShareX.</value>
+    <value>O seu antivírus ou a funcionalidade de acesso controlado a pastas do Windows pode estar a bloquear o 小蟒.</value>
   </data>
   <data name="AboutForm_AboutForm_Language_ar_YE" xml:space="preserve">
     <value>Árabe</value>
@@ -597,7 +597,7 @@ Pode desativá-los mais tarde no menu "Tarefas após captura".</value>
     <value>As fontes de vídeo e áudio do FFmpeg não podem ser ambas "Nenhuma".</value>
   </data>
   <data name="ShareXCannotBeClosedWhileScreenRecordingIsActive" xml:space="preserve">
-    <value>O ShareX não pode ser fechado enquanto a gravação do ecrã está ativa.
+    <value>O 小蟒 não pode ser fechado enquanto a gravação do ecrã está ativa.
 
 Pretende cancelar a gravação de ecrã ativa?</value>
   </data>

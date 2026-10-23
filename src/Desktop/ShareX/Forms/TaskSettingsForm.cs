@@ -107,7 +107,6 @@ namespace ShareX
         private void InitializeCapturePage()
         {
             cbShowCursor.Checked = TaskSettings.CaptureSettings.ShowCursor;
-            nudScreenshotDelay.SetValue(TaskSettings.CaptureSettings.ScreenshotDelay);
             cbCaptureTransparent.Checked = TaskSettings.CaptureSettings.CaptureTransparent;
             cbCaptureShadow.Enabled = TaskSettings.CaptureSettings.CaptureTransparent;
             cbCaptureShadow.Checked = TaskSettings.CaptureSettings.CaptureShadow;
@@ -514,11 +513,6 @@ namespace ShareX
         private void cbShowCursor_CheckedChanged(object sender, EventArgs e)
         {
             TaskSettings.CaptureSettings.ShowCursor = cbShowCursor.Checked;
-        }
-
-        private void nudScreenshotDelay_ValueChanged(object sender, EventArgs e)
-        {
-            TaskSettings.CaptureSettings.ScreenshotDelay = nudScreenshotDelay.Value;
         }
 
         private void cbCaptureTransparent_CheckedChanged(object sender, EventArgs e)

@@ -118,7 +118,7 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="AssetsFolderMustBeInsideShareXImageEffectsFolder" xml:space="preserve">
-    <value>Folder zasobów musi znajdować się wewnątrz folderu efektów graficznych ShareX.</value>
+    <value>Folder zasobów musi znajdować się wewnątrz folderu efektów graficznych 小蟒.</value>
   </data>
   <data name="WouldYouLikeToClearEffects" xml:space="preserve">
     <value>Chcesz wyczyścić efekty?</value>

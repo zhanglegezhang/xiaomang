@@ -5587,6 +5587,7 @@ name = "xiaomang-diary"
 version = "0.38.2"
 dependencies = [
  "base64 0.22.1",
+ "ico",
  "regex",
  "serde",
  "serde_json",

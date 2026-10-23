@@ -1,4 +1,4 @@
-﻿#region License Information (GPL v3)
+#region License Information (GPL v3)
 
 /*
     ShareX - A program that allows you to take screenshots and share any file type
@@ -270,7 +270,7 @@ namespace ShareX
                 try
                 {
                     // TODO: Translate
-                    if (MessageBox.Show(this, "Are you sure you want to strip all non essential metadata from this file?", "ShareX - " + Resources.Confirmation,
+                    if (MessageBox.Show(this, "确定移除此文件中所有非必要的元数据吗？", "小蟒 - " + Resources.Confirmation,
                         MessageBoxButtons.YesNo, MessageBoxIcon.Warning) != DialogResult.Yes)
                     {
                         return;

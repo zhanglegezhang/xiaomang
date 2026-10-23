@@ -140,6 +140,7 @@ namespace ShareX
 
         internal void LocateSearchResult(SearchHit hit)
         {
+            Settings.EnsureSearchSourceVisible(hit.Source);
             bool previousOverlay = showingWidgetOverlay;
             showingWidgetOverlay = true;
             try

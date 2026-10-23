@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -136,7 +136,7 @@
     <value>Efek gambar - Lebar: {0}, Tinggi: {1}, Waktu render: {2} md</value>
   </data>
   <data name="AssetsFolderMustBeInsideShareXImageEffectsFolder" xml:space="preserve">
-    <value>Folder aset harus berada di dalam folder efek gambar ShareX.</value>
+    <value>Folder aset harus berada di dalam folder efek gambar 小蟒.</value>
   </data>
   <data name="InvalidAssetsFolderPath" xml:space="preserve">
     <value>Jalur folder aset tidak valid</value>

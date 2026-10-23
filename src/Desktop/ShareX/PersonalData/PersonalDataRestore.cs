@@ -227,6 +227,7 @@ namespace ShareX
                     }
                 }
                 if (selected.Any(kind => kind is PersonalDataKind.Todo or PersonalDataKind.Clipboard or PersonalDataKind.Favorites or PersonalDataKind.Preferences)) {
+                    app["Language"] = nameof(SupportedLanguage.SimplifiedChinese);
                     if (selected.Contains(PersonalDataKind.Preferences)) PersonalDataPreferences.FitWindows(app, display);
                     _ = app.ToObject<ApplicationConfig>(PersonalDataPreferences.Serializer());
                     PersonalDataArchive.WriteJson(Payload("app-ready.json"), app); Add("personal", "ApplicationConfig.json", Payload("app-ready.json"), false);

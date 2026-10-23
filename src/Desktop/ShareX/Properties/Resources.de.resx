@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -265,7 +265,7 @@ Klicke auf 'Nein', um den derzeitigen Upload abzubrechen und den automatischen U
     <value>X: {0}, Y {1}, Breite: {2}, Höhe: {3}</value>
   </data>
   <data name="ApplicationSettingsForm_btnResetSettings_Click_WouldYouLikeToResetShareXSettings" xml:space="preserve">
-    <value>Möchten Sie die ShareX-Einstellungen zurücksetzen?</value>
+    <value>Möchten Sie die 小蟒-Einstellungen zurücksetzen?</value>
   </data>
   <data name="BeforeUploadForm_BeforeUploadForm__0__is_about_to_be_uploaded_to__1___You_may_choose_a_different_destination_" xml:space="preserve">
     <value>{0} wird gleich zu {1} hochgeladen. Du kannst ein anderes Ziel auswählen.</value>
@@ -358,7 +358,7 @@ Sie können sie später im Menü „Aufgaben nach der Aufnahme“ deaktivieren.<
     <value>Fehler</value>
   </data>
   <data name="YourAntiVirusSoftwareOrTheControlledFolderAccessFeatureInWindowsCouldBeBlockingShareX" xml:space="preserve">
-    <value>Ihre Antiviren-Software oder die Funktion für kontrollierten Ordnerzugriff in Windows könnte ShareX blockieren.</value>
+    <value>Ihre Antiviren-Software oder die Funktion für kontrollierten Ordnerzugriff in Windows könnte 小蟒 blockieren.</value>
   </data>
   <data name="QuickTaskMenuEditorForm_Reset_all_quick_tasks_to_defaults_Confirmation" xml:space="preserve">
     <value>Alle Quick-Tasks auf die Standardeinstellungen zurücksetzen?</value>
@@ -409,9 +409,9 @@ Sie können sie später im Menü „Aufgaben nach der Aufnahme“ deaktivieren.<
     <value>Schließen</value>
   </data>
   <data name="ShareXNeedsToBeRestartedForThePersonalFolderChangesToApply" xml:space="preserve">
-    <value>ShareX muss neu gestartet werden, damit die Änderungen am Einstellungsordner wirksam werden.
+    <value>小蟒 muss neu gestartet werden, damit die Änderungen am Einstellungsordner wirksam werden.
 
-Soll ShareX neu gestartet werden?</value>
+Soll 小蟒 neu gestartet werden?</value>
   </data>
   <data name="AboutForm_AboutForm_Website" xml:space="preserve">
     <value>Webseite</value>
@@ -456,7 +456,7 @@ Soll ShareX neu gestartet werden?</value>
     <value>Du kannst Arbeitsschritte aus den Hotkeyeinstellungen hinzufügen...</value>
   </data>
   <data name="ShareXConfirmation" xml:space="preserve">
-    <value>ShareX - Bestätigung</value>
+    <value>小蟒 - Bestätigung</value>
   </data>
   <data name="UploadTask_DownloadAndUpload_Downloading" xml:space="preserve">
     <value>Herunterladen</value>
@@ -498,7 +498,7 @@ Soll ShareX neu gestartet werden?</value>
     <value>FFmpeg Video- und Audioquelle können nicht beide „Keins“ sein.</value>
   </data>
   <data name="ShareXCannotBeClosedWhileScreenRecordingIsActive" xml:space="preserve">
-    <value>ShareX kann nicht geschlossen werden, während die Bildschirmaufnahme aktiv ist.
+    <value>小蟒 kann nicht geschlossen werden, während die Bildschirmaufnahme aktiv ist.
 
 Möchten Sie die aktive Bildschirmaufzeichnung abbrechen?</value>
   </data>
@@ -510,7 +510,7 @@ Möchten Sie die aktive Bildschirmaufzeichnung abbrechen?</value>
   </data>
   <data name="Program_WritePersonalPathConfig_Cant_access_to_file" xml:space="preserve">
     <value>Es kann nicht auf die Datei {0} zugegriffen werden.
-Bitte starte ShareX als Administrator, um den Einstellungsordner zu ändern.</value>
+Bitte starte 小蟒 als Administrator, um den Einstellungsordner zu ändern.</value>
   </data>
   <data name="ApplicationSettingsForm_cbStartWithWindows_DisabledByUser_Text" xml:space="preserve">
     <value>Autostart wurde im Task-Manager deaktiviert</value>
@@ -550,7 +550,7 @@ Bitte starte ShareX als Administrator, um den Einstellungsordner zu ändern.</va
 
 {1}
 
-Bitte wähle ein anderes Tastenkürzel aus oder beende das widersprüchliche Programm und starte ShareX neu.</value>
+Bitte wähle ein anderes Tastenkürzel aus oder beende das widersprüchliche Programm und starte 小蟒 neu.</value>
   </data>
   <data name="InspectWindow_ClientRectangle" xml:space="preserve">
     <value>Client-Rechteck</value>

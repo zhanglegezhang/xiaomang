@@ -49,9 +49,11 @@ namespace ShareX
                 currentCulture = CultureInfo.GetCultureInfo(cultureName);
             }
 
-            if (!currentCulture.Equals(Thread.CurrentThread.CurrentUICulture))
+            bool changed = !currentCulture.Equals(Thread.CurrentThread.CurrentUICulture);
+            CultureInfo.DefaultThreadCurrentUICulture = currentCulture;
+            Thread.CurrentThread.CurrentUICulture = currentCulture;
+            if (changed)
             {
-                Helpers.SetDefaultUICulture(currentCulture);
                 DebugHelper.WriteLine("Language changed to: " + currentCulture.DisplayName);
 
                 foreach (Form form in forms)

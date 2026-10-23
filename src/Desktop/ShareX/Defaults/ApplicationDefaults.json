@@ -2,6 +2,7 @@
   "Language": "SimplifiedChinese",
   "ShowTray": false,
   "SilentRun": false,
+  "StartWithWindowsByDefault": true,
   "TrayIconProgressEnabled": true,
   "TaskbarProgressEnabled": true,
   "UseWhiteShareXIcon": false,
@@ -222,6 +223,7 @@
     }
   ],
   "TodoSettings": {
+    "VisibleModules": [ "Todo", "Clipboard", "Favorites", "News", "Diary" ],
     "WidgetWidth": 810,
     "WidgetHeight": 1271,
     "ClipboardPreviewLines": 8,

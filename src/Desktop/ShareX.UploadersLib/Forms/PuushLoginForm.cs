@@ -1,4 +1,4 @@
-﻿#region License Information (GPL v3)
+#region License Information (GPL v3)
 
 /*
     ShareX - A program that allows you to take screenshots and share any file type
@@ -87,7 +87,7 @@ namespace ShareX.UploadersLib
                 }
                 else
                 {
-                    MessageBox.Show("Login failed.", "Authentication failure", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show("登录失败，请检查账号信息后重试。", "小蟒 - 登录失败", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
         }

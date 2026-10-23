@@ -371,6 +371,7 @@ namespace ShareX
         #region Capture / General
 
         public bool ShowCursor = true;
+        // Retired setting: retained to read old profiles without affecting capture timing.
         public decimal ScreenshotDelay = 0;
         public bool CaptureTransparent = false;
         public bool CaptureShadow = true;

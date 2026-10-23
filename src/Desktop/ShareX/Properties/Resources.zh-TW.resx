@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -268,7 +268,7 @@
     <value>X: {0}，Y: {1}，寬: {2}，高: {3}</value>
   </data>
   <data name="ApplicationSettingsForm_btnResetSettings_Click_WouldYouLikeToResetShareXSettings" xml:space="preserve">
-    <value>是否要重設 ShareX 設定？</value>
+    <value>是否要重設 小蟒 設定？</value>
   </data>
   <data name="BeforeUploadForm_BeforeUploadForm__0__is_about_to_be_uploaded_to__1___You_may_choose_a_different_destination_" xml:space="preserve">
     <value>{0} 將上傳到 {1}。你可以選擇其他目的地。</value>
@@ -373,7 +373,7 @@
     <value>錯誤</value>
   </data>
   <data name="YourAntiVirusSoftwareOrTheControlledFolderAccessFeatureInWindowsCouldBeBlockingShareX" xml:space="preserve">
-    <value>你的防毒軟體或 Windows 的受控資料夾存取權功能可能阻擋了 ShareX。</value>
+    <value>你的防毒軟體或 Windows 的受控資料夾存取權功能可能阻擋了 小蟒。</value>
   </data>
   <data name="QuickTaskMenuEditorForm_Reset_all_quick_tasks_to_defaults_Confirmation" xml:space="preserve">
     <value>是否要重設所有快速任務為預設值？</value>
@@ -427,9 +427,9 @@
     <value>關閉</value>
   </data>
   <data name="ShareXNeedsToBeRestartedForThePersonalFolderChangesToApply" xml:space="preserve">
-    <value>更改個人資料夾需要重新啟動 ShareX 才會生效。
+    <value>更改個人資料夾需要重新啟動 小蟒 才會生效。
 
-是否要重新啟動 ShareX？</value>
+是否要重新啟動 小蟒？</value>
   </data>
   <data name="AboutForm_AboutForm_Website" xml:space="preserve">
     <value>網站</value>
@@ -474,7 +474,7 @@
     <value>你可以在快捷鍵設定中新增快捷動作...</value>
   </data>
   <data name="ShareXConfirmation" xml:space="preserve">
-    <value>ShareX - 確認</value>
+    <value>小蟒 - 確認</value>
   </data>
   <data name="UploadTask_DownloadAndUpload_Downloading" xml:space="preserve">
     <value>下載中</value>
@@ -516,7 +516,7 @@
     <value>FFmpeg 視訊和音訊源不能同時為「無」。</value>
   </data>
   <data name="ShareXCannotBeClosedWhileScreenRecordingIsActive" xml:space="preserve">
-    <value>錄製螢幕時無法關閉 ShareX。
+    <value>錄製螢幕時無法關閉 小蟒。
 
 是否要取消目前的螢幕錄製？</value>
   </data>
@@ -528,7 +528,7 @@
   </data>
   <data name="Program_WritePersonalPathConfig_Cant_access_to_file" xml:space="preserve">
     <value>無法存取「{0}」檔案。
-請以管理員身分執行 ShareX 以更改個人資料夾路徑。</value>
+請以管理員身分執行 小蟒 以更改個人資料夾路徑。</value>
   </data>
   <data name="ApplicationSettingsForm_cbStartWithWindows_DisabledByUser_Text" xml:space="preserve">
     <value>開機啟動已被任務管理器停用</value>
@@ -569,7 +569,7 @@
 
 {1}
 
-請選擇其他快捷鍵，或退出衝突的應用程式並重啟 ShareX。</value>
+請選擇其他快捷鍵，或退出衝突的應用程式並重啟 小蟒。</value>
   </data>
   <data name="InspectWindow_ClientRectangle" xml:space="preserve">
     <value>客戶端矩形區域</value>

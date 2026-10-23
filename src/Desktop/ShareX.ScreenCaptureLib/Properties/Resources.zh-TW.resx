@@ -231,7 +231,7 @@
     <value>圖片編輯器</value>
   </data>
   <data name="RegionCaptureForm_ShowExitConfirmation_ShareXImageEditor" xml:space="preserve">
-    <value>ShareX - 圖片編輯器</value>
+    <value>小蟒 - 圖片編輯器</value>
   </data>
   <data name="RegionCaptureForm_TipYouCanPanImageByHoldingMouseMiddleButtonAndDragging" xml:space="preserve">
     <value>提示：點擊滑鼠中鍵並拖曳即可平移圖片。</value>

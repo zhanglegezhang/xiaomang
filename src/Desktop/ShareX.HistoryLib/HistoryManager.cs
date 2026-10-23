@@ -1,4 +1,4 @@
-﻿#region License Information (GPL v3)
+#region License Information (GPL v3)
 
 /*
     ShareX - A program that allows you to take screenshots and share any file type
@@ -56,8 +56,7 @@ namespace ShareX.HistoryLib
             {
                 DebugHelper.WriteException(e);
 
-                MessageBox.Show(Resources.ErrorOccuredWhileReadingHistoryFile + " " + FilePath + "\r\n\r\n" + e,
-                    "ShareX - " + Resources.HistoryManager_GetHistoryItems_Error, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                ErrorForm.ShowHandled("历史记录读取失败。请保留原文件，以便检查或恢复。", e, FilePath);
             }
 
             return new List<HistoryItem>();

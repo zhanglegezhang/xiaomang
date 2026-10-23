@@ -31,6 +31,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.Drawing.Design;
+using System.Runtime.Serialization;
 
 namespace ShareX
 {
@@ -66,15 +67,25 @@ namespace ShareX
         {
             this.ApplyDefaultPropertyValues();
             ProductDefaults.Apply(this);
+            Language = SupportedLanguage.SimplifiedChinese;
         }
 
         #region Settings Form
 
         #region General
 
-        public SupportedLanguage Language = SupportedLanguage.Automatic;
-        public bool ShowTray = true;
+        public SupportedLanguage Language = SupportedLanguage.SimplifiedChinese;
+        // Retained for old configuration files. Main-tray visibility is no longer optional.
+        public bool ShowTray = false;
         public bool SilentRun = false;
+
+        [OnDeserialized]
+        private void NormalizeRetiredStartupOptions(StreamingContext context)
+        {
+            Language = SupportedLanguage.SimplifiedChinese;
+            ShowTray = false;
+            SilentRun = false;
+        }
         public bool TrayIconProgressEnabled = true;
         public bool TaskbarProgressEnabled = true;
         public bool UseWhiteShareXIcon = false;

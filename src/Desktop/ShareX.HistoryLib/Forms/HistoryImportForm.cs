@@ -1,4 +1,4 @@
-﻿#region License Information (GPL v3)
+#region License Information (GPL v3)
 
 /*
     ShareX - A program that allows you to take screenshots and share any file type
@@ -108,8 +108,8 @@ namespace ShareX.HistoryLib.Forms
             }
 
             // TODO: Translate
-            MessageBox.Show(string.Format("Successfully imported {0} files.", historyItems.Count),
-                "ShareX - Import complete", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            MessageBox.Show(string.Format("已导入 {0} 个文件。", historyItems.Count),
+                "小蟒 - 导入完成", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
         private void txtFolderPath_TextChanged(object sender, EventArgs e)
