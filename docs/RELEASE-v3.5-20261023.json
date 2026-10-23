@@ -1,0 +1,22 @@
+{
+  "productVersion": "3.5",
+  "releaseTag": "v3.5-20261023",
+  "usagePackage": {
+    "bytes": 114010784,
+    "sha256": "703BAC926D0C9C0244E0C2A7CE67212A9F178EE4CA755944C1F75E738C07A6A5",
+    "asset": "xiaomang3.5_2026-10-23_usage.zip",
+    "files": 527,
+    "url": "https://github.com/zhanglegezhang/xiaomang/releases/download/v3.5-20261023/xiaomang3.5_2026-10-23_usage.zip"
+  },
+  "packaging": {
+    "parameters": "-tzip -mm=Deflate -mx=9 -mfb=258 -mpass=15 -mmt=off -mcu=on -scsUTF-8",
+    "tool": "7-Zip 26.03"
+  },
+  "releaseDate": "2026-10-23",
+  "runtime": {
+    "deployment": "self-contained",
+    "version": "9.0.21",
+    "architecture": "win-x64"
+  },
+  "source": "https://github.com/zhanglegezhang/xiaomang/tree/v3.5-20261023"
+}

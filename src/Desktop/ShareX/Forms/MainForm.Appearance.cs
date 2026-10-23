@@ -9,6 +9,7 @@ namespace ShareX
 {
     public partial class MainForm
     {
+        private Button exitXiaomangButton;
         private bool mainAppearanceReady;
         private bool navigationDpiRefreshQueued;
         private readonly HashSet<SettingsDesignSurface> dpiLayoutSurfaces = new();
@@ -117,6 +118,41 @@ namespace ShareX
             try
             {
                 mainAppearanceReady = true;
+                if (exitXiaomangButton == null)
+                {
+                    exitXiaomangButton = new Button { Name = "exitXiaomangButton", Text = "退出小蟒", Dock = DockStyle.Bottom, FlatStyle = FlatStyle.Flat, TabStop = true };
+                    exitXiaomangButton.FlatAppearance.BorderSize = 0;
+                    exitXiaomangButton.Click += (_, _) => RequestUserExit();
+                    bool hover = false, pressed = false;
+                    exitXiaomangButton.MouseEnter += (_, _) => { hover = true; exitXiaomangButton.Invalidate(); };
+                    exitXiaomangButton.MouseLeave += (_, _) => { hover = pressed = false; exitXiaomangButton.Invalidate(); };
+                    exitXiaomangButton.MouseDown += (_, e) => { if (e.Button == MouseButtons.Left) pressed = true; exitXiaomangButton.Invalidate(); };
+                    exitXiaomangButton.MouseUp += (_, _) => { pressed = false; exitXiaomangButton.Invalidate(); };
+                    exitXiaomangButton.Paint += (_, e) =>
+                    {
+                        var button = exitXiaomangButton;
+                        e.Graphics.Clear(button.BackColor);
+                        int S(int value) => MainMenuAppearance.Scale(button, value);
+                        if (hover || pressed)
+                        {
+                            e.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+                            using var path = MainMenuAppearance.Round(new Rectangle(S(6), 1, button.Width - S(12), button.Height - 2), S(5));
+                            using var fill = new SolidBrush(pressed ? MainMenuAppearance.Edge : MainMenuAppearance.Selected);
+                            e.Graphics.FillPath(fill, path);
+                        }
+                        MainMenuRenderer.DrawGlyph(e.Graphics, "power", new Rectangle(S(19), (button.Height - S(18)) / 2, S(18), S(18)), button.ForeColor);
+                        Rectangle text = new Rectangle(S(46), 0, Math.Max(1, button.Width - S(52)), button.Height);
+                        TextRenderer.DrawText(e.Graphics, button.Text, button.Font, text, button.ForeColor,
+                            TextFormatFlags.Left | TextFormatFlags.VerticalCenter | TextFormatFlags.EndEllipsis | TextFormatFlags.NoPrefix);
+                        if (button.Focused) ControlPaint.DrawFocusRectangle(e.Graphics, Rectangle.Inflate(button.ClientRectangle, -3, -3));
+                    };
+                    pToolbars.Controls.Add(exitXiaomangButton);
+                    exitXiaomangButton.SendToBack();
+                }
+                exitXiaomangButton.Height = MainMenuAppearance.Scale(this, 38);
+                exitXiaomangButton.Font = MainMenuAppearance.FontFor(tsMain, MainMenuAppearance.MenuFont);
+                exitXiaomangButton.BackColor = MainMenuAppearance.Sidebar;
+                exitXiaomangButton.ForeColor = MainMenuAppearance.Text;
                 BackColor = MainMenuAppearance.Background;
                 pMain.BackColor = MainMenuAppearance.Background;
                 pToolbars.AutoSize = false;

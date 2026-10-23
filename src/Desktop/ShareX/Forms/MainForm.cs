@@ -1183,7 +1183,7 @@ namespace ShareX
         private async void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
             if (PersonalDataManager.Busy && !PersonalDataManager.RestartReady) { e.Cancel = true; return; }
-            bool actuallyClosing = e.CloseReason != CloseReason.UserClosing || !Program.Settings.ShowTray || forceClose;
+            bool actuallyClosing = e.CloseReason != CloseReason.UserClosing || forceClose;
             if (actuallyClosing && !exitPreparationComplete)
             {
                 // WinForms requires cancellation before the first await; close again only after durable saves.
@@ -1200,13 +1200,13 @@ namespace ShareX
                 ApplyInlineSettingsChanges(false);
             }
 
-            if (e.CloseReason == CloseReason.UserClosing && Program.Settings.ShowTray && !forceClose)
+            if (e.CloseReason == CloseReason.UserClosing && !forceClose)
             {
                 e.Cancel = true;
                 Hide();
                 SettingManager.SaveAllSettingsAsync();
 
-                if (Program.Settings.FirstTimeMinimizeToTray)
+                if (Program.Settings.ShowTray && Program.Settings.FirstTimeMinimizeToTray)
                 {
                     TaskHelpers.ShowNotificationTip(Resources.ShareXIsMinimizedToTheSystemTray, Program.DisplayName, 5000);
                     Program.Settings.FirstTimeMinimizeToTray = false;

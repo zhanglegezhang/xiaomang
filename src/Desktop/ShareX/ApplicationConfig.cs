@@ -60,6 +60,7 @@ namespace ShareX
         // Logical pixels at 96 DPI, so search-window dimensions survive display scaling changes.
         public Size UnifiedSearchWindowSize = new Size(950, 620);
         public Rectangle OcrWindowBounds = Rectangle.Empty;
+        public Size OcrDefaultWindowSize = Size.Empty;
 
         public ApplicationConfig()
         {

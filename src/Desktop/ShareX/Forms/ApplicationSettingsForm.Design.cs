@@ -32,7 +32,7 @@ namespace ShareX
             switch(page.Name)
             {
                 case "tpGeneral":
-                    design.Section("启动与托盘");design.Toggle("开机自动启动",cbStartWithWindows);design.Toggle("显示托盘图标",cbShowTray);design.Toggle("启动时隐藏主窗口",cbSilentRun);
+                    design.Section("启动与托盘");design.Toggle("开机自动启动",cbStartWithWindows);design.Toggle("显示托盘图标",cbShowTray);design.Hint("关闭窗口仍在后台运行，点击「退出小蟒」结束。");design.Toggle("启动时隐藏主窗口",cbSilentRun);
                     design.Section("界面语言");design.Editor("显示语言",btnLanguages);
                     design.Section("个人数据");
                     design.Action("导出个人数据",(Button)Find("personalData_export"),"导出…");

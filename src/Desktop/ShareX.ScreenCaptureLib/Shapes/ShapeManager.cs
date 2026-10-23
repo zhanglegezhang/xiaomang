@@ -1,4 +1,4 @@
-﻿#region License Information (GPL v3)
+#region License Information (GPL v3)
 
 /*
     ShareX - A program that allows you to take screenshots and share any file type
@@ -345,7 +345,7 @@ namespace ShareX.ScreenCaptureLib
             form.MouseDown += form_MouseDown;
             form.MouseUp += form_MouseUp;
             form.MouseDoubleClick += form_MouseDoubleClick;
-            form.MouseWheel += form_MouseWheel;
+
             form.KeyDown += form_KeyDown;
             form.KeyUp += form_KeyUp;
 
@@ -548,41 +548,6 @@ namespace ShareX.ScreenCaptureLib
             }
         }
 
-        private void form_MouseWheel(object sender, MouseEventArgs e)
-        {
-            FinishInlineText(true);
-            if (Control.ModifierKeys == Keys.None)
-            {
-                if (e.Delta > 0)
-                {
-                    if (Options.ShowMagnifier)
-                    {
-                        Options.MagnifierPixelCount = Math.Min(Options.MagnifierPixelCount + 2, RegionCaptureOptions.MagnifierPixelCountMaximum);
-                    }
-                    else
-                    {
-                        Options.ShowMagnifier = true;
-                    }
-                }
-                else if (e.Delta < 0)
-                {
-                    int magnifierPixelCount = Options.MagnifierPixelCount - 2;
-                    if (magnifierPixelCount < RegionCaptureOptions.MagnifierPixelCountMinimum)
-                    {
-                        magnifierPixelCount = RegionCaptureOptions.MagnifierPixelCountMinimum;
-                        Options.ShowMagnifier = false;
-                    }
-                    Options.MagnifierPixelCount = magnifierPixelCount;
-                }
-
-                if (Form.IsAnnotationMode && ToolbarCreated)
-                {
-                    tsmiShowMagnifier.Checked = Options.ShowMagnifier;
-                    tslnudMagnifierPixelCount.Content.Value = Options.MagnifierPixelCount;
-                }
-            }
-        }
-
         public bool HandleEscape()
         {
             // the escape key handling has 3 stages:
@@ -615,6 +580,7 @@ namespace ShareX.ScreenCaptureLib
 
         private void form_KeyDown(object sender, KeyEventArgs e)
         {
+            if (e.Handled || Form.IsClosing) return;
             if (IsEditingText) return;
             switch (e.KeyCode)
             {

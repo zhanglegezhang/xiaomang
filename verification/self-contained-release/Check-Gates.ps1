@@ -1,6 +1,6 @@
 param([Parameter(Mandatory=$true)][string]$Published,[Parameter(Mandatory=$true)][string]$BadRelease,[Parameter(Mandatory=$true)][string]$Output)
 $ErrorActionPreference='Stop'
-$gate=[IO.Path]::GetFullPath((Join-Path $PSScriptRoot '../../scripts/Test-SelfContainedRuntime.ps1'))
+$gate=[IO.Path]::GetFullPath((Join-Path $PSScriptRoot '../../tools/ShareX/Test-SelfContainedRuntime.ps1'))
 $checks=0
 function Assert($ok,$message){if(!$ok){throw $message};$script:checks++;Write-Output "PASS $message"}
 $bad=$false;try{& $gate -Directory $BadRelease | Out-Null}catch{$bad=$_.Exception.Message -match 'system .NET'}

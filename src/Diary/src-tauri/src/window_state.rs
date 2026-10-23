@@ -5,7 +5,11 @@ use tauri::{Manager, LogicalSize, WindowEvent};
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct WindowState { width: f64, height: f64, maximized: bool }
 impl Default for WindowState {
-    fn default() -> Self { Self { width: 1280.0, height: 820.0, maximized: false } }
+    fn default() -> Self {
+        serde_json::from_str::<Self>(include_str!("../defaults/window-state.json"))
+            .ok().filter(Self::valid)
+            .unwrap_or(Self { width: 1280.0, height: 820.0, maximized: false })
+    }
 }
 impl WindowState {
     fn valid(&self) -> bool {
@@ -98,6 +102,7 @@ fn persist(path: &PathBuf, state: &WindowState) -> Result<(), String> {
 }
 #[cfg(test)] mod tests {
     use super::*;
+    #[test] fn reviewed_defaults_are_embedded() { let s=WindowState::default(); assert_eq!((s.width,s.height,s.maximized),(1218.5,540.0,false)); }
     #[test] fn restored_size_fits_changed_screen() { let mut s = WindowState { width: 1800.0, height: 1000.0, maximized: true }; s.fit(960.0, 680.0); assert_eq!((s.width,s.height,s.maximized),(960.0,680.0,true)); }
     #[test] fn small_screen_does_not_leave_window_offscreen() { let mut s=WindowState::default();s.fit(640.0,400.0);assert_eq!((s.width,s.height),(640.0,400.0)); }
     #[test] fn normal_size_roundtrips() { let s=WindowState {width: 910.0,height:620.0,maximized:false};let restored:WindowState=serde_json::from_slice(&serde_json::to_vec(&s).unwrap()).unwrap();assert_eq!(restored.width,910.0);assert!(restored.valid()); }

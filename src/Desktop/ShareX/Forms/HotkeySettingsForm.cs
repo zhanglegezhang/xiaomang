@@ -1,4 +1,4 @@
-﻿#region License Information (GPL v3)
+#region License Information (GPL v3)
 
 /*
     ShareX - A program that allows you to take screenshots and share any file type
@@ -48,6 +48,8 @@ namespace ShareX
 
             PrepareHotkeys(hotkeyManager);
             ConfigureMainMenuLayout();
+            btnDuplicate.Text = SettingsPageLayout.Caption("复制配置", "Copy settings");
+            btnReset.Text = SettingsPageLayout.Caption("恢复默认…", "Restore defaults…");
         }
 
         private void HotkeySettingsForm_FormClosed(object sender, FormClosedEventArgs e)
@@ -118,7 +120,9 @@ namespace ShareX
         private void UpdateButtons()
         {
             btnRemove.Enabled = btnDuplicate.Enabled = Selected != null;
-            btnMoveUp.Enabled = btnMoveDown.Enabled = Selected != null && flpHotkeys.Controls.Count > 1;
+            int index = Selected == null ? -1 : flpHotkeys.Controls.GetChildIndex(Selected);
+            btnMoveUp.Enabled = index > 0;
+            btnMoveDown.Enabled = index >= 0 && index < flpHotkeys.Controls.Count - 1;
         }
 
         private HotkeySelectionControl FindSelectionControl(HotkeySettings hotkeySetting)
@@ -234,7 +238,7 @@ namespace ShareX
 
                 if (index == 0)
                 {
-                    newIndex = flpHotkeys.Controls.Count - 1;
+                    return;
                 }
                 else
                 {
@@ -243,6 +247,7 @@ namespace ShareX
 
                 flpHotkeys.Controls.SetChildIndex(Selected, newIndex);
                 manager.Hotkeys.Move(index, newIndex);
+                UpdateButtons();
             }
         }
 
@@ -256,7 +261,7 @@ namespace ShareX
 
                 if (index == flpHotkeys.Controls.Count - 1)
                 {
-                    newIndex = 0;
+                    return;
                 }
                 else
                 {
@@ -265,6 +270,7 @@ namespace ShareX
 
                 flpHotkeys.Controls.SetChildIndex(Selected, newIndex);
                 manager.Hotkeys.Move(index, newIndex);
+                UpdateButtons();
             }
         }
 

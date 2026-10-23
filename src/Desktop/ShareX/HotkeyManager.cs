@@ -1,4 +1,4 @@
-﻿#region License Information (GPL v3)
+#region License Information (GPL v3)
 
 /*
     ShareX - A program that allows you to take screenshots and share any file type
@@ -234,7 +234,7 @@ namespace ShareX
             {
                 new HotkeySettings(HotkeyType.RectangleRegion, Keys.Control | Keys.D1),
                 new HotkeySettings(HotkeyType.ScreenRecorder, Keys.Control | Keys.D2),
-                new HotkeySettings(HotkeyType.ScreenColorPicker, Keys.Control | Keys.D3),
+
                 new HotkeySettings(HotkeyType.ActiveWindowTopMost),
                 new HotkeySettings(HotkeyType.SwitchToXiaomangInputMethod, Keys.Control | Keys.Shift | Keys.J)
             };

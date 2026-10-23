@@ -11,6 +11,35 @@ namespace ShareX;
 
 internal sealed class BaiduTranslationSettingsForm : Form
 {
+    private static BaiduTranslationSettingsForm activeWindow;
+
+    internal static void Open(Control anchor, Func<BaiduTranslationSettingsForm> create = null)
+    {
+        if (activeWindow != null && !activeWindow.IsDisposed)
+        {
+            if (activeWindow.WindowState == FormWindowState.Minimized)
+                activeWindow.WindowState = FormWindowState.Normal;
+            activeWindow.Show();
+            activeWindow.Activate();
+            return;
+        }
+
+        var window = create == null ? new BaiduTranslationSettingsForm() : create();
+        activeWindow = window;
+        window.FormClosed += (_, _) =>
+        {
+            if (ReferenceEquals(activeWindow, window)) activeWindow = null;
+        };
+        // The settings page is embedded in the main menu. Do not make it the owner:
+        // closing or replacing that page must not discard an unfinished configuration.
+        window.StartPosition = FormStartPosition.Manual;
+        Rectangle area = Screen.FromControl(anchor).WorkingArea;
+        window.Location = new Point(area.Left + Math.Max(0, (area.Width - window.Width) / 2),
+            area.Top + Math.Max(0, (area.Height - window.Height) / 2));
+        try { window.Show(); }
+        catch { activeWindow = null; window.Dispose(); throw; }
+    }
+
     internal const string CertificationUrl = "https://fanyi-api.baidu.com/manage/developer";
     private readonly CancellationTokenSource cancellation = new();
     private readonly TextBox id, secret;

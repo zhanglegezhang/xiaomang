@@ -29,6 +29,7 @@ using System;
 using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Drawing2D;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Windows.Forms;
 
@@ -93,11 +94,21 @@ namespace ShareX.ScreenCaptureLib
         private bool dragging;
         private bool isStartCountdown;
         private KeyboardHook countdownEscapeHook;
-        private Point initialLocation;
+        private Point initialPointerLocation;
+        private Rectangle initialRecordingRegion;
         private static int lastIconStatus = -1;
-        private const int panelOffset = 3;
         private static readonly Color toolbarTransparencyKey = Color.FromArgb(31, 33, 37);
-        private ToolbarBackdropForm toolbarBackdrop;
+        private static readonly Color toolbarColor = Color.FromArgb(17, 28, 37);
+        private Control toolbarGrip;
+        private Font toolbarFont;
+        private Font timerFont;
+        private bool toolbarLayoutReady;
+        private bool updatingToolbarLayout;
+        private bool toolbarOverlapsCapture;
+        private bool toolbarExcludedFromCapture;
+
+        [DllImport("user32.dll")]
+        private static extern bool SetWindowDisplayAffinity(IntPtr window, uint affinity);
 
         public ScreenRecordForm(Rectangle regionRectangle)
         {
@@ -106,32 +117,8 @@ namespace ShareX.ScreenCaptureLib
             niTray.Icon = ShareXResources.Icon;
             ConfigureRecordingToolbar();
 
-            borderRectangle = regionRectangle.Offset(1);
-            borderRectangle0Based = new Rectangle(0, 0, borderRectangle.Width, borderRectangle.Height);
-
-            Location = borderRectangle.Location;
-            int windowWidth = Math.Max(borderRectangle.Width, pInfo.Width);
-            Size = new Size(windowWidth, borderRectangle.Height + panelOffset + pInfo.Height);
-            pInfo.Location = new Point(0, borderRectangle.Height + panelOffset);
-
-            Region region = new Region(ClientRectangle);
-            region.Exclude(borderRectangle0Based.Offset(-1));
-            region.Exclude(new Rectangle(0, borderRectangle.Height, windowWidth, panelOffset));
-            if (borderRectangle.Width < pInfo.Width)
-            {
-                region.Exclude(new Rectangle(borderRectangle.Width, 0, pInfo.Width - borderRectangle.Width, borderRectangle.Height));
-            }
-            else if (borderRectangle.Width > pInfo.Width)
-            {
-                region.Exclude(new Rectangle(pInfo.Width, borderRectangle.Height + panelOffset, borderRectangle.Width - pInfo.Width, pInfo.Height));
-            }
-            using (GraphicsPath toolbarOutline = RoundedRectangle(pInfo.Bounds, 12))
-            using (Region squareToolbarCorners = new Region(pInfo.Bounds))
-            {
-                squareToolbarCorners.Exclude(toolbarOutline);
-                region.Exclude(squareToolbarCorners);
-            }
-            Region = region;
+            toolbarLayoutReady = true;
+            LayoutRecordingRegion(regionRectangle);
 
             Timer = new Stopwatch();
             UpdateTimer();
@@ -145,7 +132,6 @@ namespace ShareX.ScreenCaptureLib
         {
             if (disposing)
             {
-                DisposeToolbarBackdrop();
                 StopCountdownEscapeHook();
                 if (components != null)
                 {
@@ -156,6 +142,8 @@ namespace ShareX.ScreenCaptureLib
                 {
                     RecordResetEvent.Dispose();
                 }
+                toolbarFont?.Dispose();
+                timerFont?.Dispose();
             }
 
             base.Dispose(disposing);
@@ -163,7 +151,8 @@ namespace ShareX.ScreenCaptureLib
 
         private Rectangle GetRecordingRegion(Point windowLocation)
         {
-            return new Rectangle(windowLocation.X + 1, windowLocation.Y + 1, borderRectangle.Width - 2, borderRectangle.Height - 2);
+            return new Rectangle(windowLocation.X + borderRectangle0Based.X + 1,
+                windowLocation.Y + borderRectangle0Based.Y + 1, borderRectangle.Width - 2, borderRectangle.Height - 2);
         }
 
         public void StartStopRecording()
@@ -351,31 +340,169 @@ namespace ShareX.ScreenCaptureLib
             btnPause.Enabled = !isStartCountdown &&
                 (Status == ScreenRecordingStatus.Recording || Status == ScreenRecordingStatus.Paused);
             btnAbort.Enabled = true;
+            if (toolbarGrip != null)
+            {
+                toolbarGrip.Cursor = !isStartCountdown && (Status == ScreenRecordingStatus.Waiting || Status == ScreenRecordingStatus.Paused)
+                    ? Cursors.SizeAll : Cursors.Default;
+            }
         }
 
         private void ConfigureRecordingToolbar()
         {
             KeyPreview = true;
             AutoScaleMode = AutoScaleMode.None;
+            BackColor = toolbarTransparencyKey;
             TransparencyKey = toolbarTransparencyKey;
             int S(int value) => (int)Math.Round(value * DeviceDpi / 96f);
-            Font toolbarFont = new Font("Microsoft YaHei UI", 9f);
+            Font previousToolbarFont = toolbarFont, previousTimerFont = timerFont;
+            toolbarFont = new Font("Microsoft YaHei UI", 9f);
+            timerFont = new Font("Consolas", 9.5f);
             pInfo.AutoSize = false;
-            pInfo.BackColor = toolbarTransparencyKey;
-            int itemHeight = S(36), inset = S(4), gap = S(4), buttonWidth = S(78);
-            btnStart.Bounds = new Rectangle(inset, inset, buttonWidth, itemHeight);
-            btnPause.Bounds = new Rectangle(btnStart.Right + gap, inset, buttonWidth, itemHeight);
-            btnAbort.Bounds = new Rectangle(btnPause.Right + gap, inset, buttonWidth, itemHeight);
-            btnStart.Font = btnPause.Font = btnAbort.Font = toolbarFont;
-            lblTimer.Font = new Font("Consolas", 10f);
-            int timerWidth = ScreenRecordTimerLabel.MeasureCountdownWidth(lblTimer.Font, DeviceDpi);
-            lblTimer.Bounds = new Rectangle(btnAbort.Right + gap, inset, timerWidth, itemHeight);
-            pInfo.Size = new Size(lblTimer.Right + inset, S(44));
-            using (GraphicsPath outline = RoundedRectangle(new Rectangle(0, 0, pInfo.Width, pInfo.Height), 12))
+            pInfo.BackColor = toolbarColor;
+            if (toolbarGrip == null)
             {
-                pInfo.Region = new Region(outline);
+                toolbarGrip = new Control { Name = "recordingDragGrip", AccessibleName = "移动录屏选区" };
+                toolbarGrip.Paint += ToolbarGrip_Paint;
+                toolbarGrip.MouseDown += lblTimer_MouseDown;
+                toolbarGrip.MouseMove += lblTimer_MouseMove;
+                toolbarGrip.MouseUp += lblTimer_MouseUp;
+                pInfo.Controls.Add(toolbarGrip);
+                pInfo.Paint += RecordingToolbar_Paint;
             }
+            int itemHeight = S(28), inset = S(2), gap = S(2);
+            int ButtonWidth(params string[] labels)
+            {
+                int width = S(54);
+                foreach (string label in labels)
+                {
+                    width = Math.Max(width, TextRenderer.MeasureText(label, toolbarFont, Size.Empty,
+                        TextFormatFlags.SingleLine | TextFormatFlags.NoPadding).Width + S(30));
+                }
+                return width;
+            }
+            toolbarGrip.Bounds = new Rectangle(inset, inset, S(14), itemHeight);
+            btnStart.Bounds = new Rectangle(toolbarGrip.Right + gap, inset,
+                ButtonWidth(Resources.ScreenRecordForm_Start, Resources.ScreenRecordForm_Stop), itemHeight);
+            btnPause.Bounds = new Rectangle(btnStart.Right + gap, inset, ButtonWidth(Resources.Pause, Resources.Resume), itemHeight);
+            btnAbort.Bounds = new Rectangle(btnPause.Right + gap, inset, ButtonWidth(btnAbort.Text), itemHeight);
+            btnStart.Font = btnPause.Font = btnAbort.Font = toolbarFont;
+            lblTimer.Font = timerFont;
+            int timerWidth = ScreenRecordTimerLabel.MeasureCountdownWidth(lblTimer.Font, DeviceDpi);
+            lblTimer.Bounds = new Rectangle(btnAbort.Right + S(8), inset, timerWidth, itemHeight);
+            pInfo.Size = new Size(lblTimer.Right + inset, S(32));
+            using (GraphicsPath outline = RoundedRectangle(new Rectangle(0, 0, pInfo.Width, pInfo.Height), S(5)))
+            {
+                Region previous = pInfo.Region;
+                pInfo.Region = new Region(outline);
+                previous?.Dispose();
+            }
+            previousToolbarFont?.Dispose();
+            previousTimerFont?.Dispose();
             UpdateActionAvailability();
+        }
+
+        private void ToolbarGrip_Paint(object sender, PaintEventArgs e)
+        {
+            float scale = DeviceDpi / 96f;
+            e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
+            using (Brush dot = new SolidBrush(Color.FromArgb(125, 147, 162)))
+            {
+                for (int row = 0; row < 3; row++)
+                for (int column = 0; column < 2; column++)
+                    e.Graphics.FillEllipse(dot, (4 + column * 4) * scale,
+                        toolbarGrip.Height / 2f + (row - 1) * 4 * scale - scale, 2 * scale, 2 * scale);
+            }
+        }
+
+        private void RecordingToolbar_Paint(object sender, PaintEventArgs e)
+        {
+            int S(int value) => (int)Math.Round(value * DeviceDpi / 96f);
+            e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
+            using (GraphicsPath outline = RoundedRectangle(new Rectangle(0, 0, pInfo.Width - 1, pInfo.Height - 1), S(5)))
+            using (Pen edge = new Pen(Color.FromArgb(41, 62, 76)))
+            {
+                e.Graphics.DrawPath(edge, outline);
+                int x = lblTimer.Left - S(4);
+                e.Graphics.DrawLine(edge, x, S(8), x, pInfo.Height - S(8));
+            }
+        }
+
+        // Keep the capture coordinates independent of where the toolbar fits.
+        // The shaped window consists only of the selection border and toolbar;
+        // the selection interior and the gap remain click-through.
+        private void LayoutRecordingRegion(Rectangle recordingRegion)
+        {
+            if (updatingToolbarLayout) return;
+            updatingToolbarLayout = true;
+            try
+            {
+                borderRectangle = recordingRegion.Offset(1);
+                Rectangle screen = Screen.FromRectangle(recordingRegion).Bounds;
+                int gap = Math.Max(1, (int)Math.Round(2 * DeviceDpi / 96f));
+                Rectangle toolbar = PlaceRecordingToolbar(borderRectangle, pInfo.Size, screen, gap);
+                Rectangle window = Rectangle.Union(borderRectangle, toolbar);
+                Bounds = window;
+                borderRectangle0Based = new Rectangle(borderRectangle.X - window.X, borderRectangle.Y - window.Y,
+                    borderRectangle.Width, borderRectangle.Height);
+                pInfo.Location = new Point(toolbar.X - window.X, toolbar.Y - window.Y);
+                Region visible = new Region(borderRectangle0Based);
+                visible.Exclude(borderRectangle0Based.Offset(-1));
+                using (GraphicsPath outline = RoundedRectangle(pInfo.Bounds, Math.Max(1, (int)Math.Round(5 * DeviceDpi / 96f))))
+                    visible.Union(outline);
+                Region previous = Region;
+                Region = visible;
+                previous?.Dispose();
+                toolbarOverlapsCapture = toolbar.IntersectsWith(recordingRegion);
+                UpdateToolbarCaptureExclusion();
+                Invalidate();
+            }
+            finally { updatingToolbarLayout = false; }
+        }
+
+        internal static Rectangle PlaceRecordingToolbar(Rectangle selectionBorder, Size toolbar, Rectangle screen, int gap)
+        {
+            int x = Math.Clamp(selectionBorder.Left, screen.Left, Math.Max(screen.Left, screen.Right - toolbar.Width));
+            if (selectionBorder.Bottom + gap + toolbar.Height <= screen.Bottom)
+                return new Rectangle(x, selectionBorder.Bottom + gap, toolbar.Width, toolbar.Height);
+            if (selectionBorder.Top - gap - toolbar.Height >= screen.Top)
+                return new Rectangle(x, selectionBorder.Top - gap - toolbar.Height, toolbar.Width, toolbar.Height);
+            int y = Math.Clamp(selectionBorder.Top, screen.Top, Math.Max(screen.Top, screen.Bottom - toolbar.Height));
+            if (selectionBorder.Right + gap + toolbar.Width <= screen.Right)
+                return new Rectangle(selectionBorder.Right + gap, y, toolbar.Width, toolbar.Height);
+            if (selectionBorder.Left - gap - toolbar.Width >= screen.Left)
+                return new Rectangle(selectionBorder.Left - gap - toolbar.Width, y, toolbar.Width, toolbar.Height);
+            // Full-screen regions have no exterior space. Keep controls reachable
+            // and exclude this overlay from capture on supported Windows systems.
+            y = Math.Clamp(selectionBorder.Bottom - gap - toolbar.Height, screen.Top, Math.Max(screen.Top, screen.Bottom - toolbar.Height));
+            return new Rectangle(x, y, toolbar.Width, toolbar.Height);
+        }
+
+        private void UpdateToolbarCaptureExclusion()
+        {
+            if (!IsHandleCreated) return;
+            toolbarExcludedFromCapture = toolbarOverlapsCapture && SetWindowDisplayAffinity(Handle, 0x11);
+            if (!toolbarOverlapsCapture) SetWindowDisplayAffinity(Handle, 0);
+        }
+
+        protected override void OnDpiChanged(DpiChangedEventArgs e)
+        {
+            if (!toolbarLayoutReady || updatingToolbarLayout) { base.OnDpiChanged(e); return; }
+            Rectangle capture = RecordingRegion;
+            updatingToolbarLayout = true;
+            try
+            {
+                base.OnDpiChanged(e);
+                ConfigureRecordingToolbar();
+            }
+            finally { updatingToolbarLayout = false; }
+            LayoutRecordingRegion(capture);
+        }
+
+        protected override void OnLocationChanged(EventArgs e)
+        {
+            base.OnLocationChanged(e);
+            if (toolbarLayoutReady && !updatingToolbarLayout && !IsDisposed)
+                LayoutRecordingRegion(RecordingRegion);
         }
 
         private static GraphicsPath RoundedRectangle(Rectangle bounds, int radius)
@@ -483,33 +610,11 @@ namespace ShareX.ScreenCaptureLib
 
         private void ScreenRegionForm_Shown(object sender, EventArgs e)
         {
-            toolbarBackdrop = new ToolbarBackdropForm(pInfo.Size);
-            toolbarBackdrop.Location = pInfo.PointToScreen(Point.Empty);
-            toolbarBackdrop.Show();
-            Owner = toolbarBackdrop;
-            BringToFront();
-            LocationChanged += ScreenRecordForm_LocationChanged;
+            LayoutRecordingRegion(RecordingRegion);
             if (ActivateWindow)
             {
                 this.ForceActivate();
             }
-        }
-
-        private void ScreenRecordForm_LocationChanged(object sender, EventArgs e)
-        {
-            if (toolbarBackdrop != null && !toolbarBackdrop.IsDisposed)
-            {
-                toolbarBackdrop.Location = pInfo.PointToScreen(Point.Empty);
-            }
-        }
-
-        private void DisposeToolbarBackdrop()
-        {
-            if (toolbarBackdrop == null) return;
-            LocationChanged -= ScreenRecordForm_LocationChanged;
-            Owner = null;
-            toolbarBackdrop.Dispose();
-            toolbarBackdrop = null;
         }
 
         private void ScreenRecordForm_FormClosed(object sender, FormClosedEventArgs e)
@@ -583,10 +688,13 @@ namespace ShareX.ScreenCaptureLib
 
         private void lblTimer_MouseDown(object sender, MouseEventArgs e)
         {
-            if (e.Button == MouseButtons.Left && (Status == ScreenRecordingStatus.Waiting || Status == ScreenRecordingStatus.Paused))
+            if (e.Button == MouseButtons.Left && !isStartCountdown &&
+                (Status == ScreenRecordingStatus.Waiting || Status == ScreenRecordingStatus.Paused))
             {
                 dragging = true;
-                initialLocation = e.Location;
+                initialPointerLocation = Control.MousePosition;
+                initialRecordingRegion = RecordingRegion;
+                ((Control)sender).Capture = true;
             }
         }
 
@@ -594,16 +702,13 @@ namespace ShareX.ScreenCaptureLib
         {
             if (dragging)
             {
-                Point newLocation = new Point(Location.X + e.X - initialLocation.X, Location.Y + e.Y - initialLocation.Y);
-                Rectangle recordingRegion = GetRecordingRegion(newLocation);
+                Point pointer = Control.MousePosition;
+                Rectangle recordingRegion = initialRecordingRegion;
+                recordingRegion.Offset(pointer.X - initialPointerLocation.X, pointer.Y - initialPointerLocation.Y);
                 if (CaptureHelpers.GetScreenBounds().Contains(recordingRegion))
                 {
-                    Location = newLocation;
+                    LayoutRecordingRegion(recordingRegion);
                     Update();
-                }
-                else
-                {
-                    initialLocation = e.Location;
                 }
             }
         }
@@ -613,45 +718,15 @@ namespace ShareX.ScreenCaptureLib
             if (e.Button == MouseButtons.Left)
             {
                 dragging = false;
+                ((Control)sender).Capture = false;
             }
         }
 
         private enum ScreenRecordButtonKind { Stop, Pause, Cancel }
 
-        private sealed class ToolbarBackdropForm : Form
-        {
-            protected override bool ShowWithoutActivation => true;
-
-            protected override CreateParams CreateParams
-            {
-                get
-                {
-                    CreateParams createParams = base.CreateParams;
-                    createParams.ExStyle |= (int)(WindowStyles.WS_EX_TRANSPARENT | WindowStyles.WS_EX_TOOLWINDOW);
-                    return createParams;
-                }
-            }
-
-            public ToolbarBackdropForm(Size size)
-            {
-                AutoScaleMode = AutoScaleMode.None;
-                FormBorderStyle = FormBorderStyle.None;
-                ShowInTaskbar = false;
-                StartPosition = FormStartPosition.Manual;
-                TopMost = true;
-                BackColor = Color.Black;
-                Opacity = 0.1;
-                Size = size;
-                using (GraphicsPath outline = RoundedRectangle(new Rectangle(0, 0, Width, Height), 12))
-                {
-                    Region = new Region(outline);
-                }
-            }
-        }
-
         private sealed class ScreenRecordToolbarButton : Button
         {
-            private int cornerRadius => Math.Max(4, (int)Math.Round(7f * DeviceDpi / 96f));
+            private int cornerRadius => Math.Max(3, (int)Math.Round(4f * DeviceDpi / 96f));
             private readonly ScreenRecordButtonKind kind;
             private bool hovered;
             private bool isStartAction;
@@ -715,23 +790,23 @@ namespace ShareX.ScreenCaptureLib
 
             protected override void OnPaintBackground(PaintEventArgs e)
             {
-                e.Graphics.Clear(Parent?.BackColor ?? Color.FromArgb(31, 33, 37));
+                e.Graphics.Clear(toolbarColor);
             }
 
             protected override void OnPaint(PaintEventArgs e)
             {
                 e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
                 using (GraphicsPath tile = RoundedRectangle(new Rectangle(0, 0, Width - 1, Height - 1), cornerRadius))
-                using (SolidBrush fill = new SolidBrush(Enabled && hovered ? Color.FromArgb(48, 63, 75) : Color.FromArgb(34, 43, 51)))
-                using (Pen edge = new Pen(Color.FromArgb(53, 67, 77)))
+                using (SolidBrush fill = new SolidBrush(Enabled && hovered ? Color.FromArgb(38, 57, 69) :
+                    kind == ScreenRecordButtonKind.Stop ? Color.FromArgb(56, 37, 29) :
+                    kind == ScreenRecordButtonKind.Pause ? Color.FromArgb(24, 40, 52) : toolbarColor))
                 {
                     e.Graphics.FillPath(fill, tile);
-                    e.Graphics.DrawPath(edge, tile);
                 }
 
                 Color accent = !Enabled ? Color.FromArgb(111, 115, 120) : kind == ScreenRecordButtonKind.Stop ?
-                    Color.FromArgb(239, 94, 105) : kind == ScreenRecordButtonKind.Pause ?
-                    (IsResumeAction ? Color.FromArgb(84, 207, 151) : Color.FromArgb(244, 188, 80)) : Color.FromArgb(220, 230, 237);
+                    Color.FromArgb(255, 109, 63) : kind == ScreenRecordButtonKind.Pause ?
+                    Color.FromArgb(255, 185, 72) : Color.FromArgb(208, 223, 233);
                 float scale = DeviceDpi / 96f;
                 using (Pen line = new Pen(accent, 1.8f * scale))
                 using (SolidBrush iconFill = new SolidBrush(accent))
@@ -744,37 +819,38 @@ namespace ShareX.ScreenCaptureLib
                     line.EndCap = LineCap.Round;
                     if (kind == ScreenRecordButtonKind.Stop)
                     {
-                        if (isStartAction) e.Graphics.FillEllipse(iconFill, 12, centerY - 5, 10, 10);
-                        else e.Graphics.FillRectangle(iconFill, 12, centerY - 5, 10, 10);
+                        if (isStartAction) e.Graphics.FillEllipse(iconFill, 8, centerY - 4.5f, 9, 9);
+                        else e.Graphics.FillRectangle(iconFill, 8, centerY - 4.5f, 9, 9);
                     }
                     else if (kind == ScreenRecordButtonKind.Pause)
                     {
-                        if (IsResumeAction) e.Graphics.FillPolygon(iconFill, new[] { new PointF(12, centerY - 6), new PointF(23, centerY), new PointF(12, centerY + 6) });
+                        if (IsResumeAction) e.Graphics.FillPolygon(iconFill, new[] { new PointF(8, centerY - 5), new PointF(18, centerY), new PointF(8, centerY + 5) });
                         else
                         {
-                            e.Graphics.FillRectangle(iconFill, 12, centerY - 6, 3, 12);
-                            e.Graphics.FillRectangle(iconFill, 19, centerY - 6, 3, 12);
+                            e.Graphics.FillRectangle(iconFill, 8, centerY - 5, 3, 10);
+                            e.Graphics.FillRectangle(iconFill, 14, centerY - 5, 3, 10);
                         }
                     }
                     else
                     {
-                        e.Graphics.DrawLine(line, 12, centerY - 5, 22, centerY + 5);
-                        e.Graphics.DrawLine(line, 22, centerY - 5, 12, centerY + 5);
+                        e.Graphics.DrawLine(line, 8, centerY - 4, 16, centerY + 4);
+                        e.Graphics.DrawLine(line, 16, centerY - 4, 8, centerY + 4);
                     }
                     e.Graphics.Restore(state);
                 }
 
                 TextRenderer.DrawText(e.Graphics, Text, Font,
-                    new Rectangle((int)(28 * scale), 0, Width - (int)(34 * scale), Height),
-                    Enabled ? Color.White : Color.FromArgb(141, 145, 150),
+                    new Rectangle((int)(23 * scale), 0, Width - (int)(27 * scale), Height),
+                    Enabled ? Color.FromArgb(230, 237, 241) : Color.FromArgb(141, 145, 150),
                     TextFormatFlags.HorizontalCenter | TextFormatFlags.VerticalCenter |
-                    TextFormatFlags.SingleLine | TextFormatFlags.NoPrefix);
+                    TextFormatFlags.SingleLine | TextFormatFlags.NoPrefix | TextFormatFlags.NoPadding);
             }
         }
 
         private sealed class ScreenRecordTimerLabel : Label
         {
-            private int cornerRadius => Math.Max(4, (int)Math.Round(7f * DeviceDpi / 96f));
+            private int cornerRadius => Math.Max(3, (int)Math.Round(4f * DeviceDpi / 96f));
+            private readonly Font countdownFont = new Font("Microsoft YaHei UI", 9f);
             public bool CountdownMode { get; set; }
             public bool RecordingMode { get; set; }
             public bool PausedMode { get; set; }
@@ -783,6 +859,12 @@ namespace ShareX.ScreenCaptureLib
             {
                 SetStyle(ControlStyles.UserPaint | ControlStyles.AllPaintingInWmPaint |
                     ControlStyles.OptimizedDoubleBuffer, true);
+            }
+
+            protected override void Dispose(bool disposing)
+            {
+                if (disposing) countdownFont.Dispose();
+                base.Dispose(disposing);
             }
 
             protected override void OnResize(EventArgs e)
@@ -799,51 +881,42 @@ namespace ShareX.ScreenCaptureLib
 
             public static int MeasureCountdownWidth(Font baseFont, int dpi)
             {
-                using (Font hintFont = new Font("Microsoft YaHei UI", 9.5f))
+                using (Font hintFont = new Font("Microsoft YaHei UI", 9f))
                 {
-                    const TextFormatFlags flags = TextFormatFlags.SingleLine | TextFormatFlags.NoPrefix;
+                    const TextFormatFlags flags = TextFormatFlags.SingleLine | TextFormatFlags.NoPrefix | TextFormatFlags.NoPadding;
                     int hintWidth = TextRenderer.MeasureText("999 秒后开始", hintFont, Size.Empty, flags).Width;
                     int elapsedWidth = TextRenderer.MeasureText("9999:59:59", baseFont, Size.Empty, flags).Width;
-                    return Math.Max(elapsedWidth, hintWidth) + (int)Math.Round(34 * dpi / 96f);
+                    return Math.Max(elapsedWidth, hintWidth) + (int)Math.Round(24 * dpi / 96f);
                 }
             }
 
             protected override void OnPaintBackground(PaintEventArgs e)
             {
-                e.Graphics.Clear(Parent?.BackColor ?? Color.FromArgb(31, 33, 37));
+                e.Graphics.Clear(toolbarColor);
             }
 
             protected override void OnPaint(PaintEventArgs e)
             {
                 e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
-                using (GraphicsPath tile = RoundedRectangle(new Rectangle(0, 0, Width - 1, Height - 1), cornerRadius))
-                using (SolidBrush fill = new SolidBrush(Color.FromArgb(34, 43, 51)))
-                {
-                    e.Graphics.FillPath(fill, tile);
-                }
                 float scale = DeviceDpi / 96f;
                 using (SolidBrush dot = new SolidBrush(CountdownMode || PausedMode ? Color.FromArgb(244, 188, 80) :
                     RecordingMode ? Color.FromArgb(239, 94, 105) : Color.FromArgb(139, 147, 154)))
                 {
-                    e.Graphics.FillEllipse(dot, 10 * scale, (Height - 7 * scale) / 2, 7 * scale, 7 * scale);
+                    e.Graphics.FillEllipse(dot, 7 * scale, (Height - 6 * scale) / 2, 6 * scale, 6 * scale);
                 }
                 if (CountdownMode)
                 {
-                    using (Font hintFont = new Font("Microsoft YaHei UI", 9.5f))
-                    {
-                        const TextFormatFlags flags = TextFormatFlags.HorizontalCenter |
-                            TextFormatFlags.VerticalCenter | TextFormatFlags.SingleLine | TextFormatFlags.NoPrefix;
-                        TextRenderer.DrawText(e.Graphics, Text, hintFont,
-                            new Rectangle((int)(24 * scale), 0, Width - (int)(30 * scale), Height),
-                            Color.FromArgb(255, 214, 132), flags);
-                    }
+                    TextRenderer.DrawText(e.Graphics, Text, countdownFont,
+                        new Rectangle((int)(20 * scale), 0, Width - (int)(24 * scale), Height),
+                        Color.FromArgb(255, 214, 132), TextFormatFlags.HorizontalCenter | TextFormatFlags.VerticalCenter |
+                        TextFormatFlags.SingleLine | TextFormatFlags.NoPrefix | TextFormatFlags.NoPadding);
                 }
                 else
                 {
                     TextRenderer.DrawText(e.Graphics, Text, Font,
-                        new Rectangle((int)(24 * scale), 0, Width - (int)(30 * scale), Height), Color.White,
+                        new Rectangle((int)(20 * scale), 0, Width - (int)(24 * scale), Height), Color.FromArgb(230, 237, 241),
                         TextFormatFlags.HorizontalCenter | TextFormatFlags.VerticalCenter |
-                        TextFormatFlags.SingleLine | TextFormatFlags.NoPrefix);
+                        TextFormatFlags.SingleLine | TextFormatFlags.NoPrefix | TextFormatFlags.NoPadding);
                 }
             }
         }

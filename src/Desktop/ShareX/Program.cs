@@ -50,7 +50,7 @@ namespace ShareX
         public const string DisplayName = "小蟒";
         public const string ProductName = "小蟒";
         public const int ProductVersionMajor = 3;
-        public const int ProductVersionMinor = 4;
+        public const int ProductVersionMinor = 5;
         public static string ProductVersion => $"{ProductVersionMajor}.{ProductVersionMinor}";
         public const string MutexName = "82E6AC09-0FEF-4390-AD9F-0DD3F5561EFC";
         public static readonly string PipeName = $"{Environment.MachineName}-{Environment.UserName}-{AppName}";
@@ -710,10 +710,13 @@ namespace ShareX
 
         private static void OnError(Exception e)
         {
-            using (ErrorForm errorForm = new ErrorForm(e.Message, $"{e}\r\n\r\n{Title}", LogsFilePath, Links.GitHubIssues))
-            {
-                errorForm.ShowDialog();
-            }
+            ErrorReporting.Handle(e, Title, text => { DebugHelper.WriteLine(text); DebugHelper.Flush(); },
+                (message, details) =>
+                {
+                    using var errorForm = new ErrorForm(message, details, LogsFilePath, Links.GitHubIssues);
+                    errorForm.ShowDialog();
+                },
+                message => MessageBox.Show(message, "小蟒 - 错误", MessageBoxButtons.OK, MessageBoxIcon.Error));
         }
 
         private static bool CheckUninstall()

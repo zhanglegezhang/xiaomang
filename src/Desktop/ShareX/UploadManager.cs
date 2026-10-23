@@ -1,4 +1,4 @@
-﻿#region License Information (GPL v3)
+#region License Information (GPL v3)
 
 /*
     ShareX - A program that allows you to take screenshots and share any file type
@@ -386,6 +386,15 @@ namespace ShareX
             }
         }
 
+        internal static AfterCaptureTasks NormalizeCaptureActions(AfterCaptureTasks actions)
+        {
+            if ((actions & AfterCaptureTasks.ShowQuickTaskMenu) != 0)
+            {
+                actions = (actions & ~AfterCaptureTasks.ShowQuickTaskMenu) |
+                    AfterCaptureTasks.SaveImageToFile | AfterCaptureTasks.CopyImageToClipboard;
+            }
+            return actions;
+        }
         public static void RunImageTask(Bitmap bmp, TaskSettings taskSettings, bool skipQuickTaskMenu = false, bool skipAfterCaptureWindow = false)
         {
             TaskMetadata metadata = new TaskMetadata(bmp);
@@ -406,28 +415,8 @@ namespace ShareX
 
             if (metadata != null && metadata.Image != null && taskSettings != null)
             {
-                if (!skipQuickTaskMenu && taskSettings.AfterCaptureJob.HasFlag(AfterCaptureTasks.ShowQuickTaskMenu))
-                {
-                    QuickTaskMenu quickTaskMenu = new QuickTaskMenu();
-
-                    quickTaskMenu.TaskInfoSelected += taskInfo =>
-                    {
-                        if (taskInfo == null)
-                        {
-                            RunImageTask(metadata, taskSettings, true);
-                        }
-                        else if (taskInfo.IsValid)
-                        {
-                            taskSettings.AfterCaptureJob = taskInfo.AfterCaptureTasks;
-                            taskSettings.AfterUploadJob = taskInfo.AfterUploadTasks;
-                            RunImageTask(metadata, taskSettings, true);
-                        }
-                    };
-
-                    quickTaskMenu.ShowMenu();
-
-                    return;
-                }
+                // Legacy and imported profiles must never reopen the retired action popup.
+                taskSettings.AfterCaptureJob = NormalizeCaptureActions(taskSettings.AfterCaptureJob);
 
                 string customFileName = null;
 

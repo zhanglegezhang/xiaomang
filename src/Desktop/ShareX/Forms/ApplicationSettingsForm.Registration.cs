@@ -113,8 +113,7 @@ namespace ShareX
             }), Action("移除组件", "removeMixedOCR", token => RemoveDownloadedComponent(true, token)),
                 Action("百度翻译 API 配置", "configureBaiduTranslation", token =>
                 {
-                    using var dialog = new BaiduTranslationSettingsForm();
-                    dialog.ShowDialog(this);
+                    BaiduTranslationSettingsForm.Open(this);
                     return Task.CompletedTask;
                 },managesComponent:false));
             var recordingStatus=Status("recordingComponentStatus");

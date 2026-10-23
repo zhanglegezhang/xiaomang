@@ -17,10 +17,10 @@ namespace ShareX
             tcSettings.TabPages.Add(CreateCombinedCapturePage(resources.GetString("tpCapture.Text")));
             tcSettings.TabPages.Add(CreateTaskSettingsPage("tpScreenRecorder", resources));
             tcSettings.TabPages.Add(CreateTaskSettingsPage("tpOCR", resources));
-            tcSettings.TabPages.Add(CreateTaskSettingsPage("tpToolsGeneral", resources, resources.GetString("tpTools.Text")));
+
 
             // Reorder page containers before building navigation; leave their contents unloaded.
-            string[] order = { "tpGeneral", "tpRegistration", "tpCaptureGeneral", "tpNotifications", "tpScreenRecorder", "tpOCR", "tpToolsGeneral", "tpPaths",
+            string[] order = { "tpGeneral", "tpRegistration", "tpCaptureGeneral", "tpNotifications", "tpScreenRecorder", "tpOCR", "tpPaths",
                 "tpDailyNews", "tpVoiceTranscription", "tpAdvanced" };
             TabPage[] pages = tcSettings.TabPages.Cast<TabPage>()
                 .OrderBy(page =>

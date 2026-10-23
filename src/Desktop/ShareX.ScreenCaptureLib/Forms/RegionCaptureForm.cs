@@ -651,8 +651,109 @@ namespace ShareX.ScreenCaptureLib
             return result;
         }
 
+        private bool colorSelectionStarted;
+        private bool CanPickCaptureColor => !colorSelectionStarted &&
+            (Mode == RegionCaptureMode.Default || Mode == RegionCaptureMode.Annotation) &&
+            !ShapeManager.IsEditingText && ShapeManager.Shapes.Count == 0;
+
+        private Color CapturePointerColor()
+        {
+            Point point = PointToClient(Control.MousePosition);
+            int x = (int)(point.X / ZoomFactor - CanvasRectangle.X);
+            int y = (int)(point.Y / ZoomFactor - CanvasRectangle.Y);
+            return Canvas.GetPixel(Math.Clamp(x, 0, Canvas.Width - 1), Math.Clamp(y, 0, Canvas.Height - 1));
+        }
+
+        private Font captureColorFont, captureColorHintFont;
+        private Size captureColorSize, captureColorKeySize, captureColorCopySize;
+        private float captureColorDpi;
+        private int captureColorPadding, captureColorGap, captureColorRowHeight;
+        private const TextFormatFlags ColorHintTextFlags = TextFormatFlags.NoPadding | TextFormatFlags.NoPrefix | TextFormatFlags.SingleLine;
+
+        private Rectangle GetCaptureColorHintBounds(Graphics g)
+        {
+            if (captureColorFont == null || captureColorDpi != g.DpiY)
+            {
+                captureColorFont?.Dispose();
+                captureColorHintFont?.Dispose();
+                captureColorDpi = g.DpiY;
+                float scale = g.DpiY / 96f;
+                captureColorFont = new Font("Consolas", 12f * scale, FontStyle.Regular, GraphicsUnit.Pixel);
+                captureColorHintFont = new Font("Microsoft YaHei UI", 10f * scale, FontStyle.Regular, GraphicsUnit.Pixel);
+                captureColorPadding = Math.Max(4, (int)Math.Round(6 * scale));
+                captureColorGap = Math.Max(3, (int)Math.Round(5 * scale));
+                Size hex = TextRenderer.MeasureText(g, "#FFFFFF", captureColorFont, Size.Empty, ColorHintTextFlags);
+                captureColorKeySize = TextRenderer.MeasureText(g, "Ctrl+C", captureColorHintFont, Size.Empty, ColorHintTextFlags);
+                captureColorCopySize = TextRenderer.MeasureText(g, "复制", captureColorHintFont, Size.Empty, ColorHintTextFlags);
+                captureColorRowHeight = Math.Max(hex.Height, captureColorKeySize.Height + 4);
+                int textWidth = Math.Max(hex.Width, captureColorKeySize.Width + 8 + captureColorGap + captureColorCopySize.Width);
+                int contentHeight = captureColorRowHeight * 2 + 2;
+                captureColorSize = new Size(captureColorPadding * 2 + contentHeight + captureColorGap + textWidth,
+                    captureColorPadding * 2 + contentHeight);
+            }
+            Point point = PointToClient(Control.MousePosition);
+            Rectangle screen = Rectangle.Intersect(ClientRectangle, RectangleToClient(Screen.FromPoint(Control.MousePosition).Bounds));
+            int x = Math.Clamp(point.X + 22, screen.Left, Math.Max(screen.Left, screen.Right - captureColorSize.Width));
+            int y = point.Y + captureColorSize.Height + 24 > screen.Bottom ? point.Y - captureColorSize.Height - 18 : point.Y + 24;
+            return new Rectangle(x, Math.Max(screen.Top, y), captureColorSize.Width, captureColorSize.Height);
+        }
+
+        private static GraphicsPath CaptureColorRoundPath(Rectangle rect, int radius)
+        {
+            var path = new GraphicsPath();
+            int d = Math.Min(radius * 2, Math.Min(rect.Width, rect.Height));
+            path.AddArc(rect.Left, rect.Top, d, d, 180, 90);
+            path.AddArc(rect.Right - d - 1, rect.Top, d, d, 270, 90);
+            path.AddArc(rect.Right - d - 1, rect.Bottom - d - 1, d, d, 0, 90);
+            path.AddArc(rect.Left, rect.Bottom - d - 1, d, d, 90, 90);
+            path.CloseFigure();
+            return path;
+        }
+
+        private void DrawCaptureColorHint(Graphics g)
+        {
+            if (!CanPickCaptureColor || Canvas == null) return;
+            Color color = CapturePointerColor();
+            Rectangle bounds = GetCaptureColorHintBounds(g);
+            int padding = captureColorPadding, side = bounds.Height - padding * 2;
+            var state = g.Save();
+            g.SmoothingMode = SmoothingMode.AntiAlias;
+            using Brush background = new SolidBrush(Color.FromArgb(30, 40, 48));
+            using Brush swatch = new SolidBrush(color);
+            using Pen border = new Pen(Color.FromArgb(80, 95, 105));
+            using var outer = CaptureColorRoundPath(bounds, padding);
+            using var chip = CaptureColorRoundPath(new Rectangle(bounds.X + padding, bounds.Y + padding, side, side), padding);
+            g.FillPath(background, outer);
+            g.DrawPath(border, outer);
+            g.FillPath(swatch, chip);
+            int x = bounds.X + padding + side + captureColorGap;
+            int y = bounds.Y + padding;
+            g.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAliasGridFit;
+            using Brush white = new SolidBrush(Color.White);
+            using Brush muted = new SolidBrush(Color.FromArgb(185, 195, 202));
+            using var format = new StringFormat(StringFormat.GenericTypographic) { LineAlignment = StringAlignment.Center, FormatFlags = StringFormatFlags.NoWrap };
+            g.DrawString($"#{color.R:X2}{color.G:X2}{color.B:X2}", captureColorFont, white,
+                new RectangleF(x, y, bounds.Right - padding - x, captureColorRowHeight), format);
+            y += captureColorRowHeight + 2;
+            Rectangle key = new Rectangle(x, y, captureColorKeySize.Width + 8, captureColorRowHeight);
+            using var keyPath = CaptureColorRoundPath(key, Math.Max(2, padding / 2));
+            g.DrawPath(border, keyPath);
+            format.Alignment = StringAlignment.Center;
+            g.DrawString("Ctrl+C", captureColorHintFont, muted, key, format);
+            format.Alignment = StringAlignment.Near;
+            g.DrawString("复制", captureColorHintFont, muted,
+                new RectangleF(key.Right + captureColorGap, y, captureColorCopySize.Width, captureColorRowHeight), format);            g.Restore(state);
+        }
         internal void RegionCaptureForm_KeyDown(object sender, KeyEventArgs e)
         {
+            if (CanPickCaptureColor && e.KeyData == (Keys.Control | Keys.C))
+            {
+                Color color = CapturePointerColor();
+                ClipboardHelpers.CopyText($"#{color.R:X2}{color.G:X2}{color.B:X2}");
+                e.Handled = e.SuppressKeyPress = true;
+                CloseWindow();
+                return;
+            }
             if (ShapeManager.IsEditingText) return;
             if (e.KeyData == Keys.Escape)
             {
@@ -722,6 +823,7 @@ namespace ShareX.ScreenCaptureLib
 
         private void RegionCaptureForm_MouseDown(object sender, MouseEventArgs e)
         {
+            if (e.Button == MouseButtons.Left) colorSelectionStarted = true;
             if ((Mode == RegionCaptureMode.OneClick || Mode == RegionCaptureMode.ScreenColorPicker) && e.Button == MouseButtons.Left)
             {
                 CurrentPosition = InputManager.MousePosition;
@@ -1019,6 +1121,7 @@ namespace ShareX.ScreenCaptureLib
                 DrawFPS(g, 10);
             }
 
+            DrawCaptureColorHint(g);
             g.Restore(frameState);
             double pixels = prepared && scheduledDamage != null ? RegionCaptureDamage.Area(scheduledDamage) :
                 (double)e.ClipRectangle.Width * e.ClipRectangle.Height;
@@ -1131,6 +1234,7 @@ namespace ShareX.ScreenCaptureLib
                 (Options.EnableAnimations && ShapeManager.PreviousHoverRectangle != hover.Rectangle))) return null;
 
             var damage = new RegionCaptureDamage(ClientArea);
+            if (CanPickCaptureColor) damage.AddOverlay(GetCaptureColorHintBounds(g));
             foreach (BaseShape selection in selections)
             {
                 // DrawShapes uses the -1 path for the restored selection background.
@@ -1353,7 +1457,7 @@ namespace ShareX.ScreenCaptureLib
                     g.DrawRectangleProper(selectionHover, rect);
                 else
                 {
-                    selectionDashes.DashOffset = borderDotPen.DashOffset;
+                    selectionDashes.DashOffset = borderDotPen.DashOffset * 0.25f;
                     g.DrawRectangleProper(selectionBorder, rect);
                     g.DrawRectangleProper(selectionDashes, rect);
                 }
@@ -2025,6 +2129,8 @@ namespace ShareX.ScreenCaptureLib
             borderPen?.Dispose();
             borderDotPen?.Dispose();
             borderDotStaticPen?.Dispose();
+            captureColorFont?.Dispose();
+            captureColorHintFont?.Dispose();
             infoFont?.Dispose();
             infoFontMedium?.Dispose();
             infoFontBig?.Dispose();

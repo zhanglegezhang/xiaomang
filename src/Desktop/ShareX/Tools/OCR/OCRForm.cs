@@ -166,12 +166,13 @@ namespace ShareX
             var timer = System.Diagnostics.Stopwatch.StartNew();
             DebugHelper.WriteLine($"[OCR] window-shown bounds={Bounds}; visible={Visible}; state={WindowState}; foreground={NativeMethods.GetForegroundWindow()}; hwnd={Handle}");
             Rectangle saved = Program.Settings.OcrWindowBounds;
+            Size fallbackSize = Program.Settings.OcrDefaultWindowSize;
             bool remembered = saved.Width > 0 && saved.Height > 0 && Screen.AllScreens.Any(s => s.WorkingArea.IntersectsWith(saved));
             Rectangle area = remembered ? Screen.FromRectangle(saved).WorkingArea : Screen.FromPoint(openingPoint).WorkingArea;
             StartPosition = FormStartPosition.Manual;
             WindowState = FormWindowState.Normal;
             MinimumSize = new Size(Math.Min(MinimumSize.Width, area.Width), Math.Min(MinimumSize.Height, area.Height));
-            Size = new Size(Math.Min(saved.Width > 0 ? saved.Width : Width, area.Width), Math.Min(saved.Height > 0 ? saved.Height : Height, area.Height));
+            Size = new Size(Math.Min(saved.Width > 0 ? saved.Width : fallbackSize.Width > 0 ? fallbackSize.Width : Width, area.Width), Math.Min(saved.Height > 0 ? saved.Height : fallbackSize.Height > 0 ? fallbackSize.Height : Height, area.Height));
             Location = remembered
                 ? new Point(Math.Clamp(saved.X, area.Left, area.Right - Width), Math.Clamp(saved.Y, area.Top, area.Bottom - Height))
                 : new Point(area.Left + (area.Width - Width) / 2, area.Top + (area.Height - Height) / 2);

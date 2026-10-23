@@ -1,4 +1,4 @@
-﻿#region License Information (GPL v3)
+#region License Information (GPL v3)
 
 /*
     ShareX - A program that allows you to take screenshots and share any file type
@@ -88,7 +88,7 @@ namespace ShareX
                     if (typeof(T) == typeof(HotkeyType))
                     {
                         HotkeyType action = (HotkeyType)enumInfo.Value;
-                        if (action == HotkeyType.None ||
+                        if (action == HotkeyType.None || action == HotkeyType.ScreenColorPicker ||
                             !SystemOptions.IsHotkeyActionAvailable(action) ||
                             (enumInfo.Category == HotkeyType.RectangleRegion.GetLocalizedCategory() &&
                              action != HotkeyType.RectangleRegion) ||
@@ -174,6 +174,8 @@ namespace ShareX
             }
         }
 
+        private ToolTip independentSettingsTip;
+
         public void UpdateControls()
         {
             if (Selected)
@@ -193,6 +195,9 @@ namespace ShareX
                 taskText += "*";
             }
             btnTask.Text = taskText;
+            independentSettingsTip ??= new ToolTip(components);
+            independentSettingsTip.SetToolTip(btnTask, HotkeySettings.TaskSettings.IsUsingDefaultSettings ? string.Empty :
+                SettingsPageLayout.Caption("使用独立配置", "Uses custom settings"));
             Invalidate();
         }
 

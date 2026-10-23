@@ -1,4 +1,5 @@
 'use client'
+import { readPlainPreferences, writePlainPreferences } from './plain-preferences'
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { open, save } from '@tauri-apps/plugin-dialog'
 import { getCurrentWindow } from '@tauri-apps/api/window'
@@ -61,6 +62,16 @@ export default function Diary() {
   const richActions = useRef<BodyEditorActions|null>(null);
   const setRichActions = useCallback((actions:BodyEditorActions|null)=>{richActions.current=actions},[]);
   const [plainFontSize, setPlainFontSize] = useState(14), [plainWrapping, setPlainWrapping] = useState(true);
+  useEffect(() => {
+    if (!root) return;
+    const saved = readPlainPreferences(localStorage, root);
+    setPlainFontSize(saved.fontSize); setPlainWrapping(saved.wrapping);
+  }, [root]);
+  const savePlainPreferences = (fontSize: number, wrapping: boolean) => {
+    setPlainFontSize(fontSize); setPlainWrapping(wrapping);
+    if (!writePlainPreferences(localStorage, root, { fontSize, wrapping }))
+      setStorageWarning('显示偏好未能保存，本次调整仍有效。');
+  };
   const [plainUndoRedo, setPlainUndoRedo] = useState({undo:false,redo:false});
   const plainText = /\.txt$/i.test(active) && !index.get(active)?.folder;
   const sourceRequired = useMemo(() => !plainText && requiresSourceMode(text), [plainText, text]);
@@ -589,7 +600,7 @@ export default function Diary() {
       {error&&<div role="alert" className="error-banner"><span>{error}</span><button aria-label="关闭错误提示" onClick={()=>setError('')}><X size={16}/></button></div>}
       {conflictPath&&<div role="status" className="draft-conflict"><span>“{basename(conflictPath)}”存在外部修改，当前草稿仍保留。</span><div><button disabled={busy||navigating} onClick={()=>void exportNote(conflictPath)}>导出草稿副本</button><button disabled={busy||navigating||exportedDrafts.current.get(conflictPath)!==drafts.current.get(conflictPath)?.content} onClick={reloadConflictedDraft}>重新读取磁盘版本</button></div></div>}
       {treeWarning&&<div role="alert" className="error-banner">{treeWarning}</div>}
-      {active?<div className="editor-container" key={active+'-'+sourceMode+'-'+reloadEpoch}>{plainText?<><PlainToolbar controller={controller} undoRedo={plainUndoRedo} fontSize={plainFontSize} wrapping={plainWrapping} disabled={busy||navigating} onFontSize={setPlainFontSize} onWrapping={setPlainWrapping}/><div className="source-editor-body"><SourceMarkdownEditor session={activeSession} language="plain" value={text} onChange={update} editable={!busy&&!navigating} onUndoRedoChange={setPlainUndoRedo} showLineNumbers lineWrapping={plainWrapping} fontSize={plainFontSize} lineHeight={1.7} ariaLabel="日记 TXT 纯文本" onControllerChange={c=>controller.current=c}/></div></>:sourceMode?<><div className="format-bar source-format-bar" role="toolbar" aria-label="源码工具栏"><div className="toolbar-mode-switch">{modeSwitch}</div></div><div className="source-editor-body"><SourceMarkdownEditor session={activeSession} value={text} onChange={update} onPasteImages={pasteImages} editable={!busy&&!navigating} showLineNumbers lineWrapping fontSize={14} lineHeight={1.7} ariaLabel="日记 Markdown 源码" onControllerChange={c=>controller.current=c}/></div></>:<RichEditor session={activeSession} value={text} onChange={update} onPasteImages={pasteImages} readonly={busy||navigating} toolbarActions={modeSwitch} onContextActionsChange={setRichActions}/>}</div>:<div className="welcome"><img src="/xiaomang-logo.png" width={46} height={46} alt="小蟒标志" style={{marginBottom:10}}/><h1>留一点时间，给自己</h1><p>用目录整理日记，用搜索找回记忆。<br/>所有内容保存在这台电脑，随时可以导出和备份。</p><button className="primary" onClick={()=>create(false)} disabled={!root||busy}><FilePlus2 size={17}/>新建日记</button><small>Ctrl+N 新建 · Ctrl+S 保存 · Ctrl+Shift+F 全文搜索</small></div>}
+      {active?<div className="editor-container" key={active+'-'+sourceMode+'-'+reloadEpoch}>{plainText?<><PlainToolbar controller={controller} undoRedo={plainUndoRedo} fontSize={plainFontSize} wrapping={plainWrapping} disabled={busy||navigating} onFontSize={size=>savePlainPreferences(size,plainWrapping)} onWrapping={wrap=>savePlainPreferences(plainFontSize,wrap)}/><div className="source-editor-body"><SourceMarkdownEditor session={activeSession} language="plain" value={text} onChange={update} editable={!busy&&!navigating} onUndoRedoChange={setPlainUndoRedo} showLineNumbers lineWrapping={plainWrapping} fontSize={plainFontSize} lineHeight={1.7} ariaLabel="日记 TXT 纯文本" onControllerChange={c=>controller.current=c}/></div></>:sourceMode?<><div className="format-bar source-format-bar" role="toolbar" aria-label="源码工具栏"><div className="toolbar-mode-switch">{modeSwitch}</div></div><div className="source-editor-body"><SourceMarkdownEditor session={activeSession} value={text} onChange={update} onPasteImages={pasteImages} editable={!busy&&!navigating} showLineNumbers lineWrapping fontSize={14} lineHeight={1.7} ariaLabel="日记 Markdown 源码" onControllerChange={c=>controller.current=c}/></div></>:<RichEditor session={activeSession} value={text} onChange={update} onPasteImages={pasteImages} readonly={busy||navigating} toolbarActions={modeSwitch} onContextActionsChange={setRichActions}/>}</div>:<div className="welcome"><img src="/xiaomang-logo.png" width={46} height={46} alt="小蟒标志" style={{marginBottom:10}}/><h1>留一点时间，给自己</h1><p>用目录整理日记，用搜索找回记忆。<br/>所有内容保存在这台电脑，随时可以导出和备份。</p><button className="primary" onClick={()=>create(false)} disabled={!root||busy}><FilePlus2 size={17}/>新建日记</button><small>Ctrl+N 新建 · Ctrl+S 保存 · Ctrl+Shift+F 全文搜索</small></div>}
       <footer><span>{status}</span><span>{active?`${text.length.toLocaleString()} 字符`:''} {active&&sourceRequired?' · 源码模式保护原文':''}</span><span>本地存储</span></footer>
     </main>
     {context&&<ContextMenu context={context} onClose={closeContext} onReorder={multiple||context.tab?undefined:direction=>reorder(context.path,direction)} items={context.tab ? [

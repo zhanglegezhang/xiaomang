@@ -140,6 +140,7 @@ namespace ShareX
                     case "document": case "html":
                         Lines(new PointF(5, 2), new PointF(14, 2), new PointF(20, 8), new PointF(20, 22), new PointF(5, 22), new PointF(5, 2));
                         Lines(new PointF(14, 2), new PointF(14, 8), new PointF(20, 8)); Line(9, 12, 16, 12); Line(9, 16, 16, 16); break;
+                    case "power": g.DrawArc(pen, 3, 3, 18, 18, -55, 290); Line(12, 1, 12, 11); break;
                     case "about": g.DrawEllipse(pen, 2, 2, 20, 20); Line(12, 11, 12, 18); g.FillEllipse(fill, 11, 6, 2, 2); break;
                     case "search": g.DrawEllipse(pen, 3, 3, 13, 13); Line(15, 15, 22, 22); break;
                     case "pin": Lines(new PointF(8, 3), new PointF(17, 3), new PointF(16, 9), new PointF(20, 15), new PointF(5, 15), new PointF(9, 9), new PointF(8, 3)); Line(12, 15, 12, 22); break;

@@ -14,9 +14,9 @@ namespace ShareX.ScreenCaptureLib
             resizeVertical = SelectionCursor.Create(DeviceDpi, 90);
             resizeDownDiagonal = SelectionCursor.Create(DeviceDpi, 45);
             resizeUpDiagonal = SelectionCursor.Create(DeviceDpi, -45);
-            float width = 2 * DeviceDpi / 96f;
+            float width = System.Math.Max(1f, DeviceDpi / 96f);
             selectionBorder = new Pen(Color.Black, width);
-            selectionDashes = new Pen(Color.White, width) { DashPattern = new float[] { 5, 5 } };
+            selectionDashes = new Pen(Color.White, width) { DashPattern = new float[] { 4, 4 } };
             selectionHover = new Pen(Color.FromArgb(255, 140, 55), width);
         }
 

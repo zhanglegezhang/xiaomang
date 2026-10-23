@@ -61,6 +61,12 @@ namespace ShareX
                 themes.DropDown.LocationChanged += (_, _) => RefreshSearchMenuScreenBounds();
                 themes.DropDown.SizeChanged += (_, _) => RefreshSearchMenuScreenBounds();
                 searchMenu.Items.Add(themes);
+                searchMenu.Items.Add("退出小蟒", null, (_, _) =>
+                {
+                    // Defer disposal until the menu has finished processing the click.
+                    var main = Program.MainForm;
+                    if (main != null && !main.IsDisposed) main.BeginInvoke(new Action(main.RequestUserExit));
+                });
                 searchMenuOutsideClickTimer = new System.Windows.Forms.Timer { Interval = 15 };
                 searchMenuOutsideClickTimer.Tick += (_, _) =>
                 {
