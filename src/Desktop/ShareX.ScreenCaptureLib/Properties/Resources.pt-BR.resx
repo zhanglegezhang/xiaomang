@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -232,7 +232,7 @@
     <value>Excluir</value>
   </data>
   <data name="ShapeManager_CreateToolbar_ApplyChangesContinueTaskEnter" xml:space="preserve">
-    <value>Aplicar as alterações e continuar a tarefa (Enter)</value>
+    <value>Aplicar as alterações e continuar a tarefa</value>
   </data>
   <data name="OpenKeybindsPage" xml:space="preserve">
     <value>Abrir página da web de atalhos de teclado ...</value>
@@ -319,7 +319,7 @@
     <value>Salvar imagem como ... (Ctrl + Shift + S)</value>
   </data>
   <data name="ShapeManager_CreateToolbar_ContinueTaskSpaceOrRightClick" xml:space="preserve">
-    <value>Continuar tarefa (espaço ou clique com o botão direito)</value>
+    <value>Continuar tarefa</value>
   </data>
   <data name="ShapeManager_CreateToolbar_CanvasSize" xml:space="preserve">
     <value>Tamanho da tela...</value>
@@ -382,7 +382,7 @@
     <value>Dica: Você pode deslocar a imagem segurando o botão do meio do mouse e arrastando.</value>
   </data>
   <data name="ShapeManager_CreateToolbar_RunAfterCaptureTasks" xml:space="preserve">
-    <value>Executar após as tarefas de captura (Enter)</value>
+    <value>Executar após as tarefas de captura</value>
   </data>
   <data name="ShapeManager_CreateContextMenu_RememberMenuState" xml:space="preserve">
     <value>Lembrar do estado do menu</value>

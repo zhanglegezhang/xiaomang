@@ -3,9 +3,9 @@
   <ItemGroup>
     <Compile Include="../capture-partial/DamageChecks.cs" Link="DamageChecks.cs" />
     <Reference Include="ShareX.ScreenCaptureLib"><HintPath>$(CaptureRuntime)/ShareX.ScreenCaptureLib.dll</HintPath></Reference>
-    <Reference Include="ShareX.HelpersLib"><HintPath>$(CaptureRuntime)/ShareX.HelpersLib.dll</HintPath></Reference>
-    <Reference Include="ShareX.MediaLib"><HintPath>$(CaptureRuntime)/ShareX.MediaLib.dll</HintPath></Reference>
-    <Reference Include="ShareX.ImageEffectsLib"><HintPath>$(CaptureRuntime)/ShareX.ImageEffectsLib.dll</HintPath></Reference>
-    <Reference Include="Newtonsoft.Json"><HintPath>$(CaptureRuntime)/Newtonsoft.Json.dll</HintPath></Reference>
+    <Reference Include="ShareX.HelpersLib"><HintPath>../../artifacts/Desktop/ShareX.HelpersLib.dll</HintPath></Reference>
+    <Reference Include="ShareX.MediaLib"><HintPath>../../artifacts/Desktop/ShareX.MediaLib.dll</HintPath></Reference>
+    <Reference Include="ShareX.ImageEffectsLib"><HintPath>../../artifacts/Desktop/ShareX.ImageEffectsLib.dll</HintPath></Reference>
+    <Reference Include="Newtonsoft.Json"><HintPath>../../artifacts/Desktop/Newtonsoft.Json.dll</HintPath></Reference>
   </ItemGroup>
 </Project>

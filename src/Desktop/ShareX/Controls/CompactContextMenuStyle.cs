@@ -91,7 +91,19 @@ namespace ShareX
                 e.Graphics.TranslateTransform(r.X, r.Y);
                 e.Graphics.ScaleTransform(r.Width / 24f, r.Height / 24f);
                 using var pen = new Pen(iconColor, 1.8f) { StartCap = LineCap.Round, EndCap = LineCap.Round, LineJoin = LineJoin.Round };
-                if (text.Contains("主菜单"))
+                if (e.Item.Tag as string == "compact-theme")
+                {
+                    if (e.Item is ToolStripMenuItem choice && choice.Checked)
+                        e.Graphics.DrawLines(pen, new[] { new Point(4, 12), new Point(10, 18), new Point(21, 6) });
+                }
+                else if (text == "主题")
+                {
+                    e.Graphics.DrawEllipse(pen, 3, 3, 18, 18);
+                    e.Graphics.DrawEllipse(pen, 7, 7, 3, 3);
+                    e.Graphics.DrawEllipse(pen, 14, 7, 3, 3);
+                    e.Graphics.DrawEllipse(pen, 7, 14, 3, 3);
+                }
+                else if (text.Contains("主菜单"))
                     e.Graphics.DrawLines(pen, new[] { new Point(3, 11), new Point(12, 3), new Point(21, 11), new Point(21, 21), new Point(15, 21), new Point(15, 14), new Point(9, 14), new Point(9, 21), new Point(3, 21), new Point(3, 11) });
                 else { e.Graphics.DrawArc(pen, 3, 4, 18, 18, -50, 280); e.Graphics.DrawLine(pen, 12, 2, 12, 12); }
                 e.Graphics.Restore(state);

@@ -180,7 +180,7 @@ internal static class Program
         for(int i=0;i<8;i++){Call(form,"SetSelectionResizeCursor",Enum.ToObject(positionType,i));Check(form.Cursor.Handle!=IntPtr.Zero,"Directional cursor for all eight directions");}
         Set(nodes.GetValue(1)!,"IsCursorHover",false);Call(form,"SetDefaultCursor");
         Check(form.Cursor==(Cursor)Field(form,"defaultCursor"),"Crosshair restored after resize hover");
-        if (File.Exists("artifacts/Desktop/ShareX.ScreenCaptureLib.dll")) CompareCursors(factory, dpi);
+        CompareCursors(factory, dpi);
     }
 
     static void CheckCursorResources(int dpi)
@@ -200,7 +200,7 @@ internal static class Program
         var context = new AssemblyLoadContext("baseline-cursor-" + dpi, true);
         try
         {
-            var baseline = context.LoadFromAssemblyPath(Path.GetFullPath("artifacts/Desktop/ShareX.ScreenCaptureLib.dll")).GetType("ShareX.ScreenCaptureLib.SelectionCursor", true)!;
+            var baseline = context.LoadFromAssemblyPath(Path.GetFullPath("tools/ShareX/app/ShareX.ScreenCaptureLib.dll")).GetType("ShareX.ScreenCaptureLib.SelectionCursor", true)!;
             using var result = new Bitmap(870, 340);
             using var g = Graphics.FromImage(result);
             g.Clear(Color.FromArgb(38, 48, 57));

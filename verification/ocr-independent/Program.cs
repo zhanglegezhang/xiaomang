@@ -16,7 +16,7 @@ static class Check {
  static void Run(){
  Application.SetHighDpiMode(Environment.GetCommandLineArgs().Contains("--dpi96") ? HighDpiMode.DpiUnaware : HighDpiMode.PerMonitorV2);Application.EnableVisualStyles();
  var p=typeof(ApplicationConfig).Assembly.GetType("ShareX.Program")!;var cfg=new ApplicationConfig{ShowTray=false,DisableHotkeys=true};
- foreach(var pair in new (string,object)[]{("Settings",cfg),("DefaultTaskSettings",cfg.DefaultTaskSettings),("HotkeysConfig",new HotkeysConfig()),("UploadersConfig",new ShareX.UploadersLib.UploadersConfig()),("Sandbox",true),("CustomPersonalPath",Path.GetFullPath("test-results/ocr-independent/personal"))})p.GetProperty(pair.Item1,F)!.SetValue(null,pair.Item2);
+ foreach(var pair in new (string,object)[]{("Settings",cfg),("DefaultTaskSettings",cfg.DefaultTaskSettings),("HotkeysConfig",new HotkeysConfig()),("UploadersConfig",new ShareX.UploadersLib.UploadersConfig()),("Sandbox",true),("CustomPersonalPath",Path.GetFullPath("build/ocr-independent/personal"))})p.GetProperty(pair.Item1,F)!.SetValue(null,pair.Item2);
  using var main=new MainForm();p.GetProperty("MainForm",F)!.SetValue(null,main);
  main.HandleCreated-=(EventHandler)Delegate.CreateDelegate(typeof(EventHandler),main,typeof(MainForm).GetMethod("MainForm_HandleCreated",F)!);
  main.Show();Application.DoEvents();
@@ -24,7 +24,7 @@ static class Check {
  var cb=(ComboBox)Get(form,"cbLanguages");cb.Items.Add(new OCRLanguage("中文","zh-CN"));cb.Items.Add(new OCRLanguage("English","en-US"));cb.SelectedIndex=0;
  Wait((Task)Call(form,"ToggleLanguageAsync"));Assert(form.Options.Language=="zh-CN","mixed to CN");Wait((Task)Call(form,"ToggleLanguageAsync"));Assert(form.Options.Language=="en-US","CN to EN");Wait((Task)Call(form,"ToggleLanguageAsync"));Assert((bool)Get(form,"mixedSelected"),"EN to mixed");Wait((Task)Call(form,"ToggleLanguageAsync"));Assert(form.Options.Language=="zh-CN" && !(bool)Get(form,"mixedSelected"),"mixed to CN again");
  var editor=(TextBox)Get(form,"txtResult");editor.Text="Retained original";Call(form,"UpdateControls");
- string savePath=Path.GetFullPath("test-results/ocr-independent/closed.png");
+ string savePath=Path.GetFullPath("build/ocr-independent/closed.png");
  typeof(TaskHelpers).GetMethod("ShowIndependentOcr",F)!.Invoke(null,new object[]{form,savePath});Application.DoEvents();
  Assert(!form.Modal&&IsWindowEnabled(main.Handle),"independent OCR leaves main enabled");
  form.WindowState=FormWindowState.Minimized;Application.DoEvents();Assert(IsWindowEnabled(main.Handle),"minimized OCR leaves main enabled");
@@ -41,8 +41,8 @@ static class Check {
  var settings=(Form)typeof(MainForm).GetField("cachedApplicationSettingsForm",F)!.GetValue(main)!;
  Assert(!settings.TopLevel&&settings.Parent!=null&&IsWindowEnabled(main.Handle),"registration is embedded in operable main window");
  foreach(int width in new[]{760,1180}){form.Width=width;Application.DoEvents();foreach(string name in new[]{"btnOpenServiceLink","btnCopyAll","copyTranslationButton"}){var b=(Button)Get(form,name);Assert(b.Image!=null&&b.Visible,"icon present "+name);Assert(b.ImageAlign==ContentAlignment.MiddleCenter&&b.TextAlign==ContentAlignment.MiddleCenter,"centered "+name);var r=form.RectangleToClient(b.RectangleToScreen(b.ClientRectangle));Assert(r.Right<=form.ClientSize.Width,"button fits "+width);} }
- Console.WriteLine("DPI="+form.DeviceDpi);using(var image=new Bitmap(form.Width,form.Height)){form.DrawToBitmap(image,new Rectangle(Point.Empty,image.Size));image.Save(Path.GetFullPath("test-results/ocr-independent/ui-"+form.DeviceDpi+".png"));} Wait((Task)Call(form,"RefreshRegistrationAsync"));Assert(((Button)Get(form,"registrationButton")).Visible,"missing or invalid component keeps entry");
- string source=Path.GetFullPath("artifacts/Desktop/ThirdParty/MixedOCR/v1"),dest=Path.Combine(AppContext.BaseDirectory,"ThirdParty/MixedOCR/v1");Directory.CreateDirectory(dest);foreach(var f in Directory.GetFiles(source))File.Copy(f,Path.Combine(dest,Path.GetFileName(f)),true);
+ Console.WriteLine("DPI="+form.DeviceDpi);using(var image=new Bitmap(form.Width,form.Height)){form.DrawToBitmap(image,new Rectangle(Point.Empty,image.Size));image.Save(Path.GetFullPath("build/ocr-independent/ui-"+form.DeviceDpi+".png"));} Wait((Task)Call(form,"RefreshRegistrationAsync"));Assert(((Button)Get(form,"registrationButton")).Visible,"missing or invalid component keeps entry");
+ string source=Path.GetFullPath("tools/ShareX/app/ThirdParty/MixedOCR/v1"),dest=Path.Combine(AppContext.BaseDirectory,"ThirdParty/MixedOCR/v1");Directory.CreateDirectory(dest);foreach(var f in Directory.GetFiles(source))File.Copy(f,Path.Combine(dest,Path.GetFileName(f)),true);
  Wait((Task)Call(form,"RefreshRegistrationAsync"));Assert(!((Button)Get(form,"registrationButton")).Visible,"valid component hides entry");
  File.WriteAllText(Path.Combine(dest,"keys.txt"),"corrupt test fixture");Wait((Task)Call(form,"RefreshRegistrationAsync"));Assert(((Button)Get(form,"registrationButton")).Visible,"corrupt component restores entry");
  cfg.OcrWindowBounds=form.Bounds;form.Close();Assert(File.ReadAllText(Path.ChangeExtension(savePath,".txt"))=="Retained original","close saves OCR text");main.Hide();Console.WriteLine("PASS all OCR actions");

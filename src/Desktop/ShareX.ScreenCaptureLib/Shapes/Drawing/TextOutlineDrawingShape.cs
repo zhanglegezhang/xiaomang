@@ -57,6 +57,8 @@ namespace ShareX.ScreenCaptureLib
 
         public override void OnDraw(Graphics g)
         {
+            if (Manager.IsInlineTextShape(this)) return;
+            if (TextOptions.PlainInlineRendering) { PlainInlineTextRenderer.Draw(this, g); return; }
             DrawTextWithOutline(g, Text, TextOptions, TextOptions.Color, BorderColor, BorderSize, Rectangle);
         }
 
@@ -68,10 +70,10 @@ namespace ShareX.ScreenCaptureLib
                 {
                     gp.FillMode = FillMode.Winding;
 
-                    using (Font font = new Font(options.Font, options.Size, options.Style))
+                    using (Font font = options.CreateFont())
                     using (StringFormat sf = new StringFormat { Alignment = options.AlignmentHorizontal, LineAlignment = options.AlignmentVertical })
                     {
-                        float emSize = g.DpiY * font.SizeInPoints / 72;
+                        float emSize = options.SizeInPixels ? options.Size : g.DpiY * font.SizeInPoints / 72;
                         gp.AddString(text, font.FontFamily, (int)font.Style, emSize, rect, sf);
                     }
 

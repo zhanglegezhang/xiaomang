@@ -337,7 +337,7 @@
     <value>Przełączenie na narzędzie do zaznaczania po narysowaniu kształtu</value>
   </data>
   <data name="ShapeManager_CreateToolbar_ApplyChangesContinueTaskEnter" xml:space="preserve">
-    <value>Zastosuj zmiany i kontynuuj zadanie (Enter)</value>
+    <value>Zastosuj zmiany i kontynuuj zadanie</value>
   </data>
   <data name="ShapeManager_CreateToolbar_AutoCloseEditorOnTask" xml:space="preserve">
     <value>Automatycznie zamknij edytor podczas zadania</value>
@@ -385,7 +385,7 @@
     <value>Przechwytywanie regionów</value>
   </data>
   <data name="ShapeManager_CreateToolbar_ContinueTaskSpaceOrRightClick" xml:space="preserve">
-    <value>Kontynuuj zadanie (spacja lub prawy przycisk myszy)</value>
+    <value>Kontynuuj zadanie</value>
   </data>
   <data name="ShapeManager_CreateToolbar_CopyImageToClipboard" xml:space="preserve">
     <value>Skopiuj obraz do schowka (Ctrl + C)</value>
@@ -409,7 +409,7 @@
     <value>Zapisz obraz (Ctrl + S)</value>
   </data>
   <data name="ShapeManager_CreateToolbar_RunAfterCaptureTasks" xml:space="preserve">
-    <value>Uruchom zadanie po przechwytywaniu (Enter)</value>
+    <value>Uruchom zadanie po przechwytywaniu</value>
   </data>
   <data name="ShapeManager_CreateToolbar_Rotate180" xml:space="preserve">
     <value>Obróć o 180°</value>

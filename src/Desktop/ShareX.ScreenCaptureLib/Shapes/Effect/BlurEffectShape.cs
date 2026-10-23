@@ -24,7 +24,6 @@
 #endregion License Information (GPL v3)
 
 using ShareX.HelpersLib;
-using ShareX.ScreenCaptureLib.Properties;
 using System.Drawing;
 
 namespace ShareX.ScreenCaptureLib
@@ -33,9 +32,32 @@ namespace ShareX.ScreenCaptureLib
     {
         public override ShapeType ShapeType { get; } = ShapeType.EffectBlur;
 
-        public override string OverlayText => Resources.Blur + $" [{BlurRadius}]";
+        public override string OverlayText => string.Empty;
 
-        public int BlurRadius { get; set; }
+        internal void DrawEditBounds(Graphics graphics)
+        {
+            if (Manager == null || Manager.CurrentShape != this ||
+                !(Manager.IsCreating || Manager.IsMoving || Manager.IsResizing)) return;
+            if (Rectangle.Width <= 0 || Rectangle.Height <= 0) return;
+            var state = graphics.Save();
+            try
+            {
+                graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.None;
+                RectangleF bounds = Rectangle;
+                using var black = new Pen(Color.Black, 1) { DashStyle = System.Drawing.Drawing2D.DashStyle.Dash };
+                using var white = new Pen(Color.White, 1) { DashStyle = System.Drawing.Drawing2D.DashStyle.Dash };
+                graphics.DrawRectangle(black, bounds.X - 1, bounds.Y - 1, bounds.Width + 2, bounds.Height + 2);
+                graphics.DrawRectangle(white, bounds.X, bounds.Y, bounds.Width, bounds.Height);
+            }
+            finally { graphics.Restore(state); }
+        }
+
+        private int blurRadius = 23;
+        public int BlurRadius
+        {
+            get => blurRadius;
+            set => blurRadius = BlurStrengthPresets.Normalize(value);
+        }
 
         public override void OnConfigLoad()
         {

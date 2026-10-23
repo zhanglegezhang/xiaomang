@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -232,7 +232,7 @@
     <value>اطلاعات اندازه و مکان را نشان بده</value>
   </data>
   <data name="ShapeManager_CreateToolbar_ApplyChangesContinueTaskEnter" xml:space="preserve">
-    <value>تغییرات را اعمال کن و وظیفه را ادامه بده (Enter)</value>
+    <value>تغییرات را اعمال کن و وظیفه را ادامه بده</value>
   </data>
   <data name="ShapeManager_CreateToolbar_AutoCropImage" xml:space="preserve">
     <value>عکس را بصورت خودکار برش بده...</value>
@@ -244,7 +244,7 @@
     <value>انصراف از وظیفه (Esc)</value>
   </data>
   <data name="ShapeManager_CreateToolbar_ContinueTaskSpaceOrRightClick" xml:space="preserve">
-    <value>ادامه دادن وظیفه (کلید space یا راست کلیک)</value>
+    <value>ادامه دادن وظیفه</value>
   </data>
   <data name="ShapeManager_CreateToolbar_CopyImageToClipboard" xml:space="preserve">
     <value>کپی کردن تصویر به کلیپ بورد (Ctrl + C)</value>
@@ -478,7 +478,7 @@
     <value>Tip: You can pan تصویر by holding mouse middle button and dragging.</value>
   </data>
   <data name="ShapeManager_CreateToolbar_RunAfterCaptureTasks" xml:space="preserve">
-    <value>Run after ضبط tasks (Enter)</value>
+    <value>Run after ضبط tasks</value>
   </data>
   <data name="CutOutEffectType" xml:space="preserve">
     <value>جلوه برش:</value>

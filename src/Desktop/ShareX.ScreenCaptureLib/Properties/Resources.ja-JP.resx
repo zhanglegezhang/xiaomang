@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -142,7 +142,7 @@
     <value>削除</value>
   </data>
   <data name="ShapeManager_CreateToolbar_ApplyChangesContinueTaskEnter" xml:space="preserve">
-    <value>変更を適用してタスクを継続 (Enter)</value>
+    <value>変更を適用してタスクを継続</value>
   </data>
   <data name="ShapeManager_CreateToolbar_Edit" xml:space="preserve">
     <value>編集</value>
@@ -268,7 +268,7 @@
     <value>名前を付けて画像を保存... (Ctrl + Shift + S)</value>
   </data>
   <data name="ShapeManager_CreateToolbar_ContinueTaskSpaceOrRightClick" xml:space="preserve">
-    <value>タスクを継続 (スペース または 右クリック)</value>
+    <value>タスクを継続</value>
   </data>
   <data name="ShapeManager_CreateToolbar_CanvasSize" xml:space="preserve">
     <value>キャンバスの大きさ...</value>

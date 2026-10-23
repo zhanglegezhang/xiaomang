@@ -121,6 +121,7 @@ namespace ShareX
 
         private sealed class RecordingCompactLabel : Label
         {
+            public int Theme { get; set; }
             public bool IsRecording { get; set; }
             public float PulseOpacity { get; set; } = 1f;
             public int PendingCount { get; set; }
@@ -149,7 +150,7 @@ namespace ShareX
             protected override void OnPaint(PaintEventArgs e)
             {
                 e.Graphics.Clear(WidgetCompactBackgroundColor);
-                DrawCompactBackground(e.Graphics, ClientSize, DeviceDpi, PointerInside);
+                DrawCompactBackground(e.Graphics, ClientSize, DeviceDpi, PointerInside, Theme);
                 DrawContent(e.Graphics, ClientSize);
             }
 
@@ -164,7 +165,7 @@ namespace ShareX
                     {
                         graphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
                         graphics.PixelOffsetMode = PixelOffsetMode.HighQuality;
-                        graphics.DrawImage(Image, new RectangleF((size.Width - logoSize) / 2,
+                        graphics.DrawImage(CompactWidgetThemes.GetLogo(Theme, Image), new RectangleF((size.Width - logoSize) / 2,
                             (size.Height - logoSize) / 2, logoSize, logoSize));
                     }
                     if (PendingCount > 0)
@@ -196,7 +197,7 @@ namespace ShareX
             }
         }
 
-        private static void DrawCompactBackground(Graphics graphics, Size size, int dpi, bool hovered)
+        private static void DrawCompactBackground(Graphics graphics, Size size, int dpi, bool hovered, int theme = 0)
         {
             float scale = dpi / 96f;
             GraphicsState state = graphics.Save();
@@ -211,6 +212,7 @@ namespace ShareX
                     ? Color.FromArgb(24, 39, 59) : WidgetCompactBackgroundColor);
                 graphics.FillPath(background, outline);
                 graphics.SetClip(outline, CombineMode.Intersect);
+                if (CompactWidgetThemes.Draw(graphics, size, theme, hovered)) return;
                 // Static, subdued nebulae and stars; no animation timer or background work.
                 foreach (var cloud in new[] { (0.7f, 0.3f, Color.FromArgb(26, 71, 108, 151)),
                     (0.18f, 0.8f, Color.FromArgb(20, 67, 61, 120)) })
@@ -766,7 +768,7 @@ namespace ShareX
                     graphics.TranslateTransform(left, 0);
                     graphics.ScaleTransform(currentScale, currentScale);
                     DrawCompactBackground(graphics, compactSize, widget.compactLabel.DeviceDpi,
-                        widget.compactLabel.PointerInside);
+                        widget.compactLabel.PointerInside, widget.compactLabel.Theme);
                     // Draw paths at the final hover scale instead of enlarging a raster badge.
                     widget.compactLabel.DrawContent(graphics, compactSize);
                     graphics.ResetTransform();

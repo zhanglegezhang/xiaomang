@@ -166,6 +166,7 @@ namespace ShareX
 
             compactLabel = new RecordingCompactLabel
             {
+                Theme = Settings.CompactThemeRevision == 1 ? CompactWidgetThemes.Normalize(Settings.CompactTheme) : 0,
                 Dock = DockStyle.Fill,
                 TextAlign = ContentAlignment.MiddleCenter,
                 Cursor = Cursors.Hand,

@@ -8,6 +8,16 @@ namespace ShareX.ScreenCaptureLib
 {
     internal partial class ShapeManager
     {
+        private void ConfigureEditorToolbarSurface()
+        {
+            menuForm.BackColor = tsMain.BackColor = CaptureToolbarRenderer.Surface;
+            // Preserve the editor's existing icons and interaction colors.
+            var colors = (tsMain.Renderer as ToolStripProfessionalRenderer)?.ColorTable ?? new ProfessionalColorTable();
+            tsMain.Renderer = new CaptureToolbarSurfaceRenderer(colors);
+            tsMain.ImageScalingSize = new Size((int)Math.Round(18 * menuForm.DeviceDpi / 96d), (int)Math.Round(18 * menuForm.DeviceDpi / 96d));
+            ConfigureStyleToolbarAppearance();
+        }
+
         private void ConfigureCaptureToolbarAppearance()
         {
             // 80% of the 40px concept toolbar. Scale once for the current screen DPI.
@@ -19,15 +29,16 @@ namespace ShareX.ScreenCaptureLib
             tsMain.Renderer = new CaptureToolbarRenderer();
             tsMain.BackColor = CaptureToolbarRenderer.Surface;
             tsMain.ForeColor = Color.FromArgb(224, 233, 240);
-            tsMain.ImageScalingSize = new Size(S(16), S(16));
+            tsMain.ImageScalingSize = new Size(S(18), S(18));
             tsMain.MinimumSize = new Size(S(10), S(32));
             tsMain.Padding = new Padding(S(4));
-            tsMain.ShowItemToolTips = true;
+            tsMain.ShowItemToolTips = false;
             tsbCopyCapture.Name = "capture-copy";
             tsbLongCapture.Name = "capture-long";
             tsbPinCapture.Name = "capture-pin";
             tsbOCRCapture.Name = "capture-ocr";
             tsbTodoCapture.Name = "capture-todo";
+            tsbSaveCaptureAs.Name = "capture-save-as";
             foreach (ToolStripItem item in tsMain.Items)
             {
                 item.Margin = new Padding(S(1), 0, S(1), 0);
@@ -48,21 +59,29 @@ namespace ShareX.ScreenCaptureLib
             }
             tsbLongCapture.Margin = new Padding(S(5), 0, S(1), 0);
             tsMain.ResumeLayout(true);
-            void UpdateOutline(object sender, EventArgs e)
-            {
-                if (menuForm.Width < 2 || menuForm.Height < 2) return;
-                using GraphicsPath path = CaptureToolbarRenderer.Round(new RectangleF(0, 0, menuForm.Width, menuForm.Height), S(7));
-                Region old = menuForm.Region;
-                menuForm.Region = new Region(path);
-                old?.Dispose();
-            }
-            menuForm.SizeChanged += UpdateOutline;
-            UpdateOutline(null, EventArgs.Empty);
+            ConfigureStyleToolbarAppearance();
         }
+    }
+
+    internal sealed class CaptureToolbarSurfaceRenderer : ToolStripRoundedEdgeRenderer
+    {
+        internal CaptureToolbarSurfaceRenderer(ProfessionalColorTable colors) : base(colors) { }
+
+        protected override void OnRenderToolStripBackground(ToolStripRenderEventArgs e) =>
+            e.Graphics.Clear(CaptureToolbarRenderer.Surface);
     }
 
     internal sealed class CaptureToolbarRenderer : ToolStripProfessionalRenderer
     {
+        internal static void DrawTextSizeIcon(Graphics graphics, Color color)
+        {
+            graphics.SmoothingMode = SmoothingMode.AntiAlias;
+            using var pen = new Pen(color, 1.65f) { StartCap = LineCap.Round, EndCap = LineCap.Round, LineJoin = LineJoin.Round };
+            graphics.DrawLines(pen, new[] { new PointF(2.5f, 20), new PointF(8, 4), new PointF(13.5f, 20) });
+            graphics.DrawLine(pen, 4.5f, 14, 11.5f, 14);
+            graphics.DrawLines(pen, new[] { new PointF(14.5f, 20), new PointF(18, 10.5f), new PointF(21.5f, 20) });
+            graphics.DrawLine(pen, 15.8f, 16.5f, 20.2f, 16.5f);
+        }
         internal static readonly Color Surface = Color.FromArgb(34, 43, 51);
         private static readonly Color Accent = Color.FromArgb(255, 139, 67);
 
@@ -115,6 +134,8 @@ namespace ShareX.ScreenCaptureLib
             base.OnRenderArrow(e);
         }
 
+        protected override void OnRenderDropDownButtonBackground(ToolStripItemRenderEventArgs e) => OnRenderButtonBackground(e);
+
         protected override void OnRenderOverflowButtonBackground(ToolStripItemRenderEventArgs e)
         {
             using SolidBrush brush = new SolidBrush(e.Item.Selected ? Color.FromArgb(49, 65, 77) : Surface);
@@ -151,6 +172,7 @@ namespace ShareX.ScreenCaptureLib
                 void Lines(params PointF[] points) => g.DrawLines(p, points);
                 switch (icon)
                 {
+                    case "capture-text-size": DrawTextSizeIcon(g, color); break;
                     case "DrawingRectangle": g.DrawRectangle(p, 3, 5, 18, 14); break;
                     case "DrawingEllipse": g.DrawEllipse(p, 3, 4, 18, 16); break;
                     case "DrawingArrow": Line(4, 20, 20, 4); Lines(new PointF(10, 4), new PointF(20, 4), new PointF(20, 14)); break;
@@ -159,7 +181,11 @@ namespace ShareX.ScreenCaptureLib
                     case "DrawingStep": g.DrawEllipse(p, 2, 2, 20, 20); Lines(new PointF(9, 9), new PointF(12, 6), new PointF(12, 18)); Line(9, 18, 15, 18); break;
                     case "DrawingMagnify": g.DrawEllipse(p, 3, 3, 13, 13); Line(15, 15, 21, 21); Line(6, 9, 13, 9); Line(9.5f, 6, 9.5f, 13); break;
                     case "EffectBlur":
-                        for (int x = 4; x <= 20; x += 8) for (int y = 4; y <= 20; y += 8) g.FillEllipse(b, x - 1.5f, y - 1.5f, 3, 3);
+                        Line(4, 16, 8, 20);
+                        Line(4, 10, 14, 20);
+                        Line(4, 4, 20, 20);
+                        Line(10, 4, 20, 14);
+                        Line(16, 4, 20, 8);
                         break;
                     case "EffectHighlight": Lines(new PointF(5, 14), new PointF(14, 4), new PointF(20, 10), new PointF(11, 20), new PointF(5, 14)); Line(3, 21, 10, 21); Line(8, 11, 14, 17); break;
                     case "capture-long":
@@ -176,6 +202,9 @@ namespace ShareX.ScreenCaptureLib
                         Lines(new PointF(21, 16), new PointF(21, 21), new PointF(16, 21)); Lines(new PointF(8, 21), new PointF(3, 21), new PointF(3, 16));
                         Line(8, 8, 16, 8); Line(12, 8, 12, 16); Line(9, 16, 15, 16); break;
                     case "capture-todo": g.DrawRectangle(p, 4, 3, 16, 18); Lines(new PointF(8, 12), new PointF(11, 15), new PointF(17, 8)); break;
+                    case "capture-save-as":
+                        Lines(new PointF(4, 3), new PointF(16, 3), new PointF(21, 8), new PointF(21, 21), new PointF(4, 21), new PointF(4, 3));
+                        g.DrawRectangle(p, 8, 3, 7, 6); g.DrawRectangle(p, 8, 14, 9, 7); break;
                     case "capture-cancel": Line(5, 5, 19, 19); Line(19, 5, 5, 19); break;
                     case "capture-copy": Lines(new PointF(4, 12), new PointF(10, 18), new PointF(21, 6)); break;
                     case "capture-grip":
@@ -187,3 +216,4 @@ namespace ShareX.ScreenCaptureLib
         }
     }
 }
+

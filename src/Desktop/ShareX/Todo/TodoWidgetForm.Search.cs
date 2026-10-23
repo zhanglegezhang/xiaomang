@@ -31,6 +31,36 @@ namespace ShareX
                 searchMenu = new ContextMenuStrip { AutoClose = true };
                 searchMenu.Items.Add("全局搜索", null, (_, _) => UnifiedSearchForm.Open());
                 searchMenu.Items.Add("主菜单", null, (_, _) => Program.MainForm.ShowMainMenu("widget-context"));
+                var themes = new ToolStripMenuItem("主题");
+                var themeMenu = new ContextMenuStrip();
+                themes.DropDown = themeMenu;
+                CompactContextMenuStyle.Apply(themeMenu);
+                for (int index = 0; index < CompactWidgetThemes.Names.Length; index++)
+                {
+                    int theme = index;
+                    var item = new ToolStripMenuItem(CompactWidgetThemes.Names[index]);
+                    item.Tag = "compact-theme";
+                    item.Click += (_, _) =>
+                    {
+                        Settings.CompactTheme = theme;
+                        Settings.CompactThemeRevision = 1;
+                        compactLabel.Theme = theme;
+                        compactLabel.Invalidate();
+                        RefreshCompactOverlay();
+                        SettingManager.SaveApplicationConfigAsync();
+                    };
+                    themes.DropDownItems.Add(item);
+                }
+                themes.DropDownOpening += (_, _) =>
+                {
+                    for (int index = 0; index < themes.DropDownItems.Count; index++)
+                        ((ToolStripMenuItem)themes.DropDownItems[index]).Checked = index == compactLabel.Theme;
+                };
+                themes.DropDownOpened += (_, _) => RefreshSearchMenuScreenBounds();
+                themes.DropDownClosed += (_, _) => RefreshSearchMenuScreenBounds();
+                themes.DropDown.LocationChanged += (_, _) => RefreshSearchMenuScreenBounds();
+                themes.DropDown.SizeChanged += (_, _) => RefreshSearchMenuScreenBounds();
+                searchMenu.Items.Add(themes);
                 searchMenuOutsideClickTimer = new System.Windows.Forms.Timer { Interval = 15 };
                 searchMenuOutsideClickTimer.Tick += (_, _) =>
                 {
@@ -52,9 +82,12 @@ namespace ShareX
 
         private void RefreshSearchMenuScreenBounds()
         {
-            searchMenuScreenBounds = searchMenu?.Visible == true
-                ? new[] { searchMenu.RectangleToScreen(searchMenu.ClientRectangle) }
-                : Array.Empty<Rectangle>();
+            if (searchMenu?.Visible != true) { searchMenuScreenBounds = Array.Empty<Rectangle>(); return; }
+            var bounds = new System.Collections.Generic.List<Rectangle> { searchMenu.RectangleToScreen(searchMenu.ClientRectangle) };
+            foreach (ToolStripMenuItem item in searchMenu.Items.OfType<ToolStripMenuItem>())
+                if (item.HasDropDownItems && item.DropDown.Visible)
+                    bounds.Add(item.DropDown.RectangleToScreen(item.DropDown.ClientRectangle));
+            searchMenuScreenBounds = bounds.ToArray();
         }
 
         private void StartSearchMenuOutsideClickWatch()

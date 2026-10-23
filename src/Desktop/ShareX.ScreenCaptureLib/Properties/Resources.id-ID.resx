@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -163,7 +163,7 @@
     <value>Simpan gambar sebagai... (Ctrl + Shift + S)</value>
   </data>
   <data name="ShapeManager_CreateToolbar_RunAfterCaptureTasks" xml:space="preserve">
-    <value>Jalankan tugas setelah mengambil (Enter)</value>
+    <value>Jalankan tugas setelah mengambil</value>
   </data>
   <data name="ShapeManager_CreateContextMenu_Show_FPS" xml:space="preserve">
     <value>Tampilkan FPS</value>
@@ -226,7 +226,7 @@
     <value>Radius blur:</value>
   </data>
   <data name="ShapeManager_CreateToolbar_ApplyChangesContinueTaskEnter" xml:space="preserve">
-    <value>Terapkan perubahan &amp; lanjutkan tugas (Enter)</value>
+    <value>Terapkan perubahan &amp; lanjutkan tugas</value>
   </data>
   <data name="ShapeManager_CreateToolbar_AnnotateMenu" xml:space="preserve">
     <value>Menu anotasi</value>
@@ -241,7 +241,7 @@
     <value>Papan klip tidak berisi gambar.</value>
   </data>
   <data name="ShapeManager_CreateToolbar_ContinueTaskSpaceOrRightClick" xml:space="preserve">
-    <value>Lanjutkan tugas (Spasi atau klik kanan)</value>
+    <value>Lanjutkan tugas</value>
   </data>
   <data name="ShapeManager_CreateToolbar_CopyImageToClipboard" xml:space="preserve">
     <value>Salin gambar ke papan klip (Ctrl + C)</value>

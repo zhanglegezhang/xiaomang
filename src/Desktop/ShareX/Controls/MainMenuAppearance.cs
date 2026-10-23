@@ -59,6 +59,39 @@ namespace ShareX
             if (styled.TryGetValue(root, out _)) Apply(root);
         }
 
+        internal static void ApplyDpi(Control root)
+        {
+            if (root == null || root.IsDisposed) return;
+            if (root is SettingsDesignHost host) { host.Surface.RefreshDpiLayout(); return; }
+            if (root is SettingsDesignSurface design) { design.RefreshDpiLayout(); return; }
+            root.SuspendLayout();
+            try
+            {
+                if (root is Button button) SetDpiFont(button, BodyFont);
+                else if (root is TreeView tree)
+                {
+                    SetDpiFont(tree, MenuFont);
+                    tree.ItemHeight = Math.Max(Scale(tree, tree.FindForm() is ApplicationSettingsForm ? 30 : 29), tree.Font.Height + Scale(tree, 8));
+                    tree.Indent = Scale(tree, 13);
+                }
+                else if (root is DataGridView grid)
+                {
+                    Font font = FontFor(grid, BodyFont);
+                    if (grid.ColumnHeadersDefaultCellStyle.Font?.Equals(font) != true) grid.ColumnHeadersDefaultCellStyle.Font = font;
+                    if (grid.DefaultCellStyle.Font?.Equals(font) != true) grid.DefaultCellStyle.Font = font;
+                }
+                foreach (Control child in root.Controls)
+                    if (child.Visible) ApplyDpi(child);
+            }
+            finally { root.ResumeLayout(false); }
+        }
+
+        private static void SetDpiFont(Control control, Font basis)
+        {
+            Font font = FontFor(control, basis);
+            if (!control.Font.Equals(font)) control.Font = font;
+        }
+
         internal static void Apply(Control root)
         {
             if (root == null || root.IsDisposed) return;

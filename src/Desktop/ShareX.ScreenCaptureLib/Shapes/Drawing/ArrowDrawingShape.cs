@@ -35,6 +35,12 @@ namespace ShareX.ScreenCaptureLib
 
         public ArrowHeadDirection ArrowHeadDirection { get; set; }
 
+        protected override int ConfiguredBorderSize
+        {
+            get => (AnnotationOptions.ArrowBorderSize ?? AnnotationOptions.BorderSize).Clamp(1, 20);
+            set => AnnotationOptions.ArrowBorderSize = value.Clamp(1, 20);
+        }
+
         public override void OnConfigLoad()
         {
             base.OnConfigLoad();
@@ -61,7 +67,11 @@ namespace ShareX.ScreenCaptureLib
                     BaseInset = arrowHeight - arrowCurve
                 };
 
-                Pen pen = new Pen(borderColor, borderSize);
+                Pen pen = new Pen(borderColor, borderSize)
+                {
+                    StartCap = LineCap.Round,
+                    EndCap = LineCap.Round
+                };
 
                 if (ArrowHeadDirection == ArrowHeadDirection.Both && MathHelpers.Distance(Points[0], Points[Points.Length - 1]) > arrowHeight * borderSize * 2)
                 {

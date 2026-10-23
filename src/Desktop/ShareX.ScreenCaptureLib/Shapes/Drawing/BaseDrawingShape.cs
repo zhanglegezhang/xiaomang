@@ -44,12 +44,24 @@ namespace ShareX.ScreenCaptureLib
         public bool IsBorderVisible => BorderSize > 0 && BorderColor.A > 0;
         public bool IsFillVisible => FillColor.A > 0;
 
+        protected virtual int ConfiguredBorderSize
+        {
+            get => AnnotationOptions.BorderSize;
+            set => AnnotationOptions.BorderSize = value;
+        }
+
+        protected virtual Color ConfiguredFillColor
+        {
+            get => AnnotationOptions.FillColor;
+            set => AnnotationOptions.FillColor = value;
+        }
+
         public override void OnConfigLoad()
         {
             BorderColor = AnnotationOptions.BorderColor;
-            BorderSize = AnnotationOptions.BorderSize;
+            BorderSize = ConfiguredBorderSize;
             BorderStyle = AnnotationOptions.BorderStyle;
-            FillColor = AnnotationOptions.FillColor;
+            FillColor = ConfiguredFillColor;
             Shadow = AnnotationOptions.Shadow;
             ShadowColor = AnnotationOptions.ShadowColor;
             ShadowOffset = AnnotationOptions.ShadowOffset;
@@ -58,9 +70,9 @@ namespace ShareX.ScreenCaptureLib
         public override void OnConfigSave()
         {
             AnnotationOptions.BorderColor = BorderColor;
-            AnnotationOptions.BorderSize = BorderSize;
+            ConfiguredBorderSize = BorderSize;
             AnnotationOptions.BorderStyle = BorderStyle;
-            AnnotationOptions.FillColor = FillColor;
+            ConfiguredFillColor = FillColor;
             AnnotationOptions.Shadow = Shadow;
             AnnotationOptions.ShadowColor = ShadowColor;
             AnnotationOptions.ShadowOffset = ShadowOffset;

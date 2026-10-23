@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -343,7 +343,7 @@
     <value>Editör başlangıç modu:</value>
   </data>
   <data name="ShapeManager_CreateToolbar_ApplyChangesContinueTaskEnter" xml:space="preserve">
-    <value>Değişiklikleri uygula ve göreve devam et (Enter)</value>
+    <value>Değişiklikleri uygula ve göreve devam et</value>
   </data>
   <data name="ScreenRecordForm_ConfirmCancel" xml:space="preserve">
     <value>Kaydı iptal etmek istediğinize emin misiniz?</value>
@@ -418,7 +418,7 @@
     <value>Bölgeleri yakala</value>
   </data>
   <data name="ShapeManager_CreateToolbar_ContinueTaskSpaceOrRightClick" xml:space="preserve">
-    <value>Göreve devam et (Space veya sağ tıklama)</value>
+    <value>Göreve devam et</value>
   </data>
   <data name="ShapeManager_CreateToolbar_Rotate180" xml:space="preserve">
     <value>180° döndür</value>
@@ -430,7 +430,7 @@
     <value>90° saat yönünün tersine döndür</value>
   </data>
   <data name="ShapeManager_CreateToolbar_RunAfterCaptureTasks" xml:space="preserve">
-    <value>Yakalama sonrası görevlerini çalıştır (Enter)</value>
+    <value>Yakalama sonrası görevlerini çalıştır</value>
   </data>
   <data name="ShapeManager_CreateToolbar_ToolOptions" xml:space="preserve">
     <value>Araç seçenekleri</value>

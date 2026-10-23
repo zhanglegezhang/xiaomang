@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -232,7 +232,7 @@
     <value>Multi gebied modus</value>
   </data>
   <data name="ShapeManager_CreateToolbar_ApplyChangesContinueTaskEnter" xml:space="preserve">
-    <value>Apply changes &amp; continue taak (Enter)</value>
+    <value>Apply changes &amp; continue taak</value>
   </data>
   <data name="OpenKeybindsPage" xml:space="preserve">
     <value>Openen keybinds web page...</value>
@@ -376,7 +376,7 @@
     <value>Afbeelding copied</value>
   </data>
   <data name="ShapeManager_CreateToolbar_ContinueTaskSpaceOrRightClick" xml:space="preserve">
-    <value>Continue taak (Space or rechts klik)</value>
+    <value>Continue taak</value>
   </data>
   <data name="ShapeManager_CreateToolbar_FontSize" xml:space="preserve">
     <value>Font grootte:</value>
@@ -475,7 +475,7 @@
     <value>Tip: You can pan afbeelding by holding mouse middle button and dragging.</value>
   </data>
   <data name="ShapeManager_CreateToolbar_RunAfterCaptureTasks" xml:space="preserve">
-    <value>Run after opname taken (Enter)</value>
+    <value>Run after opname taken</value>
   </data>
   <data name="ShapeManager_CreateContextMenu_RememberMenuState" xml:space="preserve">
     <value>Remember menu state</value>

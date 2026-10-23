@@ -613,6 +613,7 @@ namespace ShareX.ScreenCaptureLib
 
         private void RegionCaptureForm_FormClosing(object sender, FormClosingEventArgs e)
         {
+            ShapeManager.FinishInlineText(true);
             if (IsEditorMode)
             {
                 if (e.CloseReason == CloseReason.UserClosing && !forceClose && !IsFullscreen && !ShowExitConfirmation())
@@ -652,6 +653,7 @@ namespace ShareX.ScreenCaptureLib
 
         internal void RegionCaptureForm_KeyDown(object sender, KeyEventArgs e)
         {
+            if (ShapeManager.IsEditingText) return;
             if (e.KeyData == Keys.Escape)
             {
                 if (ShapeManager.HandleEscape())
@@ -676,18 +678,6 @@ namespace ShareX.ScreenCaptureLib
 
             switch (e.KeyData)
             {
-                case Keys.Space:
-                    CloseWindow(RegionResult.Fullscreen);
-                    break;
-                case Keys.Enter:
-                    if (ShapeManager.IsCurrentShapeTypeRegion)
-                    {
-                        ShapeManager.StartRegionSelection();
-                        ShapeManager.EndRegionSelection();
-                    }
-
-                    CloseWindow(RegionResult.Region);
-                    break;
                 case Keys.Oemtilde:
                     CloseWindow(RegionResult.ActiveMonitor);
                     break;
@@ -847,6 +837,35 @@ namespace ShareX.ScreenCaptureLib
             CloseWindow(RegionResult.Region);
         }
 
+        public event Func<Bitmap, bool> SaveCaptureAsRequested;
+
+        internal void SaveCaptureAs()
+        {
+            if (IsEditorMode || ShapeManager.ValidRegions.Length == 0) return;
+            DebugHelper.WriteLine("Capture Save As: requested.");
+            if (SaveCaptureAsRequested == null)
+            {
+                MessageBox.Show(this, "此截图入口未连接另存为功能，请关闭截图后重新尝试。", "另存为", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+            Pause();
+            RegionResult previous = Result;
+            bool saved = false;
+            try
+            {
+                UpdateRegionPath();
+                Result = RegionResult.Region;
+                using Bitmap image = GetResultImage();
+                Result = previous;
+                if (image == null) throw new InvalidOperationException("未能生成选区图片，请重新框选后再保存。");
+                DebugHelper.WriteLine("Capture Save As: opening dialog.");
+                saved = SaveCaptureAsRequested(image);
+            }
+            catch (Exception ex) { MessageBox.Show(this, "保存失败：" + ex.Message, "另存为", MessageBoxButtons.OK, MessageBoxIcon.Error); }
+            finally { Result = previous; if (!saved) Resume(); }
+            if (saved) CloseWindow();
+        }
+
         internal void AddCaptureToTodo()
         {
             if (IsEditorMode || ShapeManager.ValidRegions.Length == 0) return;
@@ -866,6 +885,7 @@ namespace ShareX.ScreenCaptureLib
 
         internal void CloseWindow(RegionResult result = RegionResult.Close)
         {
+            ShapeManager.FinishInlineText(result != RegionResult.Close);
             Result = result;
             forceClose = true;
             Close();
@@ -1017,6 +1037,13 @@ namespace ShareX.ScreenCaptureLib
             if (elapsed > 33) slowFrames++;
         }
 
+        internal void InvalidateEffectPreview()
+        {
+            if (IsClosing || IsDisposed || Disposing) return;
+            ResetDamage();
+            Invalidate();
+        }
+
         private void ResetDamage()
         {
             previousDamage = null;
@@ -1121,7 +1148,7 @@ namespace ShareX.ScreenCaptureLib
             }
             if (!ShapeManager.IsCtrlModifier)
                 foreach (ImageEditorControl control in ShapeManager.DrawableObjects.Where(control => control.Visible)) damage.AddOverlay(control.Rectangle);
-            if (Options.ShowMagnifier || Options.ShowInfo) damage.AddOverlay(GetCursorOverlayBounds(g));
+            if (Options.ShowMagnifier || ShowCursorInfo) damage.AddOverlay(GetCursorOverlayBounds(g));
             if (IsAnnotationMode && ShapeManager.MenuTextAnimation.IsActive)
             {
                 Size size = g.MeasureString(ShapeManager.MenuTextAnimation.Text, infoFontMedium).ToSize();
@@ -1139,7 +1166,7 @@ namespace ShareX.ScreenCaptureLib
                 if (count * size > ClientArea.Width || count * size > ClientArea.Height) { count = 15; size = 10; }
                 width = height = count * size - 1;
             }
-            if (Options.ShowInfo)
+            if (ShowCursorInfo)
             {
                 CurrentPosition = InputManager.MousePosition;
                 Size textSize = g.MeasureString(GetInfoText(), infoFont).ToSize();
@@ -1195,10 +1222,7 @@ namespace ShareX.ScreenCaptureLib
             }
 
             // Draw effect shapes
-            foreach (BaseEffectShape effectShape in ShapeManager.EffectShapes)
-            {
-                effectShape.OnDraw(g);
-            }
+            ShapeManager.DrawEffectPreviews(g);
 
             // Draw drawing shapes
             foreach (BaseDrawingShape drawingShape in ShapeManager.DrawingShapes)
@@ -1213,7 +1237,7 @@ namespace ShareX.ScreenCaptureLib
             }
 
             // Draw animated rectangle on hover area
-            if (ShapeManager.IsCurrentHoverShapeValid)
+            if (ShapeManager.IsCurrentHoverShapeValid && ShapeManager.CurrentHoverShape is not BlurEffectShape)
             {
                 if (Options.EnableAnimations)
                 {
@@ -1297,7 +1321,7 @@ namespace ShareX.ScreenCaptureLib
             ShapeManager.DrawObjects(g);
 
             // Draw magnifier
-            if (Options.ShowMagnifier || Options.ShowInfo)
+            if (Options.ShowMagnifier || ShowCursorInfo)
             {
                 DrawCursorGraphics(g);
             }
@@ -1550,6 +1574,8 @@ namespace ShareX.ScreenCaptureLib
             }
         }
 
+        private bool ShowCursorInfo => Options.ShowInfo && Mode == RegionCaptureMode.ScreenColorPicker;
+
         private void DrawCursorGraphics(Graphics g)
         {
             int cursorOffsetX = 10, cursorOffsetY = 10, itemGap = 10, itemCount = 0;
@@ -1575,7 +1601,7 @@ namespace ShareX.ScreenCaptureLib
             Rectangle infoTextRect = Rectangle.Empty;
             string infoText = "";
 
-            if (Options.ShowInfo)
+            if (ShowCursorInfo)
             {
                 if (itemCount > 0) totalSize.Height += itemGap;
                 infoTextPosition = totalSize.Height;
@@ -1631,7 +1657,7 @@ namespace ShareX.ScreenCaptureLib
                 g.Transform = initialTranform;
             }
 
-            if (Options.ShowInfo)
+            if (ShowCursorInfo)
             {
                 if (Mode == RegionCaptureMode.ScreenColorPicker)
                 {
@@ -2036,3 +2062,5 @@ namespace ShareX.ScreenCaptureLib
         }
     }
 }
+
+

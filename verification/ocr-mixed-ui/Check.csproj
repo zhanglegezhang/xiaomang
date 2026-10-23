@@ -6,7 +6,7 @@
     <UseWPF>true</UseWPF>
     <PlatformTarget>x64</PlatformTarget>
     <ImplicitUsings>enable</ImplicitUsings>
-    <ProductDirectory Condition="'$(ProductDirectory)' == ''">../../artifacts/Desktop</ProductDirectory>
+    <ProductDirectory Condition="'$(ProductDirectory)' == ''">../../build/ocr-integration/app</ProductDirectory>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="ShareX"><HintPath>$(ProductDirectory)/ShareX.dll</HintPath></Reference>

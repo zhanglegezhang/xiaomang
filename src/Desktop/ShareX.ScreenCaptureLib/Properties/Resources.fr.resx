@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -211,7 +211,7 @@
     <value>Afficher la large croix sur l'écran</value>
   </data>
   <data name="ShapeManager_CreateToolbar_ContinueTaskSpaceOrRightClick" xml:space="preserve">
-    <value>Continuer la tâche (Espace ou clic droit)</value>
+    <value>Continuer la tâche</value>
   </data>
   <data name="ShapeManager_CreateToolbar_Edit" xml:space="preserve">
     <value>Modifier</value>
@@ -274,7 +274,7 @@
     <value>Exécuter après les tâches de capture</value>
   </data>
   <data name="ShapeManager_CreateToolbar_ApplyChangesContinueTaskEnter" xml:space="preserve">
-    <value>Appliquer les modifications et continuer la tâche (Entrée)</value>
+    <value>Appliquer les modifications et continuer la tâche</value>
   </data>
   <data name="ShapeManager_CreateToolbar_DropShadow" xml:space="preserve">
     <value>Ombre portée</value>

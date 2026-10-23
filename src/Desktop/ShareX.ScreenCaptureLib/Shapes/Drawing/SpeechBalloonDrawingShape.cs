@@ -1,4 +1,4 @@
-﻿#region License Information (GPL v3)
+#region License Information (GPL v3)
 
 /*
     ShareX - A program that allows you to take screenshots and share any file type
@@ -50,15 +50,16 @@ namespace ShareX.ScreenCaptureLib
         }
 
         public bool TailVisible => !Rectangle.Contains(TailPosition);
+        internal void SetInlineTailPosition(PointF position) => TailPosition = position;
 
         internal ResizeNode TailNode => Manager.ResizeNodes[(int)NodePosition.Extra];
 
-        protected const float TailWidthMultiplier = 0.3f;
+
 
         public override void OnCreated()
         {
             AutoSize(true);
-            TailPosition = Rectangle.Location.Add(0, Rectangle.Height + 30);
+            TailPosition = Rectangle.Location.Add(8, Rectangle.Height + 18);
             OnCreated(false);
         }
 
@@ -121,96 +122,68 @@ namespace ShareX.ScreenCaptureLib
 
         protected void DrawSpeechBalloon(Graphics g, Color borderColor, int borderSize, Color fillColor, RectangleF rect, PointF tailPosition)
         {
-            GraphicsPath gpTail = null;
-
-            if (TailVisible)
+            GraphicsState state = g.Save();
+            try
             {
-                gpTail = CreateTailPath(rect, tailPosition);
-            }
-
-            if (fillColor.A > 0)
-            {
-                using (Brush brush = new SolidBrush(fillColor))
-                {
-                    g.FillRectangle(brush, rect);
-                }
-            }
-
-            if (gpTail != null)
-            {
-                g.SmoothingMode = SmoothingMode.HighQuality;
-
+                g.SmoothingMode = SmoothingMode.AntiAlias;
+                using GraphicsPath path = CreateBalloonPath(rect, tailPosition);
                 if (fillColor.A > 0)
                 {
-                    g.ExcludeClip(rect.Round());
-
-                    using (Brush brush = new SolidBrush(fillColor))
-                    {
-                        g.FillPath(brush, gpTail);
-                    }
-
-                    g.ResetClip();
+                    using var brush = new SolidBrush(fillColor);
+                    g.FillPath(brush, path);
                 }
-
                 if (borderSize > 0 && borderColor.A > 0)
                 {
-                    g.ExcludeClip(rect.Offset(-1).Round());
-
-                    using (Pen pen = new Pen(borderColor, borderSize))
-                    {
-                        g.DrawPath(pen, gpTail);
-                    }
-
-                    g.ResetClip();
+                    using var pen = new Pen(borderColor, borderSize) { LineJoin = LineJoin.Round };
+                    g.DrawPath(pen, path);
                 }
-
-                g.SmoothingMode = SmoothingMode.None;
             }
-
-            if (borderSize > 0 && borderColor.A > 0)
+            finally
             {
-                if (gpTail != null)
-                {
-                    using (Region region = new Region(gpTail))
-                    {
-                        g.ExcludeClip(region);
-                    }
-                }
-
-                using (Pen pen = new Pen(borderColor, borderSize) { Alignment = PenAlignment.Inset })
-                {
-                    g.DrawRectangleProper(pen, rect.Offset(borderSize - 1));
-                }
-
-                g.ResetClip();
-            }
-
-            if (gpTail != null)
-            {
-                gpTail.Dispose();
+                g.Restore(state);
             }
         }
 
-        protected GraphicsPath CreateTailPath(RectangleF rect, PointF tailPosition)
+        // A single outline avoids seams and double opacity where the tail joins the body.
+        protected GraphicsPath CreateBalloonPath(RectangleF rect, PointF tip)
         {
-            GraphicsPath gpTail = new GraphicsPath();
+            var path = new GraphicsPath();
+            if (rect.Width <= 0 || rect.Height <= 0) return path;
+            float radius = Math.Min(8f, Math.Min(rect.Width, rect.Height) / 5f);
+            float diameter = radius * 2;
             PointF center = rect.Center();
-            float rectAverageSize = (rect.Width + rect.Height) / 2;
-            float tailWidth = TailWidthMultiplier * rectAverageSize;
-            tailWidth = Math.Min(Math.Min(tailWidth, rect.Width), rect.Height);
-            float tailOrigin = tailWidth / 2;
-            int tailLength = (int)MathHelpers.Distance(center, tailPosition);
-            gpTail.AddLine(0, -tailOrigin, 0, tailOrigin);
-            gpTail.AddLine(0, tailOrigin, tailLength, 0);
-            gpTail.CloseFigure();
-            using (Matrix matrix = new Matrix())
+            float dx = (tip.X - center.X) / (rect.Width / 2);
+            float dy = (tip.Y - center.Y) / (rect.Height / 2);
+            int side = rect.Contains(tip) ? -1 : Math.Abs(dx) > Math.Abs(dy) ? (dx > 0 ? 1 : 3) : (dy > 0 ? 2 : 0);
+
+            void Edge(PointF start, PointF end, int edge)
             {
-                matrix.Translate(center.X, center.Y);
-                float tailDegree = MathHelpers.LookAtDegree(center, tailPosition);
-                matrix.Rotate(tailDegree);
-                gpTail.Transform(matrix);
+                if (side != edge) { path.AddLine(start, end); return; }
+                float length = Math.Abs(end.X - start.X) + Math.Abs(end.Y - start.Y);
+                float halfBase = Math.Min(12f, length * .2f);
+                float position = edge == 0 ? tip.X - start.X : edge == 1 ? tip.Y - start.Y
+                    : edge == 2 ? start.X - tip.X : start.Y - tip.Y;
+                position = Math.Clamp(position, halfBase, length - halfBase);
+                float ux = (end.X - start.X) / length;
+                float uy = (end.Y - start.Y) / length;
+                PointF first = new PointF(start.X + ux * (position - halfBase), start.Y + uy * (position - halfBase));
+                PointF last = new PointF(start.X + ux * (position + halfBase), start.Y + uy * (position + halfBase));
+                path.AddLine(start, first);
+                path.AddLine(first, tip);
+                path.AddLine(tip, last);
+                path.AddLine(last, end);
             }
-            return gpTail;
+
+            Edge(new PointF(rect.Left + radius, rect.Top), new PointF(rect.Right - radius, rect.Top), 0);
+            path.AddArc(rect.Right - diameter, rect.Top, diameter, diameter, 270, 90);
+            Edge(new PointF(rect.Right, rect.Top + radius), new PointF(rect.Right, rect.Bottom - radius), 1);
+            path.AddArc(rect.Right - diameter, rect.Bottom - diameter, diameter, diameter, 0, 90);
+            Edge(new PointF(rect.Right - radius, rect.Bottom), new PointF(rect.Left + radius, rect.Bottom), 2);
+            path.AddArc(rect.Left, rect.Bottom - diameter, diameter, diameter, 90, 90);
+            Edge(new PointF(rect.Left, rect.Bottom - radius), new PointF(rect.Left, rect.Top + radius), 3);
+            path.AddArc(rect.Left, rect.Top, diameter, diameter, 180, 90);
+            path.CloseFigure();
+            return path;
         }
     }
 }

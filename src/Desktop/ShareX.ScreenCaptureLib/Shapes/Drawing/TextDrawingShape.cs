@@ -70,6 +70,8 @@ namespace ShareX.ScreenCaptureLib
 
         protected void DrawText(Graphics g)
         {
+            if (Manager.IsInlineTextShape(this)) return;
+            if (TextOptions.PlainInlineRendering) { PlainInlineTextRenderer.Draw(this, g); return; }
             if (Shadow)
             {
                 DrawText(g, Text, ShadowColor, TextOptions, Rectangle.LocationOffset(ShadowOffset));
@@ -87,7 +89,7 @@ namespace ShareX.ScreenCaptureLib
         {
             if (!string.IsNullOrEmpty(text) && rect.Width > 10 && rect.Height > 10)
             {
-                using (Font font = new Font(options.Font, options.Size, options.Style))
+                using (Font font = options.CreateFont())
                 using (Brush textBrush = new SolidBrush(textColor))
                 using (StringFormat sf = new StringFormat { Alignment = options.AlignmentHorizontal, LineAlignment = options.AlignmentVertical })
                 {
@@ -102,15 +104,13 @@ namespace ShareX.ScreenCaptureLib
         {
             PointF pos = Manager.Form.ScaledClientMousePosition;
             Rectangle = new RectangleF(pos.X, pos.Y, 1, 1);
-
-            if (ShowTextInputBox())
-            {
-                OnCreated();
-            }
-            else
-            {
-                Remove();
-            }
+            TextOptions = TextOptions.Copy();
+            ShapeManager.ApplyInlineTextDefaults(TextOptions);
+            bool wasModified = Manager.IsImageModified;
+            OnCreated();
+            Manager.IsImageModified = wasModified;
+            Move(pos.X - Rectangle.X, pos.Y - Rectangle.Y);
+            Manager.BeginInlineText(this, true);
         }
 
         public override void OnCreated()
@@ -131,25 +131,7 @@ namespace ShareX.ScreenCaptureLib
 
         public override void OnDoubleClicked()
         {
-            ShowTextInputBox();
-        }
-
-        private bool ShowTextInputBox()
-        {
-            bool result;
-
-            Manager.Form.Pause();
-
-            using (TextDrawingInputBox inputBox = new TextDrawingInputBox(Text, TextOptions, SupportGradient, Manager.Options.ColorPickerOptions))
-            {
-                result = inputBox.ShowDialogTopMost(Manager.Form) == DialogResult.OK;
-                Text = inputBox.InputText;
-                OnConfigSave();
-            }
-
-            Manager.Form.Resume();
-
-            return result;
+            Manager.BeginInlineText(this, false);
         }
 
         public void AutoSize(bool center)
@@ -158,9 +140,12 @@ namespace ShareX.ScreenCaptureLib
 
             if (!string.IsNullOrEmpty(Text))
             {
-                using (Font font = new Font(TextOptions.Font, TextOptions.Size, TextOptions.Style))
+                using (Font font = TextOptions.CreateFont())
                 {
-                    size = Helpers.MeasureText(Text, font).Offset(15, 20);
+                    size = TextOptions.PlainInlineRendering
+                        ? PlainInlineTextRenderer.Measure(TextOptions, Text, this is SpeechBalloonDrawingShape)
+                            .Offset(this is SpeechBalloonDrawingShape ? PlainInlineTextRenderer.BalloonHorizontalPadding * 2 + 2 : 15, 20)
+                        : Helpers.MeasureText(Text, font).Offset(15, 20);
                 }
             }
             else
@@ -180,6 +165,12 @@ namespace ShareX.ScreenCaptureLib
             }
 
             Rectangle = new RectangleF(location, size);
+        }
+
+        public override void Dispose()
+        {
+            PlainInlineTextRenderer.Release(this);
+            base.Dispose();
         }
     }
 }

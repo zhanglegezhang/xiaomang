@@ -22,10 +22,9 @@ namespace ShareX
             fullscreenToggle = new SettingsDesignSwitch(fullscreenToggleSource);
             fullscreenToggleLabel = new Label
             {
-                Text = fullscreenToggleSource.Text, AutoSize = true, Cursor = Cursors.Hand,
+                Text = fullscreenToggleSource.Text, AutoSize = true, Font = btnAdd.Font,
                 ForeColor = MainMenuAppearance.Text
             };
-            fullscreenToggleLabel.Click += (_, _) => fullscreenToggle.Checked = !fullscreenToggle.Checked;
             fullscreenToggleSource.CheckedChanged += (_, _) =>
             {
                 Program.Settings.DisableHotkeysOnFullscreen = fullscreenToggleSource.Checked;
@@ -54,6 +53,11 @@ namespace ShareX
                 flpHotkeys.Bounds = new Rectangle(S(16), top, System.Math.Max(1, ClientSize.Width - S(32)), System.Math.Max(1, ClientSize.Height - top - S(16)));
             }
             SizeChanged += (s, e) => LayoutPage();
+            btnAdd.FontChanged += (_, _) =>
+            {
+                fullscreenToggleLabel.Font = btnAdd.Font;
+                LayoutPage();
+            };
             btnHotkeysDisabled.VisibleChanged += (s, e) => LayoutPage();
             LayoutPage();
         }

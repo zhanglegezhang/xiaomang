@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -238,10 +238,10 @@
     <value>맨 뒤로 보내기</value>
   </data>
   <data name="ShapeManager_CreateToolbar_ApplyChangesContinueTaskEnter" xml:space="preserve">
-    <value>변경 사항 적용 &amp; 작업 재개 (Enter)</value>
+    <value>변경 사항 적용 &amp; 작업 재개</value>
   </data>
   <data name="ShapeManager_CreateToolbar_ContinueTaskSpaceOrRightClick" xml:space="preserve">
-    <value>작업 재개 (스페이스 바 또는 우클릭)</value>
+    <value>작업 재개</value>
   </data>
   <data name="ShapeManager_CreateToolbar_SaveImage" xml:space="preserve">
     <value>이미지 저장</value>

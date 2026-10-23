@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -172,7 +172,7 @@
     <value>Törlés</value>
   </data>
   <data name="ShapeManager_CreateToolbar_ApplyChangesContinueTaskEnter" xml:space="preserve">
-    <value>Módosítások alkalmazása és feladat folytatása (Enter)</value>
+    <value>Módosítások alkalmazása és feladat folytatása</value>
   </data>
   <data name="OpenKeybindsPage" xml:space="preserve">
     <value>Megnyitás kulcsbinds web page...</value>
@@ -355,7 +355,7 @@
     <value>Mentés kép as... (Ctrl + Shift + S)</value>
   </data>
   <data name="ShapeManager_CreateToolbar_ContinueTaskSpaceOrRightClick" xml:space="preserve">
-    <value>Continue task (Space or jobb click)</value>
+    <value>Continue task</value>
   </data>
   <data name="ShapeManager_CreateToolbar_FontSize" xml:space="preserve">
     <value>Font méret:</value>
@@ -475,7 +475,7 @@
     <value>Tip: You can pan kép by holding mouse middle gomb and dragging.</value>
   </data>
   <data name="ShapeManager_CreateToolbar_RunAfterCaptureTasks" xml:space="preserve">
-    <value>Run rögzítés után tasks (Enter)</value>
+    <value>Run rögzítés után tasks</value>
   </data>
   <data name="ShapeManager_CreateContextMenu_RememberMenuState" xml:space="preserve">
     <value>Remember menü state</value>

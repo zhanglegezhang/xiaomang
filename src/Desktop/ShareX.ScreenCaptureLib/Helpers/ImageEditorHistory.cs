@@ -85,6 +85,17 @@ namespace ShareX.ScreenCaptureLib
             }
         }
 
+        internal ImageEditorMemento CaptureShapes() => GetMementoFromShapes();
+
+        internal void CompleteShapes(ref ImageEditorMemento snapshot, bool changed)
+        {
+            ImageEditorMemento completed = snapshot;
+            snapshot = null;
+            if (completed == null) return;
+            if (changed) AddMemento(completed);
+            else completed.Dispose();
+        }
+
         public void Undo()
         {
             if (CanUndo)

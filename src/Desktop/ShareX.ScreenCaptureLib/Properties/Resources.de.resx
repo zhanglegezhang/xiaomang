@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -268,7 +268,7 @@
     <value>Menüzustand merken</value>
   </data>
   <data name="ShapeManager_CreateToolbar_RunAfterCaptureTasks" xml:space="preserve">
-    <value>Aufgaben nach der Aufnahme ausführen (Eingabe)</value>
+    <value>Aufgaben nach der Aufnahme ausführen</value>
   </data>
   <data name="ImageEffects" xml:space="preserve">
     <value>Bildeffekte hinzufügen...</value>
@@ -289,7 +289,7 @@
     <value>Effektgröße ausschneiden:</value>
   </data>
   <data name="ShapeManager_CreateToolbar_ApplyChangesContinueTaskEnter" xml:space="preserve">
-    <value>Änderungen übernehmen &amp; Aufgabe fortsetzen (Enter)</value>
+    <value>Änderungen übernehmen &amp; Aufgabe fortsetzen</value>
   </data>
   <data name="OpenKeybindsPage" xml:space="preserve">
     <value>Tastenkürzel-Webseite öffnen...</value>
@@ -412,7 +412,7 @@
     <value>Bild kopiert</value>
   </data>
   <data name="ShapeManager_CreateToolbar_ContinueTaskSpaceOrRightClick" xml:space="preserve">
-    <value>Aufgabe fortsetzen (Leertaste oder Rechtsklick)</value>
+    <value>Aufgabe fortsetzen</value>
   </data>
   <data name="ShapeManager_CreateToolbar_FontSize" xml:space="preserve">
     <value>Schriftgröße:</value>

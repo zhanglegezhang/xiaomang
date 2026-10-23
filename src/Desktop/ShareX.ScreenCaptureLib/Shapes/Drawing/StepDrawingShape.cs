@@ -35,10 +35,14 @@ namespace ShareX.ScreenCaptureLib
     {
         private const int DefaultSize = 30;
 
+        private (string Text, int FontSize, float DpiX, float DpiY, int BorderSize) numberLayoutKey;
+        private (int ContentSize, float FontSize) numberLayout;
+
         public override ShapeType ShapeType { get; } = ShapeType.DrawingStep;
 
         public int FontSize { get; set; }
         public int Number { get; set; }
+        public int SequenceGroup { get; set; }
         public StepType StepType { get; set; } = StepType.Numbers;
         public bool IsTailActive { get; set; }
 
@@ -154,8 +158,22 @@ namespace ShareX.ScreenCaptureLib
 
             using (Font font = new Font(FontFamily.GenericSansSerif, FontSize, FontStyle.Bold))
             {
-                Size textSize = g.MeasureString(text, font).ToSize();
-                int maxSize = Math.Max(textSize.Width, textSize.Height);
+                int maxSize;
+                float renderFontSize = font.Size;
+                if (StepType == StepType.Numbers)
+                {
+                    (maxSize, renderFontSize) = GetNumberLayout(g, text, font);
+                }
+                else
+                {
+                    Size textSize = g.MeasureString(text, font).ToSize();
+                    maxSize = Math.Max(textSize.Width, textSize.Height);
+                }
+
+                using Font fittedFont = renderFontSize < font.Size
+                    ? new Font(font.FontFamily, renderFontSize, font.Style, font.Unit)
+                    : null;
+                Font textFont = fittedFont ?? font;
                 int padding = 3;
 
                 PointF center = Rectangle.Center();
@@ -198,11 +216,41 @@ namespace ShareX.ScreenCaptureLib
 
                 if (Shadow)
                 {
-                    DrawNumber(g, text, font, ShadowColor, Rectangle.LocationOffset(ShadowOffset));
+                    DrawNumber(g, text, textFont, ShadowColor, Rectangle.LocationOffset(ShadowOffset));
                 }
 
-                DrawNumber(g, text, font, BorderColor, Rectangle);
+                DrawNumber(g, text, textFont, BorderColor, Rectangle);
             }
+        }
+
+        private (int ContentSize, float FontSize) GetNumberLayout(Graphics g, string text, Font font)
+        {
+            var key = (text, FontSize, g.DpiX, g.DpiY, BorderSize);
+            if (numberLayoutKey != key)
+            {
+                // Keep the original single-digit diameter, independently of the sequence number.
+                Size singleDigit = g.MeasureString("8", font).ToSize();
+                int contentSize = Math.Max(singleDigit.Width, singleDigit.Height);
+                float renderSize = font.Size;
+                if (text.Length > 1)
+                {
+                    using var format = new StringFormat { FormatFlags = StringFormatFlags.NoWrap };
+                    float availableWidth = Math.Max(1, contentSize - Math.Max(0, BorderSize));
+                    float width = g.MeasureString(text, font, SizeF.Empty, format).Width;
+                    if (width > availableWidth)
+                    {
+                        renderSize *= availableWidth / width;
+                        using var fitted = new Font(font.FontFamily, renderSize, font.Style, font.Unit);
+                        float fittedWidth = g.MeasureString(text, fitted, SizeF.Empty, format).Width;
+                        if (fittedWidth > availableWidth) renderSize *= availableWidth / fittedWidth;
+                    }
+                }
+
+                numberLayout = (contentSize, renderSize);
+                numberLayoutKey = key;
+            }
+
+            return numberLayout;
         }
 
         protected void DrawNumber(Graphics g, string text, Font font, Color textColor, RectangleF rect)
@@ -210,8 +258,11 @@ namespace ShareX.ScreenCaptureLib
             using (StringFormat sf = new StringFormat { Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Center })
             using (Brush textBrush = new SolidBrush(textColor))
             {
+                if (StepType == StepType.Numbers) sf.FormatFlags |= StringFormatFlags.NoWrap;
                 g.TextRenderingHint = TextRenderingHint.AntiAliasGridFit;
-                rect = rect.LocationOffset(0, StepType == StepType.Numbers ? 3 : 1);
+                // Use drawing DPI so the one-point adjustment also matches
+                // the exported image and the number's shadow.
+                rect = rect.LocationOffset(0, StepType == StepType.Numbers ? 3 + g.DpiY / 72f : 1);
                 g.DrawString(text, font, textBrush, rect, sf);
                 g.TextRenderingHint = TextRenderingHint.SystemDefault;
             }

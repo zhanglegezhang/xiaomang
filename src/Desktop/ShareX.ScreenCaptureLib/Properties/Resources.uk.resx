@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -145,7 +145,7 @@
     <value>Видалити</value>
   </data>
   <data name="ShapeManager_CreateToolbar_ApplyChangesContinueTaskEnter" xml:space="preserve">
-    <value>Застосувати зміни та продовжити завдання (Enter)</value>
+    <value>Застосувати зміни та продовжити завдання</value>
   </data>
   <data name="ShapeManager_CreateToolbar_Edit" xml:space="preserve">
     <value>Змінити</value>
@@ -522,10 +522,10 @@
     <value>Переключитися на інструмент виділення після малювання фігури</value>
   </data>
   <data name="ShapeManager_CreateToolbar_ContinueTaskSpaceOrRightClick" xml:space="preserve">
-    <value>Продовжити завдання (пробіл або ПКМ)</value>
+    <value>Продовжити завдання</value>
   </data>
   <data name="ShapeManager_CreateToolbar_RunAfterCaptureTasks" xml:space="preserve">
-    <value>Виконати завдання після захоплення (Enter)</value>
+    <value>Виконати завдання після захоплення</value>
   </data>
   <data name="ShapeManager_CreateToolbar_Rotate90Clockwise" xml:space="preserve">
     <value>Повернути на 90° за годинниковою стрілкою</value>

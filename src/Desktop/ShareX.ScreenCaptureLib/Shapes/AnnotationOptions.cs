@@ -57,6 +57,8 @@ namespace ShareX.ScreenCaptureLib
         public int LineCenterPointCount { get; set; } = 1;
 
         // Arrow drawing
+        // Null retains the user's existing shared width until the arrow is used.
+        public int? ArrowBorderSize { get; set; }
         public ArrowHeadDirection ArrowHeadDirection { get; set; } = ArrowHeadDirection.End;
 
         // Text (Outline) drawing
@@ -100,7 +102,12 @@ namespace ShareX.ScreenCaptureLib
         public string LastStickerPath { get; set; }
 
         // Blur effect
-        public int BlurRadius { get; set; } = 35;
+        private int blurRadius = 23;
+        public int BlurRadius
+        {
+            get => blurRadius;
+            set => blurRadius = BlurStrengthPresets.Normalize(value);
+        }
 
         // Pixelate effect
         public int PixelateSize { get; set; } = 15;

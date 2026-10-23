@@ -206,7 +206,7 @@ namespace ShareX
             cbToastWindowLeftClickAction = new System.Windows.Forms.ComboBox();
             nudToastWindowSizeHeight = new System.Windows.Forms.NumericUpDown();
             nudToastWindowSizeWidth = new System.Windows.Forms.NumericUpDown();
-            cbToastWindowPlacement = new System.Windows.Forms.ComboBox();
+            cbToastWindowPlacement = new PlacementComboBox();
             nudToastWindowFadeDuration = new System.Windows.Forms.NumericUpDown();
             cbDisableNotificationsOnFullscreen = new System.Windows.Forms.CheckBox();
             nudToastWindowDuration = new System.Windows.Forms.NumericUpDown();
@@ -438,7 +438,7 @@ namespace ShareX
             cbToastWindowPlacement.FormattingEnabled = true;
             resources.ApplyResources(cbToastWindowPlacement, "cbToastWindowPlacement");
             cbToastWindowPlacement.Name = "cbToastWindowPlacement";
-            cbToastWindowPlacement.SelectedIndexChanged += cbToastWindowPlacement_SelectedIndexChanged;
+            cbToastWindowPlacement.SelectionChangeCommitted += cbToastWindowPlacement_SelectedIndexChanged;
             // 
             // nudToastWindowFadeDuration
             // 
@@ -572,6 +572,17 @@ namespace ShareX
             if (updating) return;
 
             Settings.ToastWindowPlacement = Helpers.GetEnumFromIndex<ContentAlignment>(cbToastWindowPlacement.SelectedIndex);
+        }
+
+        private sealed class PlacementComboBox : ComboBox
+        {
+            protected override void WndProc(ref Message m)
+            {
+                // A closed dropdown must not silently move BottomRight to the
+                // adjacent BottomCenter while the user scrolls the settings page.
+                if (m.Msg == 0x020A && !DroppedDown) return; // WM_MOUSEWHEEL
+                base.WndProc(ref m);
+            }
         }
 
         private void nudToastWindowSizeWidth_ValueChanged(object sender, EventArgs e)

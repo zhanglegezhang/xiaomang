@@ -3,7 +3,7 @@ const {chromium}=require(process.env.DIARY_PLAYWRIGHT);
 const root=path.resolve('output/reported-bugs-20261020/browser');fs.mkdirSync(root,{recursive:true});
 (async()=>{const browser=await chromium.launch({channel:'msedge',headless:true});try{
  const page=await browser.newPage({acceptDownloads:true,viewport:{width:1100,height:850}});const errors=[];page.on('pageerror',e=>errors.push(e.message));
- await page.goto('file:///'+path.resolve('resources/Tools/数据整理小工具_V1.0.html').replace(/\\/g,'/'));
+ await page.goto('file:///'+path.resolve('tools/ShareX/app/数据整理小工具_V1.0.html').replace(/\\/g,'/'));
  await page.locator('#delim').selectOption(',');await page.locator('#colIdx').fill('2');await page.locator('#input').fill('"A,B",X\n"C,B",Y');
  await page.getByRole('button',{name:'按列去重',exact:true}).click();assert.equal(await page.locator('#output').inputValue(),'"A,B",X\n"C,B",Y');
  await page.locator('#input').fill('select distinct 1');await page.getByRole('button',{name:'SQL 美化',exact:true}).click();assert.match(await page.locator('#output').inputValue(),/SELECT DISTINCT\s+1/);

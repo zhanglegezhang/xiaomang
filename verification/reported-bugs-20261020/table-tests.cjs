@@ -1,6 +1,6 @@
 // Offline, isolated browser-function regression; no personal data or network access.
 const fs=require('fs'),path=require('path'),vm=require('vm'),assert=require('node:assert/strict');
-const input=process.argv[2]||'resources/Tools/数据整理小工具_V1.0.html';
+const input=process.argv[2]||'tools/ShareX/app/数据整理小工具_V1.0.html';
 const report=process.argv[3]||'output/reported-bugs-20261020';fs.mkdirSync(report,{recursive:true});
 const html=fs.readFileSync(input,'utf8'),fields={},alerts=[],downloads=[];
 const el=id=>fields[id]??={value:'',checked:false,textContent:'',style:{},scrollTop:0,clientHeight:400,addEventListener(){}};

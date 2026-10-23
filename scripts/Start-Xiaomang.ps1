@@ -2,9 +2,9 @@
 param([switch]$PrepareOnly, [uri]$Proxy)
 $ErrorActionPreference = 'Stop'
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-$version = 'v3.2-20261021'
-$expected = '4D6FA7790BE3592487624DD36D2FB9B89916D2C24FAC4238013F89545015E7FE'
-$url = "https://github.com/zhanglegezhang/xiaomang/releases/download/$version/xiaomang3.2_2026-10-21_usage.zip"
+$version = 'v3.3-20261023'
+$expected = '5AD97C45D125E1C800C73EDCFCCA7655CCCFF763D58D24FBC3C922FFBB23E118'
+$url = "https://github.com/zhanglegezhang/xiaomang/releases/download/$version/xiaomang3.3_2026-10-23_usage.zip"
 $base = Join-Path $env:LOCALAPPDATA 'XiaomangSourceLauncher'
 $destination = Join-Path $base $version
 $receipt = Join-Path $destination '.verified-download'

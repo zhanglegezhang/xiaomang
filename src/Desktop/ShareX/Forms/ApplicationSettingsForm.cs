@@ -62,6 +62,7 @@ namespace ShareX
             try
             {
                 if (!EnsureSettingsPage(tabPage)) return;
+                MainMenuAppearance.ApplyDpi(tabPage);
                 if (ready && tabPage == tpGeneral)
                 {
                     UpdateStartWithWindows();

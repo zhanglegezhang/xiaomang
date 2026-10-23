@@ -1,4 +1,4 @@
-﻿#region License Information (GPL v3)
+#region License Information (GPL v3)
 
 /*
     ShareX - A program that allows you to take screenshots and share any file type
@@ -42,6 +42,7 @@ namespace ShareX
         public bool StartWithWindowsByDefault = true;
         public bool StartupPreferenceInitialized;
         public string FileUploadDefaultDirectory = "";
+        public string CaptureSaveAsDirectory = "";
         public int NameParserAutoIncrementNumber = 0;
         public List<QuickTaskInfo> QuickTaskPresets = QuickTaskInfo.DefaultPresets;
         public TodoSettings TodoSettings = new TodoSettings();
@@ -331,3 +332,4 @@ namespace ShareX
         #endregion Color Picker Form
     }
 }
+

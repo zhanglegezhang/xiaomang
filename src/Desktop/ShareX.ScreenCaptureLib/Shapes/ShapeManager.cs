@@ -71,6 +71,7 @@ namespace ShareX.ScreenCaptureLib
             set
             {
                 if (currentTool == value) return;
+                FinishInlineText(true);
 
                 currentTool = value;
 
@@ -193,6 +194,7 @@ namespace ShareX.ScreenCaptureLib
         public bool IsCurrentShapeTypeRegion => IsShapeTypeRegion(CurrentTool);
 
         public int StartingStepNumber { get; set; } = 1;
+        private int currentStepSequence;
 
         public bool IsCreating { get; set; }
 
@@ -407,6 +409,7 @@ namespace ShareX.ScreenCaptureLib
         {
             OrderStepShapes();
             IsImageModified = true;
+            effectPreview?.Request();
 
             ImageModified?.Invoke();
         }
@@ -422,8 +425,10 @@ namespace ShareX.ScreenCaptureLib
 
         private void form_MouseDown(object sender, MouseEventArgs e)
         {
+            if (IsEditingText) { FinishInlineText(true); return; }
             if (e.Button == MouseButtons.Left)
             {
+                if (e.Clicks > 1 && GetInlineTextAt(new PointF(e.X / Form.ZoomFactor, e.Y / Form.ZoomFactor)) != null) return;
                 if (e.Clicks == 1 && Form.IsAnnotationMode && ValidRegions.Length > 0)
                 {
                     CreateDoubleClickMemento();
@@ -447,6 +452,7 @@ namespace ShareX.ScreenCaptureLib
 
         private void form_MouseUp(object sender, MouseEventArgs e)
         {
+            if (IsEditingText) return;
             if (e.Button == MouseButtons.Left)
             {
                 if (FinishSelectionResize(new PointF(e.X / Form.ZoomFactor, e.Y / Form.ZoomFactor))) return;
@@ -455,6 +461,7 @@ namespace ShareX.ScreenCaptureLib
                     // The mouse-up message can arrive between scheduled frames. Commit
                     // its final position before ending creation/movement, not last frame's.
                     InputManager.Update(Form);
+                    BeginActualShapeMove(Form.ScaledClientMouseVelocity);
                     CurrentShape?.OnUpdate();
                     EndRegionSelection();
                 }
@@ -502,6 +509,14 @@ namespace ShareX.ScreenCaptureLib
 
         private void form_MouseDoubleClick(object sender, MouseEventArgs e)
         {
+            if (e.Button == MouseButtons.Left && GetInlineTextAt(new PointF(e.X / Form.ZoomFactor, e.Y / Form.ZoomFactor)) is TextDrawingShape text)
+            {
+                IsMoving = IsCreating = false;
+                pendingDoubleClickMemento?.Dispose();
+                pendingDoubleClickMemento = null;
+                text.OnDoubleClicked();
+                return;
+            }
             if (e.Button == MouseButtons.Left && ValidRegions.Length > 0)
             {
                 RestoreDoubleClickMemento();
@@ -535,6 +550,7 @@ namespace ShareX.ScreenCaptureLib
 
         private void form_MouseWheel(object sender, MouseEventArgs e)
         {
+            FinishInlineText(true);
             if (Control.ModifierKeys == Keys.None)
             {
                 if (e.Delta > 0)
@@ -599,6 +615,7 @@ namespace ShareX.ScreenCaptureLib
 
         private void form_KeyDown(object sender, KeyEventArgs e)
         {
+            if (IsEditingText) return;
             switch (e.KeyCode)
             {
                 case Keys.ControlKey:
@@ -838,6 +855,7 @@ namespace ShareX.ScreenCaptureLib
 
         private void form_KeyUp(object sender, KeyEventArgs e)
         {
+            if (IsEditingText) return;
             bool wasMoving = isLeftPressed || isRightPressed || isUpPressed || isDownPressed;
 
             switch (e.KeyCode)
@@ -945,12 +963,44 @@ namespace ShareX.ScreenCaptureLib
             }
         }
 
+        private BaseShape pendingMoveHistory;
+        private ImageEditorMemento moveSnapshot, resizeSnapshot;
+        private string moveGeometry, resizeGeometry;
+        private BaseShape resizeHistoryShape;
+
+        private static string GeometryState(BaseShape shape)
+        {
+            if (shape == null) return "";
+            string state = $"{shape.Rectangle}|{shape.StartPosition}|{shape.EndPosition}";
+            foreach (string name in new[] { "TailPosition", "Points" })
+            {
+                object value = shape.GetType().GetProperty(name)?.GetValue(shape);
+                if (value is PointF[] points) state += "|" + string.Join(";", points.Select(p => p.ToString()));
+                else state += "|" + value;
+            }
+            return state;
+        }
+
+        private void BeginActualShapeMove(PointF velocity)
+        {
+            if (pendingMoveHistory == CurrentShape && pendingMoveHistory != null && IsMoving && !IsCreating && !IsPanning &&
+                (velocity.X != 0 || velocity.Y != 0))
+            {
+                moveGeometry = GeometryState(CurrentShape);
+                if (CurrentShape.IsHandledBySelectTool) moveSnapshot = history.CaptureShapes();
+                pendingMoveHistory = null;
+                CurrentShape.OnMoving();
+            }
+        }
+
         public void Update()
         {
+            if (IsEditingText) return;
             BaseShape shape = CurrentShape;
 
             if (shape != null)
             {
+                BeginActualShapeMove(Form.ScaledClientMouseVelocity);
                 shape.OnUpdate();
             }
 
@@ -973,19 +1023,19 @@ namespace ShareX.ScreenCaptureLib
 
             InputManager.Update(Form); // If it's a touch event we don't have the correct point yet, so refresh it now
 
-            BaseShape shape = GetIntersectShape();
+            BaseShape shape = GetInlineTextAt(Form.ScaledClientMousePosition) ?? GetIntersectShape();
 
-            if (shape != null && shape.IsSelectable) // Select shape
+            if (shape != null && (shape.IsSelectable || shape is TextDrawingShape)) // Select shape
             {
                 DeselectCurrentShape();
+                if (shape is TextDrawingShape && !shape.IsSelectable) CurrentTool = ShapeType.ToolSelect;
 
                 if (!IsMoving)
                 {
-                    history.CreateShapesMemento();
+                    pendingMoveHistory = shape;
                 }
 
                 IsMoving = true;
-                shape.OnMoving();
                 CurrentShape = shape;
                 SelectCurrentShape();
             }
@@ -1006,6 +1056,12 @@ namespace ShareX.ScreenCaptureLib
 
                 shape = AddShape();
                 shape.OnCreating();
+                // File/sticker dialogs may finish creation before mouse-up, without
+                // entering either drag state. Commit only a successfully added shape.
+                if (!IsCreating && !IsMoving && shape == pendingCreatedShape)
+                {
+                    EndRegionSelection();
+                }
             }
         }
 
@@ -1013,6 +1069,8 @@ namespace ShareX.ScreenCaptureLib
         {
             bool wasCreating = IsCreating;
             bool wasMoving = IsMoving;
+            bool moved = pendingMoveHistory == null;
+            pendingMoveHistory = null;
 
             IsCreating = false;
             IsMoving = false;
@@ -1027,7 +1085,9 @@ namespace ShareX.ScreenCaptureLib
 
                     UpdateCurrentHoverShape();
 
-                    if (IsCurrentHoverShapeValid)
+                    // Effects require a real area drag; an empty click must not
+                    // silently apply the effect to the window under the pointer.
+                    if (shape.ShapeCategory != ShapeCategory.Effect && IsCurrentHoverShapeValid)
                     {
                         shape.Rectangle = CurrentHoverShape.Rectangle;
                     }
@@ -1047,6 +1107,9 @@ namespace ShareX.ScreenCaptureLib
                     }
                     else
                     {
+                        // Click-created shapes (steps, cursors, images, stickers)
+                        // can enter moving directly and never set IsCreating.
+                        CommitCreatedShape(shape);
                         if (wasCreating)
                         {
                             shape.OnCreated();
@@ -1060,7 +1123,7 @@ namespace ShareX.ScreenCaptureLib
                                 CurrentTool = ShapeType.ToolSelect;
                             }
                         }
-                        else if (wasMoving)
+                        else if (wasMoving && moved)
                         {
                             shape.OnMoved();
                             SelectCurrentShape();
@@ -1080,6 +1143,7 @@ namespace ShareX.ScreenCaptureLib
                     UpdateMenuPosition();
                 }
             }
+            history.CompleteShapes(ref moveSnapshot, shape != null && GeometryState(shape) != moveGeometry);
         }
 
         private void StartPanning()
@@ -1112,7 +1176,10 @@ namespace ShareX.ScreenCaptureLib
                             {
                                 if (obj is ResizeNode)
                                 {
-                                    history.CreateShapesMemento();
+                                    resizeHistoryShape = CurrentShape;
+                                    resizeGeometry = GeometryState(CurrentShape);
+                                    if (CurrentShape?.IsHandledBySelectTool == true)
+                                        resizeSnapshot = history.CaptureShapes();
                                 }
 
                                 obj.OnMouseDown(mousePosition.Round());
@@ -1141,6 +1208,10 @@ namespace ShareX.ScreenCaptureLib
                         if (obj.IsDragging)
                         {
                             obj.OnMouseUp(mousePosition.Round());
+                            history.CompleteShapes(ref resizeSnapshot,
+                                resizeHistoryShape != null && Shapes.Contains(resizeHistoryShape) &&
+                                GeometryState(resizeHistoryShape) != resizeGeometry);
+                            resizeHistoryShape = null;
                         }
                     }
                 }
@@ -1169,10 +1240,36 @@ namespace ShareX.ScreenCaptureLib
             }
         }
 
+        private BaseShape pendingCreatedShape;
+
+        private void CommitCreatedShape(BaseShape shape)
+        {
+            if (shape != pendingCreatedShape) return;
+            pendingCreatedShape = null;
+            int index = Shapes.IndexOf(shape);
+            if (index < 0) return;
+            Shapes.RemoveAt(index);
+            try { history.CreateShapesMemento(); }
+            finally { Shapes.Insert(index, shape); }
+        }
+
         private BaseShape AddShape()
         {
             BaseShape shape = CreateShape();
-            AddShape(shape);
+            if (shape is TextDrawingShape text)
+            {
+                // Empty/cancelled inline editors are not document edits.
+                pendingNewTextHistory = text;
+                Shapes.Add(shape);
+                CurrentShape = shape;
+            }
+            else
+            {
+                pendingCreatedShape = shape;
+                if (shape is StepDrawingShape step) step.SequenceGroup = currentStepSequence;
+                Shapes.Add(shape);
+                CurrentShape = shape;
+            }
             return shape;
         }
 
@@ -1180,6 +1277,7 @@ namespace ShareX.ScreenCaptureLib
         {
             history.CreateShapesMemento();
 
+            if (shape is StepDrawingShape step) step.SequenceGroup = currentStepSequence;
             Shapes.Add(shape);
             CurrentShape = shape;
         }
@@ -1429,6 +1527,7 @@ namespace ShareX.ScreenCaptureLib
 
         public Bitmap RenderOutputImage(Bitmap bmp, PointF offset)
         {
+            FinishInlineText(true);
             Bitmap bmpOutput = (Bitmap)bmp.Clone();
             bmpOutput.SetResolution(CurrentDPI.X, CurrentDPI.Y);
 
@@ -1441,13 +1540,7 @@ namespace ShareX.ScreenCaptureLib
 
                 using (Graphics g = Graphics.FromImage(bmpOutput))
                 {
-                    foreach (BaseEffectShape shape in EffectShapes)
-                    {
-                        if (shape != null)
-                        {
-                            shape.OnDrawFinal(g, bmpOutput);
-                        }
-                    }
+                    EffectRenderPipeline.Render(g, bmpOutput, EffectShapes);
 
                     foreach (BaseDrawingShape shape in DrawingShapes)
                     {
@@ -1512,9 +1605,10 @@ namespace ShareX.ScreenCaptureLib
 
         public void DeleteShape(BaseShape shape)
         {
-            if (shape != null)
+            if (shape != null && Shapes.Contains(shape))
             {
-                history.CreateShapesMemento();
+                if (shape == pendingCreatedShape) pendingCreatedShape = null;
+                else history.CreateShapesMemento();
 
                 shape.Dispose();
                 Shapes.Remove(shape);
@@ -1634,7 +1728,10 @@ namespace ShareX.ScreenCaptureLib
                 {
                     if (Shapes[i] == shape)
                     {
+                        if (i == 0) return;
+                        history.CreateShapesMemento();
                         Shapes.Move(i, 0);
+                        RequestEffectPreview();
                         return;
                     }
                 }
@@ -1654,7 +1751,10 @@ namespace ShareX.ScreenCaptureLib
                 {
                     if (Shapes[i] == shape)
                     {
+                        if (i == Shapes.Count - 1) return;
+                        history.CreateShapesMemento();
                         Shapes.Move(i, Shapes.Count - 1);
+                        RequestEffectPreview();
                         return;
                     }
                 }
@@ -1674,7 +1774,9 @@ namespace ShareX.ScreenCaptureLib
                 {
                     if (Shapes[i] == shape)
                     {
+                        history.CreateShapesMemento();
                         Shapes.Move(i, --i);
+                        RequestEffectPreview();
                         return;
                     }
                 }
@@ -1694,7 +1796,9 @@ namespace ShareX.ScreenCaptureLib
                 {
                     if (Shapes[i] == shape)
                     {
+                        history.CreateShapesMemento();
                         Shapes.Move(i, ++i);
+                        RequestEffectPreview();
                         return;
                     }
                 }
@@ -1879,12 +1983,21 @@ namespace ShareX.ScreenCaptureLib
 
         public void OrderStepShapes()
         {
-            int i = StartingStepNumber;
-
-            foreach (StepDrawingShape shape in Shapes.OfType<StepDrawingShape>())
+            foreach (var group in Shapes.OfType<StepDrawingShape>().GroupBy(shape => shape.SequenceGroup))
             {
-                shape.Number = i++;
+                int number = group.Key == 0 ? StartingStepNumber : 1;
+                foreach (StepDrawingShape shape in group) shape.Number = number++;
             }
+        }
+
+        private void RestartStepSequence()
+        {
+            FinishInlineText(true);
+            // Allocate a fresh group even after undo, so a later redo cannot
+            // merge a restarted sequence into an older one.
+            currentStepSequence = Math.Max(currentStepSequence,
+                Shapes.OfType<StepDrawingShape>().Select(shape => shape.SequenceGroup).DefaultIfEmpty().Max()) + 1;
+            DeselectCurrentShape();
         }
 
         private void DuplicateCurrrentShape(bool insertMousePosition)
@@ -1991,6 +2104,7 @@ namespace ShareX.ScreenCaptureLib
         public void UpdateCanvas(Bitmap canvas, bool centerCanvas = true)
         {
             Form.InitBackground(canvas, centerCanvas);
+            effectPreview?.CanvasChanged();
 
             foreach (BaseEffectShape effect in EffectShapes)
             {
@@ -2040,8 +2154,6 @@ namespace ShareX.ScreenCaptureLib
 
         public void CutOut(RectangleF rect)
         {
-            history.CreateCanvasMemento();
-
             bool isHorizontal = rect.Width > rect.Height;
             RectangleF adjustedRect = CaptureHelpers.ScreenToClient(rect.Round());
             PointF offset = CaptureHelpers.ScreenToClient(Form.CanvasRectangle.Location.Round());
@@ -2051,12 +2163,14 @@ namespace ShareX.ScreenCaptureLib
 
             if (isHorizontal && cropRect.Width > 0)
             {
+                history.CreateCanvasMemento();
                 CollapseAllHorizontal(rect.X, rect.Width);
                 UpdateCanvas(ImageHelpers.CutOutBitmapMiddle(Form.Canvas, Orientation.Horizontal, cropRect.X, cropRect.Width,
                     AnnotationOptions.CutOutEffectType, AnnotationOptions.CutOutEffectSize, AnnotationOptions.CutOutBackgroundColor));
             }
             else if (!isHorizontal && cropRect.Height > 0)
             {
+                history.CreateCanvasMemento();
                 CollapseAllVertical(rect.Y, rect.Height);
                 UpdateCanvas(ImageHelpers.CutOutBitmapMiddle(Form.Canvas, Orientation.Vertical, cropRect.Y, cropRect.Height,
                     AnnotationOptions.CutOutEffectType, AnnotationOptions.CutOutEffectSize, AnnotationOptions.CutOutBackgroundColor));
@@ -2444,7 +2558,15 @@ namespace ShareX.ScreenCaptureLib
 
         public void Dispose()
         {
+            effectPreviewClosed = true;
+            effectPreview?.Dispose();
+            FinishInlineText(false);
             pendingDoubleClickMemento?.Dispose();
+            arrowWidthSnapshot?.Dispose();
+            blurStrengthSnapshot?.Dispose();
+            moveSnapshot?.Dispose();
+            resizeSnapshot?.Dispose();
+            inlineSizeSnapshot?.Dispose();
             DeleteAllShapes();
 
             history.Dispose();

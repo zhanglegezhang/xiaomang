@@ -189,6 +189,9 @@ internal static class Check
         // Verify foreground-based policy, including switching away while the full window remains open.
         foreach (var screen in Screen.AllScreens)
         {
+            // Finish the monitor's DPI transition before assigning fullscreen
+            // bounds; otherwise WM_DPICHANGED scales that first rectangle.
+            fullscreen.Location = screen.Bounds.Location; Pump();
             fullscreen.Bounds = screen.Bounds; Activate(fullscreen); Refresh(manager);
             Assert(Fullscreen() && Suspended(manager), "fullscreen on monitor " + screen.DeviceName);
             Activate(host); Refresh(manager);
@@ -222,7 +225,7 @@ internal static class Check
         config.DisableHotkeysOnFullscreen = false;
         typeof(HotkeySettingsForm).GetMethod("RefreshForActivation", All)!.Invoke(page, null);
         Assert(!toggle.Checked, "reopening page reflects advanced setting changes");
-        string output = Path.GetFullPath("test-results/fullscreen-hotkeys");
+        string output = Path.GetFullPath("build/fullscreen-hotkeys-20261021");
         page.ClientSize = new Size(S(1000), S(450)); Pump();
         using (var image = new Bitmap(page.Width, page.Height)) { page.DrawToBitmap(image, new Rectangle(Point.Empty, image.Size)); image.Save(Path.Combine(output, $"hotkeys-{page.DeviceDpi}.png")); }
         page.Close();

@@ -1,4 +1,4 @@
-﻿#region License Information (GPL v3)
+#region License Information (GPL v3)
 
 /*
     ShareX - A program that allows you to take screenshots and share any file type
@@ -120,6 +120,7 @@ namespace ShareX
                     form.AddCursor(cursorData.ToBitmap(), form.PointToClient(cursorData.DrawPosition));
                 }
 
+                form.SaveCaptureAsRequested += image => CaptureSaveAsForm.Save(form, image, taskSettings);
                 form.ShowDialog();
 
                 if (form.LongCaptureRequested)
@@ -286,3 +287,4 @@ namespace ShareX
         }
     }
 }
+

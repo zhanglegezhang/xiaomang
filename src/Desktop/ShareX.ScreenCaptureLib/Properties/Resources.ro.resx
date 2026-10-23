@@ -157,7 +157,7 @@
     <value>Adăugați efecte de imagine...</value>
   </data>
   <data name="ShapeManager_CreateToolbar_ApplyChangesContinueTaskEnter" xml:space="preserve">
-    <value>Aplicați schimbările și continuați sarcina (Enter)</value>
+    <value>Aplicați schimbările și continuați sarcina</value>
   </data>
   <data name="ScreenRecordForm_ConfirmCancel" xml:space="preserve">
     <value>Sigur abandonați această înregistrare?</value>
@@ -226,7 +226,7 @@
     <value>Închideți (Esc)</value>
   </data>
   <data name="ShapeManager_CreateToolbar_ContinueTaskSpaceOrRightClick" xml:space="preserve">
-    <value>Continuați sarcina (Spațiu sau click dreapta)</value>
+    <value>Continuați sarcina</value>
   </data>
   <data name="ShapeManager_CreateToolbar_CopyImageToClipboard" xml:space="preserve">
     <value>Copiați imaginea în clipboard (Ctrl + C)</value>
@@ -391,7 +391,7 @@
     <value>Rotiți 90° în sensul acelor ceasornicului</value>
   </data>
   <data name="ShapeManager_CreateToolbar_RunAfterCaptureTasks" xml:space="preserve">
-    <value>Rulați sarcinile după captura (Enter)</value>
+    <value>Rulați sarcinile după captura</value>
   </data>
   <data name="ShapeManager_CreateToolbar_SaveImage" xml:space="preserve">
     <value>Salvați imaginea (Ctrl + S)</value>

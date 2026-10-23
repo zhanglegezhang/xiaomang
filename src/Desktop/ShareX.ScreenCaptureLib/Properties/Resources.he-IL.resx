@@ -343,7 +343,7 @@
     <value>תפריט העורך</value>
   </data>
   <data name="ShapeManager_CreateToolbar_ApplyChangesContinueTaskEnter" xml:space="preserve">
-    <value>החל שינויים והמשך במשימה (Enter)</value>
+    <value>החל שינויים והמשך במשימה</value>
   </data>
   <data name="ShapeManager_CreateToolbar_AutoCloseEditorOnTask" xml:space="preserve">
     <value>סגירה אוטומטית של העורך במשימה</value>
@@ -367,7 +367,7 @@
     <value>צלם אזורים</value>
   </data>
   <data name="ShapeManager_CreateToolbar_ContinueTaskSpaceOrRightClick" xml:space="preserve">
-    <value>המשך משימה (רווח או לחיצה ימנית בעכבר)</value>
+    <value>המשך משימה</value>
   </data>
   <data name="ShapeManager_CreateToolbar_CopyImageToClipboard" xml:space="preserve">
     <value>העתק תמונה ללוח הגזירה (Ctrl + C)</value>
@@ -439,7 +439,7 @@
     <value>סובב 90° נגד כיוון השעון</value>
   </data>
   <data name="ShapeManager_CreateToolbar_RunAfterCaptureTasks" xml:space="preserve">
-    <value>הרץ משימות לאחר צילום מסך (Enter)</value>
+    <value>הרץ משימות לאחר צילום מסך</value>
   </data>
   <data name="ShapeManager_CreateToolbar_SaveImage" xml:space="preserve">
     <value>שמור תמונה (Ctrl + S)</value>

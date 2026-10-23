@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -145,7 +145,7 @@
     <value>Apagar</value>
   </data>
   <data name="ShapeManager_CreateToolbar_ApplyChangesContinueTaskEnter" xml:space="preserve">
-    <value>Aplicar alterações e continuar tarefa (Enter)</value>
+    <value>Aplicar alterações e continuar tarefa</value>
   </data>
   <data name="ShapeManager_CreateToolbar_Edit" xml:space="preserve">
     <value>Editar</value>
@@ -277,7 +277,7 @@
     <value>Guardar imagem como... (Ctrl + Shift + S)</value>
   </data>
   <data name="ShapeManager_CreateToolbar_ContinueTaskSpaceOrRightClick" xml:space="preserve">
-    <value>Continuar tarefa (Espaço ou clique lado direito)</value>
+    <value>Continuar tarefa</value>
   </data>
   <data name="ShapeManager_CreateToolbar_CanvasSize" xml:space="preserve">
     <value>Tamanho do ecrã...</value>
@@ -352,7 +352,7 @@
     <value>Nota: Prima botão do scroll do rato e arraste para imagem panorâmica.</value>
   </data>
   <data name="ShapeManager_CreateToolbar_RunAfterCaptureTasks" xml:space="preserve">
-    <value>Executar tarefas "após captura" (Enter)</value>
+    <value>Executar tarefas "após captura"</value>
   </data>
   <data name="ShapeManager_CreateContextMenu_RememberMenuState" xml:space="preserve">
     <value>Memorizar o estado do menu</value>

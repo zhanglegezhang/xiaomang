@@ -16,6 +16,7 @@ namespace ShareX
         private readonly Panel content = new() { Name = "settingsDesignContent" };
         private readonly List<(Control Control, Func<int,int> Measure)> rows = new();
         private bool fitting, initialized, layoutQueued;
+        private int dpiLayoutDepth;
         private readonly HashSet<ComboBox> styledCombos = new();
         private readonly ToolTip tips = new();
         private readonly List<Font> ownedFonts = new();
@@ -137,18 +138,39 @@ namespace ShareX
         }
         private void RequestFit()
         {
-            if(layoutQueued||!IsHandleCreated||IsDisposed)return;
+            if(layoutQueued||dpiLayoutDepth>0||!Visible||!IsHandleCreated||IsDisposed)return;
             layoutQueued=true;
-            BeginInvoke((Action)(()=>{layoutQueued=false;if(!IsDisposed){Fit();PerformLayout();}}));
+            BeginInvoke((Action)(()=>{layoutQueued=false;if(!IsDisposed)PerformLayout();}));
         }
-        protected override void OnLayout(LayoutEventArgs e){Fit();base.OnLayout(e);}
+        protected override void OnLayout(LayoutEventArgs e){if(Visible&&dpiLayoutDepth==0)Fit();base.OnLayout(e);}
+        protected override void OnVisibleChanged(EventArgs e)
+        {
+            base.OnVisibleChanged(e);
+            if (Visible) RequestFit();
+        }
+        internal void BeginDpiLayout() => dpiLayoutDepth++;
+        internal void EndDpiLayout()
+        {
+            if (dpiLayoutDepth > 0 && --dpiLayoutDepth == 0 && Visible) PerformLayout();
+        }
         internal void ScrollFromNumber(MouseEventArgs e) => OnMouseWheel(new MouseEventArgs(e.Button,e.Clicks,e.X,e.Y,e.Delta));
         protected override void OnDpiChangedAfterParent(EventArgs e)
         {
             base.OnDpiChangedAfterParent(e);
-            foreach (var combo in styledCombos)
-                if (!combo.IsDisposed) combo.ItemHeight = Math.Max(combo.Font.Height + S(6), S(24));
-            Fit();
+            if (Visible) RefreshDpiLayout();
+        }
+        internal void RefreshDpiLayout()
+        {
+            SuspendLayout(); content.SuspendLayout();
+            try
+            {
+                foreach (var button in All(content).OfType<Button>())
+                    if (!button.Font.Equals(Font)) button.Font = Font;
+                foreach (var combo in styledCombos)
+                    if (!combo.IsDisposed) combo.ItemHeight = Math.Max(combo.Font.Height + S(6), S(24));
+            }
+            finally { content.ResumeLayout(false); ResumeLayout(false); }
+            RequestFit();
         }
         private void Fit()
         {

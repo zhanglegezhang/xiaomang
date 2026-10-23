@@ -37,6 +37,12 @@ namespace ShareX.ScreenCaptureLib
         public int MagnifyStrength { get; set; } = 200;
         public ImageInterpolationMode ImageInterpolationMode { get; set; }
 
+        protected override Color ConfiguredFillColor
+        {
+            get => Color.Transparent;
+            set { }
+        }
+
         public MagnifyDrawingShape()
         {
             ForceProportionalResizing = true;
@@ -81,7 +87,12 @@ namespace ShareX.ScreenCaptureLib
             g.PixelOffsetMode = PixelOffsetMode.Default;
             g.InterpolationMode = InterpolationMode.Bilinear;
 
-            DrawEllipse(g);
+            // Ignore fill colors retained by older shapes without changing other tools' preferences.
+            if (Shadow && IsBorderVisible)
+            {
+                DrawEllipse(g, ShadowColor, BorderSize, BorderStyle, Color.Transparent, Rectangle.LocationOffset(ShadowOffset));
+            }
+            DrawEllipse(g, BorderColor, BorderSize, BorderStyle, Color.Transparent, Rectangle);
         }
     }
 }

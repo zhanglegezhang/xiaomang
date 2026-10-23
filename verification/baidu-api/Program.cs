@@ -11,7 +11,7 @@ static class Check{
  static void Wait(Task t){while(!t.IsCompleted){Application.DoEvents();Thread.Sleep(10);}t.GetAwaiter().GetResult();}
  [STAThread]static int Main(string[] args){try{Run(args);return 0;}catch(Exception e){Console.WriteLine("FAIL "+e.GetType().Name+" "+(e is InvalidOperationException ? e.Message : ""));return 1;}}
  static void Run(string[] args){
- Application.EnableVisualStyles();var p=typeof(OCRForm).Assembly.GetType("ShareX.Program")!;p.GetProperty("Settings",F)!.SetValue(null,new ApplicationConfig());p.GetProperty("CustomPersonalPath",F)!.SetValue(null,Path.GetFullPath("test-results/baidu-api/profile"));
+ Application.EnableVisualStyles();var p=typeof(OCRForm).Assembly.GetType("ShareX.Program")!;p.GetProperty("Settings",F)!.SetValue(null,new ApplicationConfig());p.GetProperty("CustomPersonalPath",F)!.SetValue(null,Path.GetFullPath("build/baidu-api/profile"));
  string path=(string)Api.GetProperty("CredentialPath",F)!.GetValue(null)!;
  if(args.Contains("--live")){
  var credentials=Call("Load");var watch=Stopwatch.StartNew();var task=(Task<string>)Call("TranslateAsync",credentials,"Hello","zh",CancellationToken.None);Wait(task);Assert(!string.IsNullOrWhiteSpace(task.Result),"authorized short API request");Console.WriteLine("API_MS="+watch.ElapsedMilliseconds);
@@ -22,7 +22,7 @@ static class Check{
  editor.Text="New source";Assert(result.Text=="","source change clears old API result");
 var pending=(Task)typeof(OCRForm).GetMethod("ShowTranslationAsync",F)!.Invoke(form,null)!;editor.Text="Changed immediately";Wait(pending);Assert(result.Text=="","cancelled request cannot overwrite new source");
 foreach(int width in new[]{760,1180}){form.Width=width;Application.DoEvents();Assert(result.Width>150,"API result fits "+width);}
-using(var shot=new Bitmap(form.Width,form.Height)){form.DrawToBitmap(shot,new Rectangle(Point.Empty,shot.Size));shot.Save(Path.GetFullPath("test-results/baidu-api/api-window.png"));}
+using(var shot=new Bitmap(form.Width,form.Height)){form.DrawToBitmap(shot,new Rectangle(Point.Empty,shot.Size));shot.Save(Path.GetFullPath("build/baidu-api/api-window.png"));}
 Wait((Task)typeof(OCRForm).GetMethod("ShowWebTranslationAsync",F)!.Invoke(form,null)!);Assert(!(bool)typeof(OCRForm).GetField("apiMode",F)!.GetValue(form)!,"manual web fallback");return;
  }
  Assert(!File.Exists(path),"fresh local credentials absent");

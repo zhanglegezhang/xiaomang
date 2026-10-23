@@ -357,7 +357,23 @@ namespace ShareX
 
         protected override void WndProc(ref Message m)
         {
-            if (m.Msg == (int)WindowsMessages.QUERYENDSESSION)
+            // WM_GETDPISCALEDSIZE precedes child DPI notifications. Start batching
+            // here, before those notifications can reflow the settings rows.
+            if (m.Msg == 0x02E4 && mainAppearanceReady && IsHandleCreated)
+            {
+                try
+                {
+                    QueueMainMenuDpiLayout();
+                    base.WndProc(ref m);
+                }
+                catch
+                {
+                    navigationDpiRefreshQueued = false;
+                    ResumeSettingsDpiLayout();
+                    throw;
+                }
+            }
+            else if (m.Msg == (int)WindowsMessages.QUERYENDSESSION)
             {
                 // Calling ToInt64 because the int conversion operator (called when directly casting the IntPtr to the enum)
                 // enforces checked semantics thus crashes any 64 bits build. ToInt64() and long -> enum conversion doesn't.
@@ -1116,7 +1132,8 @@ namespace ShareX
 
         private void MainForm_Resize(object sender, EventArgs e)
         {
-            Refresh();
+            // Let Windows coalesce paint requests after DPI/resize layout is settled.
+            Invalidate();
         }
 
         private void MainForm_VisibleChanged(object sender, EventArgs e)
@@ -1898,6 +1915,7 @@ namespace ShareX
             LayoutInlineSettingsForm();
             form.Show();
             if (firstShow) MainMenuAppearance.Apply(form);
+            else MainMenuAppearance.ApplyDpi(form);
             if (kind == InlineSettingsKind.Application)
                 inlineSettingsViewport.AutoScrollPosition = applicationSettingsScrollPosition;
             tsMain.Invalidate();
@@ -1920,7 +1938,7 @@ namespace ShareX
 
         private void LayoutInlineSettingsForm()
         {
-            if (inlineSettingsForm == null || inlineSettingsForm.IsDisposed || inlineSettingsViewport == null) return;
+            if (navigationDpiRefreshQueued || inlineSettingsForm == null || inlineSettingsForm.IsDisposed || inlineSettingsViewport == null) return;
 
             inlineSettingsForm.Location = Point.Empty;
             inlineSettingsForm.Size = new Size(

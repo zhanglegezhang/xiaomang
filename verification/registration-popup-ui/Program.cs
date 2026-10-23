@@ -9,7 +9,7 @@ static class Check
 {
     const BindingFlags F = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static;
     static int count;
-    static readonly string Output = Path.GetFullPath("test-results/registration-popup-ui/evidence");
+    static readonly string Output = Path.GetFullPath("build/registration-popup-ui/evidence");
     static Type DialogType => typeof(OCRForm).Assembly.GetType("ShareX.BaiduTranslationSettingsForm", true)!;
     static IEnumerable<Control> All(Control c) => new[] { c }.Concat(c.Controls.Cast<Control>().SelectMany(All));
     static T Find<T>(Control root, string name) where T : Control => (T)All(root).Single(c => c.Name == name);

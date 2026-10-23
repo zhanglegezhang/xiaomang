@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -142,7 +142,7 @@
     <value>Menu chú thích</value>
   </data>
   <data name="ShapeManager_CreateToolbar_ApplyChangesContinueTaskEnter" xml:space="preserve">
-    <value>Áp dụng thay đổi và tiếp tục tác vụ (Enter)</value>
+    <value>Áp dụng thay đổi và tiếp tục tác vụ</value>
   </data>
   <data name="ShapeManager_CreateToolbar_AutoCloseEditorOnTask" xml:space="preserve">
     <value>Tự đóng trình chỉnh sửa khi chạy tác vụ</value>
@@ -199,7 +199,7 @@
     <value>Vùng nhớ tạm không chứa hình ảnh.</value>
   </data>
   <data name="ShapeManager_CreateToolbar_ContinueTaskSpaceOrRightClick" xml:space="preserve">
-    <value>Tiếp tục tác vụ (Phím cách hoặc chuột phải)</value>
+    <value>Tiếp tục tác vụ</value>
   </data>
   <data name="ShapeManager_CreateToolbar_CopyImageToClipboard" xml:space="preserve">
     <value>Chép ảnh vào vùng nhớ tạm (Ctrl + C)</value>
@@ -334,7 +334,7 @@
     <value>Ghi nhớ trạng thái menu</value>
   </data>
   <data name="ShapeManager_CreateToolbar_RunAfterCaptureTasks" xml:space="preserve">
-    <value>Chạy tác vụ sau khi chụp (Enter)</value>
+    <value>Chạy tác vụ sau khi chụp</value>
   </data>
   <data name="ShapeManager_CreateToolbar_Image" xml:space="preserve">
     <value>Ảnh</value>

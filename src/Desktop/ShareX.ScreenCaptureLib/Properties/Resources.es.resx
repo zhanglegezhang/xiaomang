@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -175,7 +175,7 @@
     <value>Eliminar</value>
   </data>
   <data name="ShapeManager_CreateToolbar_ApplyChangesContinueTaskEnter" xml:space="preserve">
-    <value>Aplicar cambios y continuar tarea (Enter)</value>
+    <value>Aplicar cambios y continuar tarea</value>
   </data>
   <data name="OpenKeybindsPage" xml:space="preserve">
     <value>Abrir keybinds web page...</value>
@@ -358,7 +358,7 @@
     <value>Guardar imagen as... (Ctrl + Shift + S)</value>
   </data>
   <data name="ShapeManager_CreateToolbar_ContinueTaskSpaceOrRightClick" xml:space="preserve">
-    <value>Continue task (Space or derecha click)</value>
+    <value>Continue task</value>
   </data>
   <data name="ShapeManager_CreateToolbar_FontSize" xml:space="preserve">
     <value>Font tamaño:</value>
@@ -475,7 +475,7 @@
     <value>Tip: You can pan imagen by holding mouse middle button and dragging.</value>
   </data>
   <data name="ShapeManager_CreateToolbar_RunAfterCaptureTasks" xml:space="preserve">
-    <value>Run after captura tasks (Enter)</value>
+    <value>Run after captura tasks</value>
   </data>
   <data name="ShapeManager_CreateContextMenu_RememberMenuState" xml:space="preserve">
     <value>Remember menú state</value>

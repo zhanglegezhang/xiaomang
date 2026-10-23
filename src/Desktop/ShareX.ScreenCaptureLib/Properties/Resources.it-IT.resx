@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -214,7 +214,7 @@
     <value>Larghezza:</value>
   </data>
   <data name="ShapeManager_CreateToolbar_ApplyChangesContinueTaskEnter" xml:space="preserve">
-    <value>Applica e Continua Operazione (Invio)</value>
+    <value>Applica e Continua Operazione</value>
   </data>
   <data name="ShapeManager_CreateToolbar_CancelTaskEsc" xml:space="preserve">
     <value>Annulla Operazione (Esc)</value>
@@ -223,7 +223,7 @@
     <value>Cattura Regioni</value>
   </data>
   <data name="ShapeManager_CreateToolbar_ContinueTaskSpaceOrRightClick" xml:space="preserve">
-    <value>Continua Operazione (Spazio o Click Destro)</value>
+    <value>Continua Operazione</value>
   </data>
   <data name="ShapeManager_CreateToolbar_CopyImageToClipboard" xml:space="preserve">
     <value>Copia Immagine negli Appunti</value>

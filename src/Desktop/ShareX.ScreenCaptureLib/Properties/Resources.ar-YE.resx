@@ -172,7 +172,7 @@
     <value>التأكيد</value>
   </data>
   <data name="ShapeManager_CreateToolbar_ContinueTaskSpaceOrRightClick" xml:space="preserve">
-    <value>استئناف المهمة (المسطرة أو نقرة بالزر الأيمن)</value>
+    <value>استئناف المهمة</value>
   </data>
   <data name="ShapeManager_CreateToolbar_CopyImageToClipboard" xml:space="preserve">
     <value>نسخ الصورة إلى الحافظة (Ctrl + C)</value>
@@ -355,7 +355,7 @@
     <value>تدوير 90° معاكس</value>
   </data>
   <data name="ShapeManager_CreateToolbar_RunAfterCaptureTasks" xml:space="preserve">
-    <value>تشغيل مهام ما بعد الالتقاط (Enter)</value>
+    <value>تشغيل مهام ما بعد الالتقاط</value>
   </data>
   <data name="ShapeManager_CreateToolbar_SaveImage" xml:space="preserve">
     <value>حفظ  الصورة (Ctrl+S)</value>
@@ -453,7 +453,7 @@
     <value>لون التمييز...</value>
   </data>
   <data name="ShapeManager_CreateToolbar_ApplyChangesContinueTaskEnter" xml:space="preserve">
-    <value>تطبيق التغييرات ومتابعة المهمة (Enter)</value>
+    <value>تطبيق التغييرات ومتابعة المهمة</value>
   </data>
   <data name="ScreenRecordForm_ConfirmCancel" xml:space="preserve">
     <value>سيتم إلغاء التسجيل، هل أنت متأكد؟</value>

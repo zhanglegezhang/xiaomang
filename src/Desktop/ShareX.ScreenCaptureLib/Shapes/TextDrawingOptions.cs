@@ -32,6 +32,14 @@ namespace ShareX.ScreenCaptureLib
     {
         public string Font { get; set; } = AnnotationOptions.DefaultFont;
         public int Size { get; set; } = 18;
+        // Legacy annotations used points. New inline defaults use image pixels.
+        public bool SizeInPixels { get; set; }
+        public bool InlineDefaultsApplied { get; set; }
+        public int InlineDefaultsVersion { get; set; }
+        public bool PlainInlineRendering { get; set; }
+        // Image-coordinate wrap width; zero keeps legacy unwrapped annotations.
+        public float InlineWrapWidth { get; set; }
+        public Font CreateFont() => new Font(Font, Size, Style, SizeInPixels ? GraphicsUnit.Pixel : GraphicsUnit.Point);
         public Color Color { get; set; } = Color.White;
         public bool Bold { get; set; } = false;
         public bool Italic { get; set; } = false;

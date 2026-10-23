@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -258,7 +258,7 @@
     <value>編輯器選單</value>
   </data>
   <data name="ShapeManager_CreateToolbar_ApplyChangesContinueTaskEnter" xml:space="preserve">
-    <value>套用變更並繼續排程 (Enter)</value>
+    <value>套用變更並繼續排程</value>
   </data>
   <data name="ShapeManager_CreateToolbar_AutoCloseEditorOnTask" xml:space="preserve">
     <value>在排程中自動關閉編輯器</value>
@@ -282,7 +282,7 @@
     <value>擷取區域</value>
   </data>
   <data name="ShapeManager_CreateToolbar_ContinueTaskSpaceOrRightClick" xml:space="preserve">
-    <value>繼續排程 (空白鍵或滑鼠右鍵)</value>
+    <value>繼續排程</value>
   </data>
   <data name="ShapeManager_CreateToolbar_CopyImageToClipboard" xml:space="preserve">
     <value>將圖片複製到剪貼簿 (Ctrl + C)</value>
@@ -354,7 +354,7 @@
     <value>逆時針旋轉 90°</value>
   </data>
   <data name="ShapeManager_CreateToolbar_RunAfterCaptureTasks" xml:space="preserve">
-    <value>執行擷取後的排程 (Enter)</value>
+    <value>執行擷取後的排程</value>
   </data>
   <data name="ShapeManager_CreateToolbar_SaveImage" xml:space="preserve">
     <value>儲存圖片 (Ctrl + S)</value>

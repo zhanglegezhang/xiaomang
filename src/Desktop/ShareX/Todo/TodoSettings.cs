@@ -10,6 +10,8 @@ namespace ShareX
         public int WidgetWidth;
         public int WidgetHeight;
         public int WidgetY = -1;
+        public int CompactTheme;
+        public int CompactThemeRevision;
         public int ReminderVersion;
         public int NoteLogSeedVersion;
         public string ActiveModule = "Todo";

@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -232,7 +232,7 @@
     <value>Menú de anotaciones</value>
   </data>
   <data name="ShapeManager_CreateToolbar_ApplyChangesContinueTaskEnter" xml:space="preserve">
-    <value>Aplica cambios y continuar tarea (Intro)</value>
+    <value>Aplica cambios y continuar tarea</value>
   </data>
   <data name="ShapeManager_CreateToolbar_AutoCloseEditorOnTask" xml:space="preserve">
     <value>Cerrar editor al terminar</value>
@@ -256,7 +256,7 @@
     <value>Capturar regiones</value>
   </data>
   <data name="ShapeManager_CreateToolbar_ContinueTaskSpaceOrRightClick" xml:space="preserve">
-    <value>Continuar tarea (Espacio o clic derecho)</value>
+    <value>Continuar tarea</value>
   </data>
   <data name="ShapeManager_CreateToolbar_CopyImageToClipboard" xml:space="preserve">
     <value>Copiar imagen al portapapeles (Ctrl+C)</value>
@@ -328,7 +328,7 @@
     <value>Girar 90° a la izquierda</value>
   </data>
   <data name="ShapeManager_CreateToolbar_RunAfterCaptureTasks" xml:space="preserve">
-    <value>Ejecutar tareas de después de capturar (Intro)</value>
+    <value>Ejecutar tareas de después de capturar</value>
   </data>
   <data name="ShapeManager_CreateToolbar_SaveImage" xml:space="preserve">
     <value>Guardar imagen (Ctrl+S)</value>

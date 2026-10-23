@@ -97,9 +97,19 @@ namespace ShareX.ScreenCaptureLib
 
         private void SetObjectCursor(ImageEditorControl control, bool dragging)
         {
-            if (control is ResizeNode node && UsesSelectionResize)
-                Form.SetSelectionResizeCursor((NodePosition)Array.IndexOf(ResizeNodes, node));
-            else Form.SetHandCursor(dragging);
+            if (!Form.IsEditorMode && control is ResizeNode node && CurrentShape != null &&
+                CurrentShape is not LineDrawingShape && CurrentShape is not FreehandRegionShape)
+            {
+                int index = Array.IndexOf(ResizeNodes, node);
+                // Only the eight bounding-box handles resize in fixed directions.
+                // Extra handles and line/path control points keep their move cursor.
+                if (index >= 0 && index < (int)NodePosition.Extra)
+                {
+                    Form.SetSelectionResizeCursor((NodePosition)index);
+                    return;
+                }
+            }
+            Form.SetHandCursor(dragging);
         }
 
         private bool UpdateSelectionObjects(ImageEditorControl[] objects, PointF point)
