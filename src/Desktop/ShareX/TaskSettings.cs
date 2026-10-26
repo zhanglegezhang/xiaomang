@@ -305,26 +305,31 @@ namespace ShareX
     {
         #region General / Notifications
 
-        public bool PlaySoundAfterCapture = false;
-        public bool PlaySoundAfterUpload = false;
-        public bool PlaySoundAfterAction = false;
+        // Keep serialized keys compatible, but legacy/imported settings cannot re-enable notification sounds.
+        public bool PlaySoundAfterCapture { get => false; set { } }
+        public bool PlaySoundAfterUpload { get => false; set { } }
+        public bool PlaySoundAfterAction { get => false; set { } }
         public bool ShowToastNotificationAfterTaskCompleted = true;
         public float ToastWindowDuration = 5f;
         public float ToastWindowFadeDuration = 1f;
         public ContentAlignment ToastWindowPlacement = ContentAlignment.BottomRight;
         public Size ToastWindowSize = new Size(400, 300);
-        public ToastClickAction ToastWindowLeftClickAction = ToastClickAction.OpenUrl;
-        public ToastClickAction ToastWindowRightClickAction = ToastClickAction.CloseNotification;
-        public ToastClickAction ToastWindowMiddleClickAction = ToastClickAction.AnnotateImage;
-        public bool ToastWindowAutoHide = true;
-        public bool DisableNotificationsOnFullscreen = false;
-        public bool UseCustomCaptureSound = false;
+        public ToastClickAction ToastWindowLeftClickAction { get => ToastClickAction.OpenFolder; set { } }
+        private ToastClickAction toastRightAction, toastMiddleAction;
+        public ToastClickAction ToastWindowRightClickAction { get => toastRightAction; set => toastRightAction = NormalizeNotificationAction(value); }
+        public ToastClickAction ToastWindowMiddleClickAction { get => toastMiddleAction; set => toastMiddleAction = NormalizeNotificationAction(value); }
+        internal static ToastClickAction NormalizeNotificationAction(ToastClickAction action) =>
+            action == ToastClickAction.CopyImageToClipboard || action == ToastClickAction.CopyFile || action == ToastClickAction.CopyFilePath
+                ? action : ToastClickAction.CloseNotification;
+        public bool ToastWindowAutoHide { get => true; set { } }
+        public bool DisableNotificationsOnFullscreen { get => true; set { } }
+        public bool UseCustomCaptureSound { get => false; set { } }
         public string CustomCaptureSoundPath = "";
-        public bool UseCustomTaskCompletedSound = false;
+        public bool UseCustomTaskCompletedSound { get => false; set { } }
         public string CustomTaskCompletedSoundPath = "";
-        public bool UseCustomActionCompletedSound = false;
+        public bool UseCustomActionCompletedSound { get => false; set { } }
         public string CustomActionCompletedSoundPath = "";
-        public bool UseCustomErrorSound = false;
+        public bool UseCustomErrorSound { get => false; set { } }
         public string CustomErrorSoundPath = "";
 
         #endregion
@@ -400,9 +405,9 @@ namespace ShareX
         public float ScreenRecordStartDelay = 3f;
         public bool ScreenRecordFixedDuration = false;
         public float ScreenRecordDuration = 3f;
-        public bool ScreenRecordTwoPassEncoding = false;
-        public bool ScreenRecordAskConfirmationOnAbort = false;
-        public bool ScreenRecordTransparentRegion = false;
+        public bool ScreenRecordTwoPassEncoding { get => false; set { } }
+        public bool ScreenRecordAskConfirmationOnAbort { get => true; set { } }
+        public bool ScreenRecordTransparentRegion { get => false; set { } }
 
         #endregion Capture / Screen recorder
 

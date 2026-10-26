@@ -184,6 +184,7 @@ namespace ShareX
             compactHintTimer = new Timer { Interval = 500 };
             compactHintTimer.Tick += CompactHintTimer_Tick;
             Controls.Add(compactLabel);
+            InitializeCompactIdle();
 
             collapseTimer = new Timer { Interval = 300 };
             collapseTimer.Tick += (sender, e) =>

@@ -49,6 +49,7 @@
     <EmbeddedResource Include="Assets\MixedOcrNotice.txt" LogicalName="ShareX.MixedOcrNotice.txt" />
     <EmbeddedResource Include="Assets\XiaomangVersionLog.txt" LogicalName="ShareX.Assets.XiaomangVersionLog.txt" />
     <EmbeddedResource Include="Assets\CompactThemeRobots.png" LogicalName="ShareX.Assets.CompactThemeRobots.png" />
+    <EmbeddedResource Include="Assets\CompactIdleRobots.png" LogicalName="ShareX.Assets.CompactIdleRobots.png" />
     <EmbeddedResource Include="Assets\CompactThemes.png" LogicalName="ShareX.Assets.CompactThemes.png" />
     <EmbeddedResource Include="Assets\XiaomangFeatureMindMap.html" LogicalName="ShareX.Assets.XiaomangFeatureMindMap.html" />
     <EmbeddedResource Include="Assets\XiaomangUpdateRecovery.ps1" LogicalName="ShareX.Assets.XiaomangUpdateRecovery.ps1" />

@@ -54,6 +54,7 @@ namespace ShareX
 
         private void CompactLabel_MouseDown(object sender, MouseEventArgs e)
         {
+            ResetCompactIdle();
             HideCompactHint();
             if (e.Button == MouseButtons.Right) { ShowSearchMenu(); return; }
             if (e.Button != MouseButtons.Left) return;

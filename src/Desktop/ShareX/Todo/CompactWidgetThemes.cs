@@ -7,11 +7,37 @@ namespace ShareX
 {
     internal static class CompactWidgetThemes
     {
-        internal static readonly string[] Names = { "默认", "绯红", "赤雪", "青瓷", "酒红", "霜雪", "薄荷" };
+        internal static readonly string[] Names = { "默认", "绯红", "霜雪", "薄荷" };
+        internal static readonly int[] Ids = { 0, 1, 5, 6 };
         // The small immutable bitmaps are shared for the process lifetime.
         // Default-theme users never decode the optional atlas.
         private static readonly Lazy<Bitmap[]> backgrounds = new Lazy<Bitmap[]>(() => Load(false));
-        internal static int Normalize(int theme) => theme >= 0 && theme < Names.Length ? theme : 0;
+        internal static int Normalize(int theme) => Array.IndexOf(Ids, theme) >= 0 ? theme : 0;
+        private static readonly Lazy<Bitmap> idleRobots = new Lazy<Bitmap>(() =>
+        {
+            try
+            {
+                using var stream = typeof(CompactWidgetThemes).Assembly.GetManifestResourceStream("ShareX.Assets.CompactIdleRobots.png");
+                using var image = Image.FromStream(stream);
+                return new Bitmap(image);
+            }
+            catch (Exception error) { DebugHelper.WriteException(error, "闲置贴片图片加载失败"); return null; }
+        });
+        internal static bool DrawIdleLogo(Graphics graphics, Size size, int theme)
+        {
+            Bitmap atlas = idleRobots.Value;
+            if (atlas == null) return false;
+            int index = Array.IndexOf(Ids, Normalize(theme));
+            float cell = atlas.Width / 4f;
+            float height = size.Width * atlas.Height / cell;
+            // Visible artwork spans rows 121..804 in the 887px atlas; center
+            // the artwork, excluding its unequal transparent top/bottom padding.
+            // 4pt = 96/72 * 4 logical pixels; the compact height is 48 logical pixels.
+            float top = size.Height / 2f - height * (462.5f / 887f) - size.Height / 9f;
+            graphics.DrawImage(atlas, new RectangleF(0, top, size.Width, height),
+                new RectangleF(index * cell, 0, cell, atlas.Height), GraphicsUnit.Pixel);
+            return true;
+        }
 
         private static readonly Lazy<Bitmap[]> robots = new Lazy<Bitmap[]>(() => Load(true));
 

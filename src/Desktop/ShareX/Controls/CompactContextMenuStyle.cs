@@ -105,6 +105,12 @@ namespace ShareX
                 }
                 else if (text.Contains("主菜单"))
                     e.Graphics.DrawLines(pen, new[] { new Point(3, 11), new Point(12, 3), new Point(21, 11), new Point(21, 21), new Point(15, 21), new Point(15, 14), new Point(9, 14), new Point(9, 21), new Point(3, 21), new Point(3, 11) });
+                else if (text == "收起小蟒")
+                {
+                    e.Graphics.DrawLine(pen, 20, 4, 20, 20);
+                    e.Graphics.DrawLine(pen, 3, 12, 15, 12);
+                    e.Graphics.DrawLines(pen, new[] { new Point(10, 7), new Point(15, 12), new Point(10, 17) });
+                }
                 else { e.Graphics.DrawArc(pen, 3, 4, 18, 18, -50, 280); e.Graphics.DrawLine(pen, 12, 2, 12, 12); }
                 e.Graphics.Restore(state);
             }

@@ -41,21 +41,19 @@ namespace ShareX
                     design.Hint("导入导出时可选择类别并预览数据。");break;
                 case "tpCaptureGeneral":
                     design.Section("截图行为");Toggle("cbShowCursor","在截图中显示鼠标指针");Toggle("cbCaptureAutoHideDesktopIcons","自动隐藏桌面图标");
-                    Toggle("cbCaptureTransparent","截图窗口保留透明度");Toggle("cbCaptureShadow","截图窗口添加阴影");
-                    Number("nudCaptureShadowOffset","阴影偏移","px");
+                    Toggle("cbCaptureTransparent","截图窗口保留透明度");
                     design.Section("区域截图");Editor("cbRegionCaptureMouseRightClickAction","鼠标右键动作");
                     Number("nudRegionCaptureBackgroundDimStrength","背景调暗强度","%");Toggle("cbRegionCaptureShowInfo","显示位置与尺寸");
-                    design.Hint("截图窗口阴影依赖透明度。");break;
+                    break;
                 case "tpScreenRecorder":
                     design.Section("帧率");Number("nudScreenRecordFPS","视频帧率","FPS");Number("nudGIFFPS","GIF 帧率","FPS");
                     design.Section("录制行为");design.Related("自动开始录制",(CheckBox)Find("cbScreenRecordAutoStart"),Find("nudScreenRecorderStartDelay"),design.Unit("秒"));
                     design.Related("固定录制时长",(CheckBox)Find("cbScreenRecorderFixedDuration"),Find("nudScreenRecorderDuration"),design.Unit("秒"));
-                    Toggle("cbScreenRecorderShowCursor","在录像中显示鼠标指针");Toggle("cbScreenRecordTransparentRegion","使用透明区域选择");
-                    Toggle("cbScreenRecordConfirmAbort","取消录制前确认");Toggle("cbScreenRecordTwoPassEncoding","使用无损编码并应用编码选项");
+                    Toggle("cbScreenRecorderShowCursor","在录像中显示鼠标指针");
                     design.Section("编码与声音");design.Action("编码与声音来源",(Button)Find("btnScreenRecorderFFmpegOptions"),"录屏选项…");break;
                 case "tpOCR":
                     design.Section("识别偏好");design.Editor("默认语言",Find("cbCaptureOCRDefaultLanguage"),description:"此语言用于 Windows OCR 识别。");Toggle("cbCaptureOCRSilent","静默识别");
-                    design.Section("结果处理");Toggle("cbCaptureOCRAutoCopy","自动复制识别结果");Toggle("cbCloseWindowAfterOpenServiceLink","打开翻译后关闭识别窗口");
+                    design.Section("结果处理");Toggle("cbCaptureOCRAutoCopy","自动复制识别结果");
                     design.Hint("中英混合组件在“注册”中管理。");break;
                 case "tpToolsGeneral":
                     void Picker(string name,string title,bool multiline=false){
@@ -122,23 +120,12 @@ namespace ShareX
             void Toggle(string n,string title=null){var check=(CheckBox)Find(n);design.Toggle(title??check.Text.Replace("&",""),check);}
             Control popup=Find("gbToastWindow");
             void Popup(string title,Control field){var row=design.Editor(title,field);design.LinkEnabled(row,popup);}
-            design.Section("提示音");Toggle("cbPlaySoundAfterCapture","截图完成时播放提示音");
-            if(!SystemOptions.DisableUpload)Toggle("cbPlaySoundAfterUpload","上传完成时播放提示音");
-            Toggle("cbPlaySoundAfterAction","操作完成时播放提示音");design.Section("弹窗显示");Toggle("cbShowToastNotificationAfterTaskCompleted","任务完成后显示通知");
-            Popup("显示时长",design.Inline(Find("nudToastWindowDuration"),design.Unit("秒")));
-            Popup("淡出时长",design.Inline(Find("nudToastWindowFadeDuration"),design.Unit("秒")));
-            Popup("显示位置",Find("cbToastWindowPlacement"));
-            Popup("弹窗尺寸",design.Inline(Find("nudToastWindowSizeWidth"),design.Unit("×"),Find("nudToastWindowSizeHeight"),design.Unit("px")));
-            Toggle("cbToastWindowAutoHide","截图时自动隐藏通知");design.LinkEnabled(design.Controls[0].Controls.Cast<Control>().Last(),popup);
-            Toggle("cbDisableNotificationsOnFullscreen","全屏应用中不显示");design.LinkEnabled(design.Controls[0].Controls.Cast<Control>().Last(),popup);
-            design.Section("点击动作");Popup("左键",Find("cbToastWindowLeftClickAction"));Popup("右键",Find("cbToastWindowRightClickAction"));Popup("中键",Find("cbToastWindowMiddleClickAction"));
-            // Custom sound settings existed below the fold; retain them rather than
-            // losing them merely because the concept image shows the first viewport.
-            design.Section("自定义声音");
-            foreach(var sound in new[]{("Capture","截图"),("TaskCompleted","任务完成"),("ActionCompleted","操作完成"),("Error","错误")}){
-                Toggle("cbUseCustom"+sound.Item1+"Sound","自定义"+sound.Item2+"提示音");
-                design.Editor("声音文件",design.Inline(Find("txtCustom"+sound.Item1+"SoundPath"),Find("btnCustom"+sound.Item1+"SoundPath")));
-            }
+            design.Section("弹窗显示");Toggle("cbShowToastNotificationAfterTaskCompleted","任务完成后显示通知");
+            design.LinkEnabled(design.CompactPair("显示时长",design.Inline(Find("nudToastWindowDuration"),design.Unit("秒")),
+                "淡出时长",design.Inline(Find("nudToastWindowFadeDuration"),design.Unit("秒"))),popup);
+            design.LinkEnabled(design.CompactPair("显示位置",Find("cbToastWindowPlacement"),
+                "弹窗尺寸",design.Inline(Find("nudToastWindowSizeWidth"),design.Unit("×"),Find("nudToastWindowSizeHeight"),design.Unit("px"))),popup);
+            design.Section("点击动作");Popup("右键",Find("cbToastWindowRightClickAction"));Popup("中键",Find("cbToastWindowMiddleClickAction"));
         }
         private void DesignAdvanced(SettingsDesignSurface design)
         {

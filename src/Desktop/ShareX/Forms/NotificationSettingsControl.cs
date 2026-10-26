@@ -37,6 +37,9 @@ namespace ShareX
     {
         private readonly Func<TaskSettingsGeneral> getSettings;
         private bool updating = true;
+        private static readonly ToastClickAction[] ClickActions = { ToastClickAction.CloseNotification,
+            ToastClickAction.CopyImageToClipboard, ToastClickAction.CopyFile, ToastClickAction.CopyFilePath };
+        private static readonly string[] ClickActionNames = { "关闭通知", "复制图片", "复制截图文件", "复制文件路径" };
 
         private TaskSettingsGeneral Settings => getSettings();
 
@@ -50,6 +53,9 @@ namespace ShareX
             {
                 cbPlaySoundAfterUpload.Visible = !SystemOptions.DisableUpload;
                 if (useGroupedLayout) InitializeGroupedLayout();
+                foreach (Control sound in AllControls(this).Where(c => c.Name.Contains("Sound"))) sound.Visible = false;
+                cbToastWindowAutoHide.Visible = cbDisableNotificationsOnFullscreen.Visible = false;
+                cbToastWindowLeftClickAction.Visible = lblToastWindowLeftClickAction.Visible = false;
                 LoadSettings();
                 ShareXResources.ApplyCustomThemeToControl(this);
             }
@@ -71,10 +77,6 @@ namespace ShareX
         {
             using var layout = new SettingsPageLayout(this, 33.6f, true);
             var content = layout.Stack();
-            layout.Heading(content, "提示音", "Sounds");
-            layout.Add(content, cbPlaySoundAfterCapture);
-            layout.Add(content, cbPlaySoundAfterUpload);
-            layout.Add(content, cbPlaySoundAfterAction);
             layout.Heading(content, "弹窗显示", "Notification popup");
             layout.Add(content, cbShowToastNotificationAfterTaskCompleted);
 
@@ -83,10 +85,7 @@ namespace ShareX
             layout.Add(popup, layout.Row(lblToastWindowFadeDuration, layout.Inline(nudToastWindowFadeDuration, lblToastWindowFadeDurationSeconds)));
             layout.Add(popup, layout.Row(lblToastWindowPlacement, cbToastWindowPlacement));
             layout.Add(popup, layout.Row(lblToastWindowSize, layout.Inline(nudToastWindowSizeWidth, lblToastWindowSizeX, nudToastWindowSizeHeight)));
-            layout.Add(popup, cbToastWindowAutoHide);
-            layout.Add(popup, cbDisableNotificationsOnFullscreen);
             layout.Heading(popup, "弹窗点击动作", "Popup click actions");
-            layout.Add(popup, layout.Row(lblToastWindowLeftClickAction, cbToastWindowLeftClickAction));
             layout.Add(popup, layout.Row(lblToastWindowRightClickAction, cbToastWindowRightClickAction));
             layout.Add(popup, layout.Row(lblToastWindowMiddleClickAction, cbToastWindowMiddleClickAction));
             // Keep the existing enabled/disabled scope tied to the popup checkbox.
@@ -103,31 +102,6 @@ namespace ShareX
             gbToastWindow.Controls.Add(popup);
             layout.Add(content, gbToastWindow);
 
-            layout.Heading(content, "自定义声音", "Custom sounds");
-            void AddSound(CheckBox enabled, TextBox path, Button browse)
-            {
-                layout.Add(content, enabled);
-                var row = new TableLayoutPanel
-                {
-                    AutoSize = true, AutoSizeMode = AutoSizeMode.GrowAndShrink,
-                    ColumnCount = 2, RowCount = 1, Dock = DockStyle.Top, Size = new Size(1, 1)
-                };
-                layout.Defer(row);
-                row.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
-                row.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize));
-                path.Anchor = AnchorStyles.Left | AnchorStyles.Right;
-                path.Margin = new Padding(0, layout.Scale(3), layout.Scale(8), layout.Scale(3));
-                browse.AutoSize = true;
-                browse.MinimumSize = new Size(layout.Scale(32), layout.Scale(26));
-                browse.Margin = Padding.Empty;
-                row.Controls.Add(path, 0, 0);
-                row.Controls.Add(browse, 1, 0);
-                layout.Add(content, row);
-            }
-            AddSound(cbUseCustomCaptureSound, txtCustomCaptureSoundPath, btnCustomCaptureSoundPath);
-            AddSound(cbUseCustomTaskCompletedSound, txtCustomTaskCompletedSoundPath, btnCustomTaskCompletedSoundPath);
-            AddSound(cbUseCustomActionCompletedSound, txtCustomActionCompletedSoundPath, btnCustomActionCompletedSoundPath);
-            AddSound(cbUseCustomErrorSound, txtCustomErrorSoundPath, btnCustomErrorSoundPath);
             layout.Install(this, content);
         }
 
@@ -153,10 +127,10 @@ namespace ShareX
                 nudToastWindowSizeHeight.SetValue(Settings.ToastWindowSize.Height);
                 cbToastWindowLeftClickAction.Items.AddRange(Helpers.GetLocalizedEnumDescriptions<ToastClickAction>());
                 cbToastWindowLeftClickAction.SelectedIndex = (int)Settings.ToastWindowLeftClickAction;
-                cbToastWindowRightClickAction.Items.AddRange(Helpers.GetLocalizedEnumDescriptions<ToastClickAction>());
-                cbToastWindowRightClickAction.SelectedIndex = (int)Settings.ToastWindowRightClickAction;
-                cbToastWindowMiddleClickAction.Items.AddRange(Helpers.GetLocalizedEnumDescriptions<ToastClickAction>());
-                cbToastWindowMiddleClickAction.SelectedIndex = (int)Settings.ToastWindowMiddleClickAction;
+                cbToastWindowRightClickAction.Items.AddRange(ClickActionNames);
+                cbToastWindowRightClickAction.SelectedIndex = Array.IndexOf(ClickActions, Settings.ToastWindowRightClickAction);
+                cbToastWindowMiddleClickAction.Items.AddRange(ClickActionNames);
+                cbToastWindowMiddleClickAction.SelectedIndex = Array.IndexOf(ClickActions, Settings.ToastWindowMiddleClickAction);
                 cbToastWindowAutoHide.Checked = Settings.ToastWindowAutoHide;
                 cbDisableNotificationsOnFullscreen.Checked = Settings.DisableNotificationsOnFullscreen;
                 cbUseCustomCaptureSound.Checked = Settings.UseCustomCaptureSound;
@@ -610,14 +584,16 @@ namespace ShareX
         {
             if (updating) return;
 
-            Settings.ToastWindowRightClickAction = (ToastClickAction)cbToastWindowRightClickAction.SelectedIndex;
+            if (cbToastWindowRightClickAction.SelectedIndex >= 0)
+                Settings.ToastWindowRightClickAction = ClickActions[cbToastWindowRightClickAction.SelectedIndex];
         }
 
         private void cbToastWindowMiddleClickAction_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (updating) return;
 
-            Settings.ToastWindowMiddleClickAction = (ToastClickAction)cbToastWindowMiddleClickAction.SelectedIndex;
+            if (cbToastWindowMiddleClickAction.SelectedIndex >= 0)
+                Settings.ToastWindowMiddleClickAction = ClickActions[cbToastWindowMiddleClickAction.SelectedIndex];
         }
 
         private void cbToastWindowAutoHide_CheckedChanged(object sender, EventArgs e)

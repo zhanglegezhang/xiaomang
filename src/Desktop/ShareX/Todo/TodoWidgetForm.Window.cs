@@ -163,6 +163,7 @@ namespace ShareX
             }
             reminderTimer.Dispose();
             collapseTimer.Dispose();
+            compactIdleTimer?.Dispose();
             noteSaveTimer.Dispose();
             compactLongPressTimer.Dispose();
             voiceRecordingTimer.Dispose();
@@ -269,6 +270,7 @@ namespace ShareX
 
         private void CompactSurface_MouseEnter(Control surface)
         {
+            ResetCompactIdle();
             if (expanded || compactDragging || compactRecording || !Visible) return;
             HideCompactHint();
             compactHintSurface = surface;
@@ -278,6 +280,7 @@ namespace ShareX
 
         private void CompactSurface_MouseLeave(Control surface)
         {
+            compactLastActivity = Environment.TickCount64;
             if (compactHintSurface == surface) HideCompactHint();
         }
 
@@ -786,7 +789,7 @@ namespace ShareX
             try
             {
                 compactOverlay ??= new CompactOverlayForm(this);
-                Size size = new Size(D(CollapsedWidth), D(CollapsedHeight));
+                Size size = new Size(D(CurrentCompactWidth), D(CollapsedHeight));
                 Point location = PointToScreen(new Point(ClientSize.Width - size.Width, 0));
                 compactOverlay.UpdateCompact(location, size);
                 if (!compactOverlay.Visible) compactOverlay.Show(this);
@@ -853,6 +856,11 @@ namespace ShareX
 
         private void SetExpanded(bool value)
         {
+            if (!changingIdleSize)
+            {
+                compactLastActivity = Environment.TickCount64;
+                compactLabel.IdleCompact = false;
+            }
             if (value && !Settings.IsModuleVisible(Settings.ActiveModule))
             {
                 Settings.ActiveModule = Settings.FirstVisibleModule();
@@ -896,7 +904,7 @@ namespace ShareX
                     Region = null;
                     oldRegion?.Dispose();
                     MinimumSize = Size.Empty;
-                    Size = new Size(D(CollapsedWidth), D(CollapsedHeight));
+                    Size = new Size(D(CurrentCompactWidth), D(CollapsedHeight));
                 }
                 else
                 {
@@ -952,11 +960,11 @@ namespace ShareX
                 }
                 // Keep an opaque interior for the regular child control, entirely under
                 // the per-pixel overlay. No binary Region pixels reach its soft outline.
-                int left = Math.Max(0, ClientSize.Width - D(CollapsedWidth));
+                int left = Math.Max(0, ClientSize.Width - D(CurrentCompactWidth));
                 int top = D(2);
                 Region oldRegion = Region;
                 Region = new Region(new Rectangle(left + D(10), top,
-                    Math.Max(1, D(CollapsedWidth) - D(10)),
+                    Math.Max(1, D(CurrentCompactWidth) - D(10)),
                     Math.Max(1, D(CollapsedHeight) - top * 2)));
                 oldRegion?.Dispose();
                 SyncCompactOverlay();

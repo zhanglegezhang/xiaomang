@@ -79,13 +79,14 @@ namespace ShareX
             arranging=true;
             try {
             bool combo = Editor is ComboBox;
+            bool compact = Editor.Name == "cbToastWindowPlacement";
             int pad = plain ? 0 : S(9);
-            viewport.SetBounds(combo ? S(3) : pad, S(3), Math.Max(1, Width - (combo ? S(33) : pad * 2)), Math.Max(1, Height - S(6)));
+            viewport.SetBounds(combo ? S(3) : pad, S(3), Math.Max(1, Width - (combo ? S(compact ? 20 : 33) : pad * 2)), Math.Max(1, Height - S(6)));
             if (combo)
             {
                 Editor.SetBounds(-S(2), (viewport.Height - Editor.PreferredSize.Height) / 2,
                     Math.Max(1,Width-S(2)), Editor.PreferredSize.Height);
-                arrow?.SetBounds(Math.Max(0, Width - S(28)), S(3), S(25), Math.Max(1, Height - S(6)));
+                arrow?.SetBounds(Math.Max(0, Width - S(compact ? 19 : 28)), S(3), S(compact ? 16 : 25), Math.Max(1, Height - S(6)));
                 arrow?.BringToFront();
             }
             else

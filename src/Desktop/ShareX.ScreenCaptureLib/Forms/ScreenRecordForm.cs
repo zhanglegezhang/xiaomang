@@ -116,6 +116,7 @@ namespace ShareX.ScreenCaptureLib
             ShareXResources.ApplyTheme(this);
             niTray.Icon = ShareXResources.Icon;
             ConfigureRecordingToolbar();
+            recordingActionTip = new ToolTip(components);
 
             toolbarLayoutReady = true;
             LayoutRecordingRegion(regionRectangle);
@@ -296,8 +297,8 @@ namespace ShareX.ScreenCaptureLib
                     string trayTextWorking = "小蟒 - " + Resources.ScreenRecordForm_StartRecording_Click_tray_icon_to_stop_recording_;
                     niTray.Text = trayTextWorking.Truncate(63);
                     niTray.Icon = Resources.control_record.ToIcon();
-                    btnStart.Text = Resources.ScreenRecordForm_Stop;
-                    tsmiStart.Text = Resources.ScreenRecordForm_Stop;
+                    btnStart.Text = "完成";
+                    tsmiStart.Text = "完成";
                     tsmiStart.Image = Resources.tick;
                     break;
                 case ScreenRecordingStatus.Waiting:
@@ -331,8 +332,11 @@ namespace ShareX.ScreenCaptureLib
             UpdateActionAvailability();
         }
 
+        private readonly ToolTip recordingActionTip;
+
         private void UpdateActionAvailability()
         {
+            recordingActionTip?.SetToolTip(btnStart, Status == ScreenRecordingStatus.Waiting ? "开始录制" : "结束录制并保存");
             btnStart.IsStartAction = Status == ScreenRecordingStatus.Waiting;
             btnPause.IsResumeAction = Status == ScreenRecordingStatus.Paused;
             if (Status == ScreenRecordingStatus.Waiting) btnPause.Text = Resources.Pause;
@@ -382,7 +386,7 @@ namespace ShareX.ScreenCaptureLib
             }
             toolbarGrip.Bounds = new Rectangle(inset, inset, S(14), itemHeight);
             btnStart.Bounds = new Rectangle(toolbarGrip.Right + gap, inset,
-                ButtonWidth(Resources.ScreenRecordForm_Start, Resources.ScreenRecordForm_Stop), itemHeight);
+                ButtonWidth(Resources.ScreenRecordForm_Start, "完成"), itemHeight);
             btnPause.Bounds = new Rectangle(btnStart.Right + gap, inset, ButtonWidth(Resources.Pause, Resources.Resume), itemHeight);
             btnAbort.Bounds = new Rectangle(btnPause.Right + gap, inset, ButtonWidth(btnAbort.Text), itemHeight);
             btnStart.Font = btnPause.Font = btnAbort.Font = toolbarFont;
@@ -678,8 +682,8 @@ namespace ShareX.ScreenCaptureLib
         {
             if (e.Button == MouseButtons.Left)
             {
-                if (!AskConfirmationOnAbort || MessageBox.Show(Resources.ScreenRecordForm_ConfirmCancel, "小蟒", MessageBoxButtons.YesNo,
-                    MessageBoxIcon.Warning) == DialogResult.Yes)
+                using var confirmation = new RecordingAbortConfirmationForm(this);
+                if (!AskConfirmationOnAbort || confirmation.ShowDialog(this) == DialogResult.OK)
                 {
                     AbortRecording();
                 }

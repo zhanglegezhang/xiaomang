@@ -43,7 +43,13 @@ namespace ShareX.ScreenCaptureLib
 
         public bool QuickCrop = true;
         public int MinimumSize = DefaultMinimumSize;
-        public RegionCaptureAction RegionCaptureActionRightClick = RegionCaptureAction.RemoveShapeCancelCapture;
+        private RegionCaptureAction regionCaptureActionRightClick = RegionCaptureAction.RemoveShapeCancelCapture;
+        public RegionCaptureAction RegionCaptureActionRightClick
+        {
+            get => regionCaptureActionRightClick;
+            set => regionCaptureActionRightClick = value >= RegionCaptureAction.None && value <= RegionCaptureAction.RemoveShape
+                ? value : RegionCaptureAction.RemoveShapeCancelCapture;
+        }
         public RegionCaptureAction RegionCaptureActionMiddleClick = RegionCaptureAction.SwapToolType;
         public RegionCaptureAction RegionCaptureActionX1Click = RegionCaptureAction.CaptureFullscreen;
         public RegionCaptureAction RegionCaptureActionX2Click = RegionCaptureAction.CaptureActiveMonitor;

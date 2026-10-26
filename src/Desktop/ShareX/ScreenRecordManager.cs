@@ -1,4 +1,4 @@
-﻿#region License Information (GPL v3)
+#region License Information (GPL v3)
 
 /*
     ShareX - A program that allows you to take screenshots and share any file type
@@ -88,10 +88,7 @@ namespace ShareX
                 taskSettings.CaptureSettings.FFmpegOptions.VideoCodec = FFmpegVideoCodec.gif;
             }
 
-            if (taskSettings.CaptureSettings.FFmpegOptions.IsAnimatedImage)
-            {
-                taskSettings.CaptureSettings.ScreenRecordTwoPassEncoding = true;
-            }
+            bool useTwoPassEncoding = taskSettings.CaptureSettings.FFmpegOptions.IsAnimatedImage;
 
             int fps;
 
@@ -205,7 +202,7 @@ namespace ShareX
                 try
                 {
                     string extension;
-                    if (taskSettings.CaptureSettings.ScreenRecordTwoPassEncoding)
+                    if (useTwoPassEncoding)
                     {
                         extension = "mp4";
                     }
@@ -277,7 +274,7 @@ namespace ShareX
                             ScreenRecordingOptions options = new ScreenRecordingOptions()
                             {
                                 IsRecording = true,
-                                IsLossless = taskSettings.CaptureSettings.ScreenRecordTwoPassEncoding,
+                                IsLossless = useTwoPassEncoding,
                                 FFmpeg = taskSettings.CaptureSettings.FFmpegOptions,
                                 FPS = fps,
                                 Duration = duration > 0 ? Math.Max(0.01f, duration - (float)recordForm.Timer.Elapsed.TotalSeconds) : 0,
@@ -331,7 +328,7 @@ namespace ShareX
 
                 abortRequested |= recordForm.Status == ScreenRecordingStatus.Aborted;
 
-                if (taskSettings.CaptureSettings.ScreenRecordTwoPassEncoding && !abortRequested && !recordingFailed && screenRecorder != null && File.Exists(path))
+                if (useTwoPassEncoding && !abortRequested && !recordingFailed && screenRecorder != null && File.Exists(path))
                 {
                     try
                     {

@@ -44,7 +44,7 @@ namespace ShareX
                 combo.DrawItem+=(_,e)=>{
                     using var brush=new SolidBrush((e.State&DrawItemState.Selected)!=0?Border:Input);e.Graphics.FillRectangle(brush,e.Bounds);
                     string text=e.Index>=0&&e.Index<combo.Items.Count?combo.GetItemText(combo.Items[e.Index]):combo.Text;
-                    var bounds=e.Bounds;if((e.State&DrawItemState.ComboBoxEdit)!=0)bounds.Width=Math.Min(bounds.Width,Math.Max(1,combo.Width-S(34)));
+                    var bounds=e.Bounds;if((e.State&DrawItemState.ComboBoxEdit)!=0)bounds.Width=Math.Min(bounds.Width,Math.Max(1,combo.Width-S(combo.Name=="cbToastWindowPlacement"?21:34)));
                     TextRenderer.DrawText(e.Graphics,text,combo.Font,bounds,combo.Enabled?TextColor:Muted,TextFormatFlags.VerticalCenter|TextFormatFlags.Left|TextFormatFlags.EndEllipsis);
                     e.DrawFocusRectangle();
                 };
@@ -107,6 +107,25 @@ namespace ShareX
         {
             if(IsDisposed)return;if(visible)hiddenRows.Remove(row);else hiddenRows.Add(row);
             row.Visible=visible;RequestFit();
+        }
+        internal Control CompactPair(string leftTitle,Control left,string rightTitle,Control right)
+        {
+            left=Prepare(left);right=Prepare(right);
+            var row=new Panel{BackColor=Canvas,Name="notificationPair"};
+            var a=Unit(leftTitle);var b=Unit(rightTitle);
+            a.ForeColor=b.ForeColor=TextColor;
+            row.Controls.AddRange(new[]{a,left,b,right});
+            foreach(var field in new[]{left,right}){
+                foreach(var number in All(field).OfType<SettingsDesignNumber>())number.Width=S(62);
+                if(field is FlowLayoutPanel flow){flow.WrapContents=false;foreach(Control child in flow.Controls)child.Margin=new Padding(0,S(child is Label?10:3),S(5),0);}
+            }
+            Add(row,width=>{
+                int half=(width-S(18))/2,label=S(66),fieldWidth=Math.Max(S(80),half-label);
+                a.SetBounds(0,S(10),label,S(24));b.SetBounds(half+S(18),S(10),label,S(24));
+                left.SetBounds(label,S(4),left is SettingsDesignField ? S(62) : fieldWidth,S(38));right.SetBounds(half+S(18)+label,S(4),fieldWidth,S(38));
+                return S(47);
+            });
+            return row;
         }
         internal FlowLayoutPanel Inline(params Control[] editors)
         {

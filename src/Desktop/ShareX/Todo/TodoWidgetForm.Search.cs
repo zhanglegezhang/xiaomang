@@ -26,6 +26,7 @@ namespace ShareX
         private void ShowSearchMenu()
         {
             if (IsDisposed || Disposing || closingWidget) return;
+            ResetCompactIdle();
             if (searchMenu == null)
             {
                 searchMenu = new ContextMenuStrip { AutoClose = true };
@@ -37,7 +38,7 @@ namespace ShareX
                 CompactContextMenuStyle.Apply(themeMenu);
                 for (int index = 0; index < CompactWidgetThemes.Names.Length; index++)
                 {
-                    int theme = index;
+                    int theme = CompactWidgetThemes.Ids[index];
                     var item = new ToolStripMenuItem(CompactWidgetThemes.Names[index]);
                     item.Tag = "compact-theme";
                     item.Click += (_, _) =>
@@ -54,7 +55,7 @@ namespace ShareX
                 themes.DropDownOpening += (_, _) =>
                 {
                     for (int index = 0; index < themes.DropDownItems.Count; index++)
-                        ((ToolStripMenuItem)themes.DropDownItems[index]).Checked = index == compactLabel.Theme;
+                        ((ToolStripMenuItem)themes.DropDownItems[index]).Checked = CompactWidgetThemes.Ids[index] == compactLabel.Theme;
                 };
                 themes.DropDownOpened += (_, _) => RefreshSearchMenuScreenBounds();
                 themes.DropDownClosed += (_, _) => RefreshSearchMenuScreenBounds();
@@ -68,6 +69,16 @@ namespace ShareX
                     if (main != null && !main.IsDisposed) main.BeginInvoke(new Action(main.RequestUserExit));
                 });
                 searchMenuOutsideClickTimer = new System.Windows.Forms.Timer { Interval = 15 };
+                searchMenu.Items.Add("收起小蟒", null, (_, _) =>
+                {
+                    searchMenu.Close();
+                    BeginInvoke(new Action(() =>
+                    {
+                        if (IsDisposed || Disposing || closingWidget || compactRecording || stoppingVoiceRecording) return;
+                        SetExpanded(false);
+                        SetCompactIdle(true);
+                    }));
+                });
                 searchMenuOutsideClickTimer.Tick += (_, _) =>
                 {
                     if (!searchMenuOutsideClickPending) return;

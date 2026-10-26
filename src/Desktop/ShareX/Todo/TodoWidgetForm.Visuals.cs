@@ -122,6 +122,7 @@ namespace ShareX
         private sealed class RecordingCompactLabel : Label
         {
             public int Theme { get; set; }
+            public bool IdleCompact { get; set; }
             public bool IsRecording { get; set; }
             public float PulseOpacity { get; set; } = 1f;
             public int PendingCount { get; set; }
@@ -160,6 +161,7 @@ namespace ShareX
                 graphics.SmoothingMode = SmoothingMode.AntiAlias;
                 if (!IsRecording)
                 {
+                    if (IdleCompact && CompactWidgetThemes.DrawIdleLogo(graphics, size, Theme)) return;
                     float logoSize = 33.6f * scale;
                     if (Image != null)
                     {
