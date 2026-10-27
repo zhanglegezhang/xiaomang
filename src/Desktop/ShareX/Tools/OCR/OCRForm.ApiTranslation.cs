@@ -86,11 +86,18 @@ public partial class OCRForm
         EnsureApiPanel();apiMode=true;UpdateApiHeader();apiPanel.Visible=true;apiPanel.BringToFront();
         if(translationBrowser!=null){translationBrowser.CoreWebView2?.Stop();translationBrowser.Visible=false;}
         apiFeedback.Text="正在通过百度 API 翻译…";
+        string original = Result;
         try
         {
-            string text=await BaiduTranslationApi.TranslateAsync(credentials,Result,apiTarget,cancellation.Token);
+            var translated=await BaiduTranslationApi.TranslateResultAsync(credentials,original,apiTarget,cancellation.Token);
             if(IsDisposed||Disposing||revision!=translationRevision||cancellation.IsCancellationRequested)return;
-            apiResult.Text=text;apiResultRevision=revision;apiFeedback.Text="已完成";
+            apiResult.Text=translated.Text;apiResultRevision=revision;apiFeedback.Text="已完成";
+            if (Options.AutoCopy && !Options.Silent)
+            {
+                string copy = TranslationClipboardContent.Compose(original, translated, Options.TranslationCopyContent);
+                apiFeedback.Text = copy == null ? "翻译已完成；缺少所选语言内容，未自动复制"
+                    : ClipboardHelpers.CopyText(copy) ? "翻译已完成，已自动复制" : "翻译已完成；自动复制失败，可手动重试";
+            }
         }
         catch(OperationCanceledException){if(!IsDisposed&&!Disposing&&revision==translationRevision&&!cancellation.IsCancellationRequested)apiFeedback.Text="翻译超时，可重试或改用网页翻译。";}
         catch(InvalidOperationException ex){if(!IsDisposed&&!Disposing&&revision==translationRevision)apiFeedback.Text=ex.Message;}

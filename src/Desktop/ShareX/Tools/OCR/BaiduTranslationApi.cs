@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 namespace ShareX;
 
 internal sealed record BaiduTranslationCredentials(string AppId, string Secret);
+internal sealed record BaiduTranslationResult(string Text, string SourceLanguage, string TargetLanguage);
 
 internal static class BaiduTranslationApi
 {
@@ -57,6 +58,9 @@ internal static class BaiduTranslationApi
         Convert.ToHexString(MD5.HashData(Encoding.UTF8.GetBytes(id + text + salt + secret))).ToLowerInvariant();
 
     internal static async Task<string> TranslateAsync(BaiduTranslationCredentials credentials, string text, string target, CancellationToken token)
+        => (await TranslateResultAsync(credentials, text, target, token)).Text;
+
+    internal static async Task<BaiduTranslationResult> TranslateResultAsync(BaiduTranslationCredentials credentials, string text, string target, CancellationToken token)
     {
         if (string.IsNullOrWhiteSpace(text)) throw new InvalidOperationException("没有可翻译的原文。");
         if (Encoding.UTF8.GetByteCount(text) > 6000) throw new InvalidOperationException("原文超过 6000 字节，请分段翻译或改用网页。");
@@ -75,13 +79,16 @@ internal static class BaiduTranslationApi
             });
             using var response = await Client.PostAsync("https://fanyi-api.baidu.com/api/trans/vip/translate", body, token);
             if (!response.IsSuccessStatusCode) throw new InvalidOperationException("翻译服务连接失败，请稍后重试。");
-            return Parse(await response.Content.ReadAsStringAsync(token));
+            return ParseResult(await response.Content.ReadAsStringAsync(token));
         }
         catch (HttpRequestException) { throw new InvalidOperationException("无法连接百度翻译，请检查网络。"); }
         finally { Gate.Release(); }
     }
 
     internal static string Parse(string json)
+        => ParseResult(json).Text;
+
+    internal static BaiduTranslationResult ParseResult(string json)
     {
         using var doc = JsonDocument.Parse(json);
         if (doc.RootElement.TryGetProperty("error_code", out var code))
@@ -98,6 +105,8 @@ internal static class BaiduTranslationApi
             throw new InvalidOperationException("百度未返回有效译文。");
         string result = string.Join(Environment.NewLine, rows.EnumerateArray().Select(x => x.GetProperty("dst").GetString()));
         if (string.IsNullOrWhiteSpace(result)) throw new InvalidOperationException("百度未返回有效译文。");
-        return result;
+        return new(result,
+            doc.RootElement.TryGetProperty("from", out var from) ? from.GetString() : null,
+            doc.RootElement.TryGetProperty("to", out var to) ? to.GetString() : null);
     }
 }

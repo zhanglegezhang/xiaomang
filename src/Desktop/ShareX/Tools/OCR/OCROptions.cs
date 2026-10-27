@@ -27,6 +27,8 @@ using System.Collections.Generic;
 
 namespace ShareX
 {
+    public enum TranslationCopyContent { Chinese, English, ChineseAndEnglish }
+
     public class OCROptions
     {
         public string Language { get; set; } = "en";
@@ -34,6 +36,7 @@ namespace ShareX
         public bool SingleLine { get; set; } = false;
         public bool Silent { get; set; } = false;
         public bool AutoCopy { get; set; } = false;
+        public TranslationCopyContent TranslationCopyContent { get; set; } = TranslationCopyContent.ChineseAndEnglish;
         public List<ServiceLink> ServiceLinks { get; set; } = DefaultServiceLinks;
         public bool CloseWindowAfterOpeningServiceLink { get; set; } = false;
         public int SelectedServiceLink { get; set; } = 0;

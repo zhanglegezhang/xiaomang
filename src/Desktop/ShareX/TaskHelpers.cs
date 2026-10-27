@@ -1604,7 +1604,9 @@ namespace ShareX
 
                 OCROptions options = taskSettings.CaptureSettingsReference.OCROptions;
 
-                string result = await OCRHelper.OCR(bmp, options.Language, options.ScaleFactor, options.SingleLine);
+                var recognized = await MixedOcrClient.RecognizeAsync(bmp, null, default);
+                DebugHelper.WriteLine(recognized.Notice);
+                string result = recognized.Text;
 
                 if (!string.IsNullOrEmpty(result))
                 {

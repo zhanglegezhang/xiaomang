@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType><IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
+    <TargetFramework>net9.0-windows10.0.22621.0</TargetFramework>
+    <UseWindowsForms>true</UseWindowsForms>
+    <UseWPF>true</UseWPF>
+    <PlatformTarget>x64</PlatformTarget>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <ProductDirectory Condition="'$(ProductDirectory)' == ''">../../artifacts/Desktop</ProductDirectory>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="ShareX"><HintPath>$(ProductDirectory)/ShareX.dll</HintPath></Reference>
+    <Reference Include="ShareX.HelpersLib"><HintPath>$(ProductDirectory)/ShareX.HelpersLib.dll</HintPath></Reference>
+    <Reference Include="ShareX.UploadersLib"><HintPath>$(ProductDirectory)/ShareX.UploadersLib.dll</HintPath></Reference>
+    <Reference Include="ShareX.HistoryLib"><HintPath>$(ProductDirectory)/ShareX.HistoryLib.dll</HintPath></Reference>
+    <Reference Include="ShareX.MediaLib"><HintPath>$(ProductDirectory)/ShareX.MediaLib.dll</HintPath></Reference>
+    <Reference Include="ShareX.ScreenCaptureLib"><HintPath>$(ProductDirectory)/ShareX.ScreenCaptureLib.dll</HintPath></Reference>
+    <Reference Include="ShareX.ImageEffectsLib"><HintPath>$(ProductDirectory)/ShareX.ImageEffectsLib.dll</HintPath></Reference>
+    <Reference Include="Newtonsoft.Json"><HintPath>$(ProductDirectory)/Newtonsoft.Json.dll</HintPath></Reference>
+    <Reference Include="Markdig"><HintPath>$(ProductDirectory)/Markdig.dll</HintPath></Reference>
+    <Reference Include="ICSharpCode.AvalonEdit"><HintPath>$(ProductDirectory)/ICSharpCode.AvalonEdit.dll</HintPath></Reference>
+    <Reference Include="Microsoft.Web.WebView2.Core"><HintPath>$(ProductDirectory)/Microsoft.Web.WebView2.Core.dll</HintPath></Reference>
+    <Reference Include="Microsoft.Web.WebView2.WinForms"><HintPath>$(ProductDirectory)/Microsoft.Web.WebView2.WinForms.dll</HintPath></Reference>
+  </ItemGroup>
+</Project>
+
+

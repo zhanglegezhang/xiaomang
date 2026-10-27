@@ -256,7 +256,7 @@ namespace ShareX
         public bool UseAlternativeClipboardGetImage { get; set; }
 
         [Category("Image"), DefaultValue(true), Description("If JPEG exif contains orientation data then rotate image accordingly.")]
-        public bool RotateImageByExifOrientationData { get; set; }
+        public bool RotateImageByExifOrientationData { get => true; set { } }
 
         [Category("Image"), DefaultValue(false), Description("Strip color space information chunks from PNG image.")]
         public bool PNGStripColorSpaceInformation { get; set; }

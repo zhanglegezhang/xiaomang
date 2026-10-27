@@ -131,6 +131,9 @@ namespace ShareX.HelpersLib
         public TabToTreeView()
         {
             InitializeComponent();
+            // Navigation belongs to the tree; Ctrl+Tab must not select a cached
+            // tab behind it and skip the page activation callback.
+            tcMain.Selecting += (sender, e) => e.Cancel = e.TabPage != tvMain.SelectedNode?.Tag;
             TreeViewSize = 150;
         }
 
@@ -192,14 +195,16 @@ namespace ShareX.HelpersLib
             {
                 Control root = FindForm() ?? (Control)this;
                 Control[] layouts = BatchPageLayout
-                    ? LayoutControls(root).Concat(LayoutControls(tabPage)).Distinct().ToArray()
+                    ? LayoutControls(root, true).Concat(LayoutControls(tabPage)).Distinct().ToArray()
                     : Array.Empty<Control>();
                 foreach (Control control in layouts) control.SuspendLayout();
                 try
                 {
                     tcMain.Visible = true;
-                    tcMain.TabPages.Clear();
-                    tcMain.TabPages.Add(tabPage);
+                    // Keep visited pages parented so PerMonitorV2 can propagate DPI
+                    // changes to their existing handles while another page is selected.
+                    if (!tcMain.TabPages.Contains(tabPage)) tcMain.TabPages.Add(tabPage);
+                    tcMain.SelectedTab = tabPage;
                     tvMain.Focus();
 
                     OnTabChanged(tabPage);
@@ -227,11 +232,12 @@ namespace ShareX.HelpersLib
             }
         }
 
-        private static IEnumerable<Control> LayoutControls(Control parent)
+        private static IEnumerable<Control> LayoutControls(Control parent, bool visibleOnly = false)
         {
             yield return parent;
             foreach (Control child in parent.Controls)
-                foreach (Control control in LayoutControls(child)) yield return control;
+                if (!visibleOnly || child.Visible)
+                    foreach (Control control in LayoutControls(child, visibleOnly)) yield return control;
         }
 
         public void NavigateToTabPage(TabPage tabPage)

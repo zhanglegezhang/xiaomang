@@ -20,7 +20,7 @@ namespace ShareX
             var originals=SettingsDesignSurface.All(page).ToArray();
             foreach(var control in originals)control.SuspendLayout();
             Control Find(string name)=>originals.First(x=>x.Name==name);
-            var design=new SettingsDesignSurface(page.Name=="tpToolsGeneral"?"拾色器":page.Text.Replace("&",""));
+            var design=new SettingsDesignSurface(page.Name=="tpCaptureGeneral"?null:page.Name=="tpToolsGeneral"?"拾色器":page.Text.Replace("&",""));
             design.RightAlignedToggles=page.Name is "tpGeneral" or "tpCaptureGeneral" or "tpNotifications";
             design.RightAlignedActions=page.Name=="tpGeneral";
             // Stop legacy layout callbacks before moving their child controls.
@@ -40,9 +40,9 @@ namespace ShareX
                     design.Action("待处理输入法数据",(Button)Find("personalData_restore"),"恢复…");
                     design.Hint("导入导出时可选择类别并预览数据。");break;
                 case "tpCaptureGeneral":
-                    design.Section("截图行为");Toggle("cbShowCursor","在截图中显示鼠标指针");Toggle("cbCaptureAutoHideDesktopIcons","自动隐藏桌面图标");
+                    Toggle("cbShowCursor","在截图中显示鼠标指针");Toggle("cbCaptureAutoHideDesktopIcons","自动隐藏桌面图标");
                     Toggle("cbCaptureTransparent","截图窗口保留透明度");
-                    design.Section("区域截图");Editor("cbRegionCaptureMouseRightClickAction","鼠标右键动作");
+                    Editor("cbRegionCaptureMouseRightClickAction","鼠标右键动作");
                     Number("nudRegionCaptureBackgroundDimStrength","背景调暗强度","%");Toggle("cbRegionCaptureShowInfo","显示位置与尺寸");
                     break;
                 case "tpScreenRecorder":
@@ -50,11 +50,15 @@ namespace ShareX
                     design.Section("录制行为");design.Related("自动开始录制",(CheckBox)Find("cbScreenRecordAutoStart"),Find("nudScreenRecorderStartDelay"),design.Unit("秒"));
                     design.Related("固定录制时长",(CheckBox)Find("cbScreenRecorderFixedDuration"),Find("nudScreenRecorderDuration"),design.Unit("秒"));
                     Toggle("cbScreenRecorderShowCursor","在录像中显示鼠标指针");
-                    design.Section("编码与声音");design.Action("编码与声音来源",(Button)Find("btnScreenRecorderFFmpegOptions"),"录屏选项…");break;
+                    DesignRecordingOptions(design, () => Program.DefaultTaskSettings.CaptureSettings.FFmpegOptions,
+                        (Button)Find("btnScreenRecorderFFmpegOptions"));break;
                 case "tpOCR":
-                    design.Section("识别偏好");design.Editor("默认语言",Find("cbCaptureOCRDefaultLanguage"),description:"此语言用于 Windows OCR 识别。");Toggle("cbCaptureOCRSilent","静默识别");
-                    design.Section("结果处理");Toggle("cbCaptureOCRAutoCopy","自动复制识别结果");
-                    design.Hint("中英混合组件在“注册”中管理。");break;
+                    design.Hint("默认识别中英文，组件不可用时使用系统识别");
+                    Toggle("cbCaptureOCRSilent","识别后直接复制，不打开窗口");
+                    design.Section("结果处理");Toggle("cbCaptureOCRAutoCopy","自动复制翻译结果");
+                    Editor("translationCopyChoices", "复制内容", 340);
+                    design.Hint("仅支持 API 自动复制；网页需手动复制");
+                    break;
                 case "tpToolsGeneral":
                     void Picker(string name,string title,bool multiline=false){
                         var field=(TextBox)Find(name);if(multiline){field.Multiline=true;field.WordWrap=true;field.ScrollBars=ScrollBars.None;}

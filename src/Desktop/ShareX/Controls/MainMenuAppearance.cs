@@ -22,7 +22,23 @@ namespace ShareX
         internal static Color Selected => ShareXResources.IsDarkTheme ? Color.FromArgb(47, 67, 83) : Color.FromArgb(220, 233, 245);
         internal static Color Active => ShareXResources.IsDarkTheme ? Color.FromArgb(65, 48, 39) : Color.FromArgb(255, 230, 211);
         internal static readonly Color Orange = Color.FromArgb(255, 139, 67);
-        internal static readonly Font BodyFont = new Font("Microsoft YaHei UI", 9f);
+        internal static readonly Font BodyFont = new Font("Microsoft YaHei UI", 8f);
+        private static readonly Font PageTitleFont = new Font("Microsoft YaHei UI", 11f, FontStyle.Bold);
+        private static readonly Font SectionTitleFont = new Font("Microsoft YaHei UI", 10f, FontStyle.Bold);
+        private static readonly Font BoldBodyFont = new Font("Microsoft YaHei UI", 8f, FontStyle.Bold);
+        private sealed class FontRole { internal Font Basis; }
+        private static readonly ConditionalWeakTable<Control, FontRole> fontRoles = new();
+        internal static void ApplyTypography(Control control)
+        {
+            if (control is TreeView || control is ToolStrip) return;
+            FontRole role = fontRoles.GetValue(control, c => new FontRole
+            {
+                Basis = c.GetType().Name == "SectionHeading" ? SectionTitleFont :
+                    c is Label && c.Font.Bold && c.Font.SizeInPoints >= 10 ? PageTitleFont :
+                    c is Label && c.Font.Bold ? BoldBodyFont : BodyFont
+            });
+            SetDpiFont(control, role.Basis);
+        }
         internal static readonly Font MenuFont = new Font("Microsoft YaHei UI", 9.5f);
         // WinForms scales point fonts relative to the process initial DPI. Reapplying
         // an unscaled shared font after a monitor change would undo that scaling.
@@ -67,6 +83,7 @@ namespace ShareX
             root.SuspendLayout();
             try
             {
+                ApplyTypography(root);
                 if (root is Button button) SetDpiFont(button, BodyFont);
                 else if (root is TreeView tree)
                 {
@@ -97,6 +114,7 @@ namespace ShareX
             if (root == null || root.IsDisposed) return;
             if (root is SettingsDesignHost host) { host.BackColor = SettingsDesignSurface.Canvas;host.Surface.Finish();return; }
             if (root is SettingsDesignSurface design) { design.Finish(); return; }
+            ApplyTypography(root);
             bool first = !styled.TryGetValue(root, out State state);
             if (first)
             {

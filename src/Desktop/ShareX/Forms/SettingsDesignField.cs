@@ -86,6 +86,9 @@ namespace ShareX
             {
                 Editor.SetBounds(-S(2), (viewport.Height - Editor.PreferredSize.Height) / 2,
                     Math.Max(1,Width-S(2)), Editor.PreferredSize.Height);
+                // Owner-drawn combo boxes can enforce a height different from PreferredSize.
+                if (Editor.Name is "recordingAudioSource" or "recordingVideoCodec")
+                    Editor.Top = (viewport.Height - Editor.Height) / 2;
                 arrow?.SetBounds(Math.Max(0, Width - S(compact ? 19 : 28)), S(3), S(compact ? 16 : 25), Math.Max(1, Height - S(6)));
                 arrow?.BringToFront();
             }

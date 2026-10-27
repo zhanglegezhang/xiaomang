@@ -41,7 +41,7 @@ namespace ShareX
             {
                 var summary = new TableLayoutPanel { Dock = DockStyle.Top, AutoSize = true, ColumnCount = 1 };
                 var description = new Label { Text = VoiceDescription, AutoSize = true, Margin = new Padding(0,0,0,16) };
-                var jump = new Button { Text = "转到注册页", Name = "goToVoiceRegistration", AutoSize = true, MinimumSize = new Size(144,34) };
+                var jump = new Button { Text = "转到注册页", Name = "goToVoiceRegistration", AutoSize = true, AutoSizeMode = AutoSizeMode.GrowAndShrink, MinimumSize = new Size(144,34) };
                 jump.Click += (_,_) => Program.MainForm.OpenRegistrationPage("voice");
                 summary.Controls.Add(description,0,0);summary.Controls.Add(jump,0,1);voicePage.Controls.Add(summary);
                 voicePage.SizeChanged += (_,_) => description.MaximumSize = new Size(Math.Max(1,voicePage.ClientSize.Width-voicePage.Padding.Horizontal-SystemInformation.VerticalScrollBarWidth),0);
@@ -53,6 +53,8 @@ namespace ShareX
                     description.Margin=new Padding(0,0,0,MainMenuAppearance.Scale(this,16));
                 }
                 ClientSizeChanged+=(_,_)=>LayoutSummary();
+                voicePage.VisibleChanged+=(_,_)=>{if(voicePage.Visible)LayoutSummary();};
+                DpiChangedAfterParent+=(_,_)=>LayoutSummary();
                 navigation.NavigateToTabPage(voicePage);
                 AutoScaleDimensions=new SizeF(96,96);PerformAutoScale();
                 Shown += (_,_)=>{MainMenuAppearance.Apply(this);LayoutSummary();};

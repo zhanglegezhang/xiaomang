@@ -184,6 +184,7 @@ namespace ShareX
             cbCaptureOCRSilent.Checked = ocrOptions.Silent;
             cbCaptureOCRAutoCopy.Enabled = !ocrOptions.Silent;
             cbCaptureOCRAutoCopy.Checked = ocrOptions.AutoCopy;
+            InitializeTranslationCopyChoices(ocrOptions);
             cbCloseWindowAfterOpenServiceLink.Checked = ocrOptions.CloseWindowAfterOpeningServiceLink;
         }
 

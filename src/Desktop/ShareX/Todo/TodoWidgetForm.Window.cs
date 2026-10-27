@@ -18,6 +18,18 @@ namespace ShareX
 {
     public sealed partial class TodoWidgetForm
     {
+        protected override CreateParams CreateParams
+        {
+            get
+            {
+                CreateParams parameters = base.CreateParams;
+                // This interactive desktop widget is not a separate task-switcher
+                // entry. Keep activation enabled for its text editors and menus.
+                parameters.ExStyle = (parameters.ExStyle | 0x00000080) & ~0x00040000;
+                return parameters;
+            }
+        }
+
         public void OpenPanel()
         {
             if (string.IsNullOrEmpty(Settings.FirstVisibleModule())) { SetExpanded(false); return; }

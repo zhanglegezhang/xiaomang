@@ -132,10 +132,6 @@ namespace ShareX
                     DebugHelper.WriteLine($"[OCR] recognition-completed ms={timer.ElapsedMilliseconds}; chars={Result?.Length ?? 0}");
                     if (IsDisposed || Disposing) return;
 
-                    if (Options.AutoCopy && !string.IsNullOrEmpty(Result))
-                    {
-                        ClipboardHelpers.CopyText(Result);
-                    }
                 }
                 catch (Exception e)
                 {

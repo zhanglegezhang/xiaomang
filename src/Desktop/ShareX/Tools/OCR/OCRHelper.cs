@@ -70,6 +70,16 @@ namespace ShareX
         }
 
         public static Task<string> OCR(Bitmap bmp, string languageTag = "en", float scaleFactor = 1f, bool singleLine = false) => OCR(bmp, languageTag, scaleFactor, singleLine, true);
+        internal static string SelectFallbackLanguage(string[] languages)
+        {
+            return languages.FirstOrDefault(x => string.Equals(x, "zh-CN", StringComparison.OrdinalIgnoreCase))
+                ?? languages.FirstOrDefault(x => string.Equals(x, "zh-Hans", StringComparison.OrdinalIgnoreCase))
+                ?? languages.FirstOrDefault()
+                ?? throw new InvalidOperationException("系统未安装 OCR 识别语言，请安装识别组件或 Windows OCR 语言包。");
+        }
+
+        internal static string GetFallbackLanguage() => SelectFallbackLanguage(AvailableLanguages.Select(x => x.LanguageTag).ToArray());
+
         public static async Task<string> OCR(Bitmap bmp, string languageTag, float scaleFactor, bool singleLine, bool preferMixed)
         {
             if (preferMixed && MixedOcrComponent.IsPresent && (languageTag.StartsWith("zh", StringComparison.OrdinalIgnoreCase) || languageTag.StartsWith("en", StringComparison.OrdinalIgnoreCase)))

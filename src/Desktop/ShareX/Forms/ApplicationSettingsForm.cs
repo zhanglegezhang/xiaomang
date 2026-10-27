@@ -82,6 +82,8 @@ namespace ShareX
         private void InitializeControls()
         {
             InitializeComponent();
+            tcSettings.TabPages.Remove(tpAdvanced);
+            components.Add(tpAdvanced);
             tpPaths.Text = SettingsPageLayout.Caption("存储位置", "Storage locations");
             LayoutGeneralSettings();
             InitializeNotificationSettingsTab();

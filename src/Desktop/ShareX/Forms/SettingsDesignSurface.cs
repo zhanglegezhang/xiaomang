@@ -31,13 +31,14 @@ namespace ShareX
             Font=new Font("Microsoft YaHei UI",8f); ForeColor=TextColor;
             ownedFonts.Add(Font);
             DoubleBuffered=true; content.BackColor=Canvas; Controls.Add(content);
-            AddText(title,11,true,10);
+            if (!string.IsNullOrEmpty(title)) AddText(title,11,true,10);
         }
         internal static IEnumerable<Control> All(Control root) => new[]{root}.Concat(root.Controls.Cast<Control>().SelectMany(All));
         internal void Finish() {
+            MainMenuAppearance.ApplyTypography(this);
             Style(content);
             foreach(var frame in All(content).OfType<SettingsDesignField>())frame.Restyle();
-            foreach(var button in All(content).OfType<Button>()){MainMenuAppearance.Apply(button);button.Font=Font;}
+            foreach(var button in All(content).OfType<Button>()){MainMenuAppearance.Apply(button);}
             foreach(var combo in All(content).OfType<ComboBox>())if(styledCombos.Add(combo)){
                 combo.DrawMode=DrawMode.OwnerDrawFixed;
                 combo.ItemHeight=Math.Max(combo.Font.Height+S(6),S(24));
@@ -183,8 +184,8 @@ namespace ShareX
             SuspendLayout(); content.SuspendLayout();
             try
             {
-                foreach (var button in All(content).OfType<Button>())
-                    if (!button.Font.Equals(Font)) button.Font = Font;
+                MainMenuAppearance.ApplyTypography(this);
+                foreach (var control in All(content)) MainMenuAppearance.ApplyTypography(control);
                 foreach (var combo in styledCombos)
                     if (!combo.IsDisposed) combo.ItemHeight = Math.Max(combo.Font.Height + S(6), S(24));
             }
@@ -206,6 +207,7 @@ namespace ShareX
         internal static void Style(Control root)
         {
             foreach(var control in All(root)) {
+                MainMenuAppearance.ApplyTypography(control);
                 control.ForeColor=control.Tag as string=="settings-help"||control is Label label&&label.Font.Style==FontStyle.Regular&&control.Parent is not SettingRow?Muted:TextColor;
                 if(control is TextBoxBase text){text.BackColor=text.ReadOnly?Canvas:Input;text.BorderStyle=BorderStyle.None;}
                 else if(control is ComboBox combo){combo.BackColor=Input;combo.ForeColor=TextColor;combo.FlatStyle=FlatStyle.Flat;}

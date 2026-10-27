@@ -1913,6 +1913,9 @@ namespace ShareX
             form.Show();
             if (firstShow) MainMenuAppearance.Apply(form);
             else MainMenuAppearance.ApplyDpi(form);
+            // Show can autoscale a cached/late-created embedded form to its host's
+            // current DPI. Fit again afterwards, using the final viewport size.
+            LayoutInlineSettingsForm();
             if (kind == InlineSettingsKind.Application)
                 inlineSettingsViewport.AutoScrollPosition = applicationSettingsScrollPosition;
             tsMain.Invalidate();

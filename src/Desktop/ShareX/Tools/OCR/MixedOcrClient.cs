@@ -61,7 +61,7 @@ internal static class MixedOcrClient
             finally{try{File.Delete(path);}catch{} gate.Release();}
         }
         token.ThrowIfCancellationRequested();
-        string text=await OCRHelper.OCR(image,fallbackLanguage??"zh-CN",2,false,false);
+        string text=await OCRHelper.OCR(image,OCRHelper.GetFallbackLanguage(),2,false,false);
         token.ThrowIfCancellationRequested();return new Result(text,failure);
     }
 }
