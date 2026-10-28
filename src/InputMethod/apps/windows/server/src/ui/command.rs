@@ -7,7 +7,7 @@ use crate::dispatch::{RenderSettings, StatusView};
 /// 交给 UI 线程执行的命令。`Frame` 较大，装箱免得枚举过胖。
 pub(super) enum UiCommand {
     /// 把候选窗口摆到组句矩形下方并按帧重绘。
-    Show(Box<(Frame, ScreenRect)>),
+    Show(Box<(Frame, ScreenRect, qingjian_platform::protocol::SessionId)>),
 
     /// 收起候选窗口。
     Hide,

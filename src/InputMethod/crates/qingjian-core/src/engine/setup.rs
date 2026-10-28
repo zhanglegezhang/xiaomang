@@ -407,8 +407,12 @@ impl Engine {
         self.modes
     }
 
-    /// 中英混输里中文候选是否总排在英文词前面（配置 `[general] chinese_first`，缺省关）。
-    /// 关着时拼音「不像话」的输入英文词排第一（`hello` 先英文再 荷兰咯）；开了英文词固定第二。
+    /// 中文模式隐藏英文词项，不影响英文模式和候选释义。
+    pub fn set_chinese_only_candidates(&mut self, on: bool) {
+        self.chinese_only_candidates = on;
+    }
+
+    /// 中英混输时优先中文候选。
     pub fn set_chinese_first(&mut self, on: bool) {
         self.chinese_first = on;
     }

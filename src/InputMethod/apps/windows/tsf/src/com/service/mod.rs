@@ -150,6 +150,50 @@ pub(super) fn on_input_settings(input: InputSettings) {
     with_active(|service| service.apply_input_settings(input));
 }
 
+/// Apply a mouse selection through the same TSF edit session as keyboard selection.
+pub(super) fn candidate_context_active() -> bool {
+    let mut valid = false;
+    with_active(|service| {
+        if let Some(expected) = service.shared.last_context()
+            && let Some(manager) = service.thread_mgr.borrow().as_ref()
+        {
+            valid = unsafe { manager.GetFocus().and_then(|document| document.GetTop()) }
+                .is_ok_and(|context| context == expected);
+        }
+    });
+    valid
+}
+
+pub(super) fn on_candidate_commit(
+    commit: Option<String>,
+    frame: qingjian_platform::protocol::Frame,
+) {
+    with_active(|service| {
+        if !service.shared.foreground() {
+            return;
+        }
+        if let Some(context) = service.shared.last_context() {
+            let preedit = if frame.preedit_mode.inline() {
+                super::composition::preedit_string(&frame)
+            } else {
+                String::new()
+            };
+            service.shared.set_composing(!frame.is_empty());
+            service.shared.set_translating(false);
+            if let Err(error) = super::edit::request_candidate_update(
+                &context,
+                service.client_id.get(),
+                service.engine.clone(),
+                service.shared.clone(),
+                commit,
+                preedit,
+            ) {
+                crate::com::log::log(&format!("鼠标选词写入失败: {error}"));
+            }
+        }
+    });
+}
+
 /// 轮询取回了右键菜单打勾用的开关状态。
 pub(super) fn on_indicator_state(state: IndicatorState) {
     with_active(|service| service.indicator_state.set(state));

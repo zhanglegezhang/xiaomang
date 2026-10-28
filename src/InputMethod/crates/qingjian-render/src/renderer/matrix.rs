@@ -78,12 +78,19 @@ impl Renderer {
         for (i, row) in frame.rows.iter().enumerate() {
             let (text, _) = &cells.texts[i];
             if text.is_empty() && row.index.is_empty() {
+                self.candidate_bounds.push([0.0; 4]);
                 continue;
             }
             let cell_width = cells.column_widths[i % columns];
             let x = origin + cells.offset(i % columns, m.column_gap());
             let row_y = y + cells.row_height * (i / columns) as f32;
             let top = row_y + m.row_padding();
+            self.candidate_bounds.push([
+                x - inset,
+                row_y,
+                x + cell_width + inset,
+                row_y + cells.row_height,
+            ]);
             if Some(i) == frame.highlighted {
                 self.fill_highlight(
                     canvas,

@@ -7,7 +7,7 @@
 //! 4. 最后一个音节完整匹配优先（`kaifa` → 开发 排在 开放 前）
 //! 5. 同一输入串下用户选过的次数（Learner 的 `choice_weight`：`mgs` 选过 美国式，下次 `mgs` 它就是首选）
 //! 6. 上下文得分：语言模型给的 `log P(词 | 上一个上屏的词)`（个人 bigram 插值，模型不认识的按词库词频兜底并扣分，
-//!    见 `sentence::transition_log_prob`）加用户选择次数的加分（[`weight_bonus`]，对数且封顶），模糊音命中扣 ln 2、
+//!    见 `sentence::transition_log_prob`）加用户选择次数的加分（[`weight_bonus`]，对数且封顶），每处模糊音命中扣 2.0、
 //!    敲错变体命中扣那类敲错的代价（`correction::TypoKind::cost`，个人敲错表打折）。
 //!    这样 `ba` 在「做了」后面出 吧、句首出 把；纯词频排序两处都只能出同一个
 //! 7. 敲的原音节优先，词长短者优先，最后按字符串稳定排序保证结果可复现
@@ -29,8 +29,9 @@ pub const WEIGHT_BONUS: f64 = 0.5;
 /// 加分里计入的选择次数上限。
 pub const WEIGHT_CAP: u32 = 20;
 
-/// 模糊音命中扣的分（词频减半）。敲错变体的代价见 `correction::TypoKind`。
-pub const FUZZY_PENALTY: f64 = std::f64::consts::LN_2;
+/// 每处模糊音命中扣 2.0 分，基础词频约折算为 13.5%；多处命中累加。
+/// 敲错变体的代价见 `correction::TypoKind`。
+pub const FUZZY_PENALTY: f64 = 2.0;
 
 /// 用户选择次数换算成得分加成，词级排序与整句路径共用，见 [`WEIGHT_BONUS`]。
 pub fn weight_bonus(count: u32) -> f64 {
@@ -87,6 +88,37 @@ mod tests {
             pinyin,
             frequency,
             exact,
+        }
+    }
+
+    #[test]
+    fn fuzzy_penalty_keeps_shige_ten_before_four_without_removing_four() {
+        for (ten_penalty, four_penalty, expected) in
+            [(0.0, FUZZY_PENALTY, "十个"), (FUZZY_PENALTY, 0.0, "四个")]
+        {
+            let mut items = vec![
+                Scored {
+                    hit: hit("十个", "shi ge", 3398, true),
+                    full_last: true,
+                    coverage: 5,
+                    abbreviated: 0,
+                    weight: 0,
+                    penalty: ten_penalty,
+                },
+                Scored {
+                    hit: hit("四个", "si ge", 12725, true),
+                    full_last: true,
+                    coverage: 5,
+                    abbreviated: 0,
+                    weight: 0,
+                    penalty: four_penalty,
+                },
+            ];
+            rank(&mut items, 9, |item| {
+                (0, f64::from(item.hit.frequency).ln())
+            });
+            assert_eq!(items.len(), 2);
+            assert_eq!(items[0].hit.text, expected);
         }
     }
 

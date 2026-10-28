@@ -120,6 +120,7 @@ pub struct Engine {
 
     /// 中英混输时中文候选总在英文词前面（缺省关：拼音不像话的输入英文词排第一，常在中文模式里打英文词的人靠它）。
     chinese_first: bool,
+    chinese_only_candidates: bool,
 
     /// 中文模式下 Shift+字母进组句缓冲区（配置 `[general] shift_letter = "compose"`，缺省关）。
     /// 关着由壳直接把大写字母交给应用，Core 这一路就不该收——否则 `Cpan` 这种会被当成拼音。
@@ -311,8 +312,6 @@ const MIN_COMPLETION_LETTERS: usize = 3;
 const MIN_ENGLISH_TAIL_LETTERS: usize = 2;
 const MIN_ENGLISH_TAIL_HEAD_LETTERS: usize = 2;
 
-/// 尾段自己也是合法拼音时（`fan`、`database`）至少几个字母才考虑英文读法：三个字母的拼音音节太多。
-const MIN_PINYIN_LIKE_TAIL_LETTERS: usize = 4;
 
 /// 句中切到英文的代价（log 概率）：尾段像拼音时英文读法要比拼音读法高出这么多才胜出。拍的，攒够日志后用 `--replay` 调。
 const ENGLISH_SWITCH_PENALTY: f64 = 3.0;
@@ -384,6 +383,7 @@ impl Engine {
             full_width_punctuation: true,
             custom_phrases: Vec::new(),
             chinese_first: false,
+            chinese_only_candidates: false,
             shift_letter_compose: false,
             predictor: Box::new(NoPredictor),
             language_model: Box::new(NoLanguageModel),

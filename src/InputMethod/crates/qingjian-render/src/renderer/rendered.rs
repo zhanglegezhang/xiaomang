@@ -3,6 +3,8 @@
 use tiny_skia::Pixmap;
 
 pub struct Rendered {
+    /// Candidate hit rectangles in bitmap pixels: left, top, right, bottom.
+    pub candidate_bounds: Vec<[f32; 4]>,
     /// 预乘 RGBA 位图，含阴影边。
     pub pixmap: Pixmap,
 

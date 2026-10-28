@@ -18,6 +18,15 @@ pub trait CandidateSink: Send {
     /// 把候选窗口摆到 `rect`（组句范围的屏幕矩形）下方并按 `frame` 重绘。
     fn show(&self, frame: Frame, rect: ScreenRect);
 
+    fn show_for_session(
+        &self,
+        frame: Frame,
+        rect: ScreenRect,
+        _session: qingjian_platform::protocol::SessionId,
+    ) {
+        self.show(frame, rect);
+    }
+
     fn hide(&self);
 
     /// 换画法：装上时与配置热加载后调，只在设置变了时调。

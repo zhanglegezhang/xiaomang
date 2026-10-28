@@ -30,6 +30,7 @@ pub(crate) struct UpdateSession {
 
     /// 本次要落定上屏的文本。
     commit: Option<String>,
+    require_foreground: bool,
 
     /// 本次组句拼音行；空串表示收起组句。
     preedit: String,
@@ -38,6 +39,23 @@ pub(crate) struct UpdateSession {
 impl ITfEditSession_Impl for UpdateSession_Impl {
     fn DoEditSession(&self, ec: u32) -> Result<()> {
         // 从框架的 C++ 调进来：panic 不能越过 FFI。
+        if self.require_foreground {
+            use windows::Win32::System::Threading::GetCurrentProcessId;
+            use windows::Win32::UI::WindowsAndMessaging::{
+                GetForegroundWindow, GetWindowThreadProcessId,
+            };
+            let mut pid = 0;
+            unsafe {
+                GetWindowThreadProcessId(GetForegroundWindow(), Some(&mut pid));
+            }
+            if !crate::com::service::candidate_context_active() || !self.shared.foreground()
+                || self.shared.last_context().as_ref() != Some(&self.context)
+                || (pid != unsafe { GetCurrentProcessId() }
+                    && !crate::com::poll::is_uwp_frame(unsafe { GetForegroundWindow() }))
+            {
+                return Ok(());
+            }
+        }
         let result = catch_unwind(AssertUnwindSafe(|| {
             apply(
                 &self.shared,
@@ -76,7 +94,27 @@ pub(crate) fn request_update(
         engine,
         shared,
         commit,
+        require_foreground: false,
         preedit,
+    };
+    request(context, client_id, session.into(), TF_ES_READWRITE)
+}
+
+pub(crate) fn request_candidate_update(
+    context: &ITfContext,
+    client_id: u32,
+    engine: SharedClient,
+    shared: Rc<Shared>,
+    commit: Option<String>,
+    preedit: String,
+) -> Result<()> {
+    let session = UpdateSession {
+        context: context.clone(),
+        engine,
+        shared,
+        commit,
+        preedit,
+        require_foreground: true,
     };
     request(context, client_id, session.into(), TF_ES_READWRITE)
 }

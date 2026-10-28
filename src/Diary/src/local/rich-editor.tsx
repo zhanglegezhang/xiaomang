@@ -6,7 +6,7 @@ import EditorBoundary from './editor-boundary'
 import { Markdown } from '@tiptap/markdown'
 import TaskList from '@tiptap/extension-task-list'
 import TaskItem from '@tiptap/extension-task-item'
-import { Table } from '@tiptap/extension-table'
+import { LocalTable } from './local-table'
 import TableRow from '@tiptap/extension-table-row'
 import TableHeader from '@tiptap/extension-table-header'
 import TableCell from '@tiptap/extension-table-cell'
@@ -66,7 +66,7 @@ function RichEditorContent({ value, onChange, readonly = false, onPasteImages, t
   const editor = useEditor({
     immediatelyRender: false,
     extensions: [LocalStarterKit.configure({ link: { openOnClick: false }, undoRedo: { depth: 60 } }), Markdown, TaskList, TaskItem.configure({ nested: true }),
-      Table.configure({ resizable: true }), TableRow, TableHeader, TableCell, RichSearch, LocalImage.configure({onPreview:(src,alt)=>setPreview({src,alt})}), Placeholder.configure({ placeholder: '从这里开始，记录今天…' })],
+      LocalTable.configure({ resizable: true }), TableRow, TableHeader, TableCell, RichSearch, LocalImage.configure({onPreview:(src,alt)=>setPreview({src,alt})}), Placeholder.configure({ placeholder: '从这里开始，记录今天…' })],
     content: value, contentType: 'markdown', editable: !readonly,
     onBeforeCreate: ({ editor }) => {
       if (session?.rich?.content === value) editor.schema = session.rich.state.schema

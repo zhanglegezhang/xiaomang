@@ -25,7 +25,7 @@ use qingjian_platform::protocol::{
     ClientMessage, Frame, IndicatorState, InputSettings, ScreenRect, ServerMessage, SessionId,
 };
 
-pub use self::candidates::{CandidateSink, NoopSink, RenderSettings};
+pub use self::candidates::{CandidateAction, CandidateSink, NoopSink, RenderSettings};
 pub use self::code::find_code_table;
 use self::composed::Composed;
 pub use self::config::RouterConfig;
@@ -102,6 +102,7 @@ pub struct Router {
 
     /// 上次真正显示的帧与位置：没变就不重画（组字期间的空转 Poll 很多）。
     last_shown: Option<(Frame, ScreenRect)>,
+    pending_click: Option<(SessionId, Frame, usize)>,
 
     /// 本地整句模型（`.qjm` 或三件套目录）；没有模型文件为 `None`。
     model_path: Option<PathBuf>,
@@ -145,6 +146,7 @@ impl Router {
             ime_active: false,
             last_rect: None,
             last_shown: None,
+            pending_click: None,
             model_path: None,
             code_table: None,
             model_loader: None,

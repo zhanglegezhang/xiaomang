@@ -115,10 +115,23 @@ impl<S: Read + Write> EngineClient<S> {
 
     /// 组句期间定时拉一次云联想的异步结果，回最新一帧。
     pub fn poll(&mut self) -> Result<Frame, ClientError> {
+        self.poll_selection().map(|reply| reply.frame)
+    }
+
+    pub fn poll_selection(&mut self) -> Result<KeyResponse, ClientError> {
         match self.call(&ClientMessage::Poll {
             session: self.session,
         })? {
-            ServerMessage::Update { frame, .. } => Ok(frame),
+            ServerMessage::Update { frame, .. } => Ok(KeyResponse {
+                outcome: qingjian_platform::protocol::KeyOutcome::Passthrough,
+                commit: None,
+                frame,
+            }),
+            ServerMessage::CandidateCommitted { commit, frame, .. } => Ok(KeyResponse {
+                outcome: qingjian_platform::protocol::KeyOutcome::Consumed,
+                commit: Some(commit),
+                frame,
+            }),
             _ => Err(ClientError::Unexpected("expected update for poll")),
         }
     }

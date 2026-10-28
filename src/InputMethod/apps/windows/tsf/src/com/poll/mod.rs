@@ -128,8 +128,17 @@ fn poll_once(context: &PollContext) {
     let Some(client) = guard.as_mut() else {
         return;
     };
-    match client.poll() {
-        Ok(frame) => {
+    if !context.shared.foreground() || !in_foreground(context) || !super::service::candidate_context_active() {
+        return;
+    }
+    match client.poll_selection() {
+        Ok(reply) => {
+            let frame = reply.frame;
+            if reply.commit.is_some() {
+                drop(guard);
+                super::service::on_candidate_commit(reply.commit, frame);
+                return;
+            }
             // 翻译评审时回空帧 = 翻译已在 Server 侧结束（云端没给译文）。
             if translating && frame.is_empty() {
                 drop(guard);
@@ -158,7 +167,7 @@ fn in_foreground(context: &PollContext) -> bool {
 }
 
 /// UWP 应用的框架窗口（类名 `ApplicationFrameWindow`）。
-fn is_uwp_frame(window: HWND) -> bool {
+pub(crate) fn is_uwp_frame(window: HWND) -> bool {
     let mut name = [0u16; 32];
     let len = unsafe { GetClassNameW(window, &mut name) };
     usize::try_from(len)

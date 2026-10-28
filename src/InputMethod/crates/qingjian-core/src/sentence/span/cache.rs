@@ -100,6 +100,7 @@ mod tests {
                     text: "开发".to_owned(),
                     syllables: vec!["kai".to_owned(), "fa".to_owned()],
                     frequency: 9,
+                    reading_penalty: 0.0,
                     penalty: 0.0,
                 }]
             })

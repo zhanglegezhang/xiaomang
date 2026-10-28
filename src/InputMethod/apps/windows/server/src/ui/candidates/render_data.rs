@@ -1,5 +1,6 @@
 //! 候选窗口一次绘制要用的全部内容，由帧换算而来；渲染器要的帧由 [`RenderData::render_frame`] 再换一次。
 
+use std::cell::RefCell;
 use std::rc::Rc;
 
 use qingjian_platform::protocol::{Frame, PreeditKind};
@@ -11,6 +12,7 @@ use super::theme::Theme;
 
 /// 一次绘制要用的全部内容。
 pub(crate) struct RenderData {
+    pub(super) hit_bounds: RefCell<Vec<[f32; 4]>>,
     /// 配色与字体（随 DPI / 深浅重建）。
     pub(super) theme: Rc<Theme>,
 
@@ -49,6 +51,7 @@ impl RenderData {
     pub(super) fn empty(theme: Rc<Theme>) -> Self {
         Self {
             theme,
+            hit_bounds: RefCell::new(Vec::new()),
             preedit: Vec::new(),
             cursor: 0,
             rows: Vec::new(),

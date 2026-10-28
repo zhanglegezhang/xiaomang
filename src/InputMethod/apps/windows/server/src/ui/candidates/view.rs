@@ -107,6 +107,7 @@ pub(super) fn paint(hdc: HDC, data: &RenderData, client: RECT) {
     let theme = &data.theme;
     unsafe { SetBkMode(hdc, TRANSPARENT) };
 
+    data.hit_bounds.borrow_mut().clear();
     let mut y = theme.padding;
     y += draw_top_line(hdc, data, y);
     y += draw_notice(hdc, data, y);
@@ -225,6 +226,12 @@ fn draw_rows(hdc: HDC, data: &RenderData, mut y: i32, width: i32) {
     let text_x = theme.padding + columns.index_width + theme.column_gap;
     let annotation_x = text_x + columns.text_width + theme.column_gap;
     for (i, row) in data.rows.iter().enumerate() {
+        data.hit_bounds.borrow_mut().push([
+            (theme.padding / 2) as f32,
+            y as f32,
+            (width - theme.padding / 2) as f32,
+            (y + columns.row_height) as f32,
+        ]);
         if i == data.highlight {
             let rect = RECT {
                 left: theme.padding / 2,
@@ -295,6 +302,12 @@ fn draw_horizontal(hdc: HDC, data: &RenderData, y: i32, width: i32) {
             + cloud_prefix_width(hdc, theme, row)
             + text_size.cx
             + code_width(hdc, theme, row);
+        data.hit_bounds.borrow_mut().push([
+            (x - highlight_inset) as f32,
+            y as f32,
+            (x + item_width + highlight_inset) as f32,
+            (y + row_height) as f32,
+        ]);
         if i == data.highlight {
             let rect = RECT {
                 left: x - highlight_inset,

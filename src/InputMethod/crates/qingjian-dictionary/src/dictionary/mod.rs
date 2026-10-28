@@ -1,5 +1,9 @@
+use std::collections::HashMap;
 use std::ops::Range;
 use std::path::Path;
+use std::sync::OnceLock;
+
+mod readings;
 
 use qingjian_format::{Container, Kind, Metadata, Table, Text, Writer};
 use zerocopy::{FromBytes, Immutable, IntoBytes, KnownLayout};
@@ -65,6 +69,8 @@ struct Row {
 /// 内存词库。从 TSV 解析时四段数据是自己的，从 `.qj` 打开时是映射文件里的，查询代码不区分。
 #[derive(Debug, Default)]
 pub struct Dictionary {
+    /// 单字各读音的最高词频，首次需要读音先验时建立。
+    character_frequencies: OnceLock<HashMap<char, u32>>,
     /// 所有词文本首尾相接。
     texts: Text,
 
@@ -187,6 +193,7 @@ impl Dictionary {
         let total_frequency = slots.iter().map(|s| u64::from(s.frequency)).sum();
         tracing::debug!(entries = slots.len(), keys = index.len(), "词库加载完成");
         Self {
+            character_frequencies: OnceLock::new(),
             texts: Text::Owned(texts),
             keys: Text::Owned(keys),
             index: Table::Owned(index),
@@ -287,6 +294,7 @@ impl Dictionary {
             "词库已映射"
         );
         Ok(Self {
+            character_frequencies: OnceLock::new(),
             texts,
             keys,
             index,

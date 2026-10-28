@@ -2,13 +2,13 @@
 
 use super::*;
 
-/// 每个音节都合法、整句却不通的输入（`meiganxi`）：词图里的敲错边把 没关系 读出来，作为词候选插到最前；
+/// 每个音节都合法、但词库缺少完整原音路径（没有单字 xi）的输入：敲错边补出 没关系；
 /// 上屏按敲的字母消耗、记个人敲错表，退格重选时退回；原样说得通（`meiganxie` 没感谢）时不改。
 #[test]
-fn typo_edges_in_the_lattice_correct_legal_but_unlikely_pinyin() {
+fn typo_edges_recover_legal_pinyin_without_a_complete_original_path() {
     let dictionary = Dictionary::parse(
         "没关系\tmei guan xi\t800000\n关系\tguan xi\t500000\n没\tmei\t900000\n干\tgan\t200000\n\
-             洗\txi\t100000\n美感\tmei gan\t300000\n感谢\tgan xie\t300000\n谢\txie\t50000\n",
+             美感\tmei gan\t300000\n感谢\tgan xie\t300000\n谢\txie\t50000\n",
     )
     .unwrap();
     let mut engine =

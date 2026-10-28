@@ -19,7 +19,7 @@ namespace ShareX
         internal const string ClassId = "{745D01A8-3F53-41D6-969B-42A734F28B1E}";
         internal static string BundleDirectory => Path.Combine(AppContext.BaseDirectory, "ThirdParty", "XiaomangInputMethod");
         internal static string UserDirectory => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "XiaomangInputMethod");
-        internal static string ComponentDirectory => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles), "XiaomangInputMethod", "0.1.4-hotkey1");
+        internal static string ComponentDirectory => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles), "XiaomangInputMethod", "0.1.4-recovery1");
         internal static string LogDirectory => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "XiaomangInputMethod", "logs");
         private static readonly object gate = new();
         private static System.Threading.Timer monitor;
@@ -76,6 +76,8 @@ namespace ShareX
             {
                 if (monitor != null) return;
                 stopping = false;
+                try { InputMethodRecovery.Publish(Path.Combine(bundleProbe(), "XiaomangInputWorker.exe"), registrationProbe(), "start"); }
+                catch (Exception error) { DebugHelper.WriteException(error, "Input recovery registration"); }
                 monitor = new System.Threading.Timer(_ => Tick(), null, 0, 1500);
             }
             finally { System.Threading.Monitor.Exit(gate); }
@@ -96,12 +98,13 @@ namespace ShareX
                     }
                     if (worker != null)
                     {
+                        DebugHelper.WriteLine("Input worker exited: pid=" + worker.Id + "; code=" + worker.ExitCode);
                         workerReady = false;
                         worker.Dispose(); worker = null; stopEvent?.Dispose(); stopEvent = null;
                         failures++;
                         nextRetry = DateTime.UtcNow.AddSeconds(Math.Min(60, 2 << Math.Min(failures, 4)));
                     }
-                    if (failures >= 5) { lastError = "后台连续启动失败，已停止自动重试；请在此页点击重试后台。"; return; }
+                    if (failures >= 5) { InputMethodRecovery.Publish(Path.Combine(bundleProbe(), "XiaomangInputWorker.exe"), false, "consecutive-failure"); lastError = "后台连续启动失败，已停止自动重试；请在此页点击重试后台。"; return; }
                     if (DateTime.UtcNow < nextRetry || !registrationProbe()) return;
                     string bundle = bundleProbe();
                     string exe = Path.Combine(bundle, "XiaomangInputWorker.exe");
@@ -185,6 +188,8 @@ namespace ShareX
         {
             lock (gate)
             {
+                InputMethodRecovery.Publish(Path.Combine(bundleProbe(), "XiaomangInputWorker.exe"), false, "explicit-stop");
+                DebugHelper.WriteLine("Input worker stop requested explicitly.");
                 stopping = true; monitor?.Dispose(); monitor = null;
                 workerReady = false;
                 worker ??= FindWorker(Path.Combine(bundleProbe(), "XiaomangInputWorker.exe"));
@@ -208,6 +213,8 @@ namespace ShareX
         {
             lock (gate)
             {
+                InputMethodRecovery.Publish(Path.Combine(bundleProbe(), "XiaomangInputWorker.exe"), false, "personal-data-transfer");
+                DebugHelper.WriteLine("Input worker paused for personal data transfer.");
                 stopping = true; monitor?.Dispose(); monitor = null; workerReady = false;
                 worker ??= FindWorker(Path.Combine(bundleProbe(), "XiaomangInputWorker.exe"));
                 if (worker != null && !worker.HasExited)

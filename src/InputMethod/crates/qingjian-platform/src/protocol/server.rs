@@ -39,6 +39,12 @@ impl Default for InputSettings {
 /// Server 发给 DLL 的消息。
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub enum ServerMessage {
+    /// Mouse selection returned only to a v8 client polling the active composition.
+    CandidateCommitted {
+        session: SessionId,
+        commit: String,
+        frame: Frame,
+    },
     /// 对一次 [`super::ClientMessage::OpenSession`] 的答复：把 DLL 在按键到达之前就要知道的
     /// 设置带过去一次（之后 [`Self::ModeSync`] 的每一拍也带着，改了配置不用重开会话）。
     ///

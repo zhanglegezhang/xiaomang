@@ -33,7 +33,7 @@ impl Engine {
     /// 整段输入的末尾是不是一个英文词：`woxiangxuehaorust` → 我想学好 + rust。
     ///
     /// 尾段要在英文词表里（个人表或随包表），头段要能切成每个音节都完整的拼音。
-    /// 尾段自己就是完整拼音的（`database`、`fan`）要至少 [`MIN_PINYIN_LIKE_TAIL_LETTERS`] 个字母；
+    /// 尾段自己就是完整拼音的（`made`、`database`、`fan`）优先按中文处理，不拆英文尾；
     /// 两个字母的尾段只认缩写词（ID / TV / OK）和个人表里的词：`to` / `it` 这类太容易撞上简拼。
     /// 同时满足的取最长的尾段（`wodedatabase` 取 database 不取 base）。双拼、带 `'` 的输入不切；
     /// 整段本身是英文词（`agent`）、拼音不像话时纠错能纠通（`shiide` → 是的）或有英文补全（`releas` → release）的也不切，
@@ -81,7 +81,7 @@ impl Engine {
             if len == MIN_ENGLISH_TAIL_LETTERS && !acronym && !known {
                 return None;
             }
-            if parser::is_fully_segmentable(tail) && len < MIN_PINYIN_LIKE_TAIL_LETTERS {
+            if parser::is_fully_segmentable(tail) {
                 return None;
             }
             if !parser::is_fully_segmentable(&scope[..head_len]) {

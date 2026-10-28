@@ -125,18 +125,25 @@ mod lifetime;
 mod personal_data;
 
 fn main() {
-    if personal_data::try_run(&std::env::args().collect::<Vec<_>>()) { return; }
+    if personal_data::try_run(&std::env::args().collect::<Vec<_>>()) {
+        return;
+    }
     let Some(owner) = lifetime::Owner::from_args() else {
         return;
     };
-    let Some(user_root) = user_dir() else { return; };
-    let Ok(_personal_lock) = personal_data::session_lock(&user_root) else { return; };
+    let Some(user_root) = user_dir() else {
+        return;
+    };
+    let Ok(_personal_lock) = personal_data::session_lock(&user_root) else {
+        return;
+    };
     load_env();
 
     // 日志级别取自配置，所以先写模板、读配置，再装日志。
     let template = write_config_template();
     let config = load_config();
     let _log_guard = init_logging(&config);
+    tracing::info!(pid = std::process::id(), "输入后台启动");
     match template {
         Some(Ok(true)) => tracing::info!("已写出配置模板"),
         Some(Err(error)) => tracing::warn!(%error, "写配置模板失败"),
@@ -193,6 +200,7 @@ fn main() {
     engine.set_aux_enabled(config.aux_code.enabled);
     engine.set_aux_show(config.general.aux_code_show);
     engine.set_chinese_first(config.general.chinese_first);
+    engine.set_chinese_only_candidates(true);
     engine.set_shift_letter_compose(config.general.shift_letter.compose());
     engine.set_shuangpin_raw_preedit(config.general.shuangpin_raw_preedit);
     engine.log_session(env!("CARGO_PKG_VERSION"), "windows");
@@ -235,6 +243,7 @@ fn main() {
     );
 
     serve(router, owner);
+    tracing::info!(pid = std::process::id(), "输入后台正常退出");
 }
 
 /// 日志目录 `%LOCALAPPDATA%\Qingjian\logs` 给 AppContainer 应用（任务栏搜索 / 设置）写权限：
@@ -273,7 +282,11 @@ fn serve(mut router: Router, owner: lifetime::Owner) {
     let on_status = Box::new(move |event| {
         let _ = status_events.send(Work::Status(event));
     });
-    match UiHandle::spawn(on_status) {
+    let candidate_events = work_tx.clone();
+    let on_candidate = Box::new(move |session, frame, index| {
+        let _ = candidate_events.send(Work::Candidate(session, frame, index));
+    });
+    match UiHandle::spawn(on_status, on_candidate) {
         Ok(ui) => {
             router.set_candidate_sink(Box::new(ui.clone()));
             router.set_status_sink(Box::new(ui));

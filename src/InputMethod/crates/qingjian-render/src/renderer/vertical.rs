@@ -66,6 +66,12 @@ impl Renderer {
         let annotation_x = text_x + columns.text_width + m.column_gap();
         let text_height = m.px(m.theme.text_font.line_height);
         for (i, row) in frame.rows.iter().enumerate() {
+            self.candidate_bounds.push([
+                left + m.padding() / 2.0,
+                y,
+                left + content_width - m.padding() / 2.0,
+                y + columns.row_height,
+            ]);
             if Some(i) == frame.highlighted {
                 self.fill_highlight(
                     canvas,

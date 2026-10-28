@@ -82,6 +82,7 @@ impl Renderer {
         }
         Ok(RenderedStatus {
             rendered: Rendered {
+                candidate_bounds: Vec::new(),
                 pixmap: canvas.into_pixmap(),
                 content_x: margin as u32,
                 content_y: margin as u32,

@@ -10,6 +10,9 @@ pub struct SpanWord {
     /// 词库静态词频。
     pub frequency: u32,
 
+    /// 单字罕见读音的代价；独立于纠错，不把合法读音当成拼写错误。
+    pub reading_penalty: f64,
+
     /// 命中的音节不是敲的原样（模糊音 / 敲错变体）时的代价之和，进路径得分时扣掉；原样命中是 0。
     pub penalty: f64,
 }

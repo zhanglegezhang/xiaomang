@@ -102,7 +102,16 @@ pub fn serve_pipe(
                 }
             }
             Ok(Work::Status(event)) => router.handle_status_event(event),
+            Ok(Work::Candidate(session, frame, action)) => match action {
+                crate::dispatch::CandidateAction::Click(index) => {
+                    router.click_candidate(session, frame, index)
+                }
+                crate::dispatch::CandidateAction::Page(pages) => {
+                    router.scroll_candidates(session, frame, pages)
+                }
+            },
             Ok(Work::Shutdown) => {
+                tracing::info!("输入后台开始保存并停止");
                 router.flush_learning();
                 break;
             }

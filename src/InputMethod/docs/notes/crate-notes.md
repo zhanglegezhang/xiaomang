@@ -16,6 +16,10 @@ HKL 变体按系统 `Layout Id` 推导，缺失布局直接失败，不调用 Lo
 
 ## crates/qingjian-dictionary
 
+`Dictionary::reading_penalty` 延迟缓存每个单字各读音的最大词频，按读音频率比例计算代价；多字词不扣。无需修改 `.qj` 格式。整句词级模型存在该字时扣掉读音代价，并保留在神经重排之外；无词级概率时使用原读音词频兜底，避免重复扣分。
+
+整句转换保持束宽8，最多保留同末词的3个前驱，复用词图缓存，显示最多3个完整组合。保留较长完整词前缀的最佳完成作为备选，不强制它成为首选。第二、第三候选上屏时根据文本和音节找回所选路径，记录对应词语接续。真实词库与发布构建的性能对照入口为 `cargo run --release -p qingjian-cli --example candidate_quality_probe -- <运行目录> <lexical或async>`，不加载个人数据。
+
 词库（TSV 解析或 `.qj` mmap），键按字节序排好，查询逐音节位置二分收窄（简拼位置按音节块跳扫），
 `lookup_pattern`（≥ 模式长度）与 `lookup_exact`（正好等长）同一套实现。词库键以 `v` 表示 ü，
 TSV 解析、查询与生成工具把 `lue` / `nue` 统一成 `lve` / `nve`。
@@ -251,9 +255,10 @@ TSF 原有数字 / OEM 标点 / 空格键码按当前布局用 `ToUnicodeEx` 解
 拼音显示位置（`[general] preedit`）在 Windows 上分两处落地：Server 把它读进 `RouterConfig.preedit` 并随 `Frame.preedit_mode`
 下发给 DLL，DLL（`com/service/key_sink.rs`）按 `inline()` 决定要不要放行内拼音，Server（`ui/candidates/render_data.rs::window_preedit`）
 按 `in_window()` 决定候选窗口顶部画不画拼音行；`window` 模式没有组句范围，光标矩形改从 `com/edit/anchor.rs::caret_rect`（当前选区）量。
-连不上 Server 时 DLL 自己拉起它（`tsf/src/com/service/launch.rs`）：`ShellExecuteW` 起与 DLL 同目录的 `qingjian-server.exe`
-（`uiAccess=true` 的 exe 用 `CreateProcess` 报 740），进程内 5 秒冷却 + 跨进程命名互斥体防止砸出一串 Server；
-起完清掉重连退避，下一键就试。Server 只在登录时由「启动」文件夹拉起，中途挂了以前只能等下次登录。
+小蟒分支连不上后台时，由 `tsf/src/com/service/launch.rs` 的独立线程按需恢复；
+仅使用主程序发布到 HKCU 的本机路径和停止事件，校验文件及词库后启动 `XiaomangInputWorker.exe`。
+进程内 10 秒冷却、跨进程互斥体与每分钟最多三次的共享预算防止重复启动；
+主动暂停和撤销注册禁用恢复，延迟启动的后台也再次检查暂停状态。没有额外的常驻监控。
 
 词库导入（设置「词库」页）走 `qingjian-dictionary::import` 转成 `.qj`（空词库拒绝），多选批量、成功的从 `[dictionaries] disabled` 摘掉、页面显示每个文件的结果；
 Server 每次轮询比对用户 `dicts` 的路径 / mtime / 长度快照，配置没变也重载新增、同名更新与移除；配置解析失败时词库沿用上次有效的开关（#36）。
@@ -321,3 +326,18 @@ Unix socket 用共享长度前缀与 Frame（当前公共版本 7，与 `PROTOCO
 
 专属后台、TSF 身份、超时通信及表情配置见 [xiaomang-worker.md](xiaomang-worker.md)。
 
+候选窗鼠标操作复用 Router 的翻页与选词逻辑。悬停滚轮仅在候选窗可见时启用 `WH_MOUSE_LL`，
+回调检查命中后投递 UI 消息，不抢焦点，不在回调中执行引擎查询；框外事件立即放行。
+滚轮每累计 120 个单位翻一页，同一消息的多个刻度完整保留，横竖排共用；首尾页夹紧，不循环。
+后台拒绝失焦、隐藏或组句已变化的旧翻页事件，连续翻页允许沿用同一组句的旧页帧。
+
+
+小蟒 Windows 启动时启用 Engine::set_chinese_only_candidates：中文查询在自定义短语插入前移除 English 词项，候选释义及英文模式不变。
+`ranking::FUZZY_PENALTY` 为 2.0，每个模糊命中的音节累加，词级预选、排序及整句路径共用；
+等价基础频率乘以 `exp(-2)`（约 13.5%），不改变学习记录优先级，也不新增准确拼音硬分层。
+中文模式下，已选择过的完整两音节词排在自动组合句之前，长句维持原排序。
+整句 `sentence_paths` 对完整音节先用原读音与已开启的模糊音查完整路径；有无占位且覆盖全部音节的路径就直接复用，
+缺少完整路径才增加键盘敲错边。普通整句、中文加英文尾词及本地参考转换共用此入口，简拼和未完成音节沿用原规则。
+Windows 鼠标选词使用协议 v8：渲染器输出物理像素命中区域，UI 将当前会话、候选快照及页内序号串行投递 Router；活动输入组件在既有 80ms 轮询中接收提交，再经 TSF 编辑会话写入。旧协议会话不处理点击；输入、隐藏、焦点及候选变化会拒绝过期操作。
+
+中文全拼的英文尾段检测：尾段可完整解析为拼音时不拆成英文（made → ma de）；rust 等非完整拼音尾段仍走原混输流程，英文模式不变。

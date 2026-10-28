@@ -722,3 +722,16 @@ fn input_log_records_the_session_and_page_turns() {
     };
     assert_eq!(commit.pages, 2);
 }
+
+#[test]
+fn selected_exact_short_word_precedes_generated_sentence_but_long_sentence_stays_first() {
+    let dictionary = Dictionary::parse("你好\tni hao\t1000\n你\tni\t9000\n号\thao\t9000\n想\txiang\t9000\n开发\tkai fa\t9000\n").unwrap();
+    let mut learned = HashMap::new();
+    learned.insert("nihao\t你好".to_string(), 2);
+    let mut e = Engine::new(dictionary).with_learner(Box::new(CountingLearner(learned)));
+    e.set_chinese_only_candidates(true);
+    e.set_input("nihao");
+    assert_eq!(e.query().unwrap().candidates.items[0].text, "你好");
+    e.set_input("xiangkaifa");
+    assert_eq!(e.query().unwrap().candidates.items[0].text, "想开发");
+}

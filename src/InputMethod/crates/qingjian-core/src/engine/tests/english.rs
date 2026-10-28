@@ -388,39 +388,35 @@ fn english_word_at_the_end_of_pinyin_joins_the_sentence() {
     assert_eq!(engine.query().unwrap().candidates.items[0].text, "开饭");
 }
 
-/// 尾段也是合法拼音时两种读法比分：`wodedatabase` 英文赢（拼音读法是四个散字），拼音读法排第二；
-/// `womenqubeijing` 拼音赢（北京 是常用词），输了的英文读法不出。
+/// 完整拼音尾段不参与英文抢占；非拼音英文尾段和英文模式仍可用。
 #[test]
-fn pinyin_like_english_tail_competes_with_the_plain_reading() {
-    const DICT: &str = "我\two\t900000\n的\tde\t800000\n我的\two de\t500000\n大\tda\t50000\n塔\tta\t3000\n巴\tba\t3000\n瑟\tse\t500\n\
-        我们\two men\t400000\n去\tqu\t300000\n北京\tbei jing\t200000\n北\tbei\t20000\n京\tjing\t10000\n";
-    let words = WordList::parse("database\tdatabase\t4310\nBeijing\tbeijing\t4500\n").unwrap();
-    let mut engine = Engine::new(Dictionary::parse(DICT).unwrap()).with_english(words);
-
-    engine.set_input("wodedatabase");
+fn complete_pinyin_tail_stays_chinese() {
+    let dict = Dictionary::parse("操\tcao\t100\n他\tta\t100\n妈\tma\t100\n的\tde\t100\n我\two\t100\n").unwrap();
+    let words = WordList::parse("made\tmade\t9000\ndatabase\tdatabase\t9000\nrust\trust\t4000\n").unwrap();
+    let mut engine = Engine::new(dict).with_english(words);
+    for input in ["caotamade", "womade", "wodatabase"] {
+        assert!(engine.split_english_tail(input).is_none(), "{input}");
+    }
+    engine.set_input("caotamade");
     let query = engine.query().unwrap();
-    assert_eq!(query.candidates.items[0].text, "我的database");
-    // 拼音读法第二（末尾 se 被敲错边读成 的，散字路径本来就随便）
-    assert!(query.candidates.items[1].text.starts_with("我的大塔巴"));
-    assert_eq!(query.candidates.items[1].kind, CandidateKind::Sentence);
-    assert_eq!(query.marked_text(), "wo'de'database");
-
-    engine.set_input("womenqubeijing");
+    assert!(query.tail.is_empty());
+    assert!(!query.candidates.items.iter().any(|c| c.text.contains("made")));
+    assert!(engine.split_english_tail("worust").is_some());
+    engine.set_english_mode(true);
+    engine.set_input("made");
+    assert!(engine.query().unwrap().candidates.items.iter().any(|c| c.text == "made"));
+}
+#[test]
+fn chinese_only_filter_keeps_chinese_and_restores_english_on_mode_switch() {
+    let words = WordList::parse("Sm\tsm\t5000\nhello\thello\t4720\n").unwrap();
+    let mut engine = Engine::new(Dictionary::parse("什么\tshen me\t9000\n说明\tshuo ming\t8000\n").unwrap()).with_english(words);
+    engine.set_input("sm");
+    assert!(engine.query().unwrap().candidates.items.iter().any(|c| c.kind == CandidateKind::English));
+    engine.set_chinese_only_candidates(true);
     let query = engine.query().unwrap();
-    assert_eq!(query.candidates.items[0].text, "我们去北京");
-    assert!(
-        !query
-            .candidates
-            .items
-            .iter()
-            .any(|c| c.text.ends_with("Beijing"))
-    );
-    assert_eq!(query.marked_text(), "wo'men'qu'bei'jing");
-
-    // 上屏英文赢了的整句：吃掉整段，英文词是最后一个词
-    engine.set_input("wodedatabase");
-    let mixed = engine.query().unwrap().candidates.items[0].clone();
-    assert_eq!(mixed.syllables, ["wo", "de", "database"]);
-    assert_eq!(engine.commit(&mixed), "我的database");
-    assert!(engine.composition().is_empty());
+    assert!(query.candidates.items.iter().any(|c| c.text == "什么"));
+    assert!(query.candidates.items.iter().all(|c| c.kind != CandidateKind::English));
+    engine.set_english_mode(true);
+    engine.set_input("hello");
+    assert!(engine.query().unwrap().candidates.items.iter().any(|c| c.kind == CandidateKind::English));
 }

@@ -214,6 +214,7 @@ fn qj_round_trip_preserves_every_lookup() {
 #[test]
 fn legacy_qj_umlaut_keys_remain_queryable() {
     let legacy = Dictionary {
+        character_frequencies: Default::default(),
         texts: Text::Owned("略虐".to_owned()),
         keys: Text::Owned("luenue".to_owned()),
         index: Table::Owned(vec![

@@ -89,6 +89,8 @@ impl Renderer {
         let mut x = left + m.padding() + inset;
         for (i, (row, item)) in frame.rows.iter().zip(&items).enumerate() {
             let item_width = item.index_width + m.px(INDEX_GAP) + item.text_width;
+            self.candidate_bounds
+                .push([x - inset, y, x + item_width + inset, y + row_height]);
             if Some(i) == frame.highlighted {
                 self.fill_highlight(
                     canvas,

@@ -9,4 +9,4 @@ mod update;
 pub(crate) use self::anchor::{anchor_rect, caret_rect};
 pub(crate) use self::selection::request_selection;
 pub(crate) use self::surrounding::{InputContext, input_context};
-pub(crate) use self::update::request_update;
+pub(crate) use self::update::{request_candidate_update, request_update};

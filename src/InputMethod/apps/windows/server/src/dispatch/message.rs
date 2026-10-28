@@ -122,6 +122,7 @@ impl Router {
     }
 
     fn handle_key(&mut self, session: SessionId, event: KeyEvent) -> ServerMessage {
+        self.pending_click = None;
         self.ensure_focus(session);
         self.notice = None;
         if self.translation.is_some() {
@@ -166,6 +167,45 @@ impl Router {
     /// 云联想轮询：聚焦会话拉一次异步结果回最新一帧，否则回空帧。释义兜底与本地整句模型也借这个节拍收。
     fn handle_poll(&mut self, session: SessionId) -> ServerMessage {
         self.tick();
+        if self
+            .pending_click
+            .as_ref()
+            .is_some_and(|(owner, _, _)| *owner == session)
+        {
+            let (_, clicked, offset) = self.pending_click.take().unwrap();
+            if self.focused == Some(session)
+                && self.self_drawn_frame() == clicked
+                && self.last_shown.is_some()
+            {
+                if self.translation.is_some()
+                    && let ServerMessage::KeyResult {
+                        commit: Some(commit),
+                        frame,
+                        ..
+                    } = self.handle_translation_review(
+                        session,
+                        &KeyEvent::new(0x31, Some('1'), Default::default()),
+                    )
+                {
+                    return ServerMessage::CandidateCommitted {
+                        session,
+                        commit,
+                        frame,
+                    };
+                }
+                let index = clicked.page * self.config.page_size + offset;
+                if let Some(commit) = self.commit_index(index) {
+                    self.recompose();
+                    let shown = self.self_drawn_frame();
+                    self.reconcile_candidates(&shown);
+                    return ServerMessage::CandidateCommitted {
+                        session,
+                        commit,
+                        frame: self.current_frame(),
+                    };
+                }
+            }
+        }
         let learned = self.engine.poll_glosses();
         if learned > 0 {
             tracing::info!(learned, "释义兜底写入个人释义表");

@@ -21,6 +21,14 @@ pub struct Owner {
 
 impl Owner {
     pub fn from_args() -> Option<Self> {
+        // A delayed recovery launch must not race an explicit backup/unregistration pause.
+        if windows_registry::CURRENT_USER
+            .open(r"Software\Xiaomang\InputMethodRecovery")
+            .and_then(|key| key.get_u32("Enabled"))
+            .is_ok_and(|enabled| enabled == 0)
+        {
+            return None;
+        }
         let args: Vec<String> = std::env::args().collect();
         let (parent, event_name) =
             if args.len() == 4 && args[1] == "--resident" && args[2] == "--stop-event" {
@@ -94,7 +102,12 @@ impl Owner {
                 .into_iter()
                 .map(|value| HANDLE(value as *mut _))
                 .collect();
-            let _ = unsafe { WaitForMultipleObjects(&handles, false, u32::MAX) };
+            let reason = unsafe { WaitForMultipleObjects(&handles, false, u32::MAX) };
+            tracing::info!(
+                wait_result = reason.0,
+                parent_mode = handles.len() > 1,
+                "输入后台收到退出信号（0 为明确停止，1 为旧模式父进程退出）"
+            );
             let _ = sender.send(Work::Shutdown);
         });
     }

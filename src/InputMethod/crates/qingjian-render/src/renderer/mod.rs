@@ -52,6 +52,7 @@ const MIN_VERTICAL_WIDTH: f32 = 200.0;
 pub struct Renderer {
     /// 文字测绘。
     text: TextPainter,
+    candidate_bounds: Vec<[f32; 4]>,
 }
 
 /// 一次渲染期间的上下文：主题按倍数换算后的像素值。
@@ -126,7 +127,10 @@ impl Renderer {
     pub fn new(library: FontLibrary) -> Self {
         let mut text = TextPainter::new(library);
         text.set_optical_size(Some(OPTICAL_SIZE));
-        Self { text }
+        Self {
+            text,
+            candidate_bounds: Vec::new(),
+        }
     }
 
     /// 画一帧。`scale` 是点 → 像素的倍数（Retina 为 2）；带 `shadow` 时位图四周留出阴影的边。
@@ -138,6 +142,7 @@ impl Renderer {
         scale: f32,
         shadow: Option<&Shadow>,
     ) -> Result<Rendered, RenderError> {
+        self.candidate_bounds.clear();
         let metrics = Metrics { theme, scale };
         let (content_width, content_height) = self.preferred_size(frame, layout, &metrics);
         let margin = shadow.map_or(0.0, |s| metrics.px(s.margin()));
@@ -173,6 +178,7 @@ impl Renderer {
             }
         }
         Ok(Rendered {
+            candidate_bounds: self.candidate_bounds.clone(),
             pixmap: canvas.into_pixmap(),
             content_x: margin as u32,
             content_y: margin as u32,
@@ -308,3 +314,6 @@ impl Renderer {
         );
     }
 }
+
+#[cfg(test)]
+mod mouse_tests;

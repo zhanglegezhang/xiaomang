@@ -33,2045 +33,2045 @@
   },
   {
     "Id": "text",
-    "FileName": "xiaomang-inputmethod-2.4-20261019-win-x64.zip",
-    "Length": 127889822,
+    "FileName": "xiaomang-inputmethod-3.11-20261029-win-x64.zip",
+    "Length": 128036880,
     "Files": [
       {
-        "Required": true,
+        "Path": "小蟒输入法说明.md",
+        "Length": 3958,
+        "Sha256": "BD6C4E9B0C1D46D8AE9790C6E263017CC3BCF2FE9E02D2AB7F6798B5CF0FE7A6",
+        "Required": false
+      },
+      {
+        "Path": "concrt140.dll",
         "Length": 324208,
         "Sha256": "2405355F0A58067B258F8DF33C327E3A3D716EAAC5A3A5AEBB757842D85BD376",
-        "Path": "concrt140.dll"
+        "Required": true
       },
       {
-        "Required": true,
+        "Path": "coremessagingxp.dll",
         "Length": 1066800,
         "Sha256": "C6D3A66183DA33B558ABB14CC83C609048A8405C29FBF8AB3EE35E27D36C440A",
-        "Path": "coremessagingxp.dll"
+        "Required": true
       },
       {
-        "Required": true,
+        "Path": "dcompi.dll",
         "Length": 3213104,
         "Sha256": "E8A7F36DE274C83309B9142AD78ECB91CA1FEB9465D5A0FEEDBECDF560C02C78",
-        "Path": "dcompi.dll"
+        "Required": true
       },
       {
-        "Required": true,
+        "Path": "dwmcorei.dll",
         "Length": 2852632,
         "Sha256": "C8FEE14ADD00B80759375B642DB0F9935FFB422D5BDEE694E512CCD02A79090D",
-        "Path": "dwmcorei.dll"
+        "Required": true
       },
       {
-        "Required": true,
+        "Path": "dwmscenei.dll",
         "Length": 2365256,
         "Sha256": "FE3018ACFB87CFABC0B5BFD5028B3C132817A39E816A1B5199B7022671897768",
-        "Path": "dwmscenei.dll"
+        "Required": true
       },
       {
-        "Required": true,
+        "Path": "dwritecore.dll",
         "Length": 3252576,
         "Sha256": "426674B9C74612BD2A29D0812212FAF0641AD93A48521AEB58EB9A50FAC8708D",
-        "Path": "dwritecore.dll"
+        "Required": true
       },
       {
-        "Required": true,
-        "Length": 2375680,
-        "Sha256": "2D5AD6D4989EB16391C1CF03CA9C3454DB995AFBFC8B452D9556FCDEB6E95DF4",
-        "Path": "InputMethodSetup.exe"
+        "Path": "InputMethodSetup.exe",
+        "Length": 2226176,
+        "Sha256": "0EC49688B185C77AC11B87C202BE654066FA01A2A897F1C0D812A63C30F53650",
+        "Required": true
       },
       {
-        "Required": true,
+        "Path": "marshal.dll",
         "Length": 509728,
         "Sha256": "639EF9736D7029940749561FD6ED2DEB2AAC9C42D47B1088AFDBDBA90EC7AE78",
-        "Path": "marshal.dll"
+        "Required": true
       },
       {
-        "Required": true,
+        "Path": "microsoft.directmanipulation.dll",
         "Length": 665392,
         "Sha256": "8EB6DA8E42F418996D80302DDFAC9492F6D63810680D5EBE85DABD2BE88098C5",
-        "Path": "microsoft.directmanipulation.dll"
+        "Required": true
       },
       {
-        "Required": true,
+        "Path": "microsoft.graphics.imaging.dll",
         "Length": 139568,
         "Sha256": "3BC81891D6837352232581914EA446841FD457DAD5451D43786C27AA1C43E697",
-        "Path": "microsoft.graphics.imaging.dll"
+        "Required": true
       },
       {
-        "Required": true,
+        "Path": "microsoft.inputstatemanager.dll",
         "Length": 460576,
         "Sha256": "FB9944C60E136D14421CEF822073B33248BD479FD352271FBC45E61B3180899D",
-        "Path": "microsoft.inputstatemanager.dll"
+        "Required": true
       },
       {
-        "Required": true,
+        "Path": "microsoft.internal.frameworkudk.dll",
         "Length": 931248,
         "Sha256": "42EC1FE202BDD84D0D1CC93743BB520FC0D13FA32FC1217F46686F8C1690F111",
-        "Path": "microsoft.internal.frameworkudk.dll"
+        "Required": true
       },
       {
-        "Required": true,
+        "Path": "microsoft.ui.composition.ossupport.dll",
         "Length": 67384,
         "Sha256": "0B570E1DB4888E4077A2AB77B97E6F1FCC7E67D23D81D096ECAED1975DA46680",
-        "Path": "microsoft.ui.composition.ossupport.dll"
+        "Required": true
       },
       {
-        "Required": true,
+        "Path": "microsoft.ui.dll",
         "Length": 177968,
         "Sha256": "89774B2B23586807DD9D3C636C4D668DEB2F4B7A000E2FB06EDB389A44F4CEFD",
-        "Path": "microsoft.ui.dll"
+        "Required": true
       },
       {
-        "Required": true,
+        "Path": "microsoft.ui.input.dll",
         "Length": 1595168,
         "Sha256": "7A23BD40172A35A8516BD5950053E19A585DED83F1E72C5A3D2879306FF97922",
-        "Path": "microsoft.ui.input.dll"
+        "Required": true
       },
       {
-        "Required": true,
+        "Path": "microsoft.ui.pri",
         "Length": 101528,
         "Sha256": "BAFB8C79DCA23D79BBDDB7B22BAF000DD88803041CF958A68D9E03979CDA946C",
-        "Path": "microsoft.ui.pri"
+        "Required": true
       },
       {
-        "Required": true,
+        "Path": "microsoft.ui.windowing.core.dll",
         "Length": 558904,
         "Sha256": "FF2C5B7A3B1B36873CB462D5E3DAE27C7887D65BDAB9AE2F9DCA61B4EED70A97",
-        "Path": "microsoft.ui.windowing.core.dll"
+        "Required": true
       },
       {
-        "Required": true,
+        "Path": "microsoft.ui.windowing.dll",
         "Length": 562992,
         "Sha256": "5D6F9FB4316485528B1931B90AE6F374BBCEF7468F9B38187205972B8FF95388",
-        "Path": "microsoft.ui.windowing.dll"
+        "Required": true
       },
       {
-        "Required": true,
+        "Path": "microsoft.ui.xaml.controls.dll",
         "Length": 6942008,
         "Sha256": "BFB7EE4E86F00B9365FA50DECA8D30BF32C71ACAA536779D20DCF17AE32EC725",
-        "Path": "microsoft.ui.xaml.controls.dll"
+        "Required": true
       },
       {
-        "Required": true,
+        "Path": "microsoft.ui.xaml.controls.pri",
         "Length": 2088000,
         "Sha256": "5EDB56C0E4688A74CECC4297CB21BD3AAF9F4FBBD2EFD18A1C49464744EF8CF3",
-        "Path": "microsoft.ui.xaml.controls.pri"
+        "Required": true
       },
       {
-        "Required": true,
+        "Path": "microsoft.ui.xaml.dll",
         "Length": 15323960,
         "Sha256": "B241F72BFC9460E823D8A122FBDBC2E2D7AC6BA60B9E5BF981E9B5054D4555B5",
-        "Path": "microsoft.ui.xaml.dll"
+        "Required": true
       },
       {
-        "Required": true,
+        "Path": "microsoft.ui.xaml.internal.dll",
         "Length": 936760,
         "Sha256": "2FCEF08FAEB8ABAD39D264BB9D673D8570C3223C559EC7BB42D83908EB9CE836",
-        "Path": "microsoft.ui.xaml.internal.dll"
+        "Required": true
       },
       {
-        "Required": true,
+        "Path": "microsoft.ui.xaml.phone.dll",
         "Length": 1103672,
         "Sha256": "537E0CA9E62A2165B148D3B5AA47E3F0E76DB8A7D1EC49D34591A1CB8AB5C7B0",
-        "Path": "microsoft.ui.xaml.phone.dll"
+        "Required": true
       },
       {
-        "Required": true,
+        "Path": "microsoft.ui.xaml.resources.19h1.dll",
         "Length": 1120568,
         "Sha256": "79A52C769D3AF54A51D47AB90D50C96B1AF62DCDB6644A4590124A559AF74C04",
-        "Path": "microsoft.ui.xaml.resources.19h1.dll"
+        "Required": true
       },
       {
-        "Required": true,
+        "Path": "microsoft.ui.xaml.resources.common.dll",
         "Length": 55136,
         "Sha256": "60D18FC33FF12EADB9A5E025ADCB9E70BB67F24E42793AB44A467BD5A5E24D11",
-        "Path": "microsoft.ui.xaml.resources.common.dll"
+        "Required": true
       },
       {
-        "Required": true,
+        "Path": "microsoft.windows.applicationmodel.resources.dll",
         "Length": 158048,
         "Sha256": "1669A1BF57F4F41A3AD0DED4E2613080D39B2E2EFB3FBE12760E9607E48A949D",
-        "Path": "microsoft.windows.applicationmodel.resources.dll"
+        "Required": true
       },
       {
-        "Required": true,
+        "Path": "microsoft.windowsappruntime.dll",
         "Length": 2608440,
         "Sha256": "945795BF788DB870CAA0B97A010476B6225C6DF22758FE7B4EAEBADA044B4072",
-        "Path": "microsoft.windowsappruntime.dll"
+        "Required": true
       },
       {
-        "Required": true,
+        "Path": "microsoft.windowsappruntime.pri",
         "Length": 11296,
         "Sha256": "0EC8D17E6CE296BA51AA539F8F3FC1B93B8BB53C20C82BA440F07E5CD1CE081E",
-        "Path": "microsoft.windowsappruntime.pri"
+        "Required": true
       },
       {
-        "Required": true,
+        "Path": "mrm.dll",
         "Length": 290104,
         "Sha256": "F1F4E564D780E24A6601882FFCC009F10C1AB98943254A141B83C438E5A8D509",
-        "Path": "mrm.dll"
+        "Required": true
       },
       {
-        "Required": true,
-        "Length": 557728,
-        "Sha256": "0F885B509A685D2BBFA652FED26B5FB31D88FBDAB0A978C641D1C7B8AA460AA9",
-        "Path": "msvcp140.dll"
-      },
-      {
-        "Required": true,
+        "Path": "msvcp140_1.dll",
         "Length": 35952,
         "Sha256": "BFAD5AEF4C63A669E3C140655CDFDF395B6C979B400A447BD5DCB65ED8826C3D",
-        "Path": "msvcp140_1.dll"
+        "Required": true
       },
       {
-        "Required": true,
+        "Path": "msvcp140_2.dll",
         "Length": 280200,
         "Sha256": "3EA06F0EE098B4823CB79599DF3780E7F23CCE52C19AAC31D2A0D47EFE33A5E9",
-        "Path": "msvcp140_2.dll"
+        "Required": true
       },
       {
-        "Required": true,
+        "Path": "msvcp140_atomic_wait.dll",
         "Length": 50304,
         "Sha256": "640B2AEFCED484D0368EEA5BDD06ADDD0658A3A70A49256E560D6923B404A479",
-        "Path": "msvcp140_atomic_wait.dll"
+        "Required": true
       },
       {
-        "Required": true,
+        "Path": "msvcp140_codecvt_ids.dll",
         "Length": 31872,
         "Sha256": "F2069A52880EC885EE7F0511186100EB7FADA0411A2B4948FAFEA7735B878A18",
-        "Path": "msvcp140_codecvt_ids.dll"
+        "Required": true
       },
       {
-        "Required": true,
+        "Path": "msvcp140.dll",
+        "Length": 557728,
+        "Sha256": "0F885B509A685D2BBFA652FED26B5FB31D88FBDAB0A978C641D1C7B8AA460AA9",
+        "Required": true
+      },
+      {
+        "Path": "NOTICE-MSVC-runtime.txt",
         "Length": 852,
         "Sha256": "04FD7B5FDA541455951CA7A293CF5DBB088DBCF6E5E37E8C8271C70F41FFDAED",
-        "Path": "NOTICE-MSVC-runtime.txt"
+        "Required": true
       },
       {
-        "Required": true,
-        "Length": 8424448,
-        "Sha256": "8A17F21ECE270259407F92A7BF0FF1DA872C2EC27C89F130179C5B348E0CA04E",
-        "Path": "qingjian-settings.exe"
+        "Path": "qingjian-settings.exe",
+        "Length": 8276992,
+        "Sha256": "0AC3A4B94D3C9DCC75636AB838C076AE878D78215B03810801C63E8645BBDE2A",
+        "Required": true
       },
       {
-        "Required": true,
+        "Path": "resources.pri",
         "Length": 2183976,
         "Sha256": "94F569071C6CC0EEF00DD711D05B45D7C6CAFD92CF8EC16A6626DBB0643D6345",
-        "Path": "resources.pri"
+        "Required": true
       },
       {
-        "Required": false,
+        "Path": "runtime-files.sha256",
         "Length": 34140,
-        "Sha256": "C122C89A61F3778C74EB7DF78EF1E3623510FAB9B84FC4203D723109E81952B4",
-        "Path": "runtime-files.sha256"
+        "Sha256": "7B0E2AE8FC28CF3BE9BD94D77997AD0C318CC4BC8739453DF9C4E210DDAAD325",
+        "Required": false
       },
       {
-        "Required": true,
+        "Path": "sessionhandleipcproxystub.dll",
         "Length": 34072,
         "Sha256": "516F75793B1904E8A48AFFA70063FC9B6995BDEF5972B4EC681EEDE49C752EF7",
-        "Path": "sessionhandleipcproxystub.dll"
+        "Required": true
       },
       {
-        "Required": true,
+        "Path": "vccorlib140.dll",
         "Length": 352384,
         "Sha256": "19839407C3FDBC824E5BCE189BF68DDF8097F12EC28B757797FFA0415C144DDD",
-        "Path": "vccorlib140.dll"
+        "Required": true
       },
       {
-        "Required": true,
-        "Length": 124544,
-        "Sha256": "D5E4D9A3E835FA679450145D6A7D94E36573A509317111904D9B3712C30D9066",
-        "Path": "vcruntime140.dll"
-      },
-      {
-        "Required": true,
+        "Path": "vcruntime140_1.dll",
         "Length": 49792,
         "Sha256": "1F2D41C4AA5DB0BC33EBF7B66D72943A817D7CE6CBE880502A9403823633093F",
-        "Path": "vcruntime140_1.dll"
+        "Required": true
       },
       {
-        "Required": true,
+        "Path": "vcruntime140_threads.dll",
         "Length": 38528,
         "Sha256": "219915CF20822F34D5E7C1FDD4E21AE7F3396881096C51036225FB8F84B47AFA",
-        "Path": "vcruntime140_threads.dll"
+        "Required": true
       },
       {
-        "Required": true,
+        "Path": "vcruntime140.dll",
+        "Length": 124544,
+        "Sha256": "D5E4D9A3E835FA679450145D6A7D94E36573A509317111904D9B3712C30D9066",
+        "Required": true
+      },
+      {
+        "Path": "winuiedit.dll",
         "Length": 3419448,
         "Sha256": "6EA48532836D0EAC23A059D96D94FDB2FB25DFA2C8F73634199587C6AE3B577C",
-        "Path": "winuiedit.dll"
+        "Required": true
       },
       {
-        "Required": true,
+        "Path": "wuceffectsi.dll",
         "Length": 497440,
         "Sha256": "A9A53E453E432FA4A2BE4D9EDAF8054D56E7EF2B7EA07AD1561905854A843050",
-        "Path": "wuceffectsi.dll"
+        "Required": true
       },
       {
-        "Required": true,
-        "Length": 16323072,
-        "Sha256": "2BC16D9CE7FA6B18F02A1375556027D37DEDBE590803615327810E1C8B96E630",
-        "Path": "XiaomangInputWorker.exe"
+        "Path": "XiaomangInputWorker.exe",
+        "Length": 16392704,
+        "Sha256": "EEEB53EDEB5B3383F03B9B24B37851601BFECA940E55478AB16F8697D55C1C35",
+        "Required": true
       },
       {
-        "Required": true,
-        "Length": 2839,
-        "Sha256": "F1D96DB32C4B2B3D34E056C54913A6AD31E3F785268EA9B6AF09DC782C768219",
-        "Path": "小蟒输入法说明.md"
-      },
-      {
-        "Required": true,
+        "Path": "af-ZA/Microsoft.ui.xaml.dll.mui",
         "Length": 26424,
         "Sha256": "4401A21B8441C070D10C3363E6EEF436ED4C6807544756BBCFC9D26F8EA8F32B",
-        "Path": "af-ZA/Microsoft.ui.xaml.dll.mui"
+        "Required": true
       },
       {
-        "Required": true,
+        "Path": "af-ZA/Microsoft.UI.Xaml.Phone.dll.mui",
         "Length": 14136,
         "Sha256": "E9E22781445313AABD9EB21F560AED72E02B3277CA4483ED3C5ED44B6B9D33D4",
-        "Path": "af-ZA/Microsoft.UI.Xaml.Phone.dll.mui"
+        "Required": true
       },
       {
-        "Required": true,
+        "Path": "am-ET/Microsoft.ui.xaml.dll.mui",
         "Length": 23864,
         "Sha256": "6E730511F5EAF20AC7673B24C5ED6AD17805DC345D57421CF239C47B81255619",
-        "Path": "am-ET/Microsoft.ui.xaml.dll.mui"
+        "Required": true
       },
       {
-        "Required": true,
+        "Path": "am-ET/Microsoft.UI.Xaml.Phone.dll.mui",
         "Length": 13624,
         "Sha256": "770C0CDC993D5202D65B9D055A331B54DD4209447DB243242D78FA3DB3448B3B",
-        "Path": "am-ET/Microsoft.UI.Xaml.Phone.dll.mui"
+        "Required": true
       },
       {
-        "Required": true,
+        "Path": "ar-SA/Microsoft.ui.xaml.dll.mui",
         "Length": 26976,
         "Sha256": "44398E18D14F800B6F18F4D5D13B52756DC12AB43A21354E6B0D86EB3C910D1C",
-        "Path": "ar-SA/Microsoft.ui.xaml.dll.mui"
+        "Required": true
       },
       {
-        "Required": true,
+        "Path": "ar-SA/Microsoft.UI.Xaml.Phone.dll.mui",
         "Length": 14176,
         "Sha256": "5389BC85490163E613415585BF3CCDAD737779C70B621A1D0BB41802E8944FFF",
-        "Path": "ar-SA/Microsoft.UI.Xaml.Phone.dll.mui"
+        "Required": true
       },
       {
-        "Required": true,
+        "Path": "as-IN/Microsoft.ui.xaml.dll.mui",
         "Length": 26424,
         "Sha256": "03CE0F848AA6CA22E0999A454817C78E53D12116F30EF4F7035FA487FDAD2460",
-        "Path": "as-IN/Microsoft.ui.xaml.dll.mui"
+        "Required": true
       },
       {
-        "Required": true,
+        "Path": "as-IN/Microsoft.UI.Xaml.Phone.dll.mui",
         "Length": 14136,
         "Sha256": "CB3B711A0F9F0BA8F4D3CFCCB34CAEE60BB7E099455A52E52B6C380FF1DA3901",
-        "Path": "as-IN/Microsoft.UI.Xaml.Phone.dll.mui"
+        "Required": true
       },
       {
-        "Required": true,
-        "Length": 26936,
-        "Sha256": "D1E0015A6DCC291681024E5B4C2ABD8C7ED05CB54596B9F2ACFFB83A35F906D2",
-        "Path": "az-Latn-AZ/Microsoft.ui.xaml.dll.mui"
-      },
-      {
-        "Required": true,
-        "Length": 14136,
-        "Sha256": "4B6945D471414121EF929C55565319C8B2E9C4680C1C5C71619D4D427A5B1A96",
-        "Path": "az-Latn-AZ/Microsoft.UI.Xaml.Phone.dll.mui"
-      },
-      {
-        "Required": true,
-        "Length": 28512,
-        "Sha256": "FEA56FCA0DACFD1E2DF77E2F54EE618F04738D684B71D6EF413ED4CCFFD95C17",
-        "Path": "bg-BG/Microsoft.ui.xaml.dll.mui"
-      },
-      {
-        "Required": true,
-        "Length": 14136,
-        "Sha256": "2BBEA55BB63005D675D56600BEACD2249CA1C9C158206FBAFE21164360380029",
-        "Path": "bg-BG/Microsoft.UI.Xaml.Phone.dll.mui"
-      },
-      {
-        "Required": true,
-        "Length": 26936,
-        "Sha256": "FE4A13ED90CCD0216AD11E466514ECF04D0335747126B32A4D752CBFEEE1E5B1",
-        "Path": "bn-IN/Microsoft.ui.xaml.dll.mui"
-      },
-      {
-        "Required": true,
-        "Length": 14136,
-        "Sha256": "D2197AB18856B99656B22A0D0D857682D39257089CB17E07A26518E042401893",
-        "Path": "bn-IN/Microsoft.UI.Xaml.Phone.dll.mui"
-      },
-      {
-        "Required": true,
-        "Length": 27448,
-        "Sha256": "3EC2D72738233A45C2B852699FCACA35D7002AD357288427D69CEB300B67FEE4",
-        "Path": "bs-Latn-BA/Microsoft.ui.xaml.dll.mui"
-      },
-      {
-        "Required": true,
-        "Length": 14136,
-        "Sha256": "751DEAB8089FDF11CEA08B9E08E6702AE3012198D32038961D51A21E95A15A5F",
-        "Path": "bs-Latn-BA/Microsoft.UI.Xaml.Phone.dll.mui"
-      },
-      {
-        "Required": true,
-        "Length": 27960,
-        "Sha256": "CF9AA58C38DF8A7DE0023F6DC0683C72C887E3ABE056E1189338A4E5AD46A694",
-        "Path": "ca-ES/Microsoft.ui.xaml.dll.mui"
-      },
-      {
-        "Required": true,
-        "Length": 14136,
-        "Sha256": "55F79FB1BAB48DA18B7D0D67584449944150115063B6E285D397278A2D77292C",
-        "Path": "ca-ES/Microsoft.UI.Xaml.Phone.dll.mui"
-      },
-      {
-        "Required": true,
-        "Length": 27960,
-        "Sha256": "C0CEA5B9C23F298E099A9A0BD6A35948E9543C1BC8032339F5E8FA4B39D53430",
-        "Path": "ca-Es-VALENCIA/Microsoft.ui.xaml.dll.mui"
-      },
-      {
-        "Required": true,
-        "Length": 14136,
-        "Sha256": "063AB6F0693438EB086FFA4D5D8C8C59157DD3BF3D8D2370CC1B03A938E6185C",
-        "Path": "ca-Es-VALENCIA/Microsoft.UI.Xaml.Phone.dll.mui"
-      },
-      {
-        "Required": true,
-        "Length": 26976,
-        "Sha256": "CFAEF76FF58F078D0CF9D381BF900777AF3523375D835426C4D4DCDA1AB0D643",
-        "Path": "cs-CZ/Microsoft.ui.xaml.dll.mui"
-      },
-      {
-        "Required": true,
-        "Length": 14136,
-        "Sha256": "E4A3EA6DA9F9B18C1C670B8593A0FD7EC2DC3E9E04CD29B64DE790DA6466B683",
-        "Path": "cs-CZ/Microsoft.UI.Xaml.Phone.dll.mui"
-      },
-      {
-        "Required": true,
-        "Length": 26976,
-        "Sha256": "4EFA0250696C2772CE238F07AADA0AFA0F66EB4E094E49848BAC7A5930D1C24E",
-        "Path": "cy-GB/Microsoft.ui.xaml.dll.mui"
-      },
-      {
-        "Required": true,
-        "Length": 14176,
-        "Sha256": "81064A5314E2109E449AE3BC36C7B8CF7E9E1ED65E6F9E60B247B1B635671596",
-        "Path": "cy-GB/Microsoft.UI.Xaml.Phone.dll.mui"
-      },
-      {
-        "Required": true,
-        "Length": 26424,
-        "Sha256": "7559C288B99574C43CA7768600DE57E641CF9806B07DABD19D4856ED4826939C",
-        "Path": "da-DK/Microsoft.ui.xaml.dll.mui"
-      },
-      {
-        "Required": true,
-        "Length": 14136,
-        "Sha256": "2A06E98EA162B2CF5EA90D87D028EC8DBD0B20F1249D7089C13D294E23A45594",
-        "Path": "da-DK/Microsoft.UI.Xaml.Phone.dll.mui"
-      },
-      {
-        "Required": true,
-        "Length": 27488,
-        "Sha256": "F3A8779F78579167C6DA5DA4147A93728379F54914F28199884A6EAB5C7A8717",
-        "Path": "de-DE/Microsoft.ui.xaml.dll.mui"
-      },
-      {
-        "Required": true,
-        "Length": 14136,
-        "Sha256": "44E186E20C29A7BD69546D6A247A6D85B6EF992D5744353079A6BCCE309B41D3",
-        "Path": "de-DE/Microsoft.UI.Xaml.Phone.dll.mui"
-      },
-      {
-        "Required": true,
-        "Length": 28512,
-        "Sha256": "6868629B1EC44C7D8B55518733FA82CE88151C0837B53C4AD3ED300F05683229",
-        "Path": "el-GR/Microsoft.ui.xaml.dll.mui"
-      },
-      {
-        "Required": true,
-        "Length": 14176,
-        "Sha256": "44DA1E2E499603077189A0EB88FA741A6A85AC9BF78868BE7AF0448C5BB8558F",
-        "Path": "el-GR/Microsoft.UI.Xaml.Phone.dll.mui"
-      },
-      {
-        "Required": true,
-        "Length": 25400,
-        "Sha256": "DCB4CA24FC121A2F8A89626CBEF25868F1F8A592448883560415ECCCFE9506EC",
-        "Path": "en-GB/Microsoft.ui.xaml.dll.mui"
-      },
-      {
-        "Required": true,
-        "Length": 14176,
-        "Sha256": "3EEA3EDB835CAAD110F7C9FF195EF5459BAB3F2F2644BCF1B7479A3B1A23130B",
-        "Path": "en-GB/Microsoft.UI.Xaml.Phone.dll.mui"
-      },
-      {
-        "Required": true,
-        "Length": 25912,
-        "Sha256": "39883AE4BBFE3673FC44E774F5185980BB18DC3072B21B8ABBB9F81FC9B32BB5",
-        "Path": "en-us/Microsoft.ui.xaml.dll.mui"
-      },
-      {
-        "Required": true,
-        "Length": 14136,
-        "Sha256": "07ECA73F2A872073ABB0F73B0474AAEAC46411D056BA0C9E2570D14E58EE0AC4",
-        "Path": "en-us/Microsoft.UI.Xaml.Phone.dll.mui"
-      },
-      {
-        "Required": true,
-        "Length": 27960,
-        "Sha256": "9E43A3E8C7DB90CC19FCAF4A15429E53C354137D3AE259DEC0DAB3E524B8018E",
-        "Path": "es-ES/Microsoft.ui.xaml.dll.mui"
-      },
-      {
-        "Required": true,
-        "Length": 14136,
-        "Sha256": "8F51356894AADF184132DA0FA1FE84A0D8E30601C94A5166D107E6AD6EC73BAB",
-        "Path": "es-ES/Microsoft.UI.Xaml.Phone.dll.mui"
-      },
-      {
-        "Required": true,
-        "Length": 27960,
-        "Sha256": "E86F3542E68887FEE0EED015FCAF79F0C28121063A34E077DA9344DFE74F0233",
-        "Path": "es-MX/Microsoft.ui.xaml.dll.mui"
-      },
-      {
-        "Required": true,
-        "Length": 14176,
-        "Sha256": "B28DE4B9793EB75960624CBC6A3F4C2C7235D836D6AEE22D5642145FD33993BC",
-        "Path": "es-MX/Microsoft.UI.Xaml.Phone.dll.mui"
-      },
-      {
-        "Required": true,
-        "Length": 26936,
-        "Sha256": "C9E6C1A3E90B99E5A4E2D5C77ADD3DDBD6239A076B64675E4B1E84A52A97C05D",
-        "Path": "et-EE/Microsoft.ui.xaml.dll.mui"
-      },
-      {
-        "Required": true,
-        "Length": 14136,
-        "Sha256": "75EE6571943FCA7A9496B93937510446A65AB691971752E18A0B66AD215167D8",
-        "Path": "et-EE/Microsoft.UI.Xaml.Phone.dll.mui"
-      },
-      {
-        "Required": true,
-        "Length": 28472,
-        "Sha256": "D92745A746CD7A3B9257E4FAE16BA3ECAAE9DBBF3844B9EB751D49914C3A5424",
-        "Path": "eu-ES/Microsoft.ui.xaml.dll.mui"
-      },
-      {
-        "Required": true,
-        "Length": 14176,
-        "Sha256": "46833BF4B083B9852483C3F1C2E25420B6F507C1CC9C8ECE081EBF6640A56564",
-        "Path": "eu-ES/Microsoft.UI.Xaml.Phone.dll.mui"
-      },
-      {
-        "Required": true,
-        "Length": 26936,
-        "Sha256": "DDDD2BB2D67BB392042CB8F162DC79B5555517B22A5F4F8628DC510F669B940A",
-        "Path": "fa-IR/Microsoft.ui.xaml.dll.mui"
-      },
-      {
-        "Required": true,
-        "Length": 14136,
-        "Sha256": "A3B5808E9926BFDAF029E1B770B806F3ADCB5CAEA5AAFF762236FE1873D40607",
-        "Path": "fa-IR/Microsoft.UI.Xaml.Phone.dll.mui"
-      },
-      {
-        "Required": true,
-        "Length": 27488,
-        "Sha256": "2FF4A62128B7772512F2484F04B2728FFFAC968B13CCFF6D60208F89F2BD6D0F",
-        "Path": "fi-FI/Microsoft.ui.xaml.dll.mui"
-      },
-      {
-        "Required": true,
-        "Length": 14176,
-        "Sha256": "65CCEBD748F60EB58C11FC30A6B8E2D5D25C8D8BDFD54B69656F578E5260E151",
-        "Path": "fi-FI/Microsoft.UI.Xaml.Phone.dll.mui"
-      },
-      {
-        "Required": true,
-        "Length": 27488,
-        "Sha256": "52317882DFF90CA5AA57B9BDF0BA70B4A17ADF2E14561319E7B44D5EAEA7E27A",
-        "Path": "fil-PH/Microsoft.ui.xaml.dll.mui"
-      },
-      {
-        "Required": true,
-        "Length": 14176,
-        "Sha256": "2E15DF5857E5273F570F7944F8A19B6A6F519CBD67733620E35179D091AAAD68",
-        "Path": "fil-PH/Microsoft.UI.Xaml.Phone.dll.mui"
-      },
-      {
-        "Required": true,
-        "Length": 27960,
-        "Sha256": "C56DFCE1ED2789B4A12876BD112F7B914B134D9F7809F430714870BFA8F9ABBB",
-        "Path": "fr-CA/Microsoft.ui.xaml.dll.mui"
-      },
-      {
-        "Required": true,
-        "Length": 14136,
-        "Sha256": "67E9AAE511A5E4D761BAB1E09EB448AD3878EC60F04A5108ED8A4EABAF27167C",
-        "Path": "fr-CA/Microsoft.UI.Xaml.Phone.dll.mui"
-      },
-      {
-        "Required": true,
-        "Length": 27960,
-        "Sha256": "79319035425DD9378FB6E147B7B71E7F746DA93548E690CC2497DF0D5961885D",
-        "Path": "fr-FR/Microsoft.ui.xaml.dll.mui"
-      },
-      {
-        "Required": true,
-        "Length": 14136,
-        "Sha256": "435730BFE009ECFE6B795BF183F515CD3C3D021E4EF1C4DEBE51E92DCC5072C0",
-        "Path": "fr-FR/Microsoft.UI.Xaml.Phone.dll.mui"
-      },
-      {
-        "Required": true,
-        "Length": 27488,
-        "Sha256": "2C985217D6EC9A03E2061C0609ED14A7570C1E1C997E6EBDD8F4ACDA93A749BF",
-        "Path": "ga-IE/Microsoft.ui.xaml.dll.mui"
-      },
-      {
-        "Required": true,
-        "Length": 14136,
-        "Sha256": "80258924B79825FB0BE05CDC85487AFB621EEB8D0C84221B070E4EF247420E8A",
-        "Path": "ga-IE/Microsoft.UI.Xaml.Phone.dll.mui"
-      },
-      {
-        "Required": true,
-        "Length": 28472,
-        "Sha256": "5CC95BAED2C347A23499915DF31E936213233704F459C1C55C852DF42064F25E",
-        "Path": "gd-gb/Microsoft.ui.xaml.dll.mui"
-      },
-      {
-        "Required": true,
-        "Length": 14136,
-        "Sha256": "12B0C4AD77BDAF4FB6163326FE7972FDCDC3177E7743AC083D768FB6552674CE",
-        "Path": "gd-gb/Microsoft.UI.Xaml.Phone.dll.mui"
-      },
-      {
-        "Required": true,
-        "Length": 27960,
-        "Sha256": "528441CBED014C3672EB0CC4C58F589A1103644B5E35571DE67C4CC60C614C57",
-        "Path": "gl-ES/Microsoft.ui.xaml.dll.mui"
-      },
-      {
-        "Required": true,
-        "Length": 14176,
-        "Sha256": "A9DA912F7DDC065FE4536FC8629F02C2164B40B63A266B8F72AB45A2FF0D3FE6",
-        "Path": "gl-ES/Microsoft.UI.Xaml.Phone.dll.mui"
-      },
-      {
-        "Required": true,
-        "Length": 25952,
-        "Sha256": "A721D338B28F39AB6A01FAAC6A6368695E4B2C91773D985403E8D179CE225435",
-        "Path": "gu-IN/Microsoft.ui.xaml.dll.mui"
-      },
-      {
-        "Required": true,
-        "Length": 14176,
-        "Sha256": "21D5F1E70FE678F21ADD8397319B569CC9F34B0C8783F1FF074B91DB22D4BB51",
-        "Path": "gu-IN/Microsoft.UI.Xaml.Phone.dll.mui"
-      },
-      {
-        "Required": true,
-        "Length": 25912,
-        "Sha256": "F0B036E1B0CC7D3C829CC34ECF5F68ECAFCCC72BE1F940F2A590ABB3E4D53E0E",
-        "Path": "he-IL/Microsoft.ui.xaml.dll.mui"
-      },
-      {
-        "Required": true,
-        "Length": 13624,
-        "Sha256": "A452978D22953E277A768D4B9DE170D31B6C93942E628A46B8B1D35A6CE2B601",
-        "Path": "he-IL/Microsoft.UI.Xaml.Phone.dll.mui"
-      },
-      {
-        "Required": true,
-        "Length": 26464,
-        "Sha256": "7D8787E37EC8D119B75CA49B8AF8E00D371F5E8C0AD976508AFBDC687C95FD58",
-        "Path": "hi-IN/Microsoft.ui.xaml.dll.mui"
-      },
-      {
-        "Required": true,
-        "Length": 14136,
-        "Sha256": "CB775E8FE72F0DFDCD14B015D1D39DD194691FD22DA2C01245943918214E08BE",
-        "Path": "hi-IN/Microsoft.UI.Xaml.Phone.dll.mui"
-      },
-      {
-        "Required": true,
-        "Length": 27448,
-        "Sha256": "DC872CFFFCCE8208DB5FD4AF67115CAA7B7A921DC7C617B8C03BC16F11FB4EEC",
-        "Path": "hr-HR/Microsoft.ui.xaml.dll.mui"
-      },
-      {
-        "Required": true,
-        "Length": 14136,
-        "Sha256": "73D76A2BAC3CC7F45C0471699C567499D19CC9685526FEB4531321554A9B5482",
-        "Path": "hr-HR/Microsoft.UI.Xaml.Phone.dll.mui"
-      },
-      {
-        "Required": true,
-        "Length": 27488,
-        "Sha256": "09F58BEEDA9DC53D0FBB448AF787EDCF849EBB5352C8D80DBCCB70C933932C4D",
-        "Path": "hu-HU/Microsoft.ui.xaml.dll.mui"
-      },
-      {
-        "Required": true,
-        "Length": 14136,
-        "Sha256": "9631F06D89D8CDFD71E1D176BC9A114D343B91E7181AAFA9FA062E4731BB437C",
-        "Path": "hu-HU/Microsoft.UI.Xaml.Phone.dll.mui"
-      },
-      {
-        "Required": true,
-        "Length": 27448,
-        "Sha256": "043AD564AE0A54C8AE91FC60CA857B598D4CCDCEAEEED222AEDB29CD41296CE3",
-        "Path": "hy-AM/Microsoft.ui.xaml.dll.mui"
-      },
-      {
-        "Required": true,
-        "Length": 14136,
-        "Sha256": "0D15E6CA299E468FDFAD07641579DE8EFB2C52BB73B9B7E1903F87A0C36E1721",
-        "Path": "hy-AM/Microsoft.UI.Xaml.Phone.dll.mui"
-      },
-      {
-        "Required": true,
-        "Length": 752128,
-        "Sha256": "A941A71CD0F9F0C83B93332E9AB4F9F9570CAAE518893358088E3F9418D5E570",
-        "Path": "i686/RegisterInputMethod.exe"
-      },
-      {
-        "Required": true,
-        "Length": 3760128,
-        "Sha256": "1B028351B96884B9CD49E326CD7C7E1047CCDF88FD94DFF1BE0636C0B59A4DDF",
-        "Path": "i686/XiaomangInputMethod.dll"
-      },
-      {
-        "Required": true,
-        "Length": 26976,
-        "Sha256": "989466C279D01651C6540987F719309194DCA4FBEE565679559E923F81EC1BD6",
-        "Path": "id-ID/Microsoft.ui.xaml.dll.mui"
-      },
-      {
-        "Required": true,
-        "Length": 14136,
-        "Sha256": "FF6D0DB7C04B95D119A62D3B2382C57ED962BBB233FE9CDF3BA8BCE385A42507",
-        "Path": "id-ID/Microsoft.UI.Xaml.Phone.dll.mui"
-      },
-      {
-        "Required": true,
-        "Length": 26424,
-        "Sha256": "B6205A32C7409707B6D162DA89FAD064A6E8661E7A0DCB7859BD26B3CBC19712",
-        "Path": "is-IS/Microsoft.ui.xaml.dll.mui"
-      },
-      {
-        "Required": true,
-        "Length": 14136,
-        "Sha256": "466066F02BE78B755881E4F2DB726A5F4FDB91BDFB24FC1611D7488B91B6EB79",
-        "Path": "is-IS/Microsoft.UI.Xaml.Phone.dll.mui"
-      },
-      {
-        "Required": true,
-        "Length": 27960,
-        "Sha256": "DEF55C37B053E28C16710964B55539719212BF7876683BB57FD48CA16834AFD6",
-        "Path": "it-IT/Microsoft.ui.xaml.dll.mui"
-      },
-      {
-        "Required": true,
-        "Length": 14136,
-        "Sha256": "8ECE3637B48C948B5E3DDE6CE4BFBA805175E1CA2C05F23767C4BD1D1AF5528A",
-        "Path": "it-IT/Microsoft.UI.Xaml.Phone.dll.mui"
-      },
-      {
-        "Required": true,
-        "Length": 22840,
-        "Sha256": "D937B44ED101A49F3978C595339C89A4255A169386A6446B55E29C82C1A3E58C",
-        "Path": "ja-JP/Microsoft.ui.xaml.dll.mui"
-      },
-      {
-        "Required": true,
-        "Length": 13624,
-        "Sha256": "5BD0282A8DD1B2685B5ECE3D735AA9CC77B315748A37B08AA909C39961160609",
-        "Path": "ja-JP/Microsoft.UI.Xaml.Phone.dll.mui"
-      },
-      {
-        "Required": true,
-        "Length": 27448,
-        "Sha256": "5EF535B60DFE7F090E7CB0F7B237F6E2F84C9AFC668892DDAB1486F6FF77062A",
-        "Path": "ka-GE/Microsoft.ui.xaml.dll.mui"
-      },
-      {
-        "Required": true,
-        "Length": 14136,
-        "Sha256": "A760371AF879B3070D18A4B425118F0CC2050357D687483E26DF88300CCC766D",
-        "Path": "ka-GE/Microsoft.UI.Xaml.Phone.dll.mui"
-      },
-      {
-        "Required": true,
-        "Length": 27448,
-        "Sha256": "A15DA4AC61971CEB2889D97934C05BF0CC1A5D1FD3FBB3E82F5FA91C83CAAC97",
-        "Path": "kk-KZ/Microsoft.ui.xaml.dll.mui"
-      },
-      {
-        "Required": true,
-        "Length": 14136,
-        "Sha256": "FD44B847415CB97EED648429B547FE1A245F58B7F9690663F483C3C5CCCC84C2",
-        "Path": "kk-KZ/Microsoft.UI.Xaml.Phone.dll.mui"
-      },
-      {
-        "Required": true,
-        "Length": 26424,
-        "Sha256": "CA8B7B0E3AC8D6059A3B45118AF5C68BD337C787C2EE90BE5D9FA6DEE172A1D7",
-        "Path": "km-KH/Microsoft.ui.xaml.dll.mui"
-      },
-      {
-        "Required": true,
-        "Length": 14136,
-        "Sha256": "AD1EA4E43BD7AC5182700A998B84AB1DB151C323B0D986766A1411E533FB4074",
-        "Path": "km-KH/Microsoft.UI.Xaml.Phone.dll.mui"
-      },
-      {
-        "Required": true,
-        "Length": 26936,
-        "Sha256": "6365352D60CC1E7B3F7684C1176A69BD23E8BCBB3049DA357964FAFB68186B8D",
-        "Path": "kn-IN/Microsoft.ui.xaml.dll.mui"
-      },
-      {
-        "Required": true,
-        "Length": 14136,
-        "Sha256": "4C396A9AFB5E4B445F9BE0270AB01274EFDBE970B9C9A7BE19E15F5C37BDEA50",
-        "Path": "kn-IN/Microsoft.UI.Xaml.Phone.dll.mui"
-      },
-      {
-        "Required": true,
-        "Length": 22328,
-        "Sha256": "325E862EDEF843182EB81AA6635C15BC41E74FC8033C4D3F3E5CF00A17D8DF53",
-        "Path": "ko-KR/Microsoft.ui.xaml.dll.mui"
-      },
-      {
-        "Required": true,
-        "Length": 13624,
-        "Sha256": "9375A6108B5465719AF6965EC5D962FE62D333DD1B57258709BC698DB7922173",
-        "Path": "ko-KR/Microsoft.UI.Xaml.Phone.dll.mui"
-      },
-      {
-        "Required": true,
-        "Length": 26424,
-        "Sha256": "4094638D102BF64053369D554E125C13DCA4E25F6206D962D96EC7F35CF3D69D",
-        "Path": "kok-IN/Microsoft.ui.xaml.dll.mui"
-      },
-      {
-        "Required": true,
-        "Length": 14136,
-        "Sha256": "8ECB9AB3E57530A453E8B166B7F7D0EE213536F4101C7290775FF63FCAD0C1FE",
-        "Path": "kok-IN/Microsoft.UI.Xaml.Phone.dll.mui"
-      },
-      {
-        "Required": true,
-        "Length": 27488,
-        "Sha256": "E598FB65DFF4CD34D6ED7CCD74CAE665B681687E7996DE9D9E2D5D4F7E1E91C1",
-        "Path": "lb-LU/Microsoft.ui.xaml.dll.mui"
-      },
-      {
-        "Required": true,
-        "Length": 14176,
-        "Sha256": "4B5B85FE5D91D16FED418D30DF4439D775EAE518C55CAEE0B3CCAEC251A7D13B",
-        "Path": "lb-LU/Microsoft.UI.Xaml.Phone.dll.mui"
-      },
-      {
-        "Required": true,
-        "Length": 35823,
-        "Sha256": "230184F60BAE2FEAF244F10A8BAC053C8FF33A183BCC365B4D8B876D2B7F4809",
-        "Path": "Licenses/GPL-3.0.txt"
-      },
-      {
-        "Required": false,
-        "Length": 309,
-        "Sha256": "EBE1F6DF1BB5B227C9B485CEB17F64D6C025857E6AC0B67C1C74BA4DA6070150",
-        "Path": "Licenses/对应源码获取说明.txt"
-      },
-      {
-        "Required": true,
-        "Length": 400,
-        "Sha256": "99762850F09D561A6FBE854F1303F4E4400BED625803572F99358076AB162BE6",
-        "Path": "Licenses/来源与修改说明.txt"
-      },
-      {
-        "Required": true,
-        "Length": 25912,
-        "Sha256": "D1ECBFBB9FB01D05F4E519378B68FCFB95F44BF1438A0838D5BC07D3E4255628",
-        "Path": "lo-LA/Microsoft.ui.xaml.dll.mui"
-      },
-      {
-        "Required": true,
-        "Length": 14136,
-        "Sha256": "7B8C30DD49ED20DAF45D9E0CF7709326B2EF2F136585D49DE8A442590470272C",
-        "Path": "lo-LA/Microsoft.UI.Xaml.Phone.dll.mui"
-      },
-      {
-        "Required": true,
-        "Length": 27960,
-        "Sha256": "ECD0C1E647EAF73BA6F7C3166126589BEB9A34407EC86FB45E268123F2191702",
-        "Path": "lt-LT/Microsoft.ui.xaml.dll.mui"
-      },
-      {
-        "Required": true,
-        "Length": 14176,
-        "Sha256": "B8A2B94F98D1C1512829E8C03DDB3A9D8B3530986DCB4562514904717AC7A7E3",
-        "Path": "lt-LT/Microsoft.UI.Xaml.Phone.dll.mui"
-      },
-      {
-        "Required": true,
-        "Length": 26936,
-        "Sha256": "134561A5E8903D17340250960257E4926DECEDDF059C5BEC8705A87FB4F1682C",
-        "Path": "lv-LV/Microsoft.ui.xaml.dll.mui"
-      },
-      {
-        "Required": true,
-        "Length": 14136,
-        "Sha256": "DD89A8AB161EA44D563306058959B360A8536823C03F27116CB6B3870D68E8F2",
-        "Path": "lv-LV/Microsoft.UI.Xaml.Phone.dll.mui"
-      },
-      {
-        "Required": true,
-        "Length": 26936,
-        "Sha256": "67FAEF195821612623A47B62BD3A7A2261DE9FC5D368E0E2F922BAA1EC04D5D4",
-        "Path": "mi-NZ/Microsoft.ui.xaml.dll.mui"
-      },
-      {
-        "Required": true,
-        "Length": 14136,
-        "Sha256": "E878A67E720E9F23AF5D19AD6EFFDF134A8104ADAAF6027A90D65E64D630AAA4",
-        "Path": "mi-NZ/Microsoft.UI.Xaml.Phone.dll.mui"
-      },
-      {
-        "Required": true,
-        "Length": 27448,
-        "Sha256": "747434E50B2F4385346E80DD2837F1017FAECCF181EBD2CB75C31408A9127978",
-        "Path": "mk-MK/Microsoft.ui.xaml.dll.mui"
-      },
-      {
-        "Required": true,
-        "Length": 14136,
-        "Sha256": "518B6FDFAAECB1CD2335A61CBF0120F8C5513F05E023C852A0FA60708D108DE0",
-        "Path": "mk-MK/Microsoft.UI.Xaml.Phone.dll.mui"
-      },
-      {
-        "Required": true,
-        "Length": 28984,
-        "Sha256": "CAC296164F9EB568D73349D4B3F7E3B8A9C8EAA513E70A3F493CEC947828A715",
-        "Path": "ml-IN/Microsoft.ui.xaml.dll.mui"
-      },
-      {
-        "Required": true,
-        "Length": 14136,
-        "Sha256": "95B20CFEE432862B04DC2DF6765B6C9DAC3694791F997A78951B1BEB2FAE2D84",
-        "Path": "ml-IN/Microsoft.UI.Xaml.Phone.dll.mui"
-      },
-      {
-        "Required": true,
-        "Length": 26424,
-        "Sha256": "CFA57F7D005632FCAECFD707D01D60C63E1AF8A15C3525AA12ECABD2F73E1359",
-        "Path": "mr-IN/Microsoft.ui.xaml.dll.mui"
-      },
-      {
-        "Required": true,
-        "Length": 14136,
-        "Sha256": "2E349A756BB68218278C2D84B19406EDACEDF8365E4431FF7AB7D07AC87F1829",
-        "Path": "mr-IN/Microsoft.UI.Xaml.Phone.dll.mui"
-      },
-      {
-        "Required": true,
-        "Length": 26936,
-        "Sha256": "C076AAF81F1E048821A4A32EDFA4F3C5BB6761ED5FB9A1F8C73190FBF502B447",
-        "Path": "ms-MY/Microsoft.ui.xaml.dll.mui"
-      },
-      {
-        "Required": true,
-        "Length": 14176,
-        "Sha256": "5EEC46ACA3620FA1803B8313F706D8DB6803464DAAE471AFFE0C8719EED81835",
-        "Path": "ms-MY/Microsoft.UI.Xaml.Phone.dll.mui"
-      },
-      {
-        "Required": true,
-        "Length": 27448,
-        "Sha256": "421A68D89173C9F6C677E5E913B58D15C40B5FE98ED286F710730CBE686AC06A",
-        "Path": "mt-MT/Microsoft.ui.xaml.dll.mui"
-      },
-      {
-        "Required": true,
-        "Length": 14176,
-        "Sha256": "1AF725DB66E05C214EB2B573ADA8130CBF6947D9723783E91FC056381C56346D",
-        "Path": "mt-MT/Microsoft.UI.Xaml.Phone.dll.mui"
-      },
-      {
-        "Required": true,
-        "Length": 25912,
-        "Sha256": "F2414E92B402A31140CEF3E57568484C2C5CC94DA967822A3832FD7C1F59EBDB",
-        "Path": "nb-NO/Microsoft.ui.xaml.dll.mui"
-      },
-      {
-        "Required": true,
-        "Length": 14136,
-        "Sha256": "42B712CE94A5FD2378C002E56287F2A1F6F8C646378B75584150E0549B1A834C",
-        "Path": "nb-NO/Microsoft.UI.Xaml.Phone.dll.mui"
-      },
-      {
-        "Required": true,
-        "Length": 26976,
-        "Sha256": "3C1E1F1A99AD822B135332D427576E6FB05AA8CF8D322CA30D53C56B137EA39E",
-        "Path": "ne-NP/Microsoft.ui.xaml.dll.mui"
-      },
-      {
-        "Required": true,
-        "Length": 14136,
-        "Sha256": "206A59F6BDF5B52467563F6E7594011999421AAD615654C1EB1C6A4BA820B3A2",
-        "Path": "ne-NP/Microsoft.UI.Xaml.Phone.dll.mui"
-      },
-      {
-        "Required": true,
-        "Length": 27488,
-        "Sha256": "6D475E319DC34FA5C7FF097B12E5C46C0FB69D3F3C7CE1E46F7BCFE4DA0E2B10",
-        "Path": "nl-NL/Microsoft.ui.xaml.dll.mui"
-      },
-      {
-        "Required": true,
-        "Length": 14136,
-        "Sha256": "782DFE8D31156673F712C2D9F3B290034D09438A1987770499EADB56C76F3302",
-        "Path": "nl-NL/Microsoft.UI.Xaml.Phone.dll.mui"
-      },
-      {
-        "Required": true,
-        "Length": 25952,
-        "Sha256": "C970815B63D67FEDE5A64469F4B8BD6B34B887C2C216DCDFA255D27DD9A38F23",
-        "Path": "nn-NO/Microsoft.ui.xaml.dll.mui"
-      },
-      {
-        "Required": true,
-        "Length": 14136,
-        "Sha256": "32A7C94E34EEEEC263BFE437747CACF0C7086AF8B9584BFFF1F8772C29AF6A6B",
-        "Path": "nn-NO/Microsoft.UI.Xaml.Phone.dll.mui"
-      },
-      {
-        "Required": true,
-        "Length": 26936,
-        "Sha256": "308BD545F342CC94CE166961374DE3D199EAEF679051D6C9BDB1DEEDAEBF560D",
-        "Path": "or-IN/Microsoft.ui.xaml.dll.mui"
-      },
-      {
-        "Required": true,
-        "Length": 14136,
-        "Sha256": "1990838566AE944E08B31A2E797E5108029AAA25CBA868157FCB9DD3FDB468B3",
-        "Path": "or-IN/Microsoft.UI.Xaml.Phone.dll.mui"
-      },
-      {
-        "Required": true,
-        "Length": 25912,
-        "Sha256": "7EA50B66C140664E6A4913B5FB9AC661BF9908430C5AAD1F376F921D8A65F5AA",
-        "Path": "pa-IN/Microsoft.ui.xaml.dll.mui"
-      },
-      {
-        "Required": true,
-        "Length": 13664,
-        "Sha256": "C4DF5DF6E221AFF220ABA508C45D190EA6CDA499871CB0F761E56C2A92462CFE",
-        "Path": "pa-IN/Microsoft.UI.Xaml.Phone.dll.mui"
-      },
-      {
-        "Required": true,
-        "Length": 27960,
-        "Sha256": "8C8602D0F4ADF3EC18C0417DBAB9DDAB5F8DD3D4522676E4DEF1AFCB6BBB29F9",
-        "Path": "pl-PL/Microsoft.ui.xaml.dll.mui"
-      },
-      {
-        "Required": true,
-        "Length": 14136,
-        "Sha256": "FB8537ACFE50A841EF93AF59E86292848D5A7B8EF9E9860D87B86DF6A94E7557",
-        "Path": "pl-PL/Microsoft.UI.Xaml.Phone.dll.mui"
-      },
-      {
-        "Required": true,
-        "Length": 27488,
-        "Sha256": "0C3051C40957E9DAACE78CC8B44501D3E416AB6E2B339F597C895C1C8DAFAEC4",
-        "Path": "pt-BR/Microsoft.ui.xaml.dll.mui"
-      },
-      {
-        "Required": true,
-        "Length": 14136,
-        "Sha256": "4787CDF99B76482528A3674923AFEB289048C58BF9356040F7A17547B38BDDCF",
-        "Path": "pt-BR/Microsoft.UI.Xaml.Phone.dll.mui"
-      },
-      {
-        "Required": true,
-        "Length": 27448,
-        "Sha256": "9B2D8E6B8A8D8DAC6F395E6A1C70DADF6C73D472B27F9ECDC27FFA0D76DF2E8C",
-        "Path": "pt-PT/Microsoft.ui.xaml.dll.mui"
-      },
-      {
-        "Required": true,
-        "Length": 14176,
-        "Sha256": "649361B2B5F91C68C0E88B6CDA59E4F5C01798B3F1A02E5E2A56F6B3C6B68C2B",
-        "Path": "pt-PT/Microsoft.UI.Xaml.Phone.dll.mui"
-      },
-      {
-        "Required": true,
-        "Length": 27960,
-        "Sha256": "AA1BF42EDDDC7C06A75F72ED02202D58A054012D1715C07180AA1FFD395851B9",
-        "Path": "quz-PE/Microsoft.ui.xaml.dll.mui"
-      },
-      {
-        "Required": true,
-        "Length": 14136,
-        "Sha256": "7303C8CFE3972636D6AF115D518CC298FC9235A8D92CDDBF43176E24BD0229C2",
-        "Path": "quz-PE/Microsoft.UI.Xaml.Phone.dll.mui"
-      },
-      {
-        "Required": true,
-        "Length": 27488,
-        "Sha256": "097C3D80762033E555A2E051A932F137F7B5BDB8FDAC6D4E2DD2C3CCE66A94AA",
-        "Path": "ro-RO/Microsoft.ui.xaml.dll.mui"
-      },
-      {
-        "Required": true,
-        "Length": 14176,
-        "Sha256": "545842D2974C69C1E379905C15A09EEAEAC3D6FAC48B69AE1BDA5FA749A64935",
-        "Path": "ro-RO/Microsoft.UI.Xaml.Phone.dll.mui"
-      },
-      {
-        "Required": true,
-        "Length": 29024,
-        "Sha256": "44E3C0050EACAF1018CA97ED0B79AD5A89EC76162900DD87B78E8ACF81A64BED",
-        "Path": "ru-RU/Microsoft.ui.xaml.dll.mui"
-      },
-      {
-        "Required": true,
-        "Length": 14136,
-        "Sha256": "C3FE8E112A36B73B4C577955C2EBD0BC4B269EAACE3F942C6473F935BC50D516",
-        "Path": "ru-RU/Microsoft.UI.Xaml.Phone.dll.mui"
-      },
-      {
-        "Required": true,
-        "Length": 27960,
-        "Sha256": "76A45148D9060A75544C83F135EBB49D9967F509A19622D6C855E0E85123D697",
-        "Path": "sk-SK/Microsoft.ui.xaml.dll.mui"
-      },
-      {
-        "Required": true,
-        "Length": 14136,
-        "Sha256": "29F21CC73C44046E6D2484BA3DBF421CF2D31280203C55FB399334F12FC5450E",
-        "Path": "sk-SK/Microsoft.UI.Xaml.Phone.dll.mui"
-      },
-      {
-        "Required": true,
-        "Length": 27448,
-        "Sha256": "2880A8FE1200A2EC8F403F4B75E8408FC5CD860EE6D3FBDEEBC85FBE39474C56",
-        "Path": "sl-SI/Microsoft.ui.xaml.dll.mui"
-      },
-      {
-        "Required": true,
-        "Length": 14136,
-        "Sha256": "0EDB7359B6F411A0C4FC18D8CDF72BEC33C7C7441A0A2CC1FDC4EA9A79437A81",
-        "Path": "sl-SI/Microsoft.UI.Xaml.Phone.dll.mui"
-      },
-      {
-        "Required": true,
-        "Length": 27960,
-        "Sha256": "E47384E3A4C511B10196C2CC7E3366B5F020191EAE4478FAF96CD7F92BF731FC",
-        "Path": "sq-AL/Microsoft.ui.xaml.dll.mui"
-      },
-      {
-        "Required": true,
-        "Length": 14136,
-        "Sha256": "30881B667C0436E9EC70442EE57A3A3433D7EEA2B8268F2D68AABC0CD6CCDCCD",
-        "Path": "sq-AL/Microsoft.UI.Xaml.Phone.dll.mui"
-      },
-      {
-        "Required": true,
-        "Length": 27488,
-        "Sha256": "20163F2B956D9236FE43476CA49B15978C1B583B858E41E4D6183D345AFB859A",
-        "Path": "sr-Cyrl-BA/Microsoft.ui.xaml.dll.mui"
-      },
-      {
-        "Required": true,
-        "Length": 14136,
-        "Sha256": "4E78C4C6CAEFEA9DC4E214FCD4CCAE47869AF7A65D053BAADE3560043AFC207C",
-        "Path": "sr-Cyrl-BA/Microsoft.UI.Xaml.Phone.dll.mui"
-      },
-      {
-        "Required": true,
-        "Length": 27488,
-        "Sha256": "A1298079E75B70B9D73AAE7EBE7F6BB9AEEB1289966E4FCC16300FB9F54EDD32",
-        "Path": "sr-Cyrl-RS/Microsoft.ui.xaml.dll.mui"
-      },
-      {
-        "Required": true,
-        "Length": 14136,
-        "Sha256": "6FFED0AE9EE5822A1B257D4B7F2FE435AA6D6832BC815335C760D731E8281FAE",
-        "Path": "sr-Cyrl-RS/Microsoft.UI.Xaml.Phone.dll.mui"
-      },
-      {
-        "Required": true,
-        "Length": 27448,
-        "Sha256": "BBDCD41623C6E78A4ADA195608DAC28293374B446560D0B1D44A6A0E79265D93",
-        "Path": "sr-Latn-RS/Microsoft.ui.xaml.dll.mui"
-      },
-      {
-        "Required": true,
-        "Length": 14176,
-        "Sha256": "5004192C1A7F399B594AE96173294223DFD5DC98EF2084240B2B1539768B12B0",
-        "Path": "sr-Latn-RS/Microsoft.UI.Xaml.Phone.dll.mui"
-      },
-      {
-        "Required": true,
-        "Length": 26424,
-        "Sha256": "8547FF32CD877627FD476523A2CF69A44CA443E13D0FF901A235D08C3ABA91A5",
-        "Path": "sv-SE/Microsoft.ui.xaml.dll.mui"
-      },
-      {
-        "Required": true,
-        "Length": 14136,
-        "Sha256": "4DABB11665BED1A6C6BB4D72975F54A03D12924076DF29E96B90BE2D4ADEC370",
-        "Path": "sv-SE/Microsoft.UI.Xaml.Phone.dll.mui"
-      },
-      {
-        "Required": true,
-        "Length": 28000,
-        "Sha256": "A9610FB8D89C1054611ADA38DDB95BB3DEA9B17A1277562EB00A7588B98E8188",
-        "Path": "ta-IN/Microsoft.ui.xaml.dll.mui"
-      },
-      {
-        "Required": true,
-        "Length": 14136,
-        "Sha256": "A58F9C7BC24F0B37D40AB4C06893BA99CEC35A6524E968C6D7C9D46C6D05B03E",
-        "Path": "ta-IN/Microsoft.UI.Xaml.Phone.dll.mui"
-      },
-      {
-        "Required": true,
-        "Length": 27448,
-        "Sha256": "F4B9ACBD932242437EE342E597C39958FBD5EEA6555D9CF8627506D215379816",
-        "Path": "te-IN/Microsoft.ui.xaml.dll.mui"
-      },
-      {
-        "Required": true,
-        "Length": 14176,
-        "Sha256": "3C9814844CAF17DD2858ABDC99A9E6BCF0A0A65DFF87B23E527137B3B2C69B3B",
-        "Path": "te-IN/Microsoft.UI.Xaml.Phone.dll.mui"
-      },
-      {
-        "Required": true,
-        "Length": 25952,
-        "Sha256": "298A07F0E2DBCD85BC41B7AA04CB34733E35F2BF6CEB0180E8CE9A80EFD33170",
-        "Path": "th-TH/Microsoft.ui.xaml.dll.mui"
-      },
-      {
-        "Required": true,
-        "Length": 14136,
-        "Sha256": "FF0B3E861AACC9362DA30CAB8F101862BC833B6C377768050B1DDB55D4032954",
-        "Path": "th-TH/Microsoft.UI.Xaml.Phone.dll.mui"
-      },
-      {
-        "Required": true,
-        "Length": 26424,
-        "Sha256": "B9498AEB444F95CD8DFEB38FB4753BD6A014E1AAA3AD80248849352530FC9951",
-        "Path": "tr-TR/Microsoft.ui.xaml.dll.mui"
-      },
-      {
-        "Required": true,
-        "Length": 14136,
-        "Sha256": "9093B8483FEA37B3D87A48009AF7739208C15B29BA793A8C0AB01EDCC4D59F2B",
-        "Path": "tr-TR/Microsoft.UI.Xaml.Phone.dll.mui"
-      },
-      {
-        "Required": true,
-        "Length": 26936,
-        "Sha256": "E7208979B6A58087EF3F23371C3E7E73624E1A0646481D4475120AA295F919BF",
-        "Path": "tt-RU/Microsoft.ui.xaml.dll.mui"
-      },
-      {
-        "Required": true,
-        "Length": 14136,
-        "Sha256": "22F4E7EBCA5055DE148F5BA738B93BF9DB0710C3EC4EDDAF7CC49A8C3ADB048C",
-        "Path": "tt-RU/Microsoft.UI.Xaml.Phone.dll.mui"
-      },
-      {
-        "Required": true,
-        "Length": 27448,
-        "Sha256": "900A8D1009353851327509629CA0642D4A2AE021EFA79F05D0A7C4DD54C3F9BC",
-        "Path": "ug-CN/Microsoft.ui.xaml.dll.mui"
-      },
-      {
-        "Required": true,
-        "Length": 14136,
-        "Sha256": "E065DF29F8B9802F8B2A5623CAF893AAB97D519455853E90E20465980854E152",
-        "Path": "ug-CN/Microsoft.UI.Xaml.Phone.dll.mui"
-      },
-      {
-        "Required": true,
-        "Length": 28000,
-        "Sha256": "A9539C659C672F3F895DB4232E5C2A93B56BF7D69DA19D10177D6ED363EE798A",
-        "Path": "uk-UA/Microsoft.ui.xaml.dll.mui"
-      },
-      {
-        "Required": true,
-        "Length": 14136,
-        "Sha256": "C6391A9D973C5BC79869692E9EF9C86D26C20C3198D85B8E386C602AA76B8567",
-        "Path": "uk-UA/Microsoft.UI.Xaml.Phone.dll.mui"
-      },
-      {
-        "Required": true,
-        "Length": 26424,
-        "Sha256": "0266B30F47BBA76A76897675EB89F80247BD40249A8B5C8F9A4B4CC1E2222E96",
-        "Path": "ur-PK/Microsoft.ui.xaml.dll.mui"
-      },
-      {
-        "Required": true,
-        "Length": 14176,
-        "Sha256": "375192A787E41BD0E1DD4426F6F50809DA1F65BEE6ADC6C941BF6D8082AA9362",
-        "Path": "ur-PK/Microsoft.UI.Xaml.Phone.dll.mui"
-      },
-      {
-        "Required": true,
-        "Length": 27960,
-        "Sha256": "FB1196A32FC643CCEA3F07463558D8C76BD347A8B7E2346C6EFC86EDDFCCDE26",
-        "Path": "uz-Latn-UZ/Microsoft.ui.xaml.dll.mui"
-      },
-      {
-        "Required": true,
-        "Length": 14136,
-        "Sha256": "F7DC1E1686CE4B71C34F7D01549EB1494E3E21E69880EDFC37A9CC0F71762336",
-        "Path": "uz-Latn-UZ/Microsoft.UI.Xaml.Phone.dll.mui"
-      },
-      {
-        "Required": true,
-        "Length": 26936,
-        "Sha256": "73B6C4E72D54C442C9B75E71D2C0AE95D6B6FD947734F6D4BB55DC00CD1278A6",
-        "Path": "vi-VN/Microsoft.ui.xaml.dll.mui"
-      },
-      {
-        "Required": true,
-        "Length": 14136,
-        "Sha256": "590FBD97A0CAD675B2BE9070C7CAC621408AF6DF9E91383DC09D7CE3D524DE29",
-        "Path": "vi-VN/Microsoft.UI.Xaml.Phone.dll.mui"
-      },
-      {
-        "Required": true,
-        "Length": 747008,
-        "Sha256": "8ABF012D3CFAAE568FB6F786421ACA9C35E1DCC7627DEDA35F15CBBFFF165593",
-        "Path": "x86_64/RegisterInputMethod.exe"
-      },
-      {
-        "Required": true,
-        "Length": 4005888,
-        "Sha256": "FFECE645E6A2DEE035C8E5E4BB80FA18272EB7C8BE4CD71D0AB76E996924AF1B",
-        "Path": "x86_64/XiaomangInputMethod.dll"
-      },
-      {
-        "Required": true,
-        "Length": 21304,
-        "Sha256": "ED88B8730FD4D65D42434BCBEEE061940A2E2B2200FCB591D9FBF5ED02CE4B62",
-        "Path": "zh-CN/Microsoft.ui.xaml.dll.mui"
-      },
-      {
-        "Required": true,
-        "Length": 13624,
-        "Sha256": "E89CD281C547719011C3F48C20BC25F1FDC64987A681D7B5B4FCB6A9FB0CB47D",
-        "Path": "zh-CN/Microsoft.UI.Xaml.Phone.dll.mui"
-      },
-      {
-        "Required": true,
-        "Length": 21304,
-        "Sha256": "F54FB8BE2195992176D060E844BE0496D1F02C9D88E58118D91152E1055DD43A",
-        "Path": "zh-TW/Microsoft.ui.xaml.dll.mui"
-      },
-      {
-        "Required": true,
-        "Length": 13664,
-        "Sha256": "F2FC134392F24259366ABFABD0B12DD8E73A07746C2FC6ED399A07D4EEFFE7A9",
-        "Path": "zh-TW/Microsoft.UI.Xaml.Phone.dll.mui"
-      },
-      {
-        "Required": true,
+        "Path": "assets/emoji/emoji-en.tsv",
         "Length": 102751,
         "Sha256": "D93DAD41CE828818E05B512659F1DCEDEDCC91D24F7EF7E2221D1F2D118C12A4",
-        "Path": "assets/emoji/emoji-en.tsv"
+        "Required": true
       },
       {
-        "Required": true,
+        "Path": "assets/emoji/emoji-zh.tsv",
         "Length": 119895,
         "Sha256": "E94CA70AE5AC40DA29844ECED881C6C056900226D1F41F0DB0371D46890BF04F",
-        "Path": "assets/emoji/emoji-zh.tsv"
+        "Required": true
       },
       {
-        "Required": true,
+        "Path": "assets/emoji/LICENSE-unicode.txt",
         "Length": 2074,
         "Sha256": "10B95FD1E1D038754B36461A309E968AF61F7B853F23818459B82D51D2DAEF1F",
-        "Path": "assets/emoji/LICENSE-unicode.txt"
+        "Required": true
       },
       {
-        "Required": true,
+        "Path": "assets/glossary/glossary-en.tsv",
         "Length": 6788267,
         "Sha256": "59C6C33A68E434E9EDCF06B8B23B13E35AE79392A82FD912DE1212D20B297615",
-        "Path": "assets/glossary/glossary-en.tsv"
+        "Required": true
       },
       {
-        "Required": true,
+        "Path": "assets/glossary/glossary-zh.tsv",
         "Length": 1025704,
         "Sha256": "CDCA09FC3EEC96D2E7BB9A9FEE6225CDEAA4B5CD08A79D97B4FA791F53E972CA",
-        "Path": "assets/glossary/glossary-zh.tsv"
+        "Required": true
       },
       {
-        "Required": true,
+        "Path": "assets/glossary/README.md",
         "Length": 4448,
         "Sha256": "1AB400D01444D442F5A60760ABCF42867BCF4A04FC1920E0067BF92726611F7A",
-        "Path": "assets/glossary/README.md"
+        "Required": true
       },
       {
-        "Required": true,
+        "Path": "assets/icon/logo.png",
         "Length": 1568027,
         "Sha256": "85BACA4FD84D2C89414B11586AA86EEAB73411F89FBE97363B4C7CC556034E10",
-        "Path": "assets/icon/logo.png"
+        "Required": true
       },
       {
-        "Required": true,
+        "Path": "assets/icon/menu.pdf",
         "Length": 1887,
         "Sha256": "EA5550AD99CE7F9AC7144DBF76CA005224C4B4D1A4CB49F9C462203EE7A0F9FE",
-        "Path": "assets/icon/menu.pdf"
+        "Required": true
       },
       {
-        "Required": true,
+        "Path": "assets/icon/menu.svg",
         "Length": 2098,
         "Sha256": "89ACB14344CFAEDF558B50818F4A172496FE0DF715E4D83D9EA3733BE3C331AF",
-        "Path": "assets/icon/menu.svg"
+        "Required": true
       },
       {
-        "Required": true,
+        "Path": "assets/icon/README.md",
         "Length": 1525,
         "Sha256": "CF248023DA55F19483459391176EA2E81255351F665A59447EC7B84CD471B130",
-        "Path": "assets/icon/README.md"
+        "Required": true
       },
       {
-        "Required": true,
-        "Length": 111206,
-        "Sha256": "A5F810F7F8788D6C7B6ED11FD849AE0D31F6A5D9D953AB9528798D9B11D27FFA",
-        "Path": "assets/levels/levels-en.tsv"
-      },
-      {
-        "Required": true,
-        "Length": 1818,
-        "Sha256": "4DC3BDC563C6FCAF68A75E64E2F0F610FBCEF498B23C33DB319F09BEF8901738",
-        "Path": "assets/levels/README.md"
-      },
-      {
-        "Required": true,
-        "Length": 339,
-        "Sha256": "209319633FBA613D12757CF97C52CED9E62A6EE2DD2DA973A2C394DAD323589E",
-        "Path": "assets/lexicon/brand.tsv"
-      },
-      {
-        "Required": true,
-        "Length": 2043652,
-        "Sha256": "F1A151090C6DE319C97BDC19B59E329852F725E63C5CD053304F4BB468049887",
-        "Path": "assets/lexicon/dict.tsv"
-      },
-      {
-        "Required": true,
-        "Length": 1641,
-        "Sha256": "883C404A8A8C3CBF37D0C3D0C795D08F883060B4F38CE797B233FCCFB155A842",
-        "Path": "assets/lexicon/domain_words.tsv"
-      },
-      {
-        "Required": true,
-        "Length": 1412153,
-        "Sha256": "20E0E5B523AA33B7350EDB4C9A83C9B5F6A1A0FE0FBCBE3BEEBFF9DC1C914F54",
-        "Path": "assets/lexicon/english-frequency.tsv"
-      },
-      {
-        "Required": true,
-        "Length": 2299337,
-        "Sha256": "62D4FBABF369B6A7F41AAD5B5AC139B177DD1D2AA7AAA86AEAF11FFC7BF7AF15",
-        "Path": "assets/lexicon/english.tsv"
-      },
-      {
-        "Required": true,
-        "Length": 206266,
-        "Sha256": "1937840C2BF6E5BDDE08A1F7230ABEB5DC3E3754C130BA7F0C8CE6C771FFB9E6",
-        "Path": "assets/lexicon/mined_words.tsv"
-      },
-      {
-        "Required": true,
-        "Length": 636,
-        "Sha256": "A34FE818496EF1D1F446F0B069DA37144AE5ECDA44BA119C5E3F2EA83E1B839C",
-        "Path": "assets/lexicon/mixed_words.tsv"
-      },
-      {
-        "Required": true,
-        "Length": 140868,
-        "Sha256": "269D3DDD16D5B325AF916C6977547AE7F702E128D8255A1D23DB40AE89C042BF",
-        "Path": "assets/lexicon/phrases.tsv"
-      },
-      {
-        "Required": true,
-        "Length": 7673,
-        "Sha256": "D48D87991E595BDA0A708F4D715399920F19B7547765AE80027DD483F1FF4D7A",
-        "Path": "assets/lexicon/QINGJIAN.md"
-      },
-      {
-        "Required": true,
-        "Length": 3896,
-        "Sha256": "1A279AA418BEEDC917ED88BE3FB2022726AACD52D7D8095E580ADD4EFE6F3E67",
-        "Path": "assets/lexicon/README.md"
-      },
-      {
-        "Required": true,
-        "Length": 2866,
-        "Sha256": "D97095F3605ED6F827BF2D8D5E603600A7D3F91EFCFE75672C872491BFD9F1A8",
-        "Path": "assets/sample/dict.tsv"
-      },
-      {
-        "Required": true,
-        "Length": 232,
-        "Sha256": "911FEBF9C81E975D26C3CA5BE582B2EC39C2A06064AB0ABE1AB721405AD54E76",
-        "Path": "assets/sample/english.tsv"
-      },
-      {
-        "Required": true,
-        "Length": 2471,
-        "Sha256": "8583F3F2FA9F07E01FA4DB7C77A02A8528DB8A158FEDC9693FB699D64B9CD3B3",
-        "Path": "assets/sample/glossary-en.tsv"
-      },
-      {
-        "Required": true,
-        "Length": 445,
-        "Sha256": "2C5DD0FF1C6F7F64E5A725DE566E42C9D4B31CAFE53792A47F58808EAE33029B",
-        "Path": "assets/sample/README.md"
-      },
-      {
-        "Required": true,
-        "Length": 5006,
-        "Sha256": "22056882619A6B623E9FF821DA5BE94DA8D9429DFE02CF91F975E1F025A5028B",
-        "Path": "assets/stroke/LICENSE-CNS11643.txt"
-      },
-      {
-        "Required": true,
-        "Length": 6994,
-        "Sha256": "99CB527E60095BC381B4BDB42398DC6A020333304743478A7D4417749256702D",
-        "Path": "assets/stroke/prc-rules.tsv"
-      },
-      {
-        "Required": true,
-        "Length": 10214,
-        "Sha256": "841B87182E2320C17F76501C7712025558410B5D550EA4542F380C32C86B79FA",
-        "Path": "assets/stroke/README.md"
-      },
-      {
-        "Required": true,
-        "Length": 28775,
-        "Sha256": "35DF8F92CC3388DBBE58D27B6C756EEEA5333C4CB62814BB4A2DC85B28E3ABC7",
-        "Path": "assets/stroke/residual-first-strokes.tsv"
-      },
-      {
-        "Required": true,
-        "Length": 895,
-        "Sha256": "5A94276972D36F8E7A8D42EC4AA085C0725359F680A43509717B8A7D6809CB22",
-        "Path": "assets/stroke/residual-whitelist.tsv"
-      },
-      {
-        "Required": true,
-        "Length": 11556,
-        "Sha256": "5AD8C213095C573921D7388EDF93F6A9F54490B8EBF3B165AE8EF1947CF70846",
-        "Path": "assets/wubi/LICENSE"
-      },
-      {
-        "Required": true,
-        "Length": 1993,
-        "Sha256": "6921603BE910E8182F31AB61EC434821E48690C981CDE10188BA850D151E5E0E",
-        "Path": "assets/wubi/README.md"
-      },
-      {
-        "Required": true,
-        "Length": 1425872,
-        "Sha256": "B63337E2ECC48F59970B86B5C6CE6F9981608D7B657EA9F69D1090176A258DB2",
-        "Path": "assets/wubi/wubi86.tsv"
-      },
-      {
-        "Required": true,
-        "Length": 3538648,
-        "Sha256": "3E33B16A84DF555E6F16D52AC8AB3C2C6B6F1F71734E69463861FD5ABD9C19DC",
-        "Path": "data/generated/dict.qj"
-      },
-      {
-        "Required": true,
-        "Length": 1317586,
-        "Sha256": "DA3D1BBD6CCA3553FFD9BF16D739CB1D7D99CDCBFBE6C49CFBFCB66F8BCFC300",
-        "Path": "data/generated/english-frequency.tsv"
-      },
-      {
-        "Required": true,
-        "Length": 2204768,
-        "Sha256": "E9DCE15A87843C69B26FE7A3979A6848D06DB50F14617EF217DD3DB4CBF1A742",
-        "Path": "data/generated/english.tsv"
-      },
-      {
-        "Required": true,
-        "Length": 15565368,
-        "Sha256": "4CC9C587B206D0F12AABB1B85CB21E6AC2A1C8C4932B9AF14332BD96E0BE012A",
-        "Path": "data/generated/glossary-en.qj"
-      },
-      {
-        "Required": true,
-        "Length": 2876888,
-        "Sha256": "C1280592349E6BFF942EDE0AEE19935F7883A18935AC3B521A78D654516E755E",
-        "Path": "data/generated/glossary-zh.qj"
-      },
-      {
-        "Required": true,
-        "Length": 44405568,
-        "Sha256": "F9FB7B4433DDDCE86610A5D33E571BEA963F6C2A5D960B8BC908F25024D34CD1",
-        "Path": "data/generated/lm.qj"
-      },
-      {
-        "Required": true,
-        "Length": 56044184,
-        "Sha256": "EED5BD0BDA0C7BD8B43D1ACB2DC4678D4BBE295BD47B2B0D4EEACE0AF9DAFF4D",
-        "Path": "data/model/model.qjm"
-      },
-      {
-        "Required": true,
-        "Length": 32558,
-        "Sha256": "1C48985F80BF626FABE1B7E2BE7D7C53C271C5F75F5800EBA47587505D73F99D",
-        "Path": "Microsoft.UI.Xaml/Assets/map.html"
-      },
-      {
-        "Required": true,
-        "Length": 3241,
-        "Sha256": "4F2AA94A2E345A32DAE689176B86C644BEF87081FF9DAEF8C77417731862031B",
-        "Path": "Microsoft.UI.Xaml/Assets/NoiseAsset_256x256_PNG.png"
-      },
-      {
-        "Required": true,
+        "Path": "assets/icon/windows/mode-caps.svg",
         "Length": 803,
         "Sha256": "FE9C8D3C491C91338561FA0B152126995AB74D22AB5AEA5F56C72016A7882FAA",
-        "Path": "assets/icon/windows/mode-caps.svg"
+        "Required": true
       },
       {
-        "Required": true,
+        "Path": "assets/icon/windows/mode-en.svg",
         "Length": 830,
         "Sha256": "6E57DB0657B63AD7EDFBD659BFB1914745BBEB2B13DB2B81CCB82B01F1C62C3A",
-        "Path": "assets/icon/windows/mode-en.svg"
+        "Required": true
       },
       {
-        "Required": true,
+        "Path": "assets/icon/windows/mode-zh.svg",
         "Length": 589,
         "Sha256": "70475AD356EDBE220628D90F607A6A698C0718D5E9DA940EE9D258F77E5FA659",
-        "Path": "assets/icon/windows/mode-zh.svg"
+        "Required": true
       },
       {
-        "Required": true,
+        "Path": "assets/icon/windows/render-mode-icons.sh",
         "Length": 676,
         "Sha256": "36A64000B6AF4D3146652197FB52D166F8423817C4EEE72477F78093A030CD2D",
-        "Path": "assets/icon/windows/render-mode-icons.sh"
+        "Required": true
       },
       {
-        "Required": true,
+        "Path": "assets/levels/levels-en.tsv",
+        "Length": 111206,
+        "Sha256": "A5F810F7F8788D6C7B6ED11FD849AE0D31F6A5D9D953AB9528798D9B11D27FFA",
+        "Required": true
+      },
+      {
+        "Path": "assets/levels/README.md",
+        "Length": 1818,
+        "Sha256": "4DC3BDC563C6FCAF68A75E64E2F0F610FBCEF498B23C33DB319F09BEF8901738",
+        "Required": true
+      },
+      {
+        "Path": "assets/lexicon/brand.tsv",
+        "Length": 339,
+        "Sha256": "209319633FBA613D12757CF97C52CED9E62A6EE2DD2DA973A2C394DAD323589E",
+        "Required": true
+      },
+      {
+        "Path": "assets/lexicon/dict.tsv",
+        "Length": 2043652,
+        "Sha256": "F1A151090C6DE319C97BDC19B59E329852F725E63C5CD053304F4BB468049887",
+        "Required": true
+      },
+      {
+        "Path": "assets/lexicon/domain_words.tsv",
+        "Length": 1641,
+        "Sha256": "883C404A8A8C3CBF37D0C3D0C795D08F883060B4F38CE797B233FCCFB155A842",
+        "Required": true
+      },
+      {
+        "Path": "assets/lexicon/english-frequency.tsv",
+        "Length": 1412153,
+        "Sha256": "20E0E5B523AA33B7350EDB4C9A83C9B5F6A1A0FE0FBCBE3BEEBFF9DC1C914F54",
+        "Required": true
+      },
+      {
+        "Path": "assets/lexicon/english.tsv",
+        "Length": 2299337,
+        "Sha256": "62D4FBABF369B6A7F41AAD5B5AC139B177DD1D2AA7AAA86AEAF11FFC7BF7AF15",
+        "Required": true
+      },
+      {
+        "Path": "assets/lexicon/mined_words.tsv",
+        "Length": 206266,
+        "Sha256": "1937840C2BF6E5BDDE08A1F7230ABEB5DC3E3754C130BA7F0C8CE6C771FFB9E6",
+        "Required": true
+      },
+      {
+        "Path": "assets/lexicon/mixed_words.tsv",
+        "Length": 636,
+        "Sha256": "A34FE818496EF1D1F446F0B069DA37144AE5ECDA44BA119C5E3F2EA83E1B839C",
+        "Required": true
+      },
+      {
+        "Path": "assets/lexicon/phrases.tsv",
+        "Length": 140868,
+        "Sha256": "269D3DDD16D5B325AF916C6977547AE7F702E128D8255A1D23DB40AE89C042BF",
+        "Required": true
+      },
+      {
+        "Path": "assets/lexicon/QINGJIAN.md",
+        "Length": 7673,
+        "Sha256": "D48D87991E595BDA0A708F4D715399920F19B7547765AE80027DD483F1FF4D7A",
+        "Required": true
+      },
+      {
+        "Path": "assets/lexicon/README.md",
+        "Length": 3896,
+        "Sha256": "1A279AA418BEEDC917ED88BE3FB2022726AACD52D7D8095E580ADD4EFE6F3E67",
+        "Required": true
+      },
+      {
+        "Path": "assets/lexicon/00_meta/anomalous_df.tsv",
         "Length": 264,
         "Sha256": "7DB6155F5F7A5373EE9517455E399695362DA286577AB9AB788A73239F55BFED",
-        "Path": "assets/lexicon/00_meta/anomalous_df.tsv"
+        "Required": true
       },
       {
-        "Required": true,
+        "Path": "assets/lexicon/00_meta/category_stats.tsv",
         "Length": 821,
         "Sha256": "108405859FA0391448765F3DA043B28A421D6F77BCA33461568A60F3C053325F",
-        "Path": "assets/lexicon/00_meta/category_stats.tsv"
+        "Required": true
       },
       {
-        "Required": true,
+        "Path": "assets/lexicon/00_meta/english_category_stats.tsv",
         "Length": 371,
         "Sha256": "786FCF5496ECA9BE9841CCA01DA8C04318F9FE476363B9017321AD2228450DAE",
-        "Path": "assets/lexicon/00_meta/english_category_stats.tsv"
+        "Required": true
       },
       {
-        "Required": true,
+        "Path": "assets/lexicon/00_meta/summary.json",
         "Length": 3152,
         "Sha256": "7FE5641B4B0B0F023957BAE43DAA299A8F45BB24B035A7AA64D050EDFD566338",
-        "Path": "assets/lexicon/00_meta/summary.json"
+        "Required": true
       },
       {
-        "Required": true,
+        "Path": "assets/lexicon/00_meta/THUOCL_LICENSE.txt",
         "Length": 1084,
         "Sha256": "F5AE0F28EBD7E638AEC3A479AE8346C97F4767F8B9B9122A601F677D8EA9B86F",
-        "Path": "assets/lexicon/00_meta/THUOCL_LICENSE.txt"
+        "Required": true
       },
       {
-        "Required": true,
+        "Path": "assets/lexicon/00_meta/variant_forms.tsv",
         "Length": 1304,
         "Sha256": "E605120E069C3569A2FD4EAA5872C62E0C684B708C2235FC68E12984103A3DEB",
-        "Path": "assets/lexicon/00_meta/variant_forms.tsv"
+        "Required": true
       },
       {
-        "Required": true,
+        "Path": "assets/lexicon/01_characters/level1_3500.tsv",
         "Length": 191433,
         "Sha256": "EB4D6D141BFB48C406F0AC99253440EA5DF574B8FE5E927D279DEA2D61791DDE",
-        "Path": "assets/lexicon/01_characters/level1_3500.tsv"
+        "Required": true
       },
       {
-        "Required": true,
+        "Path": "assets/lexicon/01_characters/level2_3000.tsv",
         "Length": 165043,
         "Sha256": "56EF07E0DF886836730870EFAD1BC7F7404BB94B19251A3EC520DDF2D75401B8",
-        "Path": "assets/lexicon/01_characters/level2_3000.tsv"
+        "Required": true
       },
       {
-        "Required": true,
+        "Path": "assets/lexicon/01_characters/level3_1605.tsv",
         "Length": 88508,
         "Sha256": "0E85BA077FFC32B4F0F144BCEB2E364F3C3FA54E883F3CF070779EFFC0B51978",
-        "Path": "assets/lexicon/01_characters/level3_1605.tsv"
+        "Required": true
       },
       {
-        "Required": true,
+        "Path": "assets/lexicon/01_characters/standard_8105.tsv",
         "Length": 444904,
         "Sha256": "8966A2DFC16E81881CC921C84D3FA4A3A93BC4B9A89082DB7171014994D0B904",
-        "Path": "assets/lexicon/01_characters/standard_8105.tsv"
+        "Required": true
       },
       {
-        "Required": true,
+        "Path": "assets/lexicon/02_common/modern_chinese_common_words.tsv",
         "Length": 2039743,
         "Sha256": "D0726ECF964E3A763B5D077DA6CCDEB94750CC20B8C73C7861D1BB0C8941A65D",
-        "Path": "assets/lexicon/02_common/modern_chinese_common_words.tsv"
+        "Required": true
       },
       {
-        "Required": true,
+        "Path": "assets/lexicon/03_domains/animals.tsv",
         "Length": 510750,
         "Sha256": "15B8EE056C0559B2E3CB2D0722FC2CFBDE54E497FF2DE1216378A1625E4420DC",
-        "Path": "assets/lexicon/03_domains/animals.tsv"
+        "Required": true
       },
       {
-        "Required": true,
+        "Path": "assets/lexicon/03_domains/automotive.tsv",
         "Length": 51804,
         "Sha256": "E29C8253CB2E0F8971258B8211F944602831AED7778AB624A30503039487A0DA",
-        "Path": "assets/lexicon/03_domains/automotive.tsv"
+        "Required": true
       },
       {
-        "Required": true,
+        "Path": "assets/lexicon/03_domains/finance.tsv",
         "Length": 96806,
         "Sha256": "8B6FB5AA4C6B93430EE8D37D61CCBCA8D8385B49B0878ABC43A973BBD3CC20AD",
-        "Path": "assets/lexicon/03_domains/finance.tsv"
+        "Required": true
       },
       {
-        "Required": true,
+        "Path": "assets/lexicon/03_domains/food.tsv",
         "Length": 243497,
         "Sha256": "79563EFB6905A8055282BB4B34DA83B24D125FA6EB0F921A08B8D80262C39DA8",
-        "Path": "assets/lexicon/03_domains/food.tsv"
+        "Required": true
       },
       {
-        "Required": true,
+        "Path": "assets/lexicon/03_domains/historical_figures.tsv",
         "Length": 313414,
         "Sha256": "3C8111DF231199AF3EB9D2B1402178240692F69E50769B525005E64EB44D78C9",
-        "Path": "assets/lexicon/03_domains/historical_figures.tsv"
+        "Required": true
       },
       {
-        "Required": true,
+        "Path": "assets/lexicon/03_domains/idioms.tsv",
         "Length": 243260,
         "Sha256": "5AD2BE9E1A773471140C968AF5619CC9BF270AD232A519317A570F5205C2DAFA",
-        "Path": "assets/lexicon/03_domains/idioms.tsv"
+        "Required": true
       },
       {
-        "Required": true,
+        "Path": "assets/lexicon/03_domains/it_computing.tsv",
         "Length": 452195,
         "Sha256": "94917F0ABB2A650ED96E960EAD220A7F1AB228E2341BC474B7C24F9B5F9AAAC7",
-        "Path": "assets/lexicon/03_domains/it_computing.tsv"
+        "Required": true
       },
       {
-        "Required": true,
+        "Path": "assets/lexicon/03_domains/law.tsv",
         "Length": 386641,
         "Sha256": "A2006F90C2F47CEADF9B2E4C8CD03B92A48CBFA8A2EEA7B8DD024F2F1136D223",
-        "Path": "assets/lexicon/03_domains/law.tsv"
+        "Required": true
       },
       {
-        "Required": true,
+        "Path": "assets/lexicon/03_domains/medicine.tsv",
         "Length": 515084,
         "Sha256": "BBD0643CCAA0F9AFA5CB78354DF9583B02573BB6A2EC66B14B83BCD184D3518A",
-        "Path": "assets/lexicon/03_domains/medicine.tsv"
+        "Required": true
       },
       {
-        "Required": true,
+        "Path": "assets/lexicon/03_domains/places.tsv",
         "Length": 1133550,
         "Sha256": "55B4253E589F389A69C7ACEB330B4633B1857F23876A41DCF9FDAA1E33A8260A",
-        "Path": "assets/lexicon/03_domains/places.tsv"
+        "Required": true
       },
       {
-        "Required": true,
+        "Path": "assets/lexicon/03_domains/poetry_lines.tsv",
         "Length": 445468,
         "Sha256": "918B5DF0A38770A26BF30363FDA2542503AE2E9BDD24AB88638F7E20FF71C0EE",
-        "Path": "assets/lexicon/03_domains/poetry_lines.tsv"
+        "Required": true
       },
       {
-        "Required": true,
+        "Path": "assets/lexicon/04_internet_slang/README.txt",
         "Length": 114,
         "Sha256": "8D126C8230898B9C5978E4C1F94C514413CCA33A525F2EC96DC6E80459EB2113",
-        "Path": "assets/lexicon/04_internet_slang/README.txt"
+        "Required": true
       },
       {
-        "Required": true,
+        "Path": "assets/lexicon/05_english/00_all_words.tsv",
         "Length": 4224004,
         "Sha256": "89052E3E24585D6CA22589F0040AD4EF63700609D368489B70044CBDCD43D766",
-        "Path": "assets/lexicon/05_english/00_all_words.tsv"
+        "Required": true
       },
       {
-        "Required": true,
+        "Path": "assets/lexicon/05_english/01_common.tsv",
         "Length": 3372694,
         "Sha256": "56C601D0CB432BBC8EC8047E484C4D766E6C67FB95E578D558E2D8C6B828890D",
-        "Path": "assets/lexicon/05_english/01_common.tsv"
+        "Required": true
       },
       {
-        "Required": true,
+        "Path": "assets/lexicon/05_english/02_extended.tsv",
         "Length": 1001324,
         "Sha256": "14C7AFACB09FFBECB508CC84149DEC2B55B387D61E995191550F2CEFAB43131F",
-        "Path": "assets/lexicon/05_english/02_extended.tsv"
+        "Required": true
       },
       {
-        "Required": true,
+        "Path": "assets/lexicon/05_english/03_proper_nouns_abbreviations.tsv",
         "Length": 918272,
         "Sha256": "97D6ECAF7077F6DCBC3A79369DAC421F1A6D425C202B336B1B23AFA2849241DC",
-        "Path": "assets/lexicon/05_english/03_proper_nouns_abbreviations.tsv"
+        "Required": true
       },
       {
-        "Required": true,
+        "Path": "assets/lexicon/05_english/04_inflections.tsv",
         "Length": 2959161,
         "Sha256": "4022538DDFF5C2CDBDC2525EC591E5C996D86E325B7A0522CFD2014B1FD43A3E",
-        "Path": "assets/lexicon/05_english/04_inflections.tsv"
+        "Required": true
       },
       {
-        "Required": true,
+        "Path": "assets/lexicon/05_english/06_misspellings.tsv",
         "Length": 2733976,
         "Sha256": "92C503929E5DCE2518A86D88562B7D6DB997C1B6587893129FD16AFE72032089",
-        "Path": "assets/lexicon/05_english/06_misspellings.tsv"
+        "Required": true
       },
       {
-        "Required": true,
+        "Path": "assets/lexicon/05_english/07_display_forms.tsv",
         "Length": 631,
         "Sha256": "DF1DA9FDB9C91269CE97AE17A576FE19859377BC1ED9FD20E6A10E37E8EC67F8",
-        "Path": "assets/lexicon/05_english/07_display_forms.tsv"
+        "Required": true
       },
       {
-        "Required": true,
+        "Path": "assets/lexicon/05_english/README.md",
         "Length": 3100,
         "Sha256": "C5F988C3F806648AD93D81271427EB2B0304D70E95769F370BB31A8CA0CFFB19",
-        "Path": "assets/lexicon/05_english/README.md"
+        "Required": true
       },
       {
-        "Required": true,
-        "Length": 687408,
-        "Sha256": "9BDA68B2E0AE6119C97C33EDCE282A469BBFABB2E220678F6E6D2200F3FD9FC0",
-        "Path": "assets/lexicon/dicts/animals.tsv"
-      },
-      {
-        "Required": true,
-        "Length": 62270,
-        "Sha256": "3AE293DA9C03A1622176A7B3B9BA2C732E95D5227685A28F1ADD39452FC5E839",
-        "Path": "assets/lexicon/dicts/automotive.tsv"
-      },
-      {
-        "Required": true,
-        "Length": 70258,
-        "Sha256": "B595F6685CD32C0FDEE4149CFD0B8DDF434657D69F976F0B92F2B667275C3FCF",
-        "Path": "assets/lexicon/dicts/finance.tsv"
-      },
-      {
-        "Required": true,
-        "Length": 273142,
-        "Sha256": "E70C39205E984AA3AE9761801F71BE0B4337AF79953939668199D50D61F90686",
-        "Path": "assets/lexicon/dicts/food.tsv"
-      },
-      {
-        "Required": true,
-        "Length": 268538,
-        "Sha256": "CCCAD9E16402BB2C276A117C6E72E685E3EE4E9ED82A9478AB157EC67C5AD8D5",
-        "Path": "assets/lexicon/dicts/historical_figures.tsv"
-      },
-      {
-        "Required": true,
-        "Length": 129076,
-        "Sha256": "58ACC2B69EF3C54272B946C9C8D5B22BBD960270DF5027A445E74CE7C2529885",
-        "Path": "assets/lexicon/dicts/idioms.tsv"
-      },
-      {
-        "Required": true,
-        "Length": 402813,
-        "Sha256": "159E8C7316487806880923CF6E48FA157FBC8CC80006F7604ABAFED99DEB2624",
-        "Path": "assets/lexicon/dicts/it_computing.tsv"
-      },
-      {
-        "Required": true,
-        "Length": 343792,
-        "Sha256": "74EBFC2FF5476296AAEB411B3C59FC85CFE00ACBBF0C3888D1740F12EE0DC2D7",
-        "Path": "assets/lexicon/dicts/law.tsv"
-      },
-      {
-        "Required": true,
-        "Length": 587128,
-        "Sha256": "2D05CB678A53FCFBE053EF0368A2E09944AC140F1F3FC468C158C62A8698D85E",
-        "Path": "assets/lexicon/dicts/medicine.tsv"
-      },
-      {
-        "Required": true,
-        "Length": 1198736,
-        "Sha256": "CF4750DBF32E8724403B27E9F3876555E0C2EC41E795D9C863DA08748468FD3E",
-        "Path": "assets/lexicon/dicts/places.tsv"
-      },
-      {
-        "Required": true,
-        "Length": 632226,
-        "Sha256": "CAF02B084883E528DF99C1A8CE5B436816B535EFDED4008C728333D9B8F8AABE",
-        "Path": "assets/lexicon/dicts/poetry_lines.tsv"
-      },
-      {
-        "Required": true,
-        "Length": 3028152,
-        "Sha256": "77E9F27A6EB2DFE298BF470354010301C262FAC84A0FEAD30F658570D2C8BF2F",
-        "Path": "data/generated/codes/stroke.qj"
-      },
-      {
-        "Required": true,
-        "Length": 1079352,
-        "Sha256": "C610234A79FAB044332FE8906F3366F91CEC640A33991E9FB0BE99C9791E2940",
-        "Path": "data/generated/dicts/animals.qj"
-      },
-      {
-        "Required": true,
-        "Length": 99984,
-        "Sha256": "8297EEFFF0401EF98518988C77009829B870EAF28AAD76608287E11670D10C0B",
-        "Path": "data/generated/dicts/automotive.qj"
-      },
-      {
-        "Required": true,
-        "Length": 125272,
-        "Sha256": "77046444A82F66BAB7D552104B37E8C472F2B737D666EEB7F5AF196A206F92C3",
-        "Path": "data/generated/dicts/finance.qj"
-      },
-      {
-        "Required": true,
-        "Length": 461272,
-        "Sha256": "69CCE31B42A51006F9D257E509C2ACC9A6B976C305A0D0145160B60F7BE0F4E9",
-        "Path": "data/generated/dicts/food.qj"
-      },
-      {
-        "Required": true,
-        "Length": 511016,
-        "Sha256": "D17F184C87D369E5FE4F1CD7AB258BD319E57EE48D196BA433C3F5BFC2236769",
-        "Path": "data/generated/dicts/historical_figures.qj"
-      },
-      {
-        "Required": true,
-        "Length": 213192,
-        "Sha256": "356B78CA8883B945835C649B8D16E304A64C8019EFA58F84FB973E65F3A1EE64",
-        "Path": "data/generated/dicts/idioms.qj"
-      },
-      {
-        "Required": true,
-        "Length": 671456,
-        "Sha256": "99F3AA79E4F36E1D4BBF8DD2D02D866F2AFD03148B25701C4681F326C2E402A4",
-        "Path": "data/generated/dicts/it_computing.qj"
-      },
-      {
-        "Required": true,
-        "Length": 505520,
-        "Sha256": "E3CB519E4967932D2A2FDEDF85F2461AC2103D5299F9C5CDEE0FFDF1A589CF54",
-        "Path": "data/generated/dicts/law.qj"
-      },
-      {
-        "Required": true,
-        "Length": 961104,
-        "Sha256": "8BE086AEAAC8C5D9E7F924F42422A37BA2B174B0AC87B88DB584D170E29B7ED6",
-        "Path": "data/generated/dicts/medicine.qj"
-      },
-      {
-        "Required": true,
-        "Length": 2082624,
-        "Sha256": "8F27C887641FD8C8A3B04AFA1C7345A3FA27F9D55B3F49589AEACDEBF6E52D1F",
-        "Path": "data/generated/dicts/places.qj"
-      },
-      {
-        "Required": true,
-        "Length": 940744,
-        "Sha256": "E690FCFAFD44276863BCABC4E2A259981079C4F10B76559464E61F12FA36EC28",
-        "Path": "data/generated/dicts/poetry_lines.qj"
-      },
-      {
-        "Required": true,
+        "Path": "assets/lexicon/05_english/05_tech/computing_acronyms.tsv",
         "Length": 5722,
         "Sha256": "23845CC8916568479548F46139D8A7D603E161B77DC52848CE0244560B1AAA1E",
-        "Path": "assets/lexicon/05_english/05_tech/computing_acronyms.tsv"
+        "Required": true
       },
       {
-        "Required": true,
+        "Path": "assets/lexicon/05_english/05_tech/networking.tsv",
         "Length": 3836,
         "Sha256": "17CD6E169DDD49C9B2501E5456BE828168B76073EFE51142419FD70277D51E5C",
-        "Path": "assets/lexicon/05_english/05_tech/networking.tsv"
+        "Required": true
       },
       {
-        "Required": true,
+        "Path": "assets/lexicon/05_english/05_tech/software_programming.tsv",
         "Length": 201650,
         "Sha256": "5D0B634EB7943AE4C90605F42DD79703DD3D63A50B7A02C48C5BECE9D64B53A2",
-        "Path": "assets/lexicon/05_english/05_tech/software_programming.tsv"
+        "Required": true
       },
       {
-        "Required": true,
+        "Path": "assets/lexicon/05_english/05_tech/software_tools.tsv",
         "Length": 32228,
         "Sha256": "5AF03C6F6F0AF3F3C8A88D6E0E2D67FCCE753D093FC7D344AE653D78846C4CB2",
-        "Path": "assets/lexicon/05_english/05_tech/software_tools.tsv"
+        "Required": true
       },
       {
-        "Required": true,
+        "Path": "assets/lexicon/05_english/05_tech/web_services.tsv",
         "Length": 1244,
         "Sha256": "77A63F83ECF703004F5077869D1F3F8240C9FD619F8FCF6BC645CF0CE845001B",
-        "Path": "assets/lexicon/05_english/05_tech/web_services.tsv"
+        "Required": true
       },
       {
-        "Required": true,
+        "Path": "assets/lexicon/05_english/sources/category_stats.tsv",
         "Length": 371,
         "Sha256": "786FCF5496ECA9BE9841CCA01DA8C04318F9FE476363B9017321AD2228450DAE",
-        "Path": "assets/lexicon/05_english/sources/category_stats.tsv"
+        "Required": true
       },
       {
-        "Required": true,
+        "Path": "assets/lexicon/05_english/sources/CSpell_LICENSE-MIT.txt",
         "Length": 1145,
         "Sha256": "B51AC268CF67E5C16273063CADFF1033D90C3AD63587FDA47DB884CB437D08CF",
-        "Path": "assets/lexicon/05_english/sources/CSpell_LICENSE-MIT.txt"
+        "Required": true
       },
       {
-        "Required": true,
+        "Path": "assets/lexicon/05_english/sources/ESDB_Copyright.txt",
         "Length": 5008,
         "Sha256": "1FFB6BBED9787F23FA6E9E1127AD153A35E5AA2ACA294C2CF69347C87256F19F",
-        "Path": "assets/lexicon/05_english/sources/ESDB_Copyright.txt"
+        "Required": true
       },
       {
-        "Required": true,
+        "Path": "assets/lexicon/05_english/sources/esdb_pos_codes.tsv",
         "Length": 1406,
         "Sha256": "9CE21416F0C6BFB5CD4AB7EC3E967C59E98B78BFE0EE9E11DE6815AC75AB84AB",
-        "Path": "assets/lexicon/05_english/sources/esdb_pos_codes.tsv"
+        "Required": true
       },
       {
-        "Required": true,
+        "Path": "assets/lexicon/05_english/sources/filter_stats.json",
         "Length": 1226,
         "Sha256": "57D4B1DCF46B10F6C9C2CE560E8F1AFD72367DB0FE0C0EEE554B08E8F9B195ED",
-        "Path": "assets/lexicon/05_english/sources/filter_stats.json"
+        "Required": true
       },
       {
-        "Required": true,
+        "Path": "assets/lexicon/05_english/sources/sources.json",
         "Length": 1966,
         "Sha256": "C5CA8D009C7BCAB454FD70AFCA0DB6C4D0EC4D03743CFC41020A4783157329DE",
-        "Path": "assets/lexicon/05_english/sources/sources.json"
+        "Required": true
       },
       {
-        "Required": true,
+        "Path": "assets/lexicon/05_english/sources/typos_LICENSE-MIT.txt",
         "Length": 1081,
         "Sha256": "9E2D5A48A160D81F96D2C6697316E6D251E2EFE157C749B3F03AC93E1CADDADA",
-        "Path": "assets/lexicon/05_english/sources/typos_LICENSE-MIT.txt"
+        "Required": true
+      },
+      {
+        "Path": "assets/lexicon/dicts/animals.tsv",
+        "Length": 687408,
+        "Sha256": "9BDA68B2E0AE6119C97C33EDCE282A469BBFABB2E220678F6E6D2200F3FD9FC0",
+        "Required": true
+      },
+      {
+        "Path": "assets/lexicon/dicts/automotive.tsv",
+        "Length": 62270,
+        "Sha256": "3AE293DA9C03A1622176A7B3B9BA2C732E95D5227685A28F1ADD39452FC5E839",
+        "Required": true
+      },
+      {
+        "Path": "assets/lexicon/dicts/finance.tsv",
+        "Length": 70258,
+        "Sha256": "B595F6685CD32C0FDEE4149CFD0B8DDF434657D69F976F0B92F2B667275C3FCF",
+        "Required": true
+      },
+      {
+        "Path": "assets/lexicon/dicts/food.tsv",
+        "Length": 273142,
+        "Sha256": "E70C39205E984AA3AE9761801F71BE0B4337AF79953939668199D50D61F90686",
+        "Required": true
+      },
+      {
+        "Path": "assets/lexicon/dicts/historical_figures.tsv",
+        "Length": 268538,
+        "Sha256": "CCCAD9E16402BB2C276A117C6E72E685E3EE4E9ED82A9478AB157EC67C5AD8D5",
+        "Required": true
+      },
+      {
+        "Path": "assets/lexicon/dicts/idioms.tsv",
+        "Length": 129076,
+        "Sha256": "58ACC2B69EF3C54272B946C9C8D5B22BBD960270DF5027A445E74CE7C2529885",
+        "Required": true
+      },
+      {
+        "Path": "assets/lexicon/dicts/it_computing.tsv",
+        "Length": 402813,
+        "Sha256": "159E8C7316487806880923CF6E48FA157FBC8CC80006F7604ABAFED99DEB2624",
+        "Required": true
+      },
+      {
+        "Path": "assets/lexicon/dicts/law.tsv",
+        "Length": 343792,
+        "Sha256": "74EBFC2FF5476296AAEB411B3C59FC85CFE00ACBBF0C3888D1740F12EE0DC2D7",
+        "Required": true
+      },
+      {
+        "Path": "assets/lexicon/dicts/medicine.tsv",
+        "Length": 587128,
+        "Sha256": "2D05CB678A53FCFBE053EF0368A2E09944AC140F1F3FC468C158C62A8698D85E",
+        "Required": true
+      },
+      {
+        "Path": "assets/lexicon/dicts/places.tsv",
+        "Length": 1198736,
+        "Sha256": "CF4750DBF32E8724403B27E9F3876555E0C2EC41E795D9C863DA08748468FD3E",
+        "Required": true
+      },
+      {
+        "Path": "assets/lexicon/dicts/poetry_lines.tsv",
+        "Length": 632226,
+        "Sha256": "CAF02B084883E528DF99C1A8CE5B436816B535EFDED4008C728333D9B8F8AABE",
+        "Required": true
+      },
+      {
+        "Path": "assets/sample/dict.tsv",
+        "Length": 2866,
+        "Sha256": "D97095F3605ED6F827BF2D8D5E603600A7D3F91EFCFE75672C872491BFD9F1A8",
+        "Required": true
+      },
+      {
+        "Path": "assets/sample/english.tsv",
+        "Length": 232,
+        "Sha256": "911FEBF9C81E975D26C3CA5BE582B2EC39C2A06064AB0ABE1AB721405AD54E76",
+        "Required": true
+      },
+      {
+        "Path": "assets/sample/glossary-en.tsv",
+        "Length": 2471,
+        "Sha256": "8583F3F2FA9F07E01FA4DB7C77A02A8528DB8A158FEDC9693FB699D64B9CD3B3",
+        "Required": true
+      },
+      {
+        "Path": "assets/sample/README.md",
+        "Length": 445,
+        "Sha256": "2C5DD0FF1C6F7F64E5A725DE566E42C9D4B31CAFE53792A47F58808EAE33029B",
+        "Required": true
+      },
+      {
+        "Path": "assets/stroke/LICENSE-CNS11643.txt",
+        "Length": 5006,
+        "Sha256": "22056882619A6B623E9FF821DA5BE94DA8D9429DFE02CF91F975E1F025A5028B",
+        "Required": true
+      },
+      {
+        "Path": "assets/stroke/prc-rules.tsv",
+        "Length": 6994,
+        "Sha256": "99CB527E60095BC381B4BDB42398DC6A020333304743478A7D4417749256702D",
+        "Required": true
+      },
+      {
+        "Path": "assets/stroke/README.md",
+        "Length": 10214,
+        "Sha256": "841B87182E2320C17F76501C7712025558410B5D550EA4542F380C32C86B79FA",
+        "Required": true
+      },
+      {
+        "Path": "assets/stroke/residual-first-strokes.tsv",
+        "Length": 28775,
+        "Sha256": "35DF8F92CC3388DBBE58D27B6C756EEEA5333C4CB62814BB4A2DC85B28E3ABC7",
+        "Required": true
+      },
+      {
+        "Path": "assets/stroke/residual-whitelist.tsv",
+        "Length": 895,
+        "Sha256": "5A94276972D36F8E7A8D42EC4AA085C0725359F680A43509717B8A7D6809CB22",
+        "Required": true
+      },
+      {
+        "Path": "assets/wubi/LICENSE",
+        "Length": 11556,
+        "Sha256": "5AD8C213095C573921D7388EDF93F6A9F54490B8EBF3B165AE8EF1947CF70846",
+        "Required": true
+      },
+      {
+        "Path": "assets/wubi/README.md",
+        "Length": 1993,
+        "Sha256": "6921603BE910E8182F31AB61EC434821E48690C981CDE10188BA850D151E5E0E",
+        "Required": true
+      },
+      {
+        "Path": "assets/wubi/wubi86.tsv",
+        "Length": 1425872,
+        "Sha256": "B63337E2ECC48F59970B86B5C6CE6F9981608D7B657EA9F69D1090176A258DB2",
+        "Required": true
+      },
+      {
+        "Path": "az-Latn-AZ/Microsoft.ui.xaml.dll.mui",
+        "Length": 26936,
+        "Sha256": "D1E0015A6DCC291681024E5B4C2ABD8C7ED05CB54596B9F2ACFFB83A35F906D2",
+        "Required": true
+      },
+      {
+        "Path": "az-Latn-AZ/Microsoft.UI.Xaml.Phone.dll.mui",
+        "Length": 14136,
+        "Sha256": "4B6945D471414121EF929C55565319C8B2E9C4680C1C5C71619D4D427A5B1A96",
+        "Required": true
+      },
+      {
+        "Path": "bg-BG/Microsoft.ui.xaml.dll.mui",
+        "Length": 28512,
+        "Sha256": "FEA56FCA0DACFD1E2DF77E2F54EE618F04738D684B71D6EF413ED4CCFFD95C17",
+        "Required": true
+      },
+      {
+        "Path": "bg-BG/Microsoft.UI.Xaml.Phone.dll.mui",
+        "Length": 14136,
+        "Sha256": "2BBEA55BB63005D675D56600BEACD2249CA1C9C158206FBAFE21164360380029",
+        "Required": true
+      },
+      {
+        "Path": "bn-IN/Microsoft.ui.xaml.dll.mui",
+        "Length": 26936,
+        "Sha256": "FE4A13ED90CCD0216AD11E466514ECF04D0335747126B32A4D752CBFEEE1E5B1",
+        "Required": true
+      },
+      {
+        "Path": "bn-IN/Microsoft.UI.Xaml.Phone.dll.mui",
+        "Length": 14136,
+        "Sha256": "D2197AB18856B99656B22A0D0D857682D39257089CB17E07A26518E042401893",
+        "Required": true
+      },
+      {
+        "Path": "bs-Latn-BA/Microsoft.ui.xaml.dll.mui",
+        "Length": 27448,
+        "Sha256": "3EC2D72738233A45C2B852699FCACA35D7002AD357288427D69CEB300B67FEE4",
+        "Required": true
+      },
+      {
+        "Path": "bs-Latn-BA/Microsoft.UI.Xaml.Phone.dll.mui",
+        "Length": 14136,
+        "Sha256": "751DEAB8089FDF11CEA08B9E08E6702AE3012198D32038961D51A21E95A15A5F",
+        "Required": true
+      },
+      {
+        "Path": "ca-ES/Microsoft.ui.xaml.dll.mui",
+        "Length": 27960,
+        "Sha256": "CF9AA58C38DF8A7DE0023F6DC0683C72C887E3ABE056E1189338A4E5AD46A694",
+        "Required": true
+      },
+      {
+        "Path": "ca-ES/Microsoft.UI.Xaml.Phone.dll.mui",
+        "Length": 14136,
+        "Sha256": "55F79FB1BAB48DA18B7D0D67584449944150115063B6E285D397278A2D77292C",
+        "Required": true
+      },
+      {
+        "Path": "ca-Es-VALENCIA/Microsoft.ui.xaml.dll.mui",
+        "Length": 27960,
+        "Sha256": "C0CEA5B9C23F298E099A9A0BD6A35948E9543C1BC8032339F5E8FA4B39D53430",
+        "Required": true
+      },
+      {
+        "Path": "ca-Es-VALENCIA/Microsoft.UI.Xaml.Phone.dll.mui",
+        "Length": 14136,
+        "Sha256": "063AB6F0693438EB086FFA4D5D8C8C59157DD3BF3D8D2370CC1B03A938E6185C",
+        "Required": true
+      },
+      {
+        "Path": "cs-CZ/Microsoft.ui.xaml.dll.mui",
+        "Length": 26976,
+        "Sha256": "CFAEF76FF58F078D0CF9D381BF900777AF3523375D835426C4D4DCDA1AB0D643",
+        "Required": true
+      },
+      {
+        "Path": "cs-CZ/Microsoft.UI.Xaml.Phone.dll.mui",
+        "Length": 14136,
+        "Sha256": "E4A3EA6DA9F9B18C1C670B8593A0FD7EC2DC3E9E04CD29B64DE790DA6466B683",
+        "Required": true
+      },
+      {
+        "Path": "cy-GB/Microsoft.ui.xaml.dll.mui",
+        "Length": 26976,
+        "Sha256": "4EFA0250696C2772CE238F07AADA0AFA0F66EB4E094E49848BAC7A5930D1C24E",
+        "Required": true
+      },
+      {
+        "Path": "cy-GB/Microsoft.UI.Xaml.Phone.dll.mui",
+        "Length": 14176,
+        "Sha256": "81064A5314E2109E449AE3BC36C7B8CF7E9E1ED65E6F9E60B247B1B635671596",
+        "Required": true
+      },
+      {
+        "Path": "da-DK/Microsoft.ui.xaml.dll.mui",
+        "Length": 26424,
+        "Sha256": "7559C288B99574C43CA7768600DE57E641CF9806B07DABD19D4856ED4826939C",
+        "Required": true
+      },
+      {
+        "Path": "da-DK/Microsoft.UI.Xaml.Phone.dll.mui",
+        "Length": 14136,
+        "Sha256": "2A06E98EA162B2CF5EA90D87D028EC8DBD0B20F1249D7089C13D294E23A45594",
+        "Required": true
+      },
+      {
+        "Path": "data/generated/dict.qj",
+        "Length": 3538648,
+        "Sha256": "3E33B16A84DF555E6F16D52AC8AB3C2C6B6F1F71734E69463861FD5ABD9C19DC",
+        "Required": true
+      },
+      {
+        "Path": "data/generated/english-frequency.tsv",
+        "Length": 1317586,
+        "Sha256": "DA3D1BBD6CCA3553FFD9BF16D739CB1D7D99CDCBFBE6C49CFBFCB66F8BCFC300",
+        "Required": true
+      },
+      {
+        "Path": "data/generated/english.tsv",
+        "Length": 2204768,
+        "Sha256": "E9DCE15A87843C69B26FE7A3979A6848D06DB50F14617EF217DD3DB4CBF1A742",
+        "Required": true
+      },
+      {
+        "Path": "data/generated/glossary-en.qj",
+        "Length": 15565368,
+        "Sha256": "4CC9C587B206D0F12AABB1B85CB21E6AC2A1C8C4932B9AF14332BD96E0BE012A",
+        "Required": true
+      },
+      {
+        "Path": "data/generated/glossary-zh.qj",
+        "Length": 2876888,
+        "Sha256": "C1280592349E6BFF942EDE0AEE19935F7883A18935AC3B521A78D654516E755E",
+        "Required": true
+      },
+      {
+        "Path": "data/generated/lm.qj",
+        "Length": 44405568,
+        "Sha256": "F9FB7B4433DDDCE86610A5D33E571BEA963F6C2A5D960B8BC908F25024D34CD1",
+        "Required": true
+      },
+      {
+        "Path": "data/generated/codes/stroke.qj",
+        "Length": 3028152,
+        "Sha256": "77E9F27A6EB2DFE298BF470354010301C262FAC84A0FEAD30F658570D2C8BF2F",
+        "Required": true
+      },
+      {
+        "Path": "data/generated/dicts/animals.qj",
+        "Length": 1079352,
+        "Sha256": "C610234A79FAB044332FE8906F3366F91CEC640A33991E9FB0BE99C9791E2940",
+        "Required": true
+      },
+      {
+        "Path": "data/generated/dicts/automotive.qj",
+        "Length": 99984,
+        "Sha256": "8297EEFFF0401EF98518988C77009829B870EAF28AAD76608287E11670D10C0B",
+        "Required": true
+      },
+      {
+        "Path": "data/generated/dicts/finance.qj",
+        "Length": 125272,
+        "Sha256": "77046444A82F66BAB7D552104B37E8C472F2B737D666EEB7F5AF196A206F92C3",
+        "Required": true
+      },
+      {
+        "Path": "data/generated/dicts/food.qj",
+        "Length": 461272,
+        "Sha256": "69CCE31B42A51006F9D257E509C2ACC9A6B976C305A0D0145160B60F7BE0F4E9",
+        "Required": true
+      },
+      {
+        "Path": "data/generated/dicts/historical_figures.qj",
+        "Length": 511016,
+        "Sha256": "D17F184C87D369E5FE4F1CD7AB258BD319E57EE48D196BA433C3F5BFC2236769",
+        "Required": true
+      },
+      {
+        "Path": "data/generated/dicts/idioms.qj",
+        "Length": 213192,
+        "Sha256": "356B78CA8883B945835C649B8D16E304A64C8019EFA58F84FB973E65F3A1EE64",
+        "Required": true
+      },
+      {
+        "Path": "data/generated/dicts/it_computing.qj",
+        "Length": 671456,
+        "Sha256": "99F3AA79E4F36E1D4BBF8DD2D02D866F2AFD03148B25701C4681F326C2E402A4",
+        "Required": true
+      },
+      {
+        "Path": "data/generated/dicts/law.qj",
+        "Length": 505520,
+        "Sha256": "E3CB519E4967932D2A2FDEDF85F2461AC2103D5299F9C5CDEE0FFDF1A589CF54",
+        "Required": true
+      },
+      {
+        "Path": "data/generated/dicts/medicine.qj",
+        "Length": 961104,
+        "Sha256": "8BE086AEAAC8C5D9E7F924F42422A37BA2B174B0AC87B88DB584D170E29B7ED6",
+        "Required": true
+      },
+      {
+        "Path": "data/generated/dicts/places.qj",
+        "Length": 2082624,
+        "Sha256": "8F27C887641FD8C8A3B04AFA1C7345A3FA27F9D55B3F49589AEACDEBF6E52D1F",
+        "Required": true
+      },
+      {
+        "Path": "data/generated/dicts/poetry_lines.qj",
+        "Length": 940744,
+        "Sha256": "E690FCFAFD44276863BCABC4E2A259981079C4F10B76559464E61F12FA36EC28",
+        "Required": true
+      },
+      {
+        "Path": "data/model/model.qjm",
+        "Length": 56044184,
+        "Sha256": "EED5BD0BDA0C7BD8B43D1ACB2DC4678D4BBE295BD47B2B0D4EEACE0AF9DAFF4D",
+        "Required": true
+      },
+      {
+        "Path": "de-DE/Microsoft.ui.xaml.dll.mui",
+        "Length": 27488,
+        "Sha256": "F3A8779F78579167C6DA5DA4147A93728379F54914F28199884A6EAB5C7A8717",
+        "Required": true
+      },
+      {
+        "Path": "de-DE/Microsoft.UI.Xaml.Phone.dll.mui",
+        "Length": 14136,
+        "Sha256": "44E186E20C29A7BD69546D6A247A6D85B6EF992D5744353079A6BCCE309B41D3",
+        "Required": true
+      },
+      {
+        "Path": "el-GR/Microsoft.ui.xaml.dll.mui",
+        "Length": 28512,
+        "Sha256": "6868629B1EC44C7D8B55518733FA82CE88151C0837B53C4AD3ED300F05683229",
+        "Required": true
+      },
+      {
+        "Path": "el-GR/Microsoft.UI.Xaml.Phone.dll.mui",
+        "Length": 14176,
+        "Sha256": "44DA1E2E499603077189A0EB88FA741A6A85AC9BF78868BE7AF0448C5BB8558F",
+        "Required": true
+      },
+      {
+        "Path": "en-GB/Microsoft.ui.xaml.dll.mui",
+        "Length": 25400,
+        "Sha256": "DCB4CA24FC121A2F8A89626CBEF25868F1F8A592448883560415ECCCFE9506EC",
+        "Required": true
+      },
+      {
+        "Path": "en-GB/Microsoft.UI.Xaml.Phone.dll.mui",
+        "Length": 14176,
+        "Sha256": "3EEA3EDB835CAAD110F7C9FF195EF5459BAB3F2F2644BCF1B7479A3B1A23130B",
+        "Required": true
+      },
+      {
+        "Path": "en-us/Microsoft.ui.xaml.dll.mui",
+        "Length": 25912,
+        "Sha256": "39883AE4BBFE3673FC44E774F5185980BB18DC3072B21B8ABBB9F81FC9B32BB5",
+        "Required": true
+      },
+      {
+        "Path": "en-us/Microsoft.UI.Xaml.Phone.dll.mui",
+        "Length": 14136,
+        "Sha256": "07ECA73F2A872073ABB0F73B0474AAEAC46411D056BA0C9E2570D14E58EE0AC4",
+        "Required": true
+      },
+      {
+        "Path": "es-ES/Microsoft.ui.xaml.dll.mui",
+        "Length": 27960,
+        "Sha256": "9E43A3E8C7DB90CC19FCAF4A15429E53C354137D3AE259DEC0DAB3E524B8018E",
+        "Required": true
+      },
+      {
+        "Path": "es-ES/Microsoft.UI.Xaml.Phone.dll.mui",
+        "Length": 14136,
+        "Sha256": "8F51356894AADF184132DA0FA1FE84A0D8E30601C94A5166D107E6AD6EC73BAB",
+        "Required": true
+      },
+      {
+        "Path": "es-MX/Microsoft.ui.xaml.dll.mui",
+        "Length": 27960,
+        "Sha256": "E86F3542E68887FEE0EED015FCAF79F0C28121063A34E077DA9344DFE74F0233",
+        "Required": true
+      },
+      {
+        "Path": "es-MX/Microsoft.UI.Xaml.Phone.dll.mui",
+        "Length": 14176,
+        "Sha256": "B28DE4B9793EB75960624CBC6A3F4C2C7235D836D6AEE22D5642145FD33993BC",
+        "Required": true
+      },
+      {
+        "Path": "et-EE/Microsoft.ui.xaml.dll.mui",
+        "Length": 26936,
+        "Sha256": "C9E6C1A3E90B99E5A4E2D5C77ADD3DDBD6239A076B64675E4B1E84A52A97C05D",
+        "Required": true
+      },
+      {
+        "Path": "et-EE/Microsoft.UI.Xaml.Phone.dll.mui",
+        "Length": 14136,
+        "Sha256": "75EE6571943FCA7A9496B93937510446A65AB691971752E18A0B66AD215167D8",
+        "Required": true
+      },
+      {
+        "Path": "eu-ES/Microsoft.ui.xaml.dll.mui",
+        "Length": 28472,
+        "Sha256": "D92745A746CD7A3B9257E4FAE16BA3ECAAE9DBBF3844B9EB751D49914C3A5424",
+        "Required": true
+      },
+      {
+        "Path": "eu-ES/Microsoft.UI.Xaml.Phone.dll.mui",
+        "Length": 14176,
+        "Sha256": "46833BF4B083B9852483C3F1C2E25420B6F507C1CC9C8ECE081EBF6640A56564",
+        "Required": true
+      },
+      {
+        "Path": "fa-IR/Microsoft.ui.xaml.dll.mui",
+        "Length": 26936,
+        "Sha256": "DDDD2BB2D67BB392042CB8F162DC79B5555517B22A5F4F8628DC510F669B940A",
+        "Required": true
+      },
+      {
+        "Path": "fa-IR/Microsoft.UI.Xaml.Phone.dll.mui",
+        "Length": 14136,
+        "Sha256": "A3B5808E9926BFDAF029E1B770B806F3ADCB5CAEA5AAFF762236FE1873D40607",
+        "Required": true
+      },
+      {
+        "Path": "fi-FI/Microsoft.ui.xaml.dll.mui",
+        "Length": 27488,
+        "Sha256": "2FF4A62128B7772512F2484F04B2728FFFAC968B13CCFF6D60208F89F2BD6D0F",
+        "Required": true
+      },
+      {
+        "Path": "fi-FI/Microsoft.UI.Xaml.Phone.dll.mui",
+        "Length": 14176,
+        "Sha256": "65CCEBD748F60EB58C11FC30A6B8E2D5D25C8D8BDFD54B69656F578E5260E151",
+        "Required": true
+      },
+      {
+        "Path": "fil-PH/Microsoft.ui.xaml.dll.mui",
+        "Length": 27488,
+        "Sha256": "52317882DFF90CA5AA57B9BDF0BA70B4A17ADF2E14561319E7B44D5EAEA7E27A",
+        "Required": true
+      },
+      {
+        "Path": "fil-PH/Microsoft.UI.Xaml.Phone.dll.mui",
+        "Length": 14176,
+        "Sha256": "2E15DF5857E5273F570F7944F8A19B6A6F519CBD67733620E35179D091AAAD68",
+        "Required": true
+      },
+      {
+        "Path": "fr-CA/Microsoft.ui.xaml.dll.mui",
+        "Length": 27960,
+        "Sha256": "C56DFCE1ED2789B4A12876BD112F7B914B134D9F7809F430714870BFA8F9ABBB",
+        "Required": true
+      },
+      {
+        "Path": "fr-CA/Microsoft.UI.Xaml.Phone.dll.mui",
+        "Length": 14136,
+        "Sha256": "67E9AAE511A5E4D761BAB1E09EB448AD3878EC60F04A5108ED8A4EABAF27167C",
+        "Required": true
+      },
+      {
+        "Path": "fr-FR/Microsoft.ui.xaml.dll.mui",
+        "Length": 27960,
+        "Sha256": "79319035425DD9378FB6E147B7B71E7F746DA93548E690CC2497DF0D5961885D",
+        "Required": true
+      },
+      {
+        "Path": "fr-FR/Microsoft.UI.Xaml.Phone.dll.mui",
+        "Length": 14136,
+        "Sha256": "435730BFE009ECFE6B795BF183F515CD3C3D021E4EF1C4DEBE51E92DCC5072C0",
+        "Required": true
+      },
+      {
+        "Path": "ga-IE/Microsoft.ui.xaml.dll.mui",
+        "Length": 27488,
+        "Sha256": "2C985217D6EC9A03E2061C0609ED14A7570C1E1C997E6EBDD8F4ACDA93A749BF",
+        "Required": true
+      },
+      {
+        "Path": "ga-IE/Microsoft.UI.Xaml.Phone.dll.mui",
+        "Length": 14136,
+        "Sha256": "80258924B79825FB0BE05CDC85487AFB621EEB8D0C84221B070E4EF247420E8A",
+        "Required": true
+      },
+      {
+        "Path": "gd-gb/Microsoft.ui.xaml.dll.mui",
+        "Length": 28472,
+        "Sha256": "5CC95BAED2C347A23499915DF31E936213233704F459C1C55C852DF42064F25E",
+        "Required": true
+      },
+      {
+        "Path": "gd-gb/Microsoft.UI.Xaml.Phone.dll.mui",
+        "Length": 14136,
+        "Sha256": "12B0C4AD77BDAF4FB6163326FE7972FDCDC3177E7743AC083D768FB6552674CE",
+        "Required": true
+      },
+      {
+        "Path": "gl-ES/Microsoft.ui.xaml.dll.mui",
+        "Length": 27960,
+        "Sha256": "528441CBED014C3672EB0CC4C58F589A1103644B5E35571DE67C4CC60C614C57",
+        "Required": true
+      },
+      {
+        "Path": "gl-ES/Microsoft.UI.Xaml.Phone.dll.mui",
+        "Length": 14176,
+        "Sha256": "A9DA912F7DDC065FE4536FC8629F02C2164B40B63A266B8F72AB45A2FF0D3FE6",
+        "Required": true
+      },
+      {
+        "Path": "gu-IN/Microsoft.ui.xaml.dll.mui",
+        "Length": 25952,
+        "Sha256": "A721D338B28F39AB6A01FAAC6A6368695E4B2C91773D985403E8D179CE225435",
+        "Required": true
+      },
+      {
+        "Path": "gu-IN/Microsoft.UI.Xaml.Phone.dll.mui",
+        "Length": 14176,
+        "Sha256": "21D5F1E70FE678F21ADD8397319B569CC9F34B0C8783F1FF074B91DB22D4BB51",
+        "Required": true
+      },
+      {
+        "Path": "he-IL/Microsoft.ui.xaml.dll.mui",
+        "Length": 25912,
+        "Sha256": "F0B036E1B0CC7D3C829CC34ECF5F68ECAFCCC72BE1F940F2A590ABB3E4D53E0E",
+        "Required": true
+      },
+      {
+        "Path": "he-IL/Microsoft.UI.Xaml.Phone.dll.mui",
+        "Length": 13624,
+        "Sha256": "A452978D22953E277A768D4B9DE170D31B6C93942E628A46B8B1D35A6CE2B601",
+        "Required": true
+      },
+      {
+        "Path": "hi-IN/Microsoft.ui.xaml.dll.mui",
+        "Length": 26464,
+        "Sha256": "7D8787E37EC8D119B75CA49B8AF8E00D371F5E8C0AD976508AFBDC687C95FD58",
+        "Required": true
+      },
+      {
+        "Path": "hi-IN/Microsoft.UI.Xaml.Phone.dll.mui",
+        "Length": 14136,
+        "Sha256": "CB775E8FE72F0DFDCD14B015D1D39DD194691FD22DA2C01245943918214E08BE",
+        "Required": true
+      },
+      {
+        "Path": "hr-HR/Microsoft.ui.xaml.dll.mui",
+        "Length": 27448,
+        "Sha256": "DC872CFFFCCE8208DB5FD4AF67115CAA7B7A921DC7C617B8C03BC16F11FB4EEC",
+        "Required": true
+      },
+      {
+        "Path": "hr-HR/Microsoft.UI.Xaml.Phone.dll.mui",
+        "Length": 14136,
+        "Sha256": "73D76A2BAC3CC7F45C0471699C567499D19CC9685526FEB4531321554A9B5482",
+        "Required": true
+      },
+      {
+        "Path": "hu-HU/Microsoft.ui.xaml.dll.mui",
+        "Length": 27488,
+        "Sha256": "09F58BEEDA9DC53D0FBB448AF787EDCF849EBB5352C8D80DBCCB70C933932C4D",
+        "Required": true
+      },
+      {
+        "Path": "hu-HU/Microsoft.UI.Xaml.Phone.dll.mui",
+        "Length": 14136,
+        "Sha256": "9631F06D89D8CDFD71E1D176BC9A114D343B91E7181AAFA9FA062E4731BB437C",
+        "Required": true
+      },
+      {
+        "Path": "hy-AM/Microsoft.ui.xaml.dll.mui",
+        "Length": 27448,
+        "Sha256": "043AD564AE0A54C8AE91FC60CA857B598D4CCDCEAEEED222AEDB29CD41296CE3",
+        "Required": true
+      },
+      {
+        "Path": "hy-AM/Microsoft.UI.Xaml.Phone.dll.mui",
+        "Length": 14136,
+        "Sha256": "0D15E6CA299E468FDFAD07641579DE8EFB2C52BB73B9B7E1903F87A0C36E1721",
+        "Required": true
+      },
+      {
+        "Path": "i686/RegisterInputMethod.exe",
+        "Length": 752128,
+        "Sha256": "E933DA83E843A1A2ECA3CE9E452F928A10ECAF0ADDADCBF7E0844A91D601D5BE",
+        "Required": true
+      },
+      {
+        "Path": "i686/XiaomangInputMethod.dll",
+        "Length": 3697664,
+        "Sha256": "CB2A9D9E1E896DE40BD5D1636E3AF61FC4420D2E2689EF3BB41D145CA07330BD",
+        "Required": true
+      },
+      {
+        "Path": "id-ID/Microsoft.ui.xaml.dll.mui",
+        "Length": 26976,
+        "Sha256": "989466C279D01651C6540987F719309194DCA4FBEE565679559E923F81EC1BD6",
+        "Required": true
+      },
+      {
+        "Path": "id-ID/Microsoft.UI.Xaml.Phone.dll.mui",
+        "Length": 14136,
+        "Sha256": "FF6D0DB7C04B95D119A62D3B2382C57ED962BBB233FE9CDF3BA8BCE385A42507",
+        "Required": true
+      },
+      {
+        "Path": "is-IS/Microsoft.ui.xaml.dll.mui",
+        "Length": 26424,
+        "Sha256": "B6205A32C7409707B6D162DA89FAD064A6E8661E7A0DCB7859BD26B3CBC19712",
+        "Required": true
+      },
+      {
+        "Path": "is-IS/Microsoft.UI.Xaml.Phone.dll.mui",
+        "Length": 14136,
+        "Sha256": "466066F02BE78B755881E4F2DB726A5F4FDB91BDFB24FC1611D7488B91B6EB79",
+        "Required": true
+      },
+      {
+        "Path": "it-IT/Microsoft.ui.xaml.dll.mui",
+        "Length": 27960,
+        "Sha256": "DEF55C37B053E28C16710964B55539719212BF7876683BB57FD48CA16834AFD6",
+        "Required": true
+      },
+      {
+        "Path": "it-IT/Microsoft.UI.Xaml.Phone.dll.mui",
+        "Length": 14136,
+        "Sha256": "8ECE3637B48C948B5E3DDE6CE4BFBA805175E1CA2C05F23767C4BD1D1AF5528A",
+        "Required": true
+      },
+      {
+        "Path": "ja-JP/Microsoft.ui.xaml.dll.mui",
+        "Length": 22840,
+        "Sha256": "D937B44ED101A49F3978C595339C89A4255A169386A6446B55E29C82C1A3E58C",
+        "Required": true
+      },
+      {
+        "Path": "ja-JP/Microsoft.UI.Xaml.Phone.dll.mui",
+        "Length": 13624,
+        "Sha256": "5BD0282A8DD1B2685B5ECE3D735AA9CC77B315748A37B08AA909C39961160609",
+        "Required": true
+      },
+      {
+        "Path": "ka-GE/Microsoft.ui.xaml.dll.mui",
+        "Length": 27448,
+        "Sha256": "5EF535B60DFE7F090E7CB0F7B237F6E2F84C9AFC668892DDAB1486F6FF77062A",
+        "Required": true
+      },
+      {
+        "Path": "ka-GE/Microsoft.UI.Xaml.Phone.dll.mui",
+        "Length": 14136,
+        "Sha256": "A760371AF879B3070D18A4B425118F0CC2050357D687483E26DF88300CCC766D",
+        "Required": true
+      },
+      {
+        "Path": "kk-KZ/Microsoft.ui.xaml.dll.mui",
+        "Length": 27448,
+        "Sha256": "A15DA4AC61971CEB2889D97934C05BF0CC1A5D1FD3FBB3E82F5FA91C83CAAC97",
+        "Required": true
+      },
+      {
+        "Path": "kk-KZ/Microsoft.UI.Xaml.Phone.dll.mui",
+        "Length": 14136,
+        "Sha256": "FD44B847415CB97EED648429B547FE1A245F58B7F9690663F483C3C5CCCC84C2",
+        "Required": true
+      },
+      {
+        "Path": "km-KH/Microsoft.ui.xaml.dll.mui",
+        "Length": 26424,
+        "Sha256": "CA8B7B0E3AC8D6059A3B45118AF5C68BD337C787C2EE90BE5D9FA6DEE172A1D7",
+        "Required": true
+      },
+      {
+        "Path": "km-KH/Microsoft.UI.Xaml.Phone.dll.mui",
+        "Length": 14136,
+        "Sha256": "AD1EA4E43BD7AC5182700A998B84AB1DB151C323B0D986766A1411E533FB4074",
+        "Required": true
+      },
+      {
+        "Path": "kn-IN/Microsoft.ui.xaml.dll.mui",
+        "Length": 26936,
+        "Sha256": "6365352D60CC1E7B3F7684C1176A69BD23E8BCBB3049DA357964FAFB68186B8D",
+        "Required": true
+      },
+      {
+        "Path": "kn-IN/Microsoft.UI.Xaml.Phone.dll.mui",
+        "Length": 14136,
+        "Sha256": "4C396A9AFB5E4B445F9BE0270AB01274EFDBE970B9C9A7BE19E15F5C37BDEA50",
+        "Required": true
+      },
+      {
+        "Path": "ko-KR/Microsoft.ui.xaml.dll.mui",
+        "Length": 22328,
+        "Sha256": "325E862EDEF843182EB81AA6635C15BC41E74FC8033C4D3F3E5CF00A17D8DF53",
+        "Required": true
+      },
+      {
+        "Path": "ko-KR/Microsoft.UI.Xaml.Phone.dll.mui",
+        "Length": 13624,
+        "Sha256": "9375A6108B5465719AF6965EC5D962FE62D333DD1B57258709BC698DB7922173",
+        "Required": true
+      },
+      {
+        "Path": "kok-IN/Microsoft.ui.xaml.dll.mui",
+        "Length": 26424,
+        "Sha256": "4094638D102BF64053369D554E125C13DCA4E25F6206D962D96EC7F35CF3D69D",
+        "Required": true
+      },
+      {
+        "Path": "kok-IN/Microsoft.UI.Xaml.Phone.dll.mui",
+        "Length": 14136,
+        "Sha256": "8ECB9AB3E57530A453E8B166B7F7D0EE213536F4101C7290775FF63FCAD0C1FE",
+        "Required": true
+      },
+      {
+        "Path": "lb-LU/Microsoft.ui.xaml.dll.mui",
+        "Length": 27488,
+        "Sha256": "E598FB65DFF4CD34D6ED7CCD74CAE665B681687E7996DE9D9E2D5D4F7E1E91C1",
+        "Required": true
+      },
+      {
+        "Path": "lb-LU/Microsoft.UI.Xaml.Phone.dll.mui",
+        "Length": 14176,
+        "Sha256": "4B5B85FE5D91D16FED418D30DF4439D775EAE518C55CAEE0B3CCAEC251A7D13B",
+        "Required": true
+      },
+      {
+        "Path": "Licenses/对应源码获取说明.txt",
+        "Length": 282,
+        "Sha256": "D296AD4095ACFFDCC3BD69D5F3EF6C34F72EAB0F63136D7BCCD6F93CC095DFF2",
+        "Required": true
+      },
+      {
+        "Path": "Licenses/来源与修改说明.txt",
+        "Length": 400,
+        "Sha256": "99762850F09D561A6FBE854F1303F4E4400BED625803572F99358076AB162BE6",
+        "Required": true
+      },
+      {
+        "Path": "Licenses/GPL-3.0.txt",
+        "Length": 35823,
+        "Sha256": "230184F60BAE2FEAF244F10A8BAC053C8FF33A183BCC365B4D8B876D2B7F4809",
+        "Required": true
+      },
+      {
+        "Path": "lo-LA/Microsoft.ui.xaml.dll.mui",
+        "Length": 25912,
+        "Sha256": "D1ECBFBB9FB01D05F4E519378B68FCFB95F44BF1438A0838D5BC07D3E4255628",
+        "Required": true
+      },
+      {
+        "Path": "lo-LA/Microsoft.UI.Xaml.Phone.dll.mui",
+        "Length": 14136,
+        "Sha256": "7B8C30DD49ED20DAF45D9E0CF7709326B2EF2F136585D49DE8A442590470272C",
+        "Required": true
+      },
+      {
+        "Path": "lt-LT/Microsoft.ui.xaml.dll.mui",
+        "Length": 27960,
+        "Sha256": "ECD0C1E647EAF73BA6F7C3166126589BEB9A34407EC86FB45E268123F2191702",
+        "Required": true
+      },
+      {
+        "Path": "lt-LT/Microsoft.UI.Xaml.Phone.dll.mui",
+        "Length": 14176,
+        "Sha256": "B8A2B94F98D1C1512829E8C03DDB3A9D8B3530986DCB4562514904717AC7A7E3",
+        "Required": true
+      },
+      {
+        "Path": "lv-LV/Microsoft.ui.xaml.dll.mui",
+        "Length": 26936,
+        "Sha256": "134561A5E8903D17340250960257E4926DECEDDF059C5BEC8705A87FB4F1682C",
+        "Required": true
+      },
+      {
+        "Path": "lv-LV/Microsoft.UI.Xaml.Phone.dll.mui",
+        "Length": 14136,
+        "Sha256": "DD89A8AB161EA44D563306058959B360A8536823C03F27116CB6B3870D68E8F2",
+        "Required": true
+      },
+      {
+        "Path": "mi-NZ/Microsoft.ui.xaml.dll.mui",
+        "Length": 26936,
+        "Sha256": "67FAEF195821612623A47B62BD3A7A2261DE9FC5D368E0E2F922BAA1EC04D5D4",
+        "Required": true
+      },
+      {
+        "Path": "mi-NZ/Microsoft.UI.Xaml.Phone.dll.mui",
+        "Length": 14136,
+        "Sha256": "E878A67E720E9F23AF5D19AD6EFFDF134A8104ADAAF6027A90D65E64D630AAA4",
+        "Required": true
+      },
+      {
+        "Path": "Microsoft.UI.Xaml/Assets/map.html",
+        "Length": 32558,
+        "Sha256": "1C48985F80BF626FABE1B7E2BE7D7C53C271C5F75F5800EBA47587505D73F99D",
+        "Required": true
+      },
+      {
+        "Path": "Microsoft.UI.Xaml/Assets/NoiseAsset_256x256_PNG.png",
+        "Length": 3241,
+        "Sha256": "4F2AA94A2E345A32DAE689176B86C644BEF87081FF9DAEF8C77417731862031B",
+        "Required": true
+      },
+      {
+        "Path": "mk-MK/Microsoft.ui.xaml.dll.mui",
+        "Length": 27448,
+        "Sha256": "747434E50B2F4385346E80DD2837F1017FAECCF181EBD2CB75C31408A9127978",
+        "Required": true
+      },
+      {
+        "Path": "mk-MK/Microsoft.UI.Xaml.Phone.dll.mui",
+        "Length": 14136,
+        "Sha256": "518B6FDFAAECB1CD2335A61CBF0120F8C5513F05E023C852A0FA60708D108DE0",
+        "Required": true
+      },
+      {
+        "Path": "ml-IN/Microsoft.ui.xaml.dll.mui",
+        "Length": 28984,
+        "Sha256": "CAC296164F9EB568D73349D4B3F7E3B8A9C8EAA513E70A3F493CEC947828A715",
+        "Required": true
+      },
+      {
+        "Path": "ml-IN/Microsoft.UI.Xaml.Phone.dll.mui",
+        "Length": 14136,
+        "Sha256": "95B20CFEE432862B04DC2DF6765B6C9DAC3694791F997A78951B1BEB2FAE2D84",
+        "Required": true
+      },
+      {
+        "Path": "mr-IN/Microsoft.ui.xaml.dll.mui",
+        "Length": 26424,
+        "Sha256": "CFA57F7D005632FCAECFD707D01D60C63E1AF8A15C3525AA12ECABD2F73E1359",
+        "Required": true
+      },
+      {
+        "Path": "mr-IN/Microsoft.UI.Xaml.Phone.dll.mui",
+        "Length": 14136,
+        "Sha256": "2E349A756BB68218278C2D84B19406EDACEDF8365E4431FF7AB7D07AC87F1829",
+        "Required": true
+      },
+      {
+        "Path": "ms-MY/Microsoft.ui.xaml.dll.mui",
+        "Length": 26936,
+        "Sha256": "C076AAF81F1E048821A4A32EDFA4F3C5BB6761ED5FB9A1F8C73190FBF502B447",
+        "Required": true
+      },
+      {
+        "Path": "ms-MY/Microsoft.UI.Xaml.Phone.dll.mui",
+        "Length": 14176,
+        "Sha256": "5EEC46ACA3620FA1803B8313F706D8DB6803464DAAE471AFFE0C8719EED81835",
+        "Required": true
+      },
+      {
+        "Path": "mt-MT/Microsoft.ui.xaml.dll.mui",
+        "Length": 27448,
+        "Sha256": "421A68D89173C9F6C677E5E913B58D15C40B5FE98ED286F710730CBE686AC06A",
+        "Required": true
+      },
+      {
+        "Path": "mt-MT/Microsoft.UI.Xaml.Phone.dll.mui",
+        "Length": 14176,
+        "Sha256": "1AF725DB66E05C214EB2B573ADA8130CBF6947D9723783E91FC056381C56346D",
+        "Required": true
+      },
+      {
+        "Path": "nb-NO/Microsoft.ui.xaml.dll.mui",
+        "Length": 25912,
+        "Sha256": "F2414E92B402A31140CEF3E57568484C2C5CC94DA967822A3832FD7C1F59EBDB",
+        "Required": true
+      },
+      {
+        "Path": "nb-NO/Microsoft.UI.Xaml.Phone.dll.mui",
+        "Length": 14136,
+        "Sha256": "42B712CE94A5FD2378C002E56287F2A1F6F8C646378B75584150E0549B1A834C",
+        "Required": true
+      },
+      {
+        "Path": "ne-NP/Microsoft.ui.xaml.dll.mui",
+        "Length": 26976,
+        "Sha256": "3C1E1F1A99AD822B135332D427576E6FB05AA8CF8D322CA30D53C56B137EA39E",
+        "Required": true
+      },
+      {
+        "Path": "ne-NP/Microsoft.UI.Xaml.Phone.dll.mui",
+        "Length": 14136,
+        "Sha256": "206A59F6BDF5B52467563F6E7594011999421AAD615654C1EB1C6A4BA820B3A2",
+        "Required": true
+      },
+      {
+        "Path": "nl-NL/Microsoft.ui.xaml.dll.mui",
+        "Length": 27488,
+        "Sha256": "6D475E319DC34FA5C7FF097B12E5C46C0FB69D3F3C7CE1E46F7BCFE4DA0E2B10",
+        "Required": true
+      },
+      {
+        "Path": "nl-NL/Microsoft.UI.Xaml.Phone.dll.mui",
+        "Length": 14136,
+        "Sha256": "782DFE8D31156673F712C2D9F3B290034D09438A1987770499EADB56C76F3302",
+        "Required": true
+      },
+      {
+        "Path": "nn-NO/Microsoft.ui.xaml.dll.mui",
+        "Length": 25952,
+        "Sha256": "C970815B63D67FEDE5A64469F4B8BD6B34B887C2C216DCDFA255D27DD9A38F23",
+        "Required": true
+      },
+      {
+        "Path": "nn-NO/Microsoft.UI.Xaml.Phone.dll.mui",
+        "Length": 14136,
+        "Sha256": "32A7C94E34EEEEC263BFE437747CACF0C7086AF8B9584BFFF1F8772C29AF6A6B",
+        "Required": true
+      },
+      {
+        "Path": "or-IN/Microsoft.ui.xaml.dll.mui",
+        "Length": 26936,
+        "Sha256": "308BD545F342CC94CE166961374DE3D199EAEF679051D6C9BDB1DEEDAEBF560D",
+        "Required": true
+      },
+      {
+        "Path": "or-IN/Microsoft.UI.Xaml.Phone.dll.mui",
+        "Length": 14136,
+        "Sha256": "1990838566AE944E08B31A2E797E5108029AAA25CBA868157FCB9DD3FDB468B3",
+        "Required": true
+      },
+      {
+        "Path": "pa-IN/Microsoft.ui.xaml.dll.mui",
+        "Length": 25912,
+        "Sha256": "7EA50B66C140664E6A4913B5FB9AC661BF9908430C5AAD1F376F921D8A65F5AA",
+        "Required": true
+      },
+      {
+        "Path": "pa-IN/Microsoft.UI.Xaml.Phone.dll.mui",
+        "Length": 13664,
+        "Sha256": "C4DF5DF6E221AFF220ABA508C45D190EA6CDA499871CB0F761E56C2A92462CFE",
+        "Required": true
+      },
+      {
+        "Path": "pl-PL/Microsoft.ui.xaml.dll.mui",
+        "Length": 27960,
+        "Sha256": "8C8602D0F4ADF3EC18C0417DBAB9DDAB5F8DD3D4522676E4DEF1AFCB6BBB29F9",
+        "Required": true
+      },
+      {
+        "Path": "pl-PL/Microsoft.UI.Xaml.Phone.dll.mui",
+        "Length": 14136,
+        "Sha256": "FB8537ACFE50A841EF93AF59E86292848D5A7B8EF9E9860D87B86DF6A94E7557",
+        "Required": true
+      },
+      {
+        "Path": "pt-BR/Microsoft.ui.xaml.dll.mui",
+        "Length": 27488,
+        "Sha256": "0C3051C40957E9DAACE78CC8B44501D3E416AB6E2B339F597C895C1C8DAFAEC4",
+        "Required": true
+      },
+      {
+        "Path": "pt-BR/Microsoft.UI.Xaml.Phone.dll.mui",
+        "Length": 14136,
+        "Sha256": "4787CDF99B76482528A3674923AFEB289048C58BF9356040F7A17547B38BDDCF",
+        "Required": true
+      },
+      {
+        "Path": "pt-PT/Microsoft.ui.xaml.dll.mui",
+        "Length": 27448,
+        "Sha256": "9B2D8E6B8A8D8DAC6F395E6A1C70DADF6C73D472B27F9ECDC27FFA0D76DF2E8C",
+        "Required": true
+      },
+      {
+        "Path": "pt-PT/Microsoft.UI.Xaml.Phone.dll.mui",
+        "Length": 14176,
+        "Sha256": "649361B2B5F91C68C0E88B6CDA59E4F5C01798B3F1A02E5E2A56F6B3C6B68C2B",
+        "Required": true
+      },
+      {
+        "Path": "quz-PE/Microsoft.ui.xaml.dll.mui",
+        "Length": 27960,
+        "Sha256": "AA1BF42EDDDC7C06A75F72ED02202D58A054012D1715C07180AA1FFD395851B9",
+        "Required": true
+      },
+      {
+        "Path": "quz-PE/Microsoft.UI.Xaml.Phone.dll.mui",
+        "Length": 14136,
+        "Sha256": "7303C8CFE3972636D6AF115D518CC298FC9235A8D92CDDBF43176E24BD0229C2",
+        "Required": true
+      },
+      {
+        "Path": "ro-RO/Microsoft.ui.xaml.dll.mui",
+        "Length": 27488,
+        "Sha256": "097C3D80762033E555A2E051A932F137F7B5BDB8FDAC6D4E2DD2C3CCE66A94AA",
+        "Required": true
+      },
+      {
+        "Path": "ro-RO/Microsoft.UI.Xaml.Phone.dll.mui",
+        "Length": 14176,
+        "Sha256": "545842D2974C69C1E379905C15A09EEAEAC3D6FAC48B69AE1BDA5FA749A64935",
+        "Required": true
+      },
+      {
+        "Path": "ru-RU/Microsoft.ui.xaml.dll.mui",
+        "Length": 29024,
+        "Sha256": "44E3C0050EACAF1018CA97ED0B79AD5A89EC76162900DD87B78E8ACF81A64BED",
+        "Required": true
+      },
+      {
+        "Path": "ru-RU/Microsoft.UI.Xaml.Phone.dll.mui",
+        "Length": 14136,
+        "Sha256": "C3FE8E112A36B73B4C577955C2EBD0BC4B269EAACE3F942C6473F935BC50D516",
+        "Required": true
+      },
+      {
+        "Path": "sk-SK/Microsoft.ui.xaml.dll.mui",
+        "Length": 27960,
+        "Sha256": "76A45148D9060A75544C83F135EBB49D9967F509A19622D6C855E0E85123D697",
+        "Required": true
+      },
+      {
+        "Path": "sk-SK/Microsoft.UI.Xaml.Phone.dll.mui",
+        "Length": 14136,
+        "Sha256": "29F21CC73C44046E6D2484BA3DBF421CF2D31280203C55FB399334F12FC5450E",
+        "Required": true
+      },
+      {
+        "Path": "sl-SI/Microsoft.ui.xaml.dll.mui",
+        "Length": 27448,
+        "Sha256": "2880A8FE1200A2EC8F403F4B75E8408FC5CD860EE6D3FBDEEBC85FBE39474C56",
+        "Required": true
+      },
+      {
+        "Path": "sl-SI/Microsoft.UI.Xaml.Phone.dll.mui",
+        "Length": 14136,
+        "Sha256": "0EDB7359B6F411A0C4FC18D8CDF72BEC33C7C7441A0A2CC1FDC4EA9A79437A81",
+        "Required": true
+      },
+      {
+        "Path": "sq-AL/Microsoft.ui.xaml.dll.mui",
+        "Length": 27960,
+        "Sha256": "E47384E3A4C511B10196C2CC7E3366B5F020191EAE4478FAF96CD7F92BF731FC",
+        "Required": true
+      },
+      {
+        "Path": "sq-AL/Microsoft.UI.Xaml.Phone.dll.mui",
+        "Length": 14136,
+        "Sha256": "30881B667C0436E9EC70442EE57A3A3433D7EEA2B8268F2D68AABC0CD6CCDCCD",
+        "Required": true
+      },
+      {
+        "Path": "sr-Cyrl-BA/Microsoft.ui.xaml.dll.mui",
+        "Length": 27488,
+        "Sha256": "20163F2B956D9236FE43476CA49B15978C1B583B858E41E4D6183D345AFB859A",
+        "Required": true
+      },
+      {
+        "Path": "sr-Cyrl-BA/Microsoft.UI.Xaml.Phone.dll.mui",
+        "Length": 14136,
+        "Sha256": "4E78C4C6CAEFEA9DC4E214FCD4CCAE47869AF7A65D053BAADE3560043AFC207C",
+        "Required": true
+      },
+      {
+        "Path": "sr-Cyrl-RS/Microsoft.ui.xaml.dll.mui",
+        "Length": 27488,
+        "Sha256": "A1298079E75B70B9D73AAE7EBE7F6BB9AEEB1289966E4FCC16300FB9F54EDD32",
+        "Required": true
+      },
+      {
+        "Path": "sr-Cyrl-RS/Microsoft.UI.Xaml.Phone.dll.mui",
+        "Length": 14136,
+        "Sha256": "6FFED0AE9EE5822A1B257D4B7F2FE435AA6D6832BC815335C760D731E8281FAE",
+        "Required": true
+      },
+      {
+        "Path": "sr-Latn-RS/Microsoft.ui.xaml.dll.mui",
+        "Length": 27448,
+        "Sha256": "BBDCD41623C6E78A4ADA195608DAC28293374B446560D0B1D44A6A0E79265D93",
+        "Required": true
+      },
+      {
+        "Path": "sr-Latn-RS/Microsoft.UI.Xaml.Phone.dll.mui",
+        "Length": 14176,
+        "Sha256": "5004192C1A7F399B594AE96173294223DFD5DC98EF2084240B2B1539768B12B0",
+        "Required": true
+      },
+      {
+        "Path": "sv-SE/Microsoft.ui.xaml.dll.mui",
+        "Length": 26424,
+        "Sha256": "8547FF32CD877627FD476523A2CF69A44CA443E13D0FF901A235D08C3ABA91A5",
+        "Required": true
+      },
+      {
+        "Path": "sv-SE/Microsoft.UI.Xaml.Phone.dll.mui",
+        "Length": 14136,
+        "Sha256": "4DABB11665BED1A6C6BB4D72975F54A03D12924076DF29E96B90BE2D4ADEC370",
+        "Required": true
+      },
+      {
+        "Path": "ta-IN/Microsoft.ui.xaml.dll.mui",
+        "Length": 28000,
+        "Sha256": "A9610FB8D89C1054611ADA38DDB95BB3DEA9B17A1277562EB00A7588B98E8188",
+        "Required": true
+      },
+      {
+        "Path": "ta-IN/Microsoft.UI.Xaml.Phone.dll.mui",
+        "Length": 14136,
+        "Sha256": "A58F9C7BC24F0B37D40AB4C06893BA99CEC35A6524E968C6D7C9D46C6D05B03E",
+        "Required": true
+      },
+      {
+        "Path": "te-IN/Microsoft.ui.xaml.dll.mui",
+        "Length": 27448,
+        "Sha256": "F4B9ACBD932242437EE342E597C39958FBD5EEA6555D9CF8627506D215379816",
+        "Required": true
+      },
+      {
+        "Path": "te-IN/Microsoft.UI.Xaml.Phone.dll.mui",
+        "Length": 14176,
+        "Sha256": "3C9814844CAF17DD2858ABDC99A9E6BCF0A0A65DFF87B23E527137B3B2C69B3B",
+        "Required": true
+      },
+      {
+        "Path": "th-TH/Microsoft.ui.xaml.dll.mui",
+        "Length": 25952,
+        "Sha256": "298A07F0E2DBCD85BC41B7AA04CB34733E35F2BF6CEB0180E8CE9A80EFD33170",
+        "Required": true
+      },
+      {
+        "Path": "th-TH/Microsoft.UI.Xaml.Phone.dll.mui",
+        "Length": 14136,
+        "Sha256": "FF0B3E861AACC9362DA30CAB8F101862BC833B6C377768050B1DDB55D4032954",
+        "Required": true
+      },
+      {
+        "Path": "tr-TR/Microsoft.ui.xaml.dll.mui",
+        "Length": 26424,
+        "Sha256": "B9498AEB444F95CD8DFEB38FB4753BD6A014E1AAA3AD80248849352530FC9951",
+        "Required": true
+      },
+      {
+        "Path": "tr-TR/Microsoft.UI.Xaml.Phone.dll.mui",
+        "Length": 14136,
+        "Sha256": "9093B8483FEA37B3D87A48009AF7739208C15B29BA793A8C0AB01EDCC4D59F2B",
+        "Required": true
+      },
+      {
+        "Path": "tt-RU/Microsoft.ui.xaml.dll.mui",
+        "Length": 26936,
+        "Sha256": "E7208979B6A58087EF3F23371C3E7E73624E1A0646481D4475120AA295F919BF",
+        "Required": true
+      },
+      {
+        "Path": "tt-RU/Microsoft.UI.Xaml.Phone.dll.mui",
+        "Length": 14136,
+        "Sha256": "22F4E7EBCA5055DE148F5BA738B93BF9DB0710C3EC4EDDAF7CC49A8C3ADB048C",
+        "Required": true
+      },
+      {
+        "Path": "ug-CN/Microsoft.ui.xaml.dll.mui",
+        "Length": 27448,
+        "Sha256": "900A8D1009353851327509629CA0642D4A2AE021EFA79F05D0A7C4DD54C3F9BC",
+        "Required": true
+      },
+      {
+        "Path": "ug-CN/Microsoft.UI.Xaml.Phone.dll.mui",
+        "Length": 14136,
+        "Sha256": "E065DF29F8B9802F8B2A5623CAF893AAB97D519455853E90E20465980854E152",
+        "Required": true
+      },
+      {
+        "Path": "uk-UA/Microsoft.ui.xaml.dll.mui",
+        "Length": 28000,
+        "Sha256": "A9539C659C672F3F895DB4232E5C2A93B56BF7D69DA19D10177D6ED363EE798A",
+        "Required": true
+      },
+      {
+        "Path": "uk-UA/Microsoft.UI.Xaml.Phone.dll.mui",
+        "Length": 14136,
+        "Sha256": "C6391A9D973C5BC79869692E9EF9C86D26C20C3198D85B8E386C602AA76B8567",
+        "Required": true
+      },
+      {
+        "Path": "ur-PK/Microsoft.ui.xaml.dll.mui",
+        "Length": 26424,
+        "Sha256": "0266B30F47BBA76A76897675EB89F80247BD40249A8B5C8F9A4B4CC1E2222E96",
+        "Required": true
+      },
+      {
+        "Path": "ur-PK/Microsoft.UI.Xaml.Phone.dll.mui",
+        "Length": 14176,
+        "Sha256": "375192A787E41BD0E1DD4426F6F50809DA1F65BEE6ADC6C941BF6D8082AA9362",
+        "Required": true
+      },
+      {
+        "Path": "uz-Latn-UZ/Microsoft.ui.xaml.dll.mui",
+        "Length": 27960,
+        "Sha256": "FB1196A32FC643CCEA3F07463558D8C76BD347A8B7E2346C6EFC86EDDFCCDE26",
+        "Required": true
+      },
+      {
+        "Path": "uz-Latn-UZ/Microsoft.UI.Xaml.Phone.dll.mui",
+        "Length": 14136,
+        "Sha256": "F7DC1E1686CE4B71C34F7D01549EB1494E3E21E69880EDFC37A9CC0F71762336",
+        "Required": true
+      },
+      {
+        "Path": "vi-VN/Microsoft.ui.xaml.dll.mui",
+        "Length": 26936,
+        "Sha256": "73B6C4E72D54C442C9B75E71D2C0AE95D6B6FD947734F6D4BB55DC00CD1278A6",
+        "Required": true
+      },
+      {
+        "Path": "vi-VN/Microsoft.UI.Xaml.Phone.dll.mui",
+        "Length": 14136,
+        "Sha256": "590FBD97A0CAD675B2BE9070C7CAC621408AF6DF9E91383DC09D7CE3D524DE29",
+        "Required": true
+      },
+      {
+        "Path": "x86_64/RegisterInputMethod.exe",
+        "Length": 747008,
+        "Sha256": "2E0392B28840EEFD80AAC6522AD25F7AA822FFEB529F8E6251791EB74AB71A3C",
+        "Required": true
+      },
+      {
+        "Path": "x86_64/XiaomangInputMethod.dll",
+        "Length": 3966976,
+        "Sha256": "95C99FD5FEC7FFAD297CF486DF010D6783F66FFAA62ADD3089B601B5C668956C",
+        "Required": true
+      },
+      {
+        "Path": "zh-CN/Microsoft.ui.xaml.dll.mui",
+        "Length": 21304,
+        "Sha256": "ED88B8730FD4D65D42434BCBEEE061940A2E2B2200FCB591D9FBF5ED02CE4B62",
+        "Required": true
+      },
+      {
+        "Path": "zh-CN/Microsoft.UI.Xaml.Phone.dll.mui",
+        "Length": 13624,
+        "Sha256": "E89CD281C547719011C3F48C20BC25F1FDC64987A681D7B5B4FCB6A9FB0CB47D",
+        "Required": true
+      },
+      {
+        "Path": "zh-TW/Microsoft.ui.xaml.dll.mui",
+        "Length": 21304,
+        "Sha256": "F54FB8BE2195992176D060E844BE0496D1F02C9D88E58118D91152E1055DD43A",
+        "Required": true
+      },
+      {
+        "Path": "zh-TW/Microsoft.UI.Xaml.Phone.dll.mui",
+        "Length": 13664,
+        "Sha256": "F2FC134392F24259366ABFABD0B12DD8E73A07746C2FC6ED399A07D4EEFFE7A9",
+        "Required": true
       }
     ],
-    "Sha256": "C5ADCEF2BFCB167AF383D38E1CEF28D838F51E4514E32F53578FBB9BB79ADC92",
-    "ReleaseTag": "v1.1"
+    "Sha256": "693EF05FC8A40C305CFD529BFE2AA2810015BF46AD9FE5D7D7AD5E93B1765DE0",
+    "ReleaseTag": "v3.11-20261029"
   }
 ]

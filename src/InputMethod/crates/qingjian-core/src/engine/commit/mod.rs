@@ -7,7 +7,7 @@ use super::learning::Learner;
 use super::query::EnglishTail;
 use super::{
     AUTO_WORD_MAX_CHARS, AUTO_WORD_THRESHOLD, AUTO_WORD_THRESHOLD_SAME_BUFFER,
-    EXPLICIT_TRANSITION_WEIGHT, Engine, choice_key, segment_longest_prefix,
+    EXPLICIT_TRANSITION_WEIGHT, Engine, RESCORE_PATHS, choice_key, segment_longest_prefix,
 };
 use crate::candidate::{Candidate, CandidateKind, CandidateList, Language};
 use crate::correction::typo;
@@ -403,17 +403,30 @@ impl Engine {
         {
             return Some(words);
         }
-        let conversion = match (self.decode(scope), self.active_correction(scope)) {
-            (Some(decoded), _) => {
-                self.convert_sentence(&decoded.segmentation()?.patterns(), true)?
+        let paths = match (self.decode(scope), self.active_correction(scope)) {
+            (Some(decoded), _) => self.sentence_paths(
+                &decoded.segmentation()?.patterns(),
+                true,
+                false,
+                RESCORE_PATHS,
+            ),
+            (None, Some(c)) => {
+                self.sentence_paths(&c.segmentation.patterns(), false, false, RESCORE_PATHS)
             }
-            (None, Some(c)) => self.convert_sentence(&c.segmentation.patterns(), false)?,
             (None, None) => {
                 let (segmentations, _) = segment_longest_prefix(scope).ok()?;
-                self.convert_sentence(&segmentations.first()?.patterns(), true)?
+                self.sentence_paths(
+                    &segmentations.first()?.patterns(),
+                    true,
+                    false,
+                    RESCORE_PATHS,
+                )
             }
         };
-        (conversion.text == candidate.text).then_some(conversion.words)
+        paths
+            .into_iter()
+            .find(|p| p.text == candidate.text && p.syllables == candidate.syllables)
+            .map(|p| p.words)
     }
 
     /// 头段拼音的转换加上英文尾段，与 `text` 对得上时的词序列。

@@ -26,7 +26,7 @@ int wmain(int argc,wchar_t** argv) {
     if(FAILED(folderResult)) { log(L"ProgramFiles lookup failed: HRESULT="+std::to_wstring(static_cast<unsigned long>(folderResult))); notify(L"无法取得系统组件安装目录，尚未修改组件。",false); return 3; }
     // 新补丁使用独立受保护目录，避免覆盖仍被其他应用加载的 DLL。
     fs::path productRoot=fs::path(programFiles)/L"XiaomangInputMethod";
-    fs::path root=productRoot/L"0.1.4-hotkey1"; CoTaskMemFree(programFiles);
+    fs::path root=productRoot/L"0.1.4-recovery1"; CoTaskMemFree(programFiles);
     fs::path source=fs::path(executable).parent_path(); bool install=argc==1 || !wcscmp(argv[1],L"install");
     if(!install && !fs::exists(root)) root=productRoot/L"0.1.4";
     // Serialize installers; do not race another instance's file or registry operations.
