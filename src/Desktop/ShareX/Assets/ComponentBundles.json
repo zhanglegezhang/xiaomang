@@ -33,9 +33,9 @@
   },
   {
     "Id": "text",
-    "FileName": "xiaomang-inputmethod-3.11.1-20261029-win-x64.zip",
-    "Length": 128042547,
-    "Sha256": "C2002C9DF3537DB9F566F48DA4CB035EF6B43DF9A936C52593409A933B1AA90A",
+    "FileName": "xiaomang-inputmethod-3.11.2-20261029-win-x64.zip",
+    "Length": 128042590,
+    "Sha256": "B627699964AB9092176098CF99F2C1AB7A7116CAF2192866E4A8A71AA8AAF074",
     "Files": [
       {
         "Path": "小蟒输入法说明.md",
@@ -264,12 +264,6 @@
         "Length": 2183976,
         "Sha256": "94F569071C6CC0EEF00DD711D05B45D7C6CAFD92CF8EC16A6626DBB0643D6345",
         "Required": true
-      },
-      {
-        "Path": "runtime-files.sha256",
-        "Length": 34140,
-        "Sha256": "7E904FD23C0D454673673D0FAB29DB04BD9126F1A8EAE50AA9B4B04BE0C39F0B",
-        "Required": false
       },
       {
         "Path": "sessionhandleipcproxystub.dll",
@@ -1029,8 +1023,8 @@
       },
       {
         "Path": "data/generated/dict.qj",
-        "Length": 3538648,
-        "Sha256": "3E33B16A84DF555E6F16D52AC8AB3C2C6B6F1F71734E69463861FD5ABD9C19DC",
+        "Length": 3538792,
+        "Sha256": "E707ACF71E1446E4138710A40B85C4F3A0C5CE001F92A7AEE01BB06B65998409",
         "Required": true
       },
       {
@@ -2072,6 +2066,6 @@
         "Required": true
       }
     ],
-    "ReleaseTag": "text-3.11.1-20261029"
+    "ReleaseTag": "text-3.11.2-20261029"
   }
 ]

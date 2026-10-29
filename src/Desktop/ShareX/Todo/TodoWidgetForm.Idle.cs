@@ -20,6 +20,7 @@ namespace ShareX
         private void CheckCompactIdle()
         {
             if (!ready || IsDisposed || Disposing) return;
+            EnsureWidgetTopMost();
             if (!Visible || expanded || animatingGenie || compactDragging || compactRecording || stoppingVoiceRecording ||
                 titleDragging || resizing || searchMenu?.Visible == true || compactLabel.PointerInside ||
                 Bounds.Contains(Cursor.Position) || compactOverlay?.Bounds.Contains(Cursor.Position) == true)

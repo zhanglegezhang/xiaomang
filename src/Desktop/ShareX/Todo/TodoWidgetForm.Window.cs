@@ -466,6 +466,7 @@ namespace ShareX
             // content-fit height into the user's preferred height.
             if (heightBeforeNewsAutoExpand.HasValue && Height != resizeStartBounds.Height)
                 heightBeforeNewsAutoExpand = null;
+            if (Top != resizeStartBounds.Top) Settings.WidgetY = Top;
             RememberExpandedBounds();
             MoveToScreenEdge();
             LayoutContent();
@@ -592,10 +593,11 @@ namespace ShareX
         {
             if (!ready || !expanded) return false;
             int height = heightBeforeNewsAutoExpand ?? Height;
-            bool changed = Settings.WidgetWidth != Width || Settings.WidgetHeight != height || Settings.WidgetY != Top;
+            bool changed = Settings.WidgetWidth != Width || Settings.WidgetHeight != height;
             Settings.WidgetWidth = Width;
             Settings.WidgetHeight = height;
-            Settings.WidgetY = Top;
+            // Expansion may move the panel upward to fit the work area. Only an
+            // explicit drag changes WidgetY; collapsing must restore that anchor.
             return changed;
         }
 
@@ -644,7 +646,7 @@ namespace ShareX
             dockScreen = Screen.AllScreens.FirstOrDefault(x => x.DeviceName == dockScreen.DeviceName) ?? Screen.PrimaryScreen;
             Rectangle area = dockScreen.WorkingArea;
             int defaultY = area.Top + (area.Height - Height) / 2;
-            int requestedY = Settings.WidgetY >= area.Top && Settings.WidgetY <= area.Bottom - Height ? Settings.WidgetY : defaultY;
+            int requestedY = Settings.WidgetY >= area.Top && Settings.WidgetY < area.Bottom ? Settings.WidgetY : defaultY;
             int y = Math.Max(area.Top + 4, Math.Min(area.Bottom - Height - 4, requestedY));
             Location = new Point(area.Right - Width, y);
         }
@@ -805,6 +807,7 @@ namespace ShareX
                 Point location = PointToScreen(new Point(ClientSize.Width - size.Width, 0));
                 compactOverlay.UpdateCompact(location, size);
                 if (!compactOverlay.Visible) compactOverlay.Show(this);
+                EnsureWidgetTopMost();
             }
             catch (Exception error)
             {
@@ -868,6 +871,7 @@ namespace ShareX
 
         private void SetExpanded(bool value)
         {
+            if (value && !expanded && ready) Settings.WidgetY = Top;
             if (!changingIdleSize)
             {
                 compactLastActivity = Environment.TickCount64;

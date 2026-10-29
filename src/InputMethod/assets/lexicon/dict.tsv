@@ -92826,3 +92826,8 @@ H股	h gu	300
 X光	x guang	800
 X射线	x she xian	2000
 T台	t tai	1500
+
+# 小蟒补充：常用方位词；初始权重参照已有右下角，不改原词频。
+右上角	you shang jiao	1432
+左上角	zuo shang jiao	1432
+左下角	zuo xia jiao	1432

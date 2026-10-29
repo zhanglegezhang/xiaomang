@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net9.0-windows10.0.22621.0</TargetFramework>
+    <UseWindowsForms>true</UseWindowsForms><UseWPF>true</UseWPF>
+    <ImplicitUsings>enable</ImplicitUsings><PlatformTarget>x64</PlatformTarget>
+    <ProductDir Condition="'$(ProductDir)' == ''">../../artifacts/Desktop</ProductDir>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="ShareX"><HintPath>$(ProductDir)/ShareX.dll</HintPath></Reference>
+    <Reference Include="ShareX.HelpersLib"><HintPath>$(ProductDir)/ShareX.HelpersLib.dll</HintPath></Reference>
+  </ItemGroup>
+</Project>
