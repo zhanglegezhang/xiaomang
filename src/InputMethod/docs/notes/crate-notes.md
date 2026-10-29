@@ -1,6 +1,8 @@
 # 各 crate 的实现要点
 
 CLAUDE.md 只保留目录地图与规则，每个 crate / app / tool 的实现细节收在这里：入口类型、数据文件、常数、生成命令。
+
+Windows 单独 Shift 切换由 `general.shift_discard_preedit` 控制，默认 true；配置经 `InputSettings` 热更新到 TSF。旧后台未下发字段时按 false 兼容。丢弃复用后台清组句与 TSF 空 preedit 结束流程，仅删除尚存的 composition 范围，不向宿主选区提交空字符串；其他切换入口仍原文上屏。
 改了实现要同步改这里；与代码冲突时以代码为准。
 
 小蟒维护版的 Windows 运行资源只保留中英释义。`stage-runtime.ps1` 排除日语、西语的

@@ -156,6 +156,13 @@ pub(crate) fn view(settings: &Settings, context: &mut ViewContext<Settings>) -> 
                 .is_on(g.english_mode)
                 .on_toggled(context.callback(Message::EnglishMode)),
         ),
+        field(
+            "Shift 切换时\n丢弃未上屏内容",
+            "开启后，单独按 Shift 丢弃当前输入并切换中英文；关闭后原文上屏。已上屏文字不受影响。",
+            ToggleSwitch::new()
+                .is_on(g.shift_discard_preedit)
+                .on_toggled(context.callback(Message::ShiftDiscardPreedit)),
+        ),
     ];
     page("通用", StackPanel::new().spacing(16.0).children(rows))
 }

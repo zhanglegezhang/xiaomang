@@ -110,6 +110,22 @@ impl TextService_Impl {
         }
     }
 
+    pub(super) fn toggle_mode_from_tap(&self, shift: bool) {
+        if !self.mode_state.enabled() {
+            return;
+        }
+        let discard = shift
+            && self
+                .input_settings
+                .get()
+                .is_some_and(|input| input.shift_discard_preedit);
+        if discard && !self.finish_pending(true) {
+            log("Shift 丢弃未完成，本次不切换模式");
+            return;
+        }
+        self.set_english_mode(!self.mode_state.english());
+    }
+
     /// 跟上 Server 的全局模式（别的应用切过、点了悬浮状态条）：改状态、刷指示器，不再回报。
     pub(super) fn adopt_mode(&self, english: bool) {
         if english != self.mode_state.english() && self.switch_mode(english) {

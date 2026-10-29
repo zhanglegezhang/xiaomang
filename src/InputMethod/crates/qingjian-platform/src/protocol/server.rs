@@ -24,6 +24,10 @@ pub struct InputSettings {
     /// 按住 Shift 敲的字母吃不吃：缺省交给应用，开着时送 Server 起一段组句（`⇧C` 接 `pan` 出「C盘」）。
     #[serde(default)]
     pub shift_letter_compose: bool,
+
+    /// 单独 Shift 切换时丢弃未上屏内容。旧后台缺少此字段时保留旧行为。
+    #[serde(default)]
+    pub shift_discard_preedit: bool,
 }
 
 impl Default for InputSettings {
@@ -32,6 +36,7 @@ impl Default for InputSettings {
             switch_mode: SwitchKeys::default(),
             english_mode: true,
             shift_letter_compose: false,
+            shift_discard_preedit: true,
         }
     }
 }

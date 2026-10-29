@@ -134,6 +134,7 @@ namespace ShareX
                 Action("卸载","uninstallVoiceInputComponent",_=>ChangeVoice(false,false)));
             var textStatus=Status("xiaomangInputStatus");
             textRegistrationRow=Row("文本输入",textStatus,
+                Action("检查并更新","updateXiaomangInputMethod",UpdateTextComponent),
                 Action("注册 / 修复","installXiaomangInputMethod",token=>PrepareInputSingle(false,token)),
                 Action("输入法设置","openXiaomangInputSettings",_=>{XiaomangInputMethodManager.OpenSettings();return Task.CompletedTask;}),
                 Action("重试后台","retryXiaomangInputWorker",_=>Task.Run(XiaomangInputMethodManager.Retry)),
@@ -229,6 +230,14 @@ namespace ShareX
             public void Report(int value)=>target?.Report(Math.Min(value,95));
         }
         private static string InputDestination(bool voice)=>voice?SenseVoiceModelManager.GetModelFiles(Program.PersonalFolder).Folder:XiaomangInputMethodManager.BundleDirectory;
+        private async Task UpdateTextComponent(CancellationToken token)
+        {
+            registrationMessage.Text="正在检查文本输入法组件更新…";
+            var release=await InputComponentCatalog.ReadAsync(Program.ProductVersion,token);
+            var progress=new Progress<int>(value=>{if(!IsDisposed){registrationProgress.Value=Math.Min(value,95);registrationMessage.Text="正在准备输入法组件 "+release.Version+"："+value+"%";}});
+            bool changed=await Task.Run(()=>InputComponentUpdater.UpdateAsync(release,Path.Combine(Program.PersonalFolder,"Cache","Components"),progress,token));
+            if(!IsDisposed){registrationProgress.Value=100;registrationMessage.Text=changed?"输入法组件 "+release.Version+" 更新完成，设置与学习记录已保留。已打开的应用可能需重新打开以加载新系统组件。":"输入法组件 "+release.Version+" 已是最新版本。";}
+        }
         private static async Task<bool> InputReady(bool voice,CancellationToken token)
         {
             if(voice?VoiceInputComponent.RegistrationState!=VoiceInputRegistrationState.Registered:!XiaomangInputMethodManager.IsRegistered)return false;
@@ -236,6 +245,12 @@ namespace ShareX
         }
         private static async Task PrepareInput(bool voice,bool repair,IProgress<int> progress,CancellationToken token)
         {
+            if(!voice)
+            {
+                var latest=await InputComponentCatalog.ReadAsync(Program.ProductVersion,token);
+                await Task.Run(()=>InputComponentUpdater.UpdateAsync(latest,Path.Combine(Program.PersonalFolder,"Cache","Components"),progress,token));
+                progress?.Report(100);PersonalDataManager.NotifyDeferredInput();return;
+            }
             await ComponentBundles.EnsureAsync(voice?ComponentBundles.Voice:ComponentBundles.Text,InputDestination(voice),
                 Path.Combine(Program.PersonalFolder,"Cache","Components"),new ComponentProgress(progress),token);
             token.ThrowIfCancellationRequested();progress?.Report(96);

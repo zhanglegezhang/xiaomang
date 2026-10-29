@@ -33,14 +33,15 @@
   },
   {
     "Id": "text",
-    "FileName": "xiaomang-inputmethod-3.11-20261029-win-x64.zip",
-    "Length": 128036880,
+    "FileName": "xiaomang-inputmethod-3.11.1-20261029-win-x64.zip",
+    "Length": 128042547,
+    "Sha256": "C2002C9DF3537DB9F566F48DA4CB035EF6B43DF9A936C52593409A933B1AA90A",
     "Files": [
       {
         "Path": "小蟒输入法说明.md",
         "Length": 3958,
         "Sha256": "BD6C4E9B0C1D46D8AE9790C6E263017CC3BCF2FE9E02D2AB7F6798B5CF0FE7A6",
-        "Required": false
+        "Required": true
       },
       {
         "Path": "concrt140.dll",
@@ -80,8 +81,8 @@
       },
       {
         "Path": "InputMethodSetup.exe",
-        "Length": 2226176,
-        "Sha256": "0EC49688B185C77AC11B87C202BE654066FA01A2A897F1C0D812A63C30F53650",
+        "Length": 2228224,
+        "Sha256": "A7B09E34634FBBE707B38E5BB2FE8E4A43F3D0D1A2C2C321E563BD9F6612AED0",
         "Required": true
       },
       {
@@ -254,8 +255,8 @@
       },
       {
         "Path": "qingjian-settings.exe",
-        "Length": 8276992,
-        "Sha256": "0AC3A4B94D3C9DCC75636AB838C076AE878D78215B03810801C63E8645BBDE2A",
+        "Length": 8282112,
+        "Sha256": "02E6FA0F058E2AD78BC5003DA87E78ED5E6BC816B64EC2FFC4639BF16151B475",
         "Required": true
       },
       {
@@ -267,7 +268,7 @@
       {
         "Path": "runtime-files.sha256",
         "Length": 34140,
-        "Sha256": "7B0E2AE8FC28CF3BE9BD94D77997AD0C318CC4BC8739453DF9C4E210DDAAD325",
+        "Sha256": "7E904FD23C0D454673673D0FAB29DB04BD9126F1A8EAE50AA9B4B04BE0C39F0B",
         "Required": false
       },
       {
@@ -314,8 +315,8 @@
       },
       {
         "Path": "XiaomangInputWorker.exe",
-        "Length": 16392704,
-        "Sha256": "EEEB53EDEB5B3383F03B9B24B37851601BFECA940E55478AB16F8697D55C1C35",
+        "Length": 16395264,
+        "Sha256": "1C831EB7B7351B80131204181828FA1AC3B56A1E387B56461B259295FC2AD262",
         "Required": true
       },
       {
@@ -1407,13 +1408,13 @@
       {
         "Path": "i686/RegisterInputMethod.exe",
         "Length": 752128,
-        "Sha256": "E933DA83E843A1A2ECA3CE9E452F928A10ECAF0ADDADCBF7E0844A91D601D5BE",
+        "Sha256": "A941A71CD0F9F0C83B93332E9AB4F9F9570CAAE518893358088E3F9418D5E570",
         "Required": true
       },
       {
         "Path": "i686/XiaomangInputMethod.dll",
-        "Length": 3697664,
-        "Sha256": "CB2A9D9E1E896DE40BD5D1636E3AF61FC4420D2E2689EF3BB41D145CA07330BD",
+        "Length": 3699200,
+        "Sha256": "F4F06EF8A0034FD28B77CA4B6D6459ECD0864C607767108C5024673D698FA2AD",
         "Required": true
       },
       {
@@ -1550,8 +1551,8 @@
       },
       {
         "Path": "Licenses/对应源码获取说明.txt",
-        "Length": 282,
-        "Sha256": "D296AD4095ACFFDCC3BD69D5F3EF6C34F72EAB0F63136D7BCCD6F93CC095DFF2",
+        "Length": 88,
+        "Sha256": "7CA7188DE1DA71FF9F727F5A0AAF71718F64987FE006A848BF67FA937270FDF2",
         "Required": true
       },
       {
@@ -2037,13 +2038,13 @@
       {
         "Path": "x86_64/RegisterInputMethod.exe",
         "Length": 747008,
-        "Sha256": "2E0392B28840EEFD80AAC6522AD25F7AA822FFEB529F8E6251791EB74AB71A3C",
+        "Sha256": "8ABF012D3CFAAE568FB6F786421ACA9C35E1DCC7627DEDA35F15CBBFFF165593",
         "Required": true
       },
       {
         "Path": "x86_64/XiaomangInputMethod.dll",
-        "Length": 3966976,
-        "Sha256": "95C99FD5FEC7FFAD297CF486DF010D6783F66FFAA62ADD3089B601B5C668956C",
+        "Length": 3970048,
+        "Sha256": "573EAEE2587360741C730F2E9E5640271CE83890060919628404574C5FC881E4",
         "Required": true
       },
       {
@@ -2071,7 +2072,6 @@
         "Required": true
       }
     ],
-    "Sha256": "693EF05FC8A40C305CFD529BFE2AA2810015BF46AD9FE5D7D7AD5E93B1765DE0",
-    "ReleaseTag": "v3.11-20261029"
+    "ReleaseTag": "text-3.11.1-20261029"
   }
 ]

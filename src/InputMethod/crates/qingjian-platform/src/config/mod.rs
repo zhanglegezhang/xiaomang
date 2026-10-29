@@ -227,6 +227,7 @@ chinese_first = false
 # 中文模式下按住 Shift 敲的字母：passthrough 拼音原样上屏、字母交给应用（缺省，与以前一致）/ compose 收进组句
 # 缓冲区参与匹配，这样 Cpan 与 cpan 一样能出「C盘」。英文模式与英文直输段（no-Way）不受影响
 shift_letter = "passthrough"
+shift_discard_preedit = true  # Windows 单独 Shift 切换时丢弃未上屏内容；false 原文上屏
 # 内置英文模式：开着时单击切换键（[shortcut] switch_mode）或 Caps Lock 亮着进英文模式
 # 关掉后青简保持中文模式，切换键与语言栏按钮都不再切过去；要打英文请用系统快捷键（Win+Space）切到别的输入法。只有 Windows 用，macOS 的中英切换是 Caps Lock
 english_mode = true

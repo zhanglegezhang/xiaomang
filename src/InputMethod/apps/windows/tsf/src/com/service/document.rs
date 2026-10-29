@@ -28,19 +28,24 @@ impl TextService_Impl {
     /// 失焦 / 停用 / 切模式：让 Server 交出缓冲区，原样落进最近收键的文档并收掉组句。
     /// 组句已被应用终止的（拼音已是普通文本）只清 Server 不再插。
     pub(super) fn commit_pending(&self) {
+        self.finish_pending(false);
+    }
+
+    /// 复用后台清组句流程；丢弃时只清 TSF 组句范围，不插入空字符串替换宿主选区。
+    pub(super) fn finish_pending(&self, discard: bool) -> bool {
         if self.shared.translating() {
             self.shared.set_translating(false);
             self.shared.hide_candidates();
         }
         let stale = self.shared.take_server_stale();
         if !self.shared.composing() && !stale {
-            return;
+            return true;
         }
         let text = {
             let mut guard = self.engine.borrow_mut();
             let Some(client) = guard.as_mut() else {
                 self.shared.reset();
-                return;
+                return false;
             };
             match client.commit() {
                 Ok(text) => text,
@@ -48,32 +53,38 @@ impl TextService_Impl {
                     log(&format!("失焦上屏失败，断开，下一键重连: {error}"));
                     drop(guard);
                     self.disconnect();
-                    return;
+                    return false;
                 }
             }
         };
         if stale {
-            return;
+            return true;
         }
         self.shared.end_composing();
         let Some(context) = self.shared.last_context() else {
             log(&format!("失焦上屏没有上下文，丢弃: {text:?}"));
             self.shared.reset();
-            return;
+            return false;
         };
-        log(&format!("失焦上屏: {text:?}"));
+        if discard {
+            log("Shift 切换：丢弃未上屏内容");
+        } else {
+            log(&format!("失焦上屏: {text:?}"));
+        }
         let requested = request_update(
             &context,
             self.client_id.get(),
             self.engine.clone(),
             self.shared.clone(),
-            text.filter(|t| !t.is_empty()),
+            text.filter(|t| !discard && !t.is_empty()),
             String::new(),
         );
         if let Err(error) = requested {
             log(&format!("失焦上屏的编辑会话没被受理: {error}"));
             self.shared.reset();
+            return false;
         }
+        true
     }
 
     /// 经异步编辑会话把上屏文本 + 组句拼音行写进文档。

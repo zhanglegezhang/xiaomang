@@ -1,0 +1,29 @@
+{
+  "runtime": {
+    "architecture": "win-x64",
+    "version": "9.0.21",
+    "deployment": "self-contained"
+  },
+  "usagePackage": {
+    "url": "https://github.com/zhanglegezhang/xiaomang/releases/download/v3.12-20261029/xiaomang3.12_2026-10-29_usage.zip",
+    "sha256": "5E1C0F3420FAF0B91E096D57D992E9E07AE35FCE026D470B8275C3F129AA5DAB",
+    "files": 527,
+    "asset": "xiaomang3.12_2026-10-29_usage.zip",
+    "bytes": 115308621
+  },
+  "packaging": {
+    "tool": "7-Zip 26.03",
+    "parameters": "-tzip -mm=Deflate -mx=9 -mfb=258 -mpass=15 -mmt=off -mcu=on -scsUTF-8"
+  },
+  "releaseDate": "2026-10-29",
+  "productVersion": "3.12",
+  "source": "https://github.com/zhanglegezhang/xiaomang/tree/v3.12-20261029",
+  "releaseTag": "v3.12-20261029",
+  "inputMethodComponent": {
+    "tag": "text-3.11.1-20261029",
+    "source": "https://github.com/zhanglegezhang/xiaomang/tree/v3.12-20261029/src/InputMethod",
+    "sha256": "C2002C9DF3537DB9F566F48DA4CB035EF6B43DF9A936C52593409A933B1AA90A",
+    "asset": "xiaomang-inputmethod-3.11.1-20261029-win-x64.zip",
+    "bytes": 128042547
+  }
+}

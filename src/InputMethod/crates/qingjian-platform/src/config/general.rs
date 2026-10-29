@@ -15,6 +15,25 @@ pub const PAGE_KEY_OPTIONS: [&str; 3] = ["-=", "[]", ",."];
 /// 缺省翻页键对，与 [`PAGE_KEY_OPTIONS`] 第一项一致。
 pub const DEFAULT_PAGE_KEYS: (char, char) = ('-', '=');
 
+#[cfg(test)]
+mod shift_discard_tests {
+    use super::GeneralConfig;
+
+    #[test]
+    fn legacy_config_defaults_to_discard_and_explicit_false_survives_roundtrip() {
+        let legacy: GeneralConfig = toml::from_str("english_mode = true").unwrap();
+        assert!(legacy.shift_discard_preedit);
+        let keep: GeneralConfig = toml::from_str("shift_discard_preedit = false").unwrap();
+        assert!(!keep.shift_discard_preedit);
+        let saved = toml::to_string(&keep).unwrap();
+        assert!(
+            !toml::from_str::<GeneralConfig>(&saved)
+                .unwrap()
+                .shift_discard_preedit
+        );
+    }
+}
+
 /// `[general]` 分节：与具体功能无关的常规项。
 /// `learning_language` 写这个值表示不显示译文。
 pub const LEARNING_LANGUAGE_OFF: &str = "off";
@@ -67,6 +86,9 @@ pub struct GeneralConfig {
     /// 内置英文模式：开着时单击切换键（`[shortcut] switch_mode`）或按 Caps Lock 能进英文模式。
     /// 关掉后青简保持中文模式，切换键与语言栏按钮都不再切过去；要打英文请用系统快捷键切到别的输入法。
     pub english_mode: bool,
+
+    /// 单独按 Shift 切换中英时丢弃未上屏内容；关闭时原文上屏。
+    pub shift_discard_preedit: bool,
 
     /// 中文模式下不在组句时敲的标点转成全角（`，。？！` 等，数字后的 `.` 保持半角）。
     /// Windows 悬浮状态条上可点切换；macOS 在偏好设置中选择默认模式。
@@ -137,6 +159,7 @@ impl Default for GeneralConfig {
             chinese_first: false,
             shift_letter: ShiftLetter::default(),
             english_mode: true,
+            shift_discard_preedit: true,
             full_width_punctuation: true,
             english_full_width_punctuation: false,
             aux_code_key: qingjian_core::DEFAULT_AUX_CODE_KEY.to_string(),
