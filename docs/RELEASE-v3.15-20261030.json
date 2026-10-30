@@ -1,0 +1,32 @@
+{
+  "runtime": {
+    "deployment": "self-contained",
+    "architecture": "win-x64",
+    "version": "9.0.21"
+  },
+  "source": "https://github.com/zhanglegezhang/xiaomang/tree/v3.15-20261030",
+  "productVersion": "3.15",
+  "packaging": {
+    "parameters": "-tzip -mm=Deflate -mx=9 -mfb=258 -mpass=15 -mmt=off -mcu=on -scsUTF-8",
+    "tool": "7-Zip 26.03"
+  },
+  "releaseTag": "v3.15-20261030",
+  "inputMethodComponent": {
+    "source": "https://github.com/zhanglegezhang/xiaomang/tree/v3.15-20261030/src/InputMethod",
+    "bytes": 128655513,
+    "asset": "xiaomang-inputmethod-3.15.0-20261030-win-x64.zip",
+    "version": "3.15.0",
+    "tag": "text-3.15.0-20261030",
+    "sha256": "A2C2D59FCDD31F1BA1B3D638E741B71A774AE801C0F5E35FB7300276E78C26CB",
+    "buildSourceAsset": "xiaomang-inputmethod-3.15.0-20261030-build-source.zip",
+    "buildSourceSha256": "0E3F1D8B6E44B205AB6994FA7F9A75973EF12A066E79EAD82121582A5620E8CA"
+  },
+  "usagePackage": {
+    "asset": "xiaomang3.15_2026-10-30_usage.zip",
+    "bytes": 115313379,
+    "url": "https://github.com/zhanglegezhang/xiaomang/releases/download/v3.15-20261030/xiaomang3.15_2026-10-30_usage.zip",
+    "sha256": "270E9954BE441FAE2F2FDB564552A5D302AE83A9938099559F7AA0BAC0BF2FA6",
+    "files": 527
+  },
+  "releaseDate": "2026-10-30"
+}

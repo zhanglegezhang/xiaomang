@@ -48,7 +48,7 @@ pub(crate) fn digit_key(vk: u32) -> bool {
     (0x31..=0x39).contains(&vk)
 }
 
-fn current_modifiers(english_mode: bool) -> KeyModifiers {
+pub(crate) fn current_modifiers(english_mode: bool) -> KeyModifiers {
     KeyModifiers {
         ctrl: key_down(VK_CONTROL),
         shift: key_down(VK_SHIFT),

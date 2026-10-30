@@ -33,9 +33,9 @@
   },
   {
     "Id": "text",
-    "FileName": "xiaomang-inputmethod-3.14.0-20261030-win-x64.zip",
-    "Length": 128654522,
-    "Sha256": "8034459E7D273DE1CEC15618DF0A0B178604DC7FC197DAF91BDFE581403EE8A8",
+    "FileName": "xiaomang-inputmethod-3.15.0-20261030-win-x64.zip",
+    "Length": 128655513,
+    "Sha256": "A2C2D59FCDD31F1BA1B3D638E741B71A774AE801C0F5E35FB7300276E78C26CB",
     "Files": [
       {
         "Path": "小蟒输入法说明.md",
@@ -81,8 +81,8 @@
       },
       {
         "Path": "InputMethodSetup.exe",
-        "Length": 2228224,
-        "Sha256": "A7B09E34634FBBE707B38E5BB2FE8E4A43F3D0D1A2C2C321E563BD9F6612AED0",
+        "Length": 2228736,
+        "Sha256": "B96E48B874A54EA963DF7BCC11A27113DCD7F0A89CFB0701A1CF5B3AF1E1600F",
         "Required": true
       },
       {
@@ -264,6 +264,12 @@
         "Length": 2183976,
         "Sha256": "94F569071C6CC0EEF00DD711D05B45D7C6CAFD92CF8EC16A6626DBB0643D6345",
         "Required": true
+      },
+      {
+        "Path": "runtime-files.sha256",
+        "Length": 34140,
+        "Sha256": "1C6B4B99EE4620CD27FAB5BDC043B2450358A898BBA2C580ABDE417D2FA2CD81",
+        "Required": false
       },
       {
         "Path": "sessionhandleipcproxystub.dll",
@@ -1407,8 +1413,8 @@
       },
       {
         "Path": "i686/XiaomangInputMethod.dll",
-        "Length": 3699200,
-        "Sha256": "F4F06EF8A0034FD28B77CA4B6D6459ECD0864C607767108C5024673D698FA2AD",
+        "Length": 3699712,
+        "Sha256": "4E0765828445DE895005176595527DE5963701036377EAAAF4AAEFD3AB0051AE",
         "Required": true
       },
       {
@@ -2038,7 +2044,7 @@
       {
         "Path": "x86_64/XiaomangInputMethod.dll",
         "Length": 3970048,
-        "Sha256": "573EAEE2587360741C730F2E9E5640271CE83890060919628404574C5FC881E4",
+        "Sha256": "AC5B9664672322D32025FDF291BF1EBE0CA7008F646C27979368800BA611E2DA",
         "Required": true
       },
       {
@@ -2064,14 +2070,8 @@
         "Length": 13664,
         "Sha256": "F2FC134392F24259366ABFABD0B12DD8E73A07746C2FC6ED399A07D4EEFFE7A9",
         "Required": true
-      },
-      {
-        "Length": 34140,
-        "Required": false,
-        "Path": "runtime-files.sha256",
-        "Sha256": "852DE22E8EFC1CD43DED4778D997BB1BA30884437A13EB31EB8355D072B2C8FF"
       }
     ],
-    "ReleaseTag": "text-3.14.0-20261030"
+    "ReleaseTag": "text-3.15.0-20261030"
   }
 ]

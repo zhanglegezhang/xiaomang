@@ -202,6 +202,7 @@ impl TextService_Impl {
         if self.shared.foreground() == foreground {
             return;
         }
+        self.key_tap.reset();
         self.shared.set_foreground(foreground);
         if foreground {
             self.ensure_connected();

@@ -240,7 +240,7 @@ try {
  Set-XMPhase $transaction 'complete' $startedCount
  Clear-XMMarker $transaction
  Set-Content -LiteralPath $result -Value '更新成功。个人数据备份和旧程序保留在此目录。' -Encoding UTF8
- if(!$NoUI){Add-Type -AssemblyName System.Windows.Forms;[Windows.Forms.MessageBox]::Show(('升级完成，原数据已加载。备份与日志：'+$c.Stage),'小蟒升级完成')|Out-Null}
+ if(!$NoUI){Add-Type -AssemblyName System.Windows.Forms;[Windows.Forms.MessageBox]::Show(('主程序升级完成，原数据已加载。已安装的输入法组件由新版程序继续检查更新。备份与日志：'+$c.Stage),'小蟒主程序升级完成')|Out-Null}
 } catch {
  $reason=$_.Exception.Message
  try {

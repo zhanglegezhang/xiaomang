@@ -16,6 +16,7 @@ internal static class UpgradeStartupCheck
     private static string originalPinned;
     private static Exception settingsError;
     private static bool settingsChecked;
+    internal static bool StartInputAfterUpgrade => (bool?)expected?["InputWasEnabled"] != false;
     // Run synchronously after configuration loading, before clipboard monitoring can
     // append a record or evict the oldest record at the history limit.
     internal static void SettingsLoaded()
@@ -74,6 +75,9 @@ internal static class UpgradeStartupCheck
     {
         if (string.IsNullOrEmpty(Request)) return;
         expected = JObject.Parse(File.ReadAllText(Request));
+        // This receipt belongs to this one upgrade launch. Do not pass it to
+        // restarted applications or child tools and repeat the component check.
+        Environment.SetEnvironmentVariable("XIAOMANG_UPGRADE_CHECK", null);
         string personal = Path.GetFullPath(Program.PersonalFolder);
         if (!personal.TrimEnd('\\').Equals(((string)expected["Personal"]).TrimEnd('\\'), StringComparison.OrdinalIgnoreCase))
             throw new IOException("升级后个人数据目录发生变化，停止启动以保护原数据。");
@@ -110,7 +114,11 @@ internal static class UpgradeStartupCheck
         catch (Exception error)
         {
             WriteResult(new { Success = false, Error = error.Message });
+            return;
         }
+        // Component errors must not overwrite the successful application data-load receipt.
+        try { UpgradeInputComponentForm.OpenAfterUpgrade(Request + ".input-result"); }
+        catch (Exception error) { ShareX.HelpersLib.DebugHelper.WriteException(error, "Post-upgrade input component update"); }
     }
     private static void WriteResult(object value)
     {

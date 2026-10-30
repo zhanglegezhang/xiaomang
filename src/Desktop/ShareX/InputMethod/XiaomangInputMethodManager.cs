@@ -19,7 +19,7 @@ namespace ShareX
         internal const string ClassId = "{745D01A8-3F53-41D6-969B-42A734F28B1E}";
         internal static string BundleDirectory => Path.Combine(AppContext.BaseDirectory, "ThirdParty", "XiaomangInputMethod");
         internal static string UserDirectory => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "XiaomangInputMethod");
-        internal static string ComponentDirectory => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles), "XiaomangInputMethod", "0.1.4-shift1");
+        internal static string ComponentDirectory => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles), "XiaomangInputMethod", "0.1.4-shift2");
         internal static string LogDirectory => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "XiaomangInputMethod", "logs");
         private static readonly object gate = new();
         private static System.Threading.Timer monitor;
@@ -44,12 +44,15 @@ namespace ShareX
                 using var key = machine.OpenSubKey(@"Software\Classes\CLSID\" + ClassId + @"\InprocServer32");
                 var path = key?.GetValue("") as string;
                 string expected = Path.Combine(ComponentDirectory, "x86_64", "XiaomangInputMethod.dll");
+                string previousShift = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles),
+                    "XiaomangInputMethod", "0.1.4-shift1", "x86_64", "XiaomangInputMethod.dll");
                 string previous = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles),
                     "XiaomangInputMethod", "0.1.4-recovery1", "x86_64", "XiaomangInputMethod.dll");
                 string legacy = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles),
                     "XiaomangInputMethod", "0.1.4", "x86_64", "XiaomangInputMethod.dll");
                 using var profile = machine.OpenSubKey(@"Software\Microsoft\CTF\TIP\" + ClassId + @"\LanguageProfile\0x00000804\{81C29015-D151-48C4-9643-EA1BA891612E}");
                 return (string.Equals(path, expected, StringComparison.OrdinalIgnoreCase) ||
+                    string.Equals(path, previousShift, StringComparison.OrdinalIgnoreCase) ||
                     string.Equals(path, previous, StringComparison.OrdinalIgnoreCase) ||
                     string.Equals(path, legacy, StringComparison.OrdinalIgnoreCase)) && File.Exists(path) && profile != null;
             }

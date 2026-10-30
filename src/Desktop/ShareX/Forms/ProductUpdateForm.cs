@@ -237,7 +237,7 @@ namespace ShareX
         private async Task Install()
         {
             if (busy || release == null) return;
-            if (MessageBox.Show(this, "更新会先下载并校验，然后保存并关闭编辑窗口、备份个人数据，最后重启小蟒。是否继续？", "更新小蟒", MessageBoxButtons.OKCancel, MessageBoxIcon.Information) != DialogResult.OK) return;
+            if (MessageBox.Show(this, "更新会先下载并校验，然后保存并关闭编辑窗口、备份个人数据，最后重启小蟒。已安装的输入法组件会随后检查更新，保留设置和学习记录。是否继续？", "更新小蟒", MessageBoxButtons.OKCancel, MessageBoxIcon.Information) != DialogResult.OK) return;
             busy = true; check.Enabled = update.Enabled = false;
             string stage = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "XiaomangUpdates", Guid.NewGuid().ToString("N"));
             try

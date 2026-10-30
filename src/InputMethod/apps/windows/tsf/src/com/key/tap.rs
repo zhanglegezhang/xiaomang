@@ -25,6 +25,30 @@ pub(crate) struct KeyTap {
 }
 
 impl KeyTap {
+    /// 焦点边界不能继承旧窗口的按键序列（松开事件可能交给了别的窗口）。
+    pub(crate) fn reset(&self) {
+        self.cancel();
+        self.held_modifiers.set(0);
+    }
+
+    /// 使用当前消息队列的键盘状态纠正漏收的修饰键事件。
+    /// 不用异步状态，避免快速输入时把尚未处理的松开误认为已经发生。
+    pub(crate) fn reconcile_modifiers(&self, ctrl: bool, shift: bool, alt: bool, win: bool) {
+        let mask =
+            u8::from(ctrl) | (u8::from(shift) << 1) | (u8::from(alt) << 2) | (u8::from(win) << 3);
+        self.held_modifiers.set(mask);
+        if let Some(key) = self.pressed.get() {
+            let bit = match key {
+                SwitchKey::Shift => 2,
+                SwitchKey::Control => 1,
+                _ => 0,
+            };
+            if mask & bit == 0 {
+                self.cancel();
+            }
+        }
+    }
+
     /// 任一键按下。`lparam` 第 30 位是按下前的状态（1 = 自动重复，不算新按下）。
     pub(crate) fn key_down(&self, vk: u32, lparam: LPARAM, keys: SwitchKeys) {
         let modifier = modifier_bit(vk);
@@ -108,6 +132,60 @@ mod tests {
 
     fn only(key: SwitchKey) -> SwitchKeys {
         SwitchKeys::NONE.with(key, true)
+    }
+
+    #[test]
+    fn missed_modifier_release_does_not_block_next_shift() {
+        for vk in [VK_CONTROL_LEFT, 0xA4, 0x5B] {
+            let tap = KeyTap::default();
+            let keys = only(SwitchKey::Shift);
+            tap.key_down(vk, DOWN, keys);
+            // 原窗口没收到 Ctrl / Alt / Win 的抬起，下一次仅 Shift 实际按下。
+            tap.reconcile_modifiers(false, true, false, false);
+            tap.key_down(VK_SHIFT_LEFT, DOWN, keys);
+            assert!(tap.key_up(VK_SHIFT_LEFT, keys));
+        }
+    }
+
+    #[test]
+    fn focus_reset_cancels_old_tap_and_clears_stale_modifiers() {
+        let tap = KeyTap::default();
+        let keys = only(SwitchKey::Shift);
+        tap.key_down(VK_SHIFT_LEFT, DOWN, keys);
+        tap.reset();
+        assert!(!tap.key_up(VK_SHIFT_LEFT, keys));
+        tap.key_down(VK_CONTROL_LEFT, DOWN, keys);
+        tap.reset();
+        tap.key_down(VK_SHIFT_LEFT, DOWN, keys);
+        assert!(tap.key_up(VK_SHIFT_LEFT, keys));
+    }
+
+    #[test]
+    fn actual_modifier_held_before_focus_still_blocks_shift_tap() {
+        for (ctrl, alt, win) in [
+            (true, false, false),
+            (false, true, false),
+            (false, false, true),
+        ] {
+            let tap = KeyTap::default();
+            let keys = only(SwitchKey::Shift);
+            tap.reset();
+            tap.reconcile_modifiers(ctrl, true, alt, win);
+            tap.key_down(VK_SHIFT_LEFT, DOWN, keys);
+            assert!(!tap.key_up(VK_SHIFT_LEFT, keys));
+        }
+    }
+
+    #[test]
+    fn repeated_test_and_real_callback_only_toggle_once() {
+        let tap = KeyTap::default();
+        let keys = only(SwitchKey::Shift);
+        for _ in 0..2 {
+            tap.reconcile_modifiers(false, true, false, false);
+            tap.key_down(VK_SHIFT_LEFT, DOWN, keys);
+        }
+        assert!(tap.key_up(VK_SHIFT_LEFT, keys));
+        assert!(!tap.key_up(VK_SHIFT_LEFT, keys));
     }
 
     #[test]

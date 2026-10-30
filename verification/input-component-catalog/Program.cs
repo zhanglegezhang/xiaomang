@@ -1,6 +1,6 @@
 using ShareX;
 using System.Text.Json;
-var bundles=JsonSerializer.Deserialize<ComponentBundle[]>(File.ReadAllText("src/Desktop/ShareX/Assets/ComponentBundles.json"));
+var bundles=JsonSerializer.Deserialize<ComponentBundle[]>(File.ReadAllText("tools/ShareX/source/ShareX-21.0.0/ShareX/Assets/ComponentBundles.json"));
 var release=new InputComponentRelease(1,"3.12","3.11",bundles.Single(b=>b.Id=="text"));
 InputComponentCatalog.Validate(release,"3.11");
 int count=1;

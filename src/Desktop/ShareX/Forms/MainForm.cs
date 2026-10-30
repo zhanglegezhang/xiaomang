@@ -1231,6 +1231,7 @@ namespace ShareX
             exitStateCaptured = true;
             try
             {
+                await UpgradeInputComponentForm.StopForExitAsync();
                 if (Program.HotkeyManager != null) Program.HotkeyManager.IgnoreHotkeys = true;
                 if (todoWidget != null && !todoWidget.IsDisposed) todoWidget.Enabled = false;
                 if (inlineSettingsForm != null && !inlineSettingsForm.IsDisposed) inlineSettingsForm.Enabled = false;

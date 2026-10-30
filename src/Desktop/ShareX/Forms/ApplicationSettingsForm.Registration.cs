@@ -285,6 +285,7 @@ namespace ShareX
         }
         private async Task RunRegistrationAction(Func<CancellationToken,Task> action)
         {
+            if(UpgradeInputComponentForm.IsBusy){registrationMessage.Text="升级后正在更新输入法组件，请等待完成或在更新窗口取消。";return;}
             if(registrationBusy)return;
             registrationBusy=true;registrationCancellation=new CancellationTokenSource();registrationRefresh.UpdateVisibility();
             foreach(var button in registrationActions)button.Enabled=false;

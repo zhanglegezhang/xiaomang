@@ -104,6 +104,13 @@ impl TextService_Impl {
     }
 
     fn note_key_down(&self, vk: u32, lparam: LPARAM) {
+        let modifiers = crate::com::key::event::current_modifiers(self.mode_state.english());
+        self.key_tap.reconcile_modifiers(
+            modifiers.ctrl,
+            modifiers.shift,
+            modifiers.alt,
+            modifiers.win,
+        );
         self.key_tap
             .key_down(vk, lparam, self.mode_state.switch_keys());
     }

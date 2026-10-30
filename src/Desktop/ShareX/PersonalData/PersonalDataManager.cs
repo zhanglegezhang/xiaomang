@@ -56,7 +56,7 @@ namespace ShareX
         {
             internal readonly List<FileStream> Locks = new();
             internal readonly List<(Form form, bool enabled)> Forms = new();
-            internal bool InputPaused, OldIgnore;
+            internal bool InputPaused, InputResume, OldIgnore;
             internal IDisposable FileFavoritesLease;
             internal void Lock(string root) {
                 PersonalDataArchive.SafePath(root); Directory.CreateDirectory(root);
@@ -68,12 +68,13 @@ namespace ShareX
                 foreach (var (form, enabled) in Forms) if (!form.IsDisposed) form.Enabled = enabled;
                 if (Program.HotkeyManager != null) Program.HotkeyManager.IgnoreHotkeys = OldIgnore;
                 Busy = false;
-                if (InputPaused && Program.MainForm != null && !Program.MainForm.IsDisposed) XiaomangInputMethodManager.Start();
+                if (InputPaused && InputResume && Program.MainForm != null && !Program.MainForm.IsDisposed) XiaomangInputMethodManager.Start();
             }
         }
         private static async Task<TransferScope> Pause(PersonalDataPaths paths, PersonalDataKind[] selected, Form transfer, PersonalDataTransferControl control = null)
         {
             control?.Token.ThrowIfCancellationRequested();
+            if (UpgradeInputComponentForm.IsBusy) throw new IOException("请先等待输入法组件更新完成，再备份或导入。");
             if (Busy || VoiceTypingController.IsTyping || Application.OpenForms.OfType<TodoWidgetForm>().Any(form => form.PersonalDataRecordingActive) || TaskManager.Tasks.Any(task => task.IsWorking)) throw new IOException("请先结束录音、截图或录屏任务，再备份或导入。");
             var scope = new TransferScope(); Busy = true;
             try {
@@ -91,6 +92,7 @@ namespace ShareX
                 }
                 if (selected.Contains(PersonalDataKind.InputMethod)) {
                     await CloseOwnedWindows(Path.Combine(XiaomangInputMethodManager.BundleDirectory, "qingjian-settings.exe"));
+                    scope.InputResume = InputComponentUpdater.RecoveryEnabled;
                     scope.InputPaused = true;
                     await Task.Run(XiaomangInputMethodManager.PauseForPersonalData);
                     scope.Lock(paths.Input);
@@ -118,12 +120,13 @@ namespace ShareX
         internal static async Task BackupForUpdate(Form transfer, string destination, IProgress<string> progress, Func<Task> install)
         {
             var paths = Paths();
+            bool inputWasEnabled = InputComponentUpdater.RecoveryEnabled;
             // Upgrade preserves the original files; it must not require an input-method converter.
             var selected = Enum.GetValues<PersonalDataKind>();
             using var scope = await Pause(paths, selected, transfer);
             try
             {
-                await Task.Run(() => UpgradeDataSnapshot.Create(paths, destination, progress));
+                await Task.Run(() => UpgradeDataSnapshot.Create(paths, destination, progress, inputWasEnabled));
                 updateReady = true;
                 await install();
             }

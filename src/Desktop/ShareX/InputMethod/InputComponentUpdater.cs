@@ -11,6 +11,14 @@ namespace ShareX;
 internal static class InputComponentUpdater
 {
     private static readonly SemaphoreSlim gate = new(1, 1);
+    internal static bool RecoveryEnabled
+    {
+        get
+        {
+            using var state = Registry.CurrentUser.OpenSubKey(InputMethodRecovery.RegistryPath);
+            return state?.GetValue("Enabled") is not int enabled || enabled == 1;
+        }
+    }
     internal static bool RegistrationMatches(string folder)
     {
         foreach (var pair in new[] { (RegistryView.Registry64, "x86_64"), (RegistryView.Registry32, "i686") })
@@ -47,9 +55,16 @@ internal static class InputComponentUpdater
             InputComponentCatalog.Validate(release, Program.ProductVersion);
             if (await ComponentBundles.IsValidAsync(release.Bundle, destination, token) && RegistrationMatches(destination)) return false;
             await ComponentBundles.EnsureAsync(release.Bundle, stage, cache, progress, token);
-            using var state = Registry.CurrentUser.OpenSubKey(InputMethodRecovery.RegistryPath);
             bool wasRegistered = XiaomangInputMethodManager.IsRegistered;
-            bool resume = !wasRegistered || (state?.GetValue("Enabled") is int enabled && enabled == 1);
+            bool resume = !wasRegistered || RecoveryEnabled;
+            bool? profileEnabled = null;
+            if (wasRegistered && Program.MainForm != null)
+                profileEnabled = await Program.MainForm.InvokeAsync(() => { using var profiles = new TsfInputProfiles(); return profiles.XiaomangEnabled; });
+            async Task RestoreDisabledProfile()
+            {
+                if (profileEnabled == false && Program.MainForm != null)
+                    await Program.MainForm.InvokeAsync(() => { using var profiles = new TsfInputProfiles(); profiles.EnableXiaomang(false); });
+            }
             bool registrationAttempted = false;
             async Task Resume()
             {
@@ -64,10 +79,11 @@ internal static class InputComponentUpdater
             }
             await InputComponentTransaction.CommitAsync(release.Bundle, stage, destination,
                 () => Task.Run(XiaomangInputMethodManager.PauseForPersonalData),
-                async () => { registrationAttempted = !RegistrationMatches(destination); await Register(destination); await Resume(); },
+                async () => { registrationAttempted = !RegistrationMatches(destination); await Register(destination); await RestoreDisabledProfile(); await Resume(); },
                 async () =>
                 {
                     if (wasRegistered && registrationAttempted) await Register(destination);
+                    await RestoreDisabledProfile();
                     if (!wasRegistered && registrationAttempted && XiaomangInputMethodManager.IsRegistered)
                     {
                         using var undo = Process.Start(new ProcessStartInfo(Path.Combine(stage,"InputMethodSetup.exe"),"uninstall")
