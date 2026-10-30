@@ -1,0 +1,29 @@
+{
+  "usagePackage": {
+    "url": "https://github.com/zhanglegezhang/xiaomang/releases/download/v3.14-20261030/xiaomang3.14_2026-10-30_usage.zip",
+    "asset": "xiaomang3.14_2026-10-30_usage.zip",
+    "sha256": "92CB2E93B28A1543EDC4A7C4068A3DE5ACA3C85E1AB99EE3D3F688CF6AD0308B",
+    "bytes": 115309209,
+    "files": 527
+  },
+  "source": "https://github.com/zhanglegezhang/xiaomang/tree/v3.14-20261030",
+  "inputMethodComponent": {
+    "tag": "text-3.14.0-20261030",
+    "asset": "xiaomang-inputmethod-3.14.0-20261030-win-x64.zip",
+    "sha256": "8034459E7D273DE1CEC15618DF0A0B178604DC7FC197DAF91BDFE581403EE8A8",
+    "bytes": 128654522,
+    "source": "https://github.com/zhanglegezhang/xiaomang/tree/v3.14-20261030/src/InputMethod"
+  },
+  "releaseDate": "2026-10-30",
+  "productVersion": "3.14",
+  "releaseTag": "v3.14-20261030",
+  "packaging": {
+    "parameters": "-tzip -mm=Deflate -mx=9 -mfb=258 -mpass=15 -mmt=off -mcu=on -scsUTF-8",
+    "tool": "7-Zip 26.03"
+  },
+  "runtime": {
+    "architecture": "win-x64",
+    "deployment": "self-contained",
+    "version": "9.0.21"
+  }
+}

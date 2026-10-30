@@ -33,9 +33,9 @@
   },
   {
     "Id": "text",
-    "FileName": "xiaomang-inputmethod-3.11.2-20261029-win-x64.zip",
-    "Length": 128042590,
-    "Sha256": "B627699964AB9092176098CF99F2C1AB7A7116CAF2192866E4A8A71AA8AAF074",
+    "FileName": "xiaomang-inputmethod-3.14.0-20261030-win-x64.zip",
+    "Length": 128654522,
+    "Sha256": "8034459E7D273DE1CEC15618DF0A0B178604DC7FC197DAF91BDFE581403EE8A8",
     "Files": [
       {
         "Path": "小蟒输入法说明.md",
@@ -309,8 +309,8 @@
       },
       {
         "Path": "XiaomangInputWorker.exe",
-        "Length": 16395264,
-        "Sha256": "1C831EB7B7351B80131204181828FA1AC3B56A1E387B56461B259295FC2AD262",
+        "Length": 16398336,
+        "Sha256": "8567271652B0C59D7D04347006174ABE7E998BF44D2B3EE9ABDFFD16E69EDAB7",
         "Required": true
       },
       {
@@ -1023,8 +1023,8 @@
       },
       {
         "Path": "data/generated/dict.qj",
-        "Length": 3538792,
-        "Sha256": "E707ACF71E1446E4138710A40B85C4F3A0C5CE001F92A7AEE01BB06B65998409",
+        "Length": 6084296,
+        "Sha256": "CB4D1E20635BE78A7294C66FFE6438E46E22AF575405CD9AE9AB257CD5E194B3",
         "Required": true
       },
       {
@@ -2064,8 +2064,14 @@
         "Length": 13664,
         "Sha256": "F2FC134392F24259366ABFABD0B12DD8E73A07746C2FC6ED399A07D4EEFFE7A9",
         "Required": true
+      },
+      {
+        "Length": 34140,
+        "Required": false,
+        "Path": "runtime-files.sha256",
+        "Sha256": "852DE22E8EFC1CD43DED4778D997BB1BA30884437A13EB31EB8355D072B2C8FF"
       }
     ],
-    "ReleaseTag": "text-3.11.2-20261029"
+    "ReleaseTag": "text-3.14.0-20261030"
   }
 ]

@@ -12,6 +12,42 @@ use super::{
 };
 use crate::ranking::weight_bonus;
 
+/// Only consider unseen single-character tails when exact multi-character words
+/// cover the input; never break an existing three-or-more-character word.
+fn tail_guard(dictionaries: &[&Dictionary], positions: &[Vec<SyllablePattern<'_>>]) -> bool {
+    if positions.len() < 4
+        || positions
+            .iter()
+            .any(|p| p.first().is_none_or(|s| !s.complete))
+    {
+        return false;
+    }
+    let keys: Vec<_> = positions.iter().map(|p| p[0].text).collect();
+    let n = keys.len();
+    let exact = |start: usize, end: usize| {
+        dictionaries.iter().any(|d| {
+            d.lookup(&keys[start..end], false).iter().any(|h| {
+                h.syllables().count() == end - start && h.text.chars().count() == end - start
+            })
+        })
+    };
+    for start in 0..n {
+        for end in start + 3..=n {
+            if exact(start, end) {
+                return false;
+            }
+        }
+    }
+    let mut reachable = vec![false; n + 1];
+    reachable[0] = true;
+    for start in 0..n {
+        if reachable[start] && start + 2 <= n && exact(start, start + 2) {
+            reachable[start + 2] = true;
+        }
+    }
+    reachable[n]
+}
+
 /// 词库里没有的孤立音节（罕见音节没有单字）按这个 log 概率兜底，让路径总能走通。
 const UNKNOWN_LOG_PROB: f64 = -30.0;
 
@@ -187,6 +223,7 @@ pub fn convert_paths_with_prefix(
         .sum::<f64>()
         .max(1.0);
     let log_total = total.ln();
+    let conservative_tail = prefix.is_none() && tail_guard(dictionaries, positions);
 
     // nodes[i]：覆盖前 i 个音节、以某个词结尾的部分路径；nodes[0] 是虚拟起点
     let mut nodes: Vec<Vec<Node>> = (0..=n).map(|_| Vec::new()).collect();
@@ -263,11 +300,19 @@ pub fn convert_paths_with_prefix(
                     };
                     let static_step = static_probability.unwrap_or(fallback);
                     let static_score = previous.static_score + static_step;
+                    let tail_cost = if conservative_tail && end == n {
+                        model.transition_penalty(
+                            (start > 0).then_some(previous.text.as_str()),
+                            &hit.text,
+                        )
+                    } else {
+                        0.0
+                    };
                     nodes[end].push(Node {
                         start,
                         text: hit.text.clone(),
                         syllables: hit.syllables.clone(),
-                        score: score + bonus - hit.penalty - reading_cost,
+                        score: score + bonus - hit.penalty - reading_cost - tail_cost,
                         static_score,
                         back,
                         placeholder: false,

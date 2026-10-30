@@ -286,6 +286,22 @@ fn group(pairs: &[(u32, u32, u32)], word_count: usize) -> (Vec<u32>, Vec<Success
 }
 
 impl LanguageModel for BigramModel {
+    fn transition_penalty(&self, previous: Option<&str>, word: &str) -> f64 {
+        let Some(previous) = previous.filter(|p| p.chars().count() >= 2) else {
+            return 0.0;
+        };
+        if word.chars().count() != 1 {
+            return 0.0;
+        }
+        match (self.word_id(previous), self.word_id(word)) {
+            (Some(p), Some(w))
+                if self.entries[p as usize].count > 0 && self.bigram(p, w).unwrap_or(0) == 0 =>
+            {
+                3.0
+            }
+            _ => 0.0,
+        }
+    }
     fn log_prob(&self, previous: Option<&str>, word: &str) -> Option<f64> {
         let id = self.word_id(word)?;
         let unigram = f64::from(self.entries[id as usize].count) / self.total;
@@ -358,5 +374,23 @@ mod tests {
                 model.log_prob(previous, word)
             );
         }
+    }
+}
+
+#[cfg(test)]
+mod conservative_tail_tests {
+    use super::*;
+    #[test]
+    fn only_known_words_with_an_unseen_single_character_successor_get_a_cost() {
+        let model = BigramModel::parse(
+            "层次\t100\n会\t100\n已\t100\n案件\t100\n词汇\t100\n",
+            "案件\t已\t2\n",
+        )
+        .unwrap();
+        assert_eq!(model.transition_penalty(Some("层次"), "会"), 3.0);
+        assert_eq!(model.transition_penalty(Some("案件"), "已"), 0.0);
+        assert_eq!(model.transition_penalty(Some("层次"), "词汇"), 0.0);
+        assert_eq!(model.transition_penalty(Some("未知"), "会"), 0.0);
+        assert_eq!(model.transition_penalty(None, "会"), 0.0);
     }
 }

@@ -315,3 +315,27 @@ fn typo_alternatives_are_penalized_edges() {
     assert_eq!(conversion.text, "感谢");
     assert_eq!(conversion.penalty, 0.0);
 }
+
+#[test]
+fn conservative_tail_requires_complete_word_cover_and_preserves_long_words() {
+    let dictionary = Dictionary::parse(
+        "底层\tdi ceng\t100\n词汇\tci hui\t100\n模型\tmo xing\t100\n层\tceng\t100\n",
+    )
+    .unwrap();
+    assert!(tail_guard(
+        &[&dictionary],
+        &complete(&["di", "ceng", "ci", "hui"])
+    ));
+    assert!(!tail_guard(
+        &[&dictionary],
+        &complete(&["mo", "xing", "ceng"])
+    ));
+    let longer = Dictionary::parse("底层词\tdi ceng ci\t10\n").unwrap();
+    assert!(!tail_guard(
+        &[&dictionary, &longer],
+        &complete(&["di", "ceng", "ci", "hui"])
+    ));
+    let mut partial = complete(&["di", "ceng", "ci", "hui"]);
+    partial[3] = vec![SyllablePattern::prefix("h")];
+    assert!(!tail_guard(&[&dictionary], &partial));
+}
